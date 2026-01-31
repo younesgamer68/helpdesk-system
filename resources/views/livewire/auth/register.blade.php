@@ -101,7 +101,6 @@
 
         </div> --}}
 
-    {{--  WA JM3 RASSK A WALID WAAAAAAAAAA --}}
         {{-- ÉTAPE 2 : Formulaire complet avec email pré-rempli --}}
         <div class="min-h-screen bg-[#0A170F] flex items-center justify-center px-4">
             <!-- Header avec Logo et Login Button -->
