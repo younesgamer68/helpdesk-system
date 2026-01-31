@@ -108,11 +108,11 @@
                 <a href="{{ route('home') }}" class="flex flex-col items-center gap-1 hover:opacity-80 transition">
                     <!-- LOGO IMAGE -->
                     <img 
-                        src="{{ asset('images/logo.png') }}" 
+                        src="{{ asset('images/logodm.svg') }}" 
                         alt="HelpDesk Logo"g
-                        class="w-10 h-10 object-contain"
+                        class="w-30 h-30 object-contain"
                     >
-                    <span class="text-white font-semibold text-sm">HelpDesk</span>
+                    <span class="text-white font-semibold text-sm">Helpdesk</span>
                 </a>
                 <a href="{{ route('login') }}" class="bg-white text-[#0A170F] px-6 py-2 rounded font-semibold text-sm hover:bg-gray-100 transition">
                     Log in
