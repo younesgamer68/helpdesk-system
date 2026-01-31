@@ -109,7 +109,7 @@
                     <!-- LOGO IMAGE -->
                     <img 
                         src="{{ asset('images/logo.png') }}" 
-                        alt="HelpDesk Logo" 
+                        alt="HelpDesk Logo"g
                         class="w-10 h-10 object-contain"
                     >
                     <span class="text-white font-semibold text-sm">HelpDesk</span>
