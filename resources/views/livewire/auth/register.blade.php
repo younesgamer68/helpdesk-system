@@ -1,7 +1,6 @@
-<div>
-    
+<x-layouts::auth>
         {{-- ÉTAPE 1 : Formulaire Email uniquement --}}
-        <div class="min-h-screen flex items-center justify-center px-4" style="background-color: #0A170F;">
+        {{-- <div class="min-h-screen flex items-center justify-center px-4" style="background-color: #0A170F;">
 
             <!-- Header -->
             <div class="absolute top-0 left-0 right-0 px-6 py-4 flex justify-between items-center border-b border-white">
@@ -100,7 +99,7 @@
                 </svg>
             </div>
 
-        </div>
+        </div> --}}
 
     
         {{-- ÉTAPE 2 : Formulaire complet avec email pré-rempli --}}
@@ -116,7 +115,7 @@
                     >
                     <span class="text-white font-semibold text-sm">HelpDesk</span>
                 </a>
-                <a href="{{ route('register') }}" class="bg-white text-[#0A170F] px-6 py-2 rounded font-semibold text-sm hover:bg-gray-100 transition">
+                <a href="{{ route('login') }}" class="bg-white text-[#0A170F] px-6 py-2 rounded font-semibold text-sm hover:bg-gray-100 transition">
                     Log in
                 </a>
             </div>
@@ -139,15 +138,21 @@
                 </button>
 
                 <!-- Registration Form -->
-                <form wire:submit.prevent="submit" class="space-y-5">
+                <form method="POST" action="{{ route('register.store') }}" class="space-y-5">
+                    @csrf
                     <!-- Company Name -->
                     <div class="text-left">
                         <label class="text-gray-300 text-sm font-medium block mb-2">
                             Company Name
                         </label>
                         <input 
-                            type="text" 
-                            wire:model="company_name"
+                            name="name"
+                            :label="__('Name')"
+                            :value="old('name')"
+                            type="text"
+                            required
+                            autofocus
+                            autocomplete="name"
                             placeholder="Acme"
                             class="w-full bg-[#0A170F] border border-slate-700 text-white placeholder-gray-500 py-3 px-4 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                         >
@@ -162,9 +167,12 @@
                             Business email
                         </label>
                         <input 
-                            type="email" 
-                            wire:model="email"
-                            readonly
+                           name="email"
+                        :label="__('Email address')"
+                        :value="old('email')"
+                        type="email"
+                        required
+                        autocomplete="email"
                             class="w-full bg-[#0A170F] border border-slate-700 text-gray-400 py-3 px-4 rounded-lg cursor-not-allowed opacity-70"
                         >
                         <p class="text-gray-500 text-xs mt-1">Email cannot be changed</p>
@@ -179,8 +187,11 @@
                             Password
                         </label>
                         <input 
-                            type="password" 
-                            wire:model="password"
+                                    name="password"
+                        :label="__('Password')"
+                        type="password"
+                        required
+                        autocomplete="new-password"
                             placeholder="••••••••"
                             class="w-full bg-[#0A170F] border border-slate-700 text-white placeholder-gray-500 py-3 px-4 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                         >
@@ -195,8 +206,11 @@
                             Confirm Password
                         </label>
                         <input 
-                            type="password" 
-                            wire:model="password_confirmation"
+                            name="password_confirmation"
+                :label="__('Confirm password')"
+                type="password"
+                required
+                autocomplete="new-password"
                             placeholder="••••••••"
                             class="w-full bg-[#0A170F] border border-slate-700 text-white placeholder-gray-500 py-3 px-4 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                         >
@@ -217,7 +231,7 @@
                 <!-- Login Link -->
                 <p class="text-gray-400 text-sm mt-6">
                     Already have an account? 
-                    <a href="{{ route('register') }}" class="text-teal-400 hover:text-teal-300 font-semibold">
+                    <a href="{{ route('login') }}" class="text-teal-400 hover:text-teal-300 font-semibold">
                         Log in
                     </a>
                 </p>
@@ -231,4 +245,4 @@
             </div>
         </div>
     
-</div>
+</x-layouts::auth>
