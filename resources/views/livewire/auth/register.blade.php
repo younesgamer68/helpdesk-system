@@ -108,9 +108,9 @@
                 <a href="{{ route('home') }}" class="flex flex-col items-center gap-1 hover:opacity-80 transition">
                     <!-- LOGO IMAGE -->
                     <img 
-                        src="{{ asset('images/logodm.svg') }}" 
+                        src="{{ asset('images/logodm.png') }}" 
                         alt="HelpDesk Logo"g
-                        class="w-30 h-30 object-contain"
+                        class="w-10 h-10 object-contain"
                     >
                     <span class="text-white font-semibold text-sm">Helpdesk</span>
                 </a>
