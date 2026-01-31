@@ -127,15 +127,7 @@
                     Get started It's free !
                 </h1>
 
-                <!-- Bouton de retour (optionnel) -->
-                <button 
-                    wire:click="backToStep1" 
-                    class="text-teal-400 hover:text-teal-300 text-sm mb-4 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    Back to email
-                </button>
+                
 
                 <!-- Registration Form -->
                 <form method="POST" action="{{ route('register.store') }}" class="space-y-5">
