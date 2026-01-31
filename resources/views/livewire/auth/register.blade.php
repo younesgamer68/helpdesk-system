@@ -111,8 +111,9 @@
                         src="{{ asset('images/logodm.png') }}" 
                         alt="HelpDesk Logo"g
                         class="w-10 h-10 object-contain"
+                        class="w-10 h-10 object-contain"
                     >
-                    <span class="text-white font-semibold text-sm">Helpdesk</span>
+                    <span class="text-white font-semibold text-sm">HelpDesk</span>
                 </a>
                 <a href="{{ route('login') }}" class="bg-white text-[#0A170F] px-6 py-2 rounded font-semibold text-sm hover:bg-gray-100 transition">
                     Log in
