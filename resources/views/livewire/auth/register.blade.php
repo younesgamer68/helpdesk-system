@@ -116,22 +116,17 @@
                             Business email
                         </label>
                         
-                        <!-- Input visible (désactivé) -->
                         <input 
-                            id="emailDisplay"
+                           name="email"
+                            :label="__('Email address')"
+                            :value="old('email')"
                             type="email"
-                            disabled
-                            class="w-full bg-transparent border border-white/30 text-gray-400 py-3 px-4 rounded-lg cursor-not-allowed opacity-70"
-                        >
+                            required
+                            id="emailDisplay"
+                            autocomplete="email"
+ class="w-full bg-transparent border border-white/30 text-white placeholder-white/40 py-3 px-4 rounded-lg focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition"                        >
                         
-                        <!-- Input caché pour le formulaire -->
-                        <input 
-                            id="emailHidden"
-                            name="email"
-                            type="hidden"
-                        >
-                        
-                        <p class="text-gray-500 text-xs mt-1">Email cannot be changed</p>
+                
                         @error('email')
                             <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
                         @enderror
@@ -216,7 +211,6 @@
             const step1 = document.getElementById('step-1');
             const step2 = document.getElementById('step-2');
             const emailDisplay = document.getElementById('emailDisplay');
-            const emailHidden = document.getElementById('emailHidden');
             const companyName = document.getElementById('companyName');
             
             // Quand on clique sur "Sign up with email"
@@ -243,7 +237,6 @@
                 
                 // Pré-remplir les champs email de l'étape 2
                 emailDisplay.value = email;
-                emailHidden.value = email;
                 
                 // Masquer l'étape 1 et afficher l'étape 2
                 step1.classList.add('hidden');
