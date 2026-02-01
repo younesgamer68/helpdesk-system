@@ -32,7 +32,7 @@
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
                 @csrf
                 
-                <!-- Business Email -->
+                <!-- Business email -->
                 <div class="text-left">
                     <label class="text-white text-sm font-medium block mb-3">
                         Business email
