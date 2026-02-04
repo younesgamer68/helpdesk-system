@@ -6,18 +6,19 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{  route('tickets', $company) }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
-
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
+                    <flux:sidebar.item icon="home" :href=" route('tickets', $company)" :current="request()->routeIs('tickets')" wire:navigate>
+                        {{ __('Tickets') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="home" :href="route('ticket')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Ticket') }}
+                    @if(Auth::user()->role == 'admin')
+                    <flux:sidebar.item icon="home" :href=" route('technicians', $company)" :current="request()->routeIs('technicians')" wire:navigate>
+                        {{ __('Technicians') }}
                     </flux:sidebar.item>
+                    @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password')->nullable(); // Nullable for Google OAuth
             $table->string('google_id')->nullable()->unique();
             $table->string('avatar')->nullable();
-            $table->enum('role', ['admin', 'technician'])->default('technician');
+            $table->enum('role', ['admin', 'technician'])->default('admin');
             $table->rememberToken();
             $table->timestamps();
 
