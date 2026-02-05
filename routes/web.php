@@ -15,7 +15,7 @@ Route::middleware(['auth', 'verified'])
         Route::view('tickets', 'dashboard.tickets.index')
             ->name('tickets');
 
-        Route::get('tickets/{ticket:ticket_number}', [TicketsController::class, 'show']);
+        Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
         
 
         Route::view('technicians', 'dashboard.technicians')

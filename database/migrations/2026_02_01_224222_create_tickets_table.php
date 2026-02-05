@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('description');
 
             // Status and priority
-            $table->enum('status', ['pending', 'open', 'in_progress', 'resolved', 'closed'])
+            $table->enum('status', ['pending', 'open', 'in progress', 'resolved', 'closed'])
                 ->default('pending');
             $table->enum('priority', ['low', 'medium', 'high', 'urgent'])
                 ->default('medium');

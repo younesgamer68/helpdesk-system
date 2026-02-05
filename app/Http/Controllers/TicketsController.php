@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,7 @@ class TicketsController extends Controller
 
     public function show($company, Ticket $ticket)
     {
-        return view('dashboard.tickets.show', compact('ticket'));
+        $agents = $ticket->company->user;
+        return view('dashboard.tickets.show', compact('ticket', 'agents'));
     }
 }

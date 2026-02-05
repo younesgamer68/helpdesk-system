@@ -10,12 +10,9 @@ class Ticket extends Model
     use HasFactory;
 
     protected $guarded = [];
-    // In app/Models/Ticket.php
 
-    // public function getRouteKeyName()
-    // {
-    //     return 'ticket_number';
-    // }
+
+  
     public function user()
     {
         return $this->belongsTo(User::class, foreignKey:'assigned_to');
@@ -25,6 +22,12 @@ class Ticket extends Model
     }
     public function category(){
         return $this->belongsTo(TicketCategory::class, foreignKey: 'category_id');
+    }
+
+
+    public function getRouteKeyName()
+    {
+        return 'ticket_number';
     }
 
 }

@@ -48,10 +48,11 @@
                             </flux:button>
 
                             <flux:navmenu>
-                                <flux:navmenu.item  icon="trash">Delete</flux:navmenu.item>
-                                <flux:navmenu.item  icon="building-storefront" >
-                                       <a href="tickets/{{ $ticket->ticket_number }}" wire:navigate>View details</a> 
-                            </flux:navmenu.item>
+                                <flux:navmenu.item icon="trash">Delete</flux:navmenu.item>
+                                <flux:navmenu.item icon="building-storefront">
+                                    <a href="{{ route('details', ['company' => request()->route('company'), 'ticket' => $ticket]) }}"
+                                        wire:navigate>View details</a>
+                                </flux:navmenu.item>
 
                             </flux:navmenu>
                         </flux:dropdown>
