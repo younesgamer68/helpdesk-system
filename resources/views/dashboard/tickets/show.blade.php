@@ -253,22 +253,16 @@
                             <div>
                                 <p class="text-xs text-zinc-500 mb-2">Last updated</p>
                                 <p class="text-sm text-white">{{ $ticket->updated_at->diffForHumans() }}</p>
-                                <p class="text-xs text-zinc-500">via {{ $ticket->user->name ?? 'System' }}</p>
+                                <p class="text-xs text-zinc-500">via {{ Auth::user()->name ?? 'System' }}</p>
                             </div>
                         </div>
 
                         <div class="mt-6 pt-6 border-t border-zinc-800 space-y-2">
                        <livewire:dashboard.reassignment :ticket="$ticket"/>
                        <livewire:dashboard.change-priority :ticket="$ticket"/>
+                       <livewire:dashboard.change-status :ticket="$ticket"/>
                          
-                            <button
-                                class="w-full px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition text-sm flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                </svg>
-                                Change status
-                            </button>
+                           
                             <button
                                 class="w-full px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

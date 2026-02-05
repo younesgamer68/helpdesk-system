@@ -9,7 +9,7 @@ class Status extends Component
 {
 
     public Ticket $ticket;
-    protected $listeners = ['statusChanged' => 'render'];
+    protected $listeners = ['statusChanged' => '$refresh'];
     public function mount(Ticket $ticket)
     {
         $this->ticket = $ticket;

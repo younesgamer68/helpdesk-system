@@ -9,7 +9,7 @@ class Priority extends Component
 {
     public Ticket $ticket;
 
-    public $listeners = ["priorityChanged"=>"render"];
+    public $listeners = ['priorityChanged'=>'$refresh'];
     public function mount($ticket){
         $this->ticket = $ticket;
     }

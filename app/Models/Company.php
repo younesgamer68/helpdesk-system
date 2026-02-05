@@ -20,4 +20,7 @@ class Company extends Model
     public function user(){
         return $this->hasMany(User::class, foreignKey:'company_id');
     }
+    public function categories(){
+        return $this->hasMany(TicketCategory::class, foreignKey:'company_id');
+    }
 }

@@ -8,7 +8,7 @@ use Livewire\Component;
 class AssignedAgent extends Component
 {
     public Ticket $ticket;
-    public $listeners = ['agentChanged' => 'render'];
+    public $listeners = ['agentChanged' => '$refresh'];
     public function mount($ticket){
         $this->ticket = $ticket;
     }
