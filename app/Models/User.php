@@ -48,7 +48,22 @@ class User extends Authenticatable
     public function company(){
         return $this->belongsTo(Company::class);
     }
-    public function ticket(){
+    public function tickets(){
         return $this->hasMany(Ticket::class , 'ticket_number');
+    }
+    // In App\Models\User.php
+
+    protected static function booted()
+    {
+        static::updated(function ($user) {
+            // Clear company cache when user is updated
+            cache()->forget("company.{$user->company_id}.agents");
+            cache()->forget("company.{$user->company_id}.categories");
+        });
+
+        static::deleted(function ($user) {
+            // Clear company cache when user is deleted
+            cache()->forget("company.{$user->company_id}.agents");
+        });
     }
 }

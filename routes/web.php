@@ -19,7 +19,7 @@ Route::middleware(['auth', 'verified'])
             ->name('tickets');
 
         Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
-        
+
 
         Route::view('technicians', 'dashboard.technicians')
             ->can('view-technicians')

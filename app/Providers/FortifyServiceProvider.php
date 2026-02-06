@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -28,13 +29,11 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
-            $view->with('company', request()->route('company'));
-        });
+
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
-        
+       
         Gate::define('view-technicians', fn($user)=> $user->isAdmin());
     }
 
