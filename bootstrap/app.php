@@ -12,7 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        RedirectIfAuthenticated::redirectUsing(fn() => route('test'));
+        RedirectIfAuthenticated::redirectUsing(fn() => route('verification.notice'));
+    })->withMiddleware(function (Middleware $middleware) {
+        // Add this line:
+        $middleware->alias([
+            'company.access' => \App\Http\Middleware\EnsureUserBelongsToCompany::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

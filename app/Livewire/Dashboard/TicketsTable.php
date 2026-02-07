@@ -138,7 +138,7 @@ class TicketsTable extends Component
     {
         $user = Auth::user();
 
-        $query = Ticket::where('company_id', $user->company_id)
+        $query = Ticket::where('company_id', $user->company_id)->where('verified', 1)
             ->with(['user:id,name', 'category:id,name']);
 
         if ($user->role !== 'admin') {

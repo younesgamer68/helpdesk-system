@@ -28,6 +28,7 @@
     :class="{
         'bg-teal-600': type === 'success',
         'bg-red-500': type === 'error',
+        'bg-orange-500': type === 'warning',
         'bg-blue-500': type === 'info'
     }"
     class="fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white text-sm z-50"

@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
@@ -17,6 +17,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'company_id',
+        'email_verified_at',
+        'google_id',
+        'avatar',
+        'role',
     ];
 
     protected $hidden = [
