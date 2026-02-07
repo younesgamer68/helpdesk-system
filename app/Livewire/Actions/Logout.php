@@ -17,6 +17,9 @@ class Logout
         Session::invalidate();
         Session::regenerateToken();
 
-        return redirect('/');
+        // Redirect to main domain home page
+        $mainDomain = config('app.url'); // http://helpdesk-system.test
+
+        return redirect()->to($mainDomain);
     }
 }

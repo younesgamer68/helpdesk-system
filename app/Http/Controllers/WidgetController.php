@@ -17,8 +17,11 @@ class WidgetController extends Controller
     /**
      * Show the widget form
      */
-    public function show(Company $company, $key)
+    public function show($companySlug, $key)
     {
+        // Get company from request (set by middleware)
+        $company = request()->get('company');
+
         $widget = WidgetSetting::where('widget_key', $key)
             ->where('company_id', $company->id)
             ->where('is_active', true)
@@ -31,8 +34,9 @@ class WidgetController extends Controller
     /**
      * Submit a ticket from the widget
      */
-    public function submit(Request $request, Company $company, $key)
+    public function submit(Request $request, $companySlug, $key)
     {
+        $company = request()->get('company');
         $widget = WidgetSetting::where('widget_key', $key)
             ->where('company_id', $company->id)
             ->where('is_active', true)

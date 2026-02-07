@@ -8,37 +8,24 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserBelongsToCompany
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
 
-        // If no user is authenticated, let auth middleware handle it
         if (!$user) {
-            return $next($request);
+            return redirect()->route('login');
         }
 
-        // Get company slug from route parameter
-        $companySlug = $request->route('company');
+        // Get company from request (set by IdentifyCompanyFromSubdomain middleware)
+        $company = $request->get('company');
 
-        // If no company in route, proceed (might be on a different page)
-        if (!$companySlug) {
-            return $next($request);
+        if (!$company) {
+            abort(404, 'Company not found');
         }
 
-        // Check if user's company slug matches the route slug
-        if ($user->company && $user->company->slug !== $companySlug) {
-            // User is trying to access another company - redirect to their own
-            abort(403, 'Unauthorized access to this company.');
-        }
-
-        // If user has no company, something is wrong
-        if (!$user->company) {
-            abort(403, 'No company assigned to your account.');
+        // Check if user belongs to this company
+        if ($user->company_id !== $company->id) {
+            abort(403, 'You do not have access to this company');
         }
 
         return $next($request);

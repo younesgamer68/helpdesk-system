@@ -122,5 +122,7 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-
+    // Add these at the bottom of the config array
+    'domain' => env('APP_DOMAIN', 'helpdesk-system.test'),
+    'url_without_protocol' => env('APP_URL_WITHOUT_PROTOCOL', 'helpdesk-system.test'),
 ];

@@ -60,7 +60,10 @@ class WidgetSetting extends Model
 
     public function getWidgetUrlAttribute(): string
     {
-        return route('widget.show', ['company'=> Auth::user()->company->slug, 'key' => $this->widget_key]);
+        $domain = config('app.domain');
+        $protocol = config('app.env') === 'local' ? 'http' : 'https';
+
+        return "{$protocol}://{$this->company->slug}.{$domain}/widget/{$this->widget_key}";
     }
 
     public function getIframeCodeAttribute(): string

@@ -13,12 +13,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         RedirectIfAuthenticated::redirectUsing(fn() => route('verification.notice'));
-    })->withMiddleware(function (Middleware $middleware) {
-        // Add this line:
-        $middleware->alias([
-            'company.access' => \App\Http\Middleware\EnsureUserBelongsToCompany::class,
-        ]);
-    })
+    })->withMiddleware(function (Middleware $middleware): void {
+    RedirectIfAuthenticated::redirectUsing(fn() => route('verification.notice'));
+
+    // Register middleware aliases
+    $middleware->alias([
+        'company.access' => \App\Http\Middleware\EnsureUserBelongsToCompany::class,
+    ]);
+
+    // Append web middleware
+    $middleware->web(append: [
+        \App\Http\Middleware\IdentifyCompanyFromSubdomain::class,
+    ]);
+})
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
