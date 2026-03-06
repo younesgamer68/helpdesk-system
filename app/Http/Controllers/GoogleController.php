@@ -16,7 +16,9 @@ class GoogleController extends Controller
      */
     public function redirect()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')
+            ->with(['prompt' => 'select_account consent'])
+            ->redirect();
     }
 
     /**
@@ -59,7 +61,16 @@ class GoogleController extends Controller
             }
         }
 
-        return redirect()->route('ticket')
-            ->with('success', 'Welcome ' . $user->name . '!');
+        // Rafraîchir l'utilisateur pour avoir les données à jour
+        $user->refresh();
+
+        // Si l'utilisateur a une company, rediriger vers le dashboard
+        if ($user->company_id && $user->company) {
+            return redirect()->to('http://' . $user->company->slug . '.' . config('app.domain') . '/tickets')
+                ->with('success', 'Welcome ' . $user->name . '!');
+        }
+
+        // Sinon, TOUJOURS rediriger vers le formulaire de setup company
+        return redirect()->route('setup-company');
     }
 }

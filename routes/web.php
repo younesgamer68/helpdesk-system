@@ -30,6 +30,11 @@ Route::post('/logout', function () {
     return redirect()->route('home');
 })->middleware('auth')->name('logout');
 
+// Setup Company (after Google OAuth)
+Route::get('/setup-company', App\Livewire\Auth\SetupCompany::class)
+    ->middleware('auth')
+    ->name('setup-company');
+
 // ====== EMAIL VERIFICATION ======
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
