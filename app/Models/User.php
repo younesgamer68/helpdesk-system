@@ -71,4 +71,5 @@ class User extends Authenticatable implements MustVerifyEmail
             cache()->forget("company.{$user->company_id}.agents");
         });
     }
+    
 }

@@ -59,7 +59,7 @@ class GoogleController extends Controller
             }
         }
 
-        return redirect()->route('dashboard')
+        return redirect()->route('ticket')
             ->with('success', 'Welcome ' . $user->name . '!');
     }
 }
