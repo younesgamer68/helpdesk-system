@@ -15,7 +15,6 @@ Route::get('/', function () {
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
     Route::get('/login', fn() => view('auth.login'))->name('login');
-    Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'store'])->name('login.store');
 
     Route::post('/register/quick', [QuickRegisterController::class, 'store'])
         ->name('register.quick');
