@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Mail\WelcomeMail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -41,36 +40,37 @@ class GoogleController extends Controller
             Auth::login($user);
 
         } else {
-            // ── Nouvel utilisateur → créer le compte ──────────────────
+            // ── Nouvel utilisateur → créer le compte (email NON vérifié) ──────────────────
             $user = User::create([
-                'name'              => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User',
-                'email'             => $googleUser->getEmail(),
-                'password'          => bcrypt(Str::random(32)),
-                'google_id'         => $googleUser->getId(),
-                'avatar'            => $googleUser->getAvatar(),
-                'email_verified_at' => now(), // Google vérifie l'email
+                'name' => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User',
+                'email' => $googleUser->getEmail(),
+                'password' => bcrypt(Str::random(32)),
+                'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
+                // email_verified_at reste null → l'utilisateur doit confirmer
             ]);
 
             Auth::login($user);
 
-            // Envoyer email de bienvenue
-            try {
-                Mail::to($user->email)->queue(new WelcomeMail($user));
-            } catch (\Exception $e) {
-                logger()->error('Welcome email failed: ' . $e->getMessage());
-            }
+            // Déclencher l'envoi de l'email de vérification
+            event(new Registered($user));
         }
 
         // Rafraîchir l'utilisateur pour avoir les données à jour
         $user->refresh();
 
-        // Si l'utilisateur a une company, rediriger vers le dashboard
-        if ($user->company_id && $user->company) {
-            return redirect()->to('http://' . $user->company->slug . '.' . config('app.domain') . '/tickets')
-                ->with('success', 'Welcome ' . $user->name . '!');
+        // Si l'email n'est pas vérifié → page de vérification
+        if (! $user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice');
         }
 
-        // Sinon, TOUJOURS rediriger vers le formulaire de setup company
+        // Si l'utilisateur a une company, rediriger vers le dashboard
+        if ($user->company_id && $user->company) {
+            return redirect()->to('http://'.$user->company->slug.'.'.config('app.domain').'/tickets')
+                ->with('success', 'Welcome '.$user->name.'!');
+        }
+
+        // Sinon, rediriger vers le formulaire de setup company
         return redirect()->route('setup-company');
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\GoogleController;
-use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\QuickRegisterController;
+use App\Http\Controllers\TicketsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +14,7 @@ Route::get('/', function () {
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn() => view('auth.login'))->name('login');
+    Route::get('/login', fn () => view('auth.login'))->name('login');
 
     Route::post('/register/quick', [QuickRegisterController::class, 'store'])
         ->name('register.quick');
@@ -26,27 +26,31 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', function () {
     Auth::logout();
+
     return redirect()->route('home');
 })->middleware('auth')->name('logout');
 
-// Setup Company (after Google OAuth)
+// Setup Company (after Google OAuth + email verified)
 Route::get('/setup-company', App\Livewire\Auth\SetupCompany::class)
-    ->middleware('auth')
+    ->middleware(['auth', 'verified'])
     ->name('setup-company');
 
-// ====== EMAIL VERIFICATION ======
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
+// ====== EMAIL VERIFICATION (override verification.verify for custom redirect) ======
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    $company = Auth::user()->company;
-    return redirect()->to('https://' . $company->slug . '.' . config('app.domain') . '/tickets');
+    $user = Auth::user();
+
+    // Si l'utilisateur a déjà une company → dashboard
+    if ($user->company_id && $user->company) {
+        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
+    }
+
+    // Sinon → formulaire setup company
+    return redirect()->route('setup-company');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // ====== SUBDOMAIN (company) ======
-Route::domain('{company}.' . config('app.domain'))->group(function () {
+Route::domain('{company}.'.config('app.domain'))->group(function () {
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
 
         Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
@@ -57,4 +61,4 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
     });
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';
