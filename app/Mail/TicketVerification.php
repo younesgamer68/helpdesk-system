@@ -20,7 +20,7 @@ class TicketVerification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verify Your Support Ticket - ' . $this->ticket->ticket_number,
+            subject: 'Verify Your Support Ticket - '.$this->ticket->ticket_number,
         );
     }
 

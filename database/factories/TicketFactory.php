@@ -3,9 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Ticket;
-use App\Models\Company;
-use App\Models\User;
-use App\Models\TicketCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TicketFactory extends Factory
@@ -32,7 +29,7 @@ class TicketFactory extends Factory
 
         return [
             'company_id' => 1, // Will be overridden when called
-            'ticket_number' => 'TKT-' . str_pad($this->faker->unique()->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
+            'ticket_number' => 'TKT-'.str_pad($this->faker->unique()->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
             'customer_name' => $this->faker->name(),
             'customer_email' => $this->faker->safeEmail(),
             'customer_phone' => $this->faker->boolean(70) ? $this->faker->phoneNumber() : null,
@@ -154,8 +151,8 @@ class TicketFactory extends Factory
                 ' This is affecting multiple users in my organization.',
                 ' I checked the status page and no outages were reported.',
                 ' I am using the latest version of the application.',
-                ' Transaction ID: ' . strtoupper($this->faker->bothify('TXN-####-####-####')),
-                ' Error code: ' . $this->faker->bothify('ERR-###'),
+                ' Transaction ID: '.strtoupper($this->faker->bothify('TXN-####-####-####')),
+                ' Error code: '.$this->faker->bothify('ERR-###'),
             ];
             $description .= $this->faker->randomElement($additionalDetails);
         }
@@ -168,7 +165,7 @@ class TicketFactory extends Factory
      */
     public function pending(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'pending',
             'resolved_at' => null,
             'closed_at' => null,
@@ -180,7 +177,7 @@ class TicketFactory extends Factory
      */
     public function open(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'open',
             'resolved_at' => null,
             'closed_at' => null,
@@ -192,7 +189,7 @@ class TicketFactory extends Factory
      */
     public function inProgress(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'in_progress',
             'resolved_at' => null,
             'closed_at' => null,
@@ -204,7 +201,7 @@ class TicketFactory extends Factory
      */
     public function resolved(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'resolved',
             'resolved_at' => $this->faker->dateTimeBetween('-30 days', 'now'),
             'closed_at' => null,
@@ -218,7 +215,7 @@ class TicketFactory extends Factory
     {
         $resolvedAt = $this->faker->dateTimeBetween('-30 days', '-1 day');
 
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'closed',
             'resolved_at' => $resolvedAt,
             'closed_at' => $this->faker->dateTimeBetween($resolvedAt, 'now'),
@@ -230,7 +227,7 @@ class TicketFactory extends Factory
      */
     public function urgent(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'priority' => 'urgent',
         ]);
     }
@@ -240,7 +237,7 @@ class TicketFactory extends Factory
      */
     public function high(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'priority' => 'high',
         ]);
     }

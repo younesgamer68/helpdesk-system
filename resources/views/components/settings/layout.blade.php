@@ -1,15 +1,15 @@
 <div class="flex items-start max-md:flex-col">
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist aria-label="{{ __('Settings') }}">
-            <flux:navlist.item :href="route('profile.edit', Auth::user()->company->slug)" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('user-password.edit',Auth::user()->company->slug)" wire:navigate>{{ __('Password') }}
+            <flux:navlist.item :href="route('profile.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
+            <flux:navlist.item :href="route('user-password.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Password') }}
             </flux:navlist.item>
             @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
-                <flux:navlist.item :href="route('two-factor.show',Auth::user()->company->slug)" wire:navigate>{{ __('Two-Factor Auth') }}
+                <flux:navlist.item :href="route('two-factor.show', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Two-Factor Auth') }}
                 </flux:navlist.item>
             @endif
-            <flux:navlist.item :href="route('appearance.edit',Auth::user()->company->slug)" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('form-widget.edit',Auth::user()->company->slug)" wire:navigate>{{ __('Form Widget') }}
+            <flux:navlist.item :href="route('appearance.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
+            <flux:navlist.item :href="route('form-widget.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Form Widget') }}
             </flux:navlist.item>
         </flux:navlist>
     </div>

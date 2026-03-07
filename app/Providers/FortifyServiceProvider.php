@@ -4,12 +4,12 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\LogoutResponse;
@@ -22,7 +22,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
             {
                 // Redirect to main domain (no subdomain)
@@ -40,8 +41,8 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
-       
-        Gate::define('view-technicians', fn($user)=> $user->isAdmin());
+
+        Gate::define('view-operators', fn ($user) => $user->isAdmin());
     }
 
     /**
@@ -51,6 +52,25 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+
+        Fortify::authenticateUsing(function (Request $request) {
+            /** @var \Illuminate\Database\Eloquent\Builder $query */
+            $user = User::where('email', '=', $request->email)->first(['*']);
+            if ($user && $user->password === null) {
+                // If it's a pending user (invited, no password set yet),
+                // put their email into session for the SetPassword view.
+                $company = $user->company;
+                session()->put('pending_user_email', $user->email);
+
+                throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                    redirect()->route('set-password', ['company' => $company ? $company->slug : ''])
+                );
+            }
+
+            if ($user && Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+        });
     }
 
     /**

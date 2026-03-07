@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 // Widget routes - PUBLIC (on company subdomains)
-Route::domain('{company}.' . config('app.domain'))->prefix('widget')->name('widget.')->group(function () {
+Route::domain('{company}.'.config('app.domain'))->prefix('widget')->name('widget.')->group(function () {
     Route::get('/{key}', [WidgetController::class, 'show'])->name('show');
     Route::post('/{key}/submit', [WidgetController::class, 'submit'])->name('submit');
     Route::get('/verify/{ticketNumber}/{token}', [WidgetController::class, 'verify'])->name('verify');
@@ -19,7 +19,7 @@ Route::domain('{company}.' . config('app.domain'))->prefix('widget')->name('widg
 });
 
 // Settings routes - AUTHENTICATED (on company subdomains)
-Route::domain('{company}.' . config('app.domain'))
+Route::domain('{company}.'.config('app.domain'))
     ->middleware(['auth', 'company.access', 'verified'])
     ->group(function () {
         Route::redirect('settings', 'settings/profile');

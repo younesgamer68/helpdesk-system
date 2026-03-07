@@ -12,14 +12,19 @@ class EnsureUserBelongsToCompany
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
         // Get company from request (set by IdentifyCompanyFromSubdomain middleware)
-        $company = $request->get('company');
+        $company = $request->attributes->get('company');
 
-        if (!$company) {
+        if (! $company) {
+            // Also try to get from user as fallback or if manually merged in some cases
+            $company = $request->get('company') ?: $user->company;
+        }
+
+        if (! $company) {
             abort(404, 'Company not found');
         }
 

@@ -11,6 +11,7 @@ use Livewire\Component;
 class SetupCompany extends Component
 {
     public string $name = '';
+
     public string $companyName = '';
 
     protected function rules(): array
@@ -25,10 +26,10 @@ class SetupCompany extends Component
     {
         // If user already has a company, redirect to tickets
         $user = Auth::user();
-        
+
         if ($user && $user->company_id) {
             return redirect()->to(
-                'http://' . $user->company->slug . '.' . config('app.domain') . '/tickets'
+                'http://'.$user->company->slug.'.'.config('app.domain').'/tickets'
             );
         }
 
@@ -49,7 +50,7 @@ class SetupCompany extends Component
             $counter = 1;
 
             while (Company::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter;
+                $slug = $baseSlug.'-'.$counter;
                 $counter++;
             }
 
@@ -76,7 +77,7 @@ class SetupCompany extends Component
 
         // Redirect to the company's tickets page
         return redirect()->to(
-            'http://' . $user->company->slug . '.' . config('app.domain') . '/tickets'
+            'http://'.$user->company->slug.'.'.config('app.domain').'/tickets'
         );
     }
 

@@ -4,8 +4,8 @@ namespace App\Actions\Fortify;
 
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
-use App\Models\User;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -34,13 +34,13 @@ class CreateNewUser implements CreatesNewUsers
             $counter = 1;
 
             while (Company::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter;
+                $slug = $baseSlug.'-'.$counter;
                 $counter++;
             }
 
             // Create a company for the new user
             $company = Company::create([
-                'name' => $input['name'] . "'s Company",
+                'name' => $input['name']."'s Company",
                 'slug' => $slug,
                 'email' => $input['email'], // Use user's email as company email
                 'phone' => null,

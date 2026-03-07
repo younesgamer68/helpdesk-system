@@ -15,6 +15,14 @@ Route::get('/', function () {
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
     Route::get('/login', fn () => view('auth.login'))->name('login');
+    Route::get('/set-password', App\Livewire\Auth\SetPassword::class)
+        ->name('set-password')
+        ->middleware('user.pending');
+
+    // Invitation link acceptance
+    Route::get('/invitation/{user}', App\Http\Controllers\Auth\InvitationController::class)
+        ->name('invitations.accept')
+        ->middleware('signed');
 
     Route::post('/register/quick', [QuickRegisterController::class, 'store'])
         ->name('register.quick');
@@ -58,11 +66,17 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 Route::domain('{company}.'.config('app.domain'))->group(function () {
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
 
-        Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
-        Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
-        Route::view('technicians', 'dashboard.technicians')
-            ->can('view-technicians')
-            ->name('technicians');
+        // Onboarding form for the company
+        Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
+
+        // Dashboard routes (require onboarding)
+        Route::middleware(['company.is_onboarded'])->group(function () {
+            Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
+            Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
+            Route::get('/operators', fn () => view('dashboard.operators'))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('operators');
+        });
     });
 });
 

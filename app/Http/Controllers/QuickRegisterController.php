@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Mail\WelcomeMail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class QuickRegisterController extends Controller
 {
@@ -28,18 +27,18 @@ class QuickRegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
         ], [
             'email.required' => 'Please enter your email address.',
-            'email.email'    => 'Please enter a valid email address.',
-            'email.unique'   => 'This email is already registered. Please log in instead.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already registered. Please log in instead.',
         ]);
 
         // ── 2. Create user ────────────────────────────────────────────
         // Extract name from email (e.g. john.doe@gmail.com → John Doe)
         $rawName = explode('@', $request->email)[0];
-        $name    = Str::title(str_replace(['.', '_', '-'], ' ', $rawName));
+        $name = Str::title(str_replace(['.', '_', '-'], ' ', $rawName));
 
         $user = User::create([
-            'name'     => $name,
-            'email'    => $request->email,
+            'name' => $name,
+            'email' => $request->email,
             'password' => Hash::make(Str::random(32)), // Random password — user can set later
         ]);
 
@@ -51,7 +50,7 @@ class QuickRegisterController extends Controller
             Mail::to($user->email)->queue(new WelcomeMail($user));
         } catch (\Exception $e) {
             // Don't block registration if email fails — just log it
-            logger()->error('Welcome email failed for user ' . $user->id . ': ' . $e->getMessage());
+            logger()->error('Welcome email failed for user '.$user->id.': '.$e->getMessage());
         }
 
         // ── 5. Redirect to dashboard ──────────────────────────────────

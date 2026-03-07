@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TicketVerification;
+use App\Mail\TicketVerified;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\WidgetSetting;
-use App\Mail\TicketVerification;
-use App\Mail\TicketVerified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -36,7 +36,7 @@ class WidgetController extends Controller
      */
     public function submit(Request $request, $companySlug, $key)
     {
-        $company = request()->get('company');
+        $company = $request->attributes->get('company') ?? $request->get('company');
         $widget = WidgetSetting::where('widget_key', $key)
             ->where('company_id', $company->id)
             ->where('is_active', true)
@@ -55,7 +55,7 @@ class WidgetController extends Controller
 
         // Generate unique ticket number
         do {
-            $ticketNumber = 'TKT-' . strtoupper(Str::random(6));
+            $ticketNumber = 'TKT-'.strtoupper(Str::random(6));
         } while (Ticket::where('ticket_number', $ticketNumber)->exists());
 
         // Generate verification token

@@ -3,42 +3,57 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Ticket;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
-use Livewire\WithPagination;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class TicketsTable extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
     public $priorityFilter = '';
+
     public $assignedFilter = '';
+
     public $categoryFilter = '';
+
     public $sortBy = 'id';
+
     public $sortDirection = 'desc';
 
     public $statuses = ['open', 'in_progress', 'resolved', 'closed', 'pending'];
+
     public $priorities = ['low', 'medium', 'high', 'urgent'];
 
     // Modal state
     public $showCreateModal = false;
+
     public $showDiscardConfirmation = false;
 
     // Form fields
     public $customer_name = '';
+
     public $customer_email = '';
+
     public $customer_phone = '';
+
     public $subject = '';
+
     public $description = '';
+
     public $priority = 'medium';
+
     public $status = 'pending';
+
     public $assigned_to = '';
+
     public $category_id = '';
 
     protected function rules()
@@ -68,9 +83,9 @@ class TicketsTable extends Component
     public function categories()
     {
         return cache()->remember(
-            "company." . Auth::user()->company_id . ".categories",
+            'company.'.Auth::user()->company_id.'.categories',
             3600,
-            fn() => Auth::user()->company->categories()->select('id', 'name')->get()
+            fn () => Auth::user()->company->categories()->select('id', 'name')->get()
         );
     }
 
@@ -82,9 +97,9 @@ class TicketsTable extends Component
         }
 
         return cache()->remember(
-            "company." . Auth::user()->company_id . ".agents",
+            'company.'.Auth::user()->company_id.'.agents',
             3600,
-            fn() => Auth::user()->company->user()->select('id', 'name')->orderBy('name')->get()
+            fn () => Auth::user()->company->user()->select('id', 'name')->orderBy('name')->get()
         );
     }
 
@@ -147,17 +162,25 @@ class TicketsTable extends Component
 
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('ticket_number', 'like', '%' . $this->search . '%')
-                    ->orWhere('subject', 'like', '%' . $this->search . '%')
-                    ->orWhere('customer_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('description', 'like', '%' . $this->search . '%');
+                $q->where('ticket_number', 'like', '%'.$this->search.'%')
+                    ->orWhere('subject', 'like', '%'.$this->search.'%')
+                    ->orWhere('customer_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('description', 'like', '%'.$this->search.'%');
             });
         }
 
-        if ($this->statusFilter) $query->where('status', $this->statusFilter);
-        if ($this->priorityFilter) $query->where('priority', $this->priorityFilter);
-        if ($this->categoryFilter) $query->where('category_id', $this->categoryFilter);
-        if ($this->assignedFilter && $user->role === 'admin') $query->where('assigned_to', $this->assignedFilter);
+        if ($this->statusFilter) {
+            $query->where('status', $this->statusFilter);
+        }
+        if ($this->priorityFilter) {
+            $query->where('priority', $this->priorityFilter);
+        }
+        if ($this->categoryFilter) {
+            $query->where('category_id', $this->categoryFilter);
+        }
+        if ($this->assignedFilter && $user->role === 'admin') {
+            $query->where('assigned_to', $this->assignedFilter);
+        }
 
         return $query->orderBy($this->sortBy, $this->sortDirection)->paginate(9);
     }
@@ -184,7 +207,7 @@ class TicketsTable extends Component
     public function openCreateModal()
     {
         // Only reset if there's no existing form data
-        if (!$this->hasFormData) {
+        if (! $this->hasFormData) {
             $this->priority = 'medium';
             $this->status = 'pending';
         }
@@ -233,7 +256,7 @@ class TicketsTable extends Component
             'priority',
             'status',
             'assigned_to',
-            'category_id'
+            'category_id',
         ]);
 
         $this->priority = 'medium';
@@ -266,7 +289,7 @@ class TicketsTable extends Component
 
         $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} created successfully!", type: 'success');
         $this->closeCreateModal();
-        $this->clearForm(); 
+        $this->clearForm();
         unset($this->tickets);
         $this->resetPage();
     }
@@ -275,7 +298,7 @@ class TicketsTable extends Component
     {
         do {
             // Format: TKT-YYYYMMDD-XXXX
-            $ticketNumber = 'TKT-' . strtoupper(Str::random(6));
+            $ticketNumber = 'TKT-'.strtoupper(Str::random(6));
         } while (Ticket::where('ticket_number', $ticketNumber)->exists());
 
         return $ticketNumber;

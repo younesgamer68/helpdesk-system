@@ -10,6 +10,7 @@ use Livewire\Component;
 class TicketDetails extends Component
 {
     public Ticket $ticket;
+
     public $state = '';
 
     public function mount(Ticket $ticket)
@@ -22,9 +23,9 @@ class TicketDetails extends Component
     public function agents()
     {
         return cache()->remember(
-            "company." . Auth::user()->company_id . ".agents",
+            'company.'.Auth::user()->company_id.'.agents',
             3600,
-            fn() => Auth::user()->company->user()
+            fn () => Auth::user()->company->user()
                 ->select('id', 'name', 'email')
                 ->orderBy('name')
                 ->get()
@@ -35,6 +36,7 @@ class TicketDetails extends Component
     {
         if ($this->ticket->status === 'resolved') {
             $this->dispatch('show-toast', message: 'Ticket is already resolved!', type: 'error');
+
             return;
         }
 
@@ -53,6 +55,7 @@ class TicketDetails extends Component
     {
         if ($this->ticket->status !== 'resolved') {
             $this->dispatch('show-toast', message: 'Ticket is not resolved!', type: 'error');
+
             return;
         }
 
@@ -73,6 +76,7 @@ class TicketDetails extends Component
 
         if ($this->ticket->assigned_to === $agentId) {
             $this->dispatch('show-toast', message: "Ticket is already assigned to {$agent->name}!", type: 'error');
+
             return;
         }
 
@@ -88,18 +92,20 @@ class TicketDetails extends Component
 
         if ($this->ticket->priority === $normalizedPriority) {
             $this->dispatch('show-toast', message: "Ticket is already prioritized as {$priority}!", type: 'error');
+
             return;
         }
 
-        if (!in_array($normalizedPriority, ['low', 'medium', 'high', 'urgent'])) {
+        if (! in_array($normalizedPriority, ['low', 'medium', 'high', 'urgent'])) {
             $this->dispatch('show-toast', message: 'Invalid priority level!', type: 'error');
+
             return;
         }
 
         $this->ticket->update(['priority' => $normalizedPriority]);
         $this->ticket->refresh();
 
-        $this->dispatch('show-toast', message: "Priority changed to " . ucfirst($normalizedPriority) . "!", type: 'success');
+        $this->dispatch('show-toast', message: 'Priority changed to '.ucfirst($normalizedPriority).'!', type: 'success');
     }
 
     public function changeStatus($status)
@@ -107,14 +113,16 @@ class TicketDetails extends Component
         $dbStatus = str_replace(' ', '_', strtolower($status));
 
         if ($this->ticket->status === $dbStatus) {
-            $this->dispatch('show-toast', message: "Ticket is already in '" . str_replace('_', ' ', $status) . "' status!", type: 'error');
+            $this->dispatch('show-toast', message: "Ticket is already in '".str_replace('_', ' ', $status)."' status!", type: 'error');
+
             return;
         }
 
         $validStatuses = ['pending', 'open', 'in_progress', 'resolved', 'closed'];
 
-        if (!in_array($dbStatus, $validStatuses)) {
+        if (! in_array($dbStatus, $validStatuses)) {
             $this->dispatch('show-toast', message: 'Invalid status!', type: 'error');
+
             return;
         }
 
@@ -122,18 +130,20 @@ class TicketDetails extends Component
         $this->ticket->refresh();
         $this->state = $this->ticket->status;
 
-        $this->dispatch('show-toast', message: "Status changed to " . str_replace('_', ' ', ucfirst($dbStatus)) . "!", type: 'success');
+        $this->dispatch('show-toast', message: 'Status changed to '.str_replace('_', ' ', ucfirst($dbStatus)).'!', type: 'success');
     }
 
     public function closeTicket()
     {
         if ($this->ticket->status === 'closed') {
             $this->dispatch('show-toast', message: 'Ticket is already closed!', type: 'error');
+
             return;
         }
 
         if ($this->ticket->status !== 'resolved') {
             $this->dispatch('show-toast', message: 'Ticket must be resolved before closing!', type: 'error');
+
             return;
         }
 

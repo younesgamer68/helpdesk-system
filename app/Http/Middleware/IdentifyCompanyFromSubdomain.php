@@ -17,15 +17,15 @@ class IdentifyCompanyFromSubdomain
         $subdomain = $this->getSubdomain($host);
 
         // Skip for main domain or www
-        if (!$subdomain || in_array($subdomain, ['www', 'api'])) {
+        if (! $subdomain || in_array($subdomain, ['www', 'api'])) {
             return $next($request);
         }
 
         // Find company by slug (subdomain)
         $company = Company::where('slug', $subdomain)->first();
 
-        if (!$company) {
-            abort(404, 'Company not found: ' . $subdomain);
+        if (! $company) {
+            abort(404, 'Company not found: '.$subdomain);
         }
 
         // Share company with all views and attach to request

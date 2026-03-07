@@ -31,19 +31,11 @@
                         </div>
 
                         <div class="p-6 space-y-6">
-                            {{-- Primary Color --}}
-                            <div class="grid grid-cols-4 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-sm font-medium mb-2">{{ __('Primary Color') }}</label>
-                                    <input wire:model.live="primary_color" type="color"
-                                        class="h-10 w-full rounded border border-gray-300 dark:border-zinc-700 cursor-pointer">
-                                </div>
-                                <div class="col-span-3">
-                                    <label class="block text-sm font-medium mb-2">&nbsp;</label>
-                                    <input wire:model.blur="primary_color" type="text" placeholder="#14b8a6"
-                                        class="w-full rounded border border-gray-300 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white">
-                                </div>
-                            </div>
+                            {{-- Theme Mode --}}
+                            <flux:select wire:model.live="theme_mode" label="{{ __('Theme Mode') }}">
+                                <flux:select.option value="dark">{{ __('Dark Mode') }}</flux:select.option>
+                                <flux:select.option value="light">{{ __('Light Mode') }}</flux:select.option>
+                            </flux:select>
 
                             {{-- Form Title --}}
                             <div class="space-y-2">

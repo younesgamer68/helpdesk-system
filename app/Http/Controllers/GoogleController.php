@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
@@ -47,7 +46,7 @@ class GoogleController extends Controller
             $user = User::create([
                 'name' => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User',
                 'email' => $googleUser->getEmail(),
-                'password' => bcrypt(Str::random(32)),
+                'password' => null,
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
                 // email_verified_at reste null → l'utilisateur doit confirmer

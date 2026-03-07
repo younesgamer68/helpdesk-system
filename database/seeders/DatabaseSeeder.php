@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
-use App\Models\User;
-use App\Models\TicketCategory;
 use App\Models\Ticket;
+use App\Models\TicketCategory;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -31,13 +31,13 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Create technician user
+        // Create operator user
         $tech = User::create([
             'company_id' => $company->id,
-            'name' => 'Tech Support',
-            'email' => 'tech@acme.com',
+            'name' => 'Support Operator',
+            'email' => 'tech@example.com',
             'password' => bcrypt('password'),
-            'role' => 'technician',
+            'role' => 'operator',
             'email_verified_at' => now(),
         ]);
 
@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Sarah Williams',
             'email' => 'sarah@acme.com',
             'password' => bcrypt('password'),
-            'role' => 'technician',
+            'role' => 'operator',
             'email_verified_at' => now(),
         ]);
 
@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Mike Johnson',
             'email' => 'mike@acme.com',
             'password' => bcrypt('password'),
-            'role' => 'technician',
+            'role' => 'operator',
             'email_verified_at' => now(),
         ]);
 
@@ -117,7 +117,7 @@ class DatabaseSeeder extends Seeder
 
             Ticket::factory()
                 ->count($count)
-                ->state(fn() => [
+                ->state(fn () => [
                     'company_id' => $company->id,
                     'assigned_to' => fake()->randomElement($agentIds),
                     'category_id' => fake()->randomElement($categoryIds),
@@ -141,10 +141,10 @@ class DatabaseSeeder extends Seeder
 
         $totalTickets = Ticket::count();
         $this->command->info("✅ Successfully seeded {$totalTickets} tickets!");
-        $this->command->info("📊 Breakdown:");
+        $this->command->info('📊 Breakdown:');
         foreach ($ticketCounts as $status => $count) {
             $this->command->info("   - {$status}: {$count}");
         }
-        $this->command->info("   - urgent: 20");
+        $this->command->info('   - urgent: 20');
     }
 }

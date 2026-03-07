@@ -4,49 +4,59 @@ namespace App\Livewire\Settings;
 
 use App\Models\WidgetSetting;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Livewire\Attributes\Computed;
+use Livewire\Component;
 
 class FormWidget extends Component
 {
     public $widgetSetting;
 
     // Appearance
-    public $primary_color = '#14b8a6';
+    public $theme_mode = 'dark';
+
     public $form_title = 'Submit a Support Ticket';
+
     public $welcome_message = '';
+
     public $success_message = 'Thank you! Please check your email to verify your ticket.';
 
     // Form fields
     public $require_phone = false;
+
     public $show_category = true;
 
     // Defaults
     public $default_assigned_to = '';
+
     public $default_status = 'pending';
+
     public $default_priority = 'medium';
 
     // UI
     public $is_active = true;
-    public ?string $copiedKey = null;
 
+    public ?string $copiedKey = null;
 
     public function mount()
     {
         $this->widgetSetting = WidgetSetting::firstOrCreate(
             ['company_id' => Auth::user()->company_id],
             [
-                'primary_color' => $this->primary_color,
+                'theme_mode' => $this->theme_mode,
                 'form_title' => $this->form_title,
+                'welcome_message' => $this->welcome_message,
                 'success_message' => $this->success_message,
+                'require_phone' => $this->require_phone,
+                'show_category' => $this->show_category,
                 'default_status' => $this->default_status,
                 'default_priority' => $this->default_priority,
+                'is_active' => $this->is_active,
             ]
         );
 
         // Load existing settings
         $this->fill([
-            'primary_color' => $this->widgetSetting->primary_color,
+            'theme_mode' => $this->widgetSetting->theme_mode,
             'form_title' => $this->widgetSetting->form_title,
             'welcome_message' => $this->widgetSetting->welcome_message,
             'success_message' => $this->widgetSetting->success_message,
@@ -79,7 +89,7 @@ class FormWidget extends Component
     public function save()
     {
         $this->validate([
-            'primary_color' => 'required|regex:/^#[0-9A-Fa-f]{6}$/',
+            'theme_mode' => 'required|in:dark,light',
             'form_title' => 'required|string|max:100',
             'welcome_message' => 'nullable|string|max:500',
             'success_message' => 'required|string|max:500',
@@ -92,7 +102,7 @@ class FormWidget extends Component
         ]);
 
         $this->widgetSetting->update([
-            'primary_color' => $this->primary_color,
+            'theme_mode' => $this->theme_mode,
             'form_title' => $this->form_title,
             'welcome_message' => $this->welcome_message,
             'success_message' => $this->success_message,
@@ -109,7 +119,7 @@ class FormWidget extends Component
 
     public function toggleActive()
     {
-        $this->is_active = !$this->is_active;
+        $this->is_active = ! $this->is_active;
         $this->widgetSetting->update(['is_active' => $this->is_active]);
 
         $status = $this->is_active ? 'activated' : 'deactivated';
@@ -119,13 +129,12 @@ class FormWidget extends Component
     public function regenerateKey()
     {
         $this->widgetSetting->update([
-            'widget_key' => WidgetSetting::generateUniqueKey()
+            'widget_key' => WidgetSetting::generateUniqueKey(),
         ]);
 
         $this->widgetSetting->refresh();
         $this->dispatch('show-toast', message: 'Widget key regenerated! Please update your embed code.', type: 'warning');
     }
-
 
     public function copyToClipboard(string $text, string $key)
     {
@@ -139,7 +148,6 @@ class FormWidget extends Component
         );
         $this->js('setTimeout(() => $wire.set("copiedKey", null), 2000)');
     }
-
 
     public function render()
     {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TicketCategory extends Model
 {
-    //
     use HasFactory;
+
+    protected $guarded = [];
 }

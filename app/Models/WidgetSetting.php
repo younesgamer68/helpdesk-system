@@ -4,25 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class WidgetSetting extends Model
 {
-    protected $fillable = [
-        'company_id',
-        'widget_key',
-        'is_active',
-        'primary_color',
-        'form_title',
-        'welcome_message',
-        'success_message',
-        'require_phone',
-        'show_category',
-        'default_assigned_to',
-        'default_status',
-        'default_priority',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -33,7 +19,7 @@ class WidgetSetting extends Model
     protected static function booted()
     {
         static::creating(function ($widget) {
-            if (!$widget->widget_key) {
+            if (! $widget->widget_key) {
                 $widget->widget_key = self::generateUniqueKey();
             }
         });

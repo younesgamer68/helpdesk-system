@@ -44,17 +44,25 @@ class User extends Authenticatable implements MustVerifyEmail
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
-    public function isAdmin(){
+
+    public function isAdmin()
+    {
         return $this->role === 'admin';
     }
-    public function isTech(){
-        return $this->role === 'technician';
+
+    public function isOperator()
+    {
+        return $this->role === 'operator';
     }
-    public function company(){
+
+    public function company()
+    {
         return $this->belongsTo(Company::class);
     }
-    public function tickets(){
-        return $this->hasMany(Ticket::class , 'ticket_number');
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'ticket_number');
     }
     // In App\Models\User.php
 
@@ -71,5 +79,4 @@ class User extends Authenticatable implements MustVerifyEmail
             cache()->forget("company.{$user->company_id}.agents");
         });
     }
-    
 }
