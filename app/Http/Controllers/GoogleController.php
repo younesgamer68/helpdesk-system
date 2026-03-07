@@ -35,11 +35,15 @@ class GoogleController extends Controller
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if ($user) {
-            // ── Utilisateur existant → juste le connecter ─────────────
+            // ── Utilisateur existant (LOGIN) → vérifier email et connecter directement ─────────────
+            if (! $user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+            }
+
             Auth::login($user);
 
         } else {
-            // ── Nouvel utilisateur → créer le compte (email NON vérifié) ──────────────────
+            // ── Nouvel utilisateur (REGISTER) → créer le compte (email NON vérifié) ──────────────────
             $user = User::create([
                 'name' => $googleUser->getName() ?? $googleUser->getNickname() ?? 'User',
                 'email' => $googleUser->getEmail(),

@@ -74,6 +74,13 @@
 </head>
 <body>
     <div class="header">
+        <div style="margin-bottom: 16px;">
+            <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="40" height="40" rx="8" fill="white"/>
+                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#10b981" text-anchor="middle">HD</text>
+                <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="white">HelpDesk</text>
+            </svg>
+        </div>
         <h1 style="margin: 0; font-size: 24px;">✓ Ticket Verified Successfully!</h1>
         <div class="success-badge">Verified</div>
     </div>

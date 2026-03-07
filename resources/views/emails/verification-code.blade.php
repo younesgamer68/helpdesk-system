@@ -7,11 +7,13 @@
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 40px 20px;">
     <div style="max-width: 400px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 40px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        {{-- Logo --}}
-        <div style="margin-bottom: 20px;">
-            <img src="{{ asset('images/logodm.png') }}" alt="HelpDesk" style="height: 50px; width: auto;">
+        <div style="margin-bottom: 24px;">
+            <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="40" height="40" rx="8" fill="#0F766E"/>
+                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="white" text-anchor="middle">HD</text>
+                <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#333">HelpDesk</text>
+            </svg>
         </div>
-        
         <h1 style="color: #333; font-size: 24px; margin-bottom: 10px;">Verify your email</h1>
         <p style="color: #666; font-size: 14px; margin-bottom: 30px;">
             Enter this code to verify your email address
