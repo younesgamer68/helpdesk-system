@@ -35,7 +35,12 @@ Route::get('/setup-company', App\Livewire\Auth\SetupCompany::class)
     ->middleware(['auth', 'verified'])
     ->name('setup-company');
 
-// ====== EMAIL VERIFICATION (override verification.verify for custom redirect) ======
+// ====== EMAIL VERIFICATION WITH CODE ======
+Route::get('/email/verify', App\Livewire\Auth\VerifyEmailCode::class)
+    ->middleware('auth')
+    ->name('verification.notice');
+
+// Keep link-based verification as backup
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
     $user = Auth::user();

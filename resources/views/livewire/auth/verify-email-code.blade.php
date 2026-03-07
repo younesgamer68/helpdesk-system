@@ -1,9 +1,9 @@
 <div class="min-h-screen bg-white flex flex-col">
     {{-- Back to login link --}}
     <div class="flex justify-end p-4">
-        <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        <button type="button" wire:click="logout" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
             Back to login
-        </a>
+        </button>
     </div>
 
     {{-- Main content --}}
@@ -31,40 +31,56 @@
                 <div class="flex-1 border-t border-gray-300"></div>
             </div>
 
-            {{-- Email sent message --}}
+            {{-- Code sent message --}}
             <p class="text-gray-600 mb-2">
-                We sent a verification link to
+                Enter the 6-digit code sent to
             </p>
             <p class="font-semibold text-gray-900 mb-6">
                 {{ auth()->user()->email }}
             </p>
 
-            @if (session('status') == 'verification-link-sent')
-                <div class="mb-6 p-3 bg-green-50 border border-green-200 rounded-md">
-                    <p class="text-green-700 text-sm">
-                        A new verification link has been sent!
-                    </p>
+            {{-- OTP Input --}}
+            <form wire:submit="verify" class="mb-6">
+                <div class="flex justify-center mb-4 [&_input]:!text-gray-900 [&_input]:!bg-white [&_input]:!border-gray-300">
+                    <flux:otp wire:model="code" length="6" />
                 </div>
-            @endif
 
-            {{-- Resend link --}}
+                @error('code')
+                    <p class="text-red-500 text-sm mb-4">{{ $message }}</p>
+                @enderror
+
+                @if (session('status') == 'verification-code-sent')
+                    <p class="text-green-600 text-sm mb-4">
+                        A new verification code has been sent!
+                    </p>
+                @endif
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition"
+                    wire:loading.attr="disabled"
+                    wire:loading.class="opacity-50">
+                    <span wire:loading.remove wire:target="verify">Verify</span>
+                    <span wire:loading wire:target="verify">Verifying...</span>
+                </button>
+            </form>
+
+            {{-- Resend code --}}
             <p class="text-gray-600 text-sm mb-2">
                 Didn't get an email? Check your <strong>spam folder</strong>
             </p>
-            <form method="POST" action="{{ route('verification.send') }}" class="mb-8">
-                @csrf
-                <button type="submit" class="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline">
-                    or get a new verification link.
-                </button>
-            </form>
+            <button type="button" wire:click="resendCode" 
+                class="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline mb-8"
+                wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="resendCode">or get a new confirmation code.</span>
+                <span wire:loading wire:target="resendCode">Sending...</span>
+            </button>
 
             {{-- Logout --}}
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="text-gray-500 hover:text-gray-700 text-sm font-medium">
+            <div>
+                <button type="button" wire:click="logout" class="text-gray-500 hover:text-gray-700 text-sm font-medium">
                     Log out
                 </button>
-            </form>
+            </div>
         </div>
     </div>
 

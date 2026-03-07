@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -52,8 +51,7 @@ class GoogleController extends Controller
 
             Auth::login($user);
 
-            // Déclencher l'envoi de l'email de vérification
-            event(new Registered($user));
+            // Le code de vérification sera envoyé par le composant VerifyEmailCode
         }
 
         // Rafraîchir l'utilisateur pour avoir les données à jour
