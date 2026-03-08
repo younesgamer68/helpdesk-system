@@ -51,6 +51,28 @@
                         class="w-full bg-transparent border border-white/30 text-white placeholder-white/40 py-3 px-4 rounded-lg focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition">
                 </div>
 
+                <!-- Specialty Selection (for operators only) -->
+                @if($this->isOperator && $this->categories->count() > 0)
+                    <div class="text-left">
+                        <label class="text-white text-sm font-medium block mb-3">
+                            Your Specialty (optional)
+                        </label>
+                        <select wire:model="specialty_id"
+                            class="w-full bg-transparent border border-white/30 text-white py-3 px-4 rounded-lg focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition [&>option]:bg-zinc-800 [&>option]:text-white">
+                            <option value="" class="bg-zinc-800">-- Select your specialty --</option>
+                            @foreach($this->categories as $category)
+                                <option value="{{ $category->id }}" class="bg-zinc-800">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-white/50 text-xs mt-2">
+                            Choose the category you specialize in. Tickets in this category will be automatically assigned to you.
+                        </p>
+                        @error('specialty_id')
+                            <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+                @endif
+
                 <!-- Submit Button -->
                 <button type="submit" class="w-full text-white font-semibold py-3 px-4 rounded-lg transition"
                     style="background-color:#0F766E;" onmouseover="this.style.backgroundColor='#0d6963'"

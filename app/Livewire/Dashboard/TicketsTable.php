@@ -156,8 +156,18 @@ class TicketsTable extends Component
         $query = Ticket::where('company_id', $user->company_id)->where('verified', 1)
             ->with(['user:id,name', 'category:id,name']);
 
+        // Filter for non-admin users (operators)
         if ($user->role !== 'admin') {
-            $query->where('assigned_to', $user->id);
+            if ($user->specialty_id) {
+                // Show tickets from their specialty category OR assigned to them
+                $query->where(function ($q) use ($user) {
+                    $q->where('category_id', $user->specialty_id)
+                        ->orWhere('assigned_to', $user->id);
+                });
+            } else {
+                // No specialty - show only assigned tickets
+                $query->where('assigned_to', $user->id);
+            }
         }
 
         if ($this->search) {

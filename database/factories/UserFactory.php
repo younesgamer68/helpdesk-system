@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\TicketCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -32,6 +33,8 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            'is_available' => true,
+            'assigned_tickets_count' => 0,
         ];
     }
 
@@ -54,6 +57,46 @@ class UserFactory extends Factory
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an operator.
+     */
+    public function operator(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'operator',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
+     * Indicate that the operator has a specialty.
+     */
+    public function withSpecialty(?int $categoryId = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'specialty_id' => $categoryId ?? TicketCategory::factory(),
+        ]);
+    }
+
+    /**
+     * Indicate that the operator is unavailable.
+     */
+    public function unavailable(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_available' => false,
         ]);
     }
 }

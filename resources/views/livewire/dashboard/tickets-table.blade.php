@@ -48,16 +48,18 @@
                 </select>
             </div>
 
-            <!-- Category Filter -->
-            <div>
-                <select wire:model.live="categoryFilter"
-                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
-                    <option value="">All Categories</option>
-                    @foreach ($this->categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <!-- Category Filter (Admin only - operators see their specialty automatically) -->
+            @if (Auth::user()->isAdmin())
+                <div>
+                    <select wire:model.live="categoryFilter"
+                        class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                        <option value="">All Categories</option>
+                        @foreach ($this->categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
 
             <!-- Assigned To Filter (Admin only) -->
             @if (Auth::user()->isAdmin())
@@ -75,6 +77,18 @@
             @endif
         </div>
     </div>
+
+    <!-- Specialty Indicator for Operators -->
+    @if (!Auth::user()->isAdmin() && Auth::user()->specialty)
+        <div class="mb-4">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 text-purple-400 text-sm font-medium rounded-full border border-purple-500/20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Your Specialty: {{ Auth::user()->specialty->name }}
+            </span>
+        </div>
+    @endif
 
     <!-- Active Filters Display -->
     @if ($this->hasActiveFilters)
@@ -97,7 +111,7 @@
                     Priority: {{ ucfirst($priorityFilter) }}
                 </span>
             @endif
-            @if ($categoryFilter)
+            @if ($categoryFilter && Auth::user()->isAdmin())
                 <span
                     class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-medium rounded-full border border-purple-500/20">
                     Category: {{ $this->categories->find($categoryFilter)?->name ?? '' }}

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Http\Responses\LoginResponse;
+use App\Models\Ticket;
+use App\Observers\TicketObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::preventLazyLoading();
+        Ticket::observe(TicketObserver::class);
         $this->configureDefaults();
     }
 

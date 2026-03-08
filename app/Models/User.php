@@ -23,6 +23,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'avatar',
         'role',
+        'specialty_id',
+        'is_available',
+        'assigned_tickets_count',
     ];
 
     protected $hidden = [
@@ -35,6 +38,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_available' => 'boolean',
+        'assigned_tickets_count' => 'integer',
     ];
 
     public function initials(): string
@@ -61,11 +66,44 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Company::class);
     }
 
+    public function specialty()
+    {
+        return $this->belongsTo(TicketCategory::class, 'specialty_id');
+    }
+
+    public function assignedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to');
+    }
+
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'ticket_number');
     }
-    // In App\Models\User.php
+
+    /**
+     * Scope a query to only include available operators.
+     */
+    public function scopeAvailable($query)
+    {
+        return $query->where('is_available', true);
+    }
+
+    /**
+     * Scope a query to only include operators with a specific specialty.
+     */
+    public function scopeWithSpecialty($query, int $categoryId)
+    {
+        return $query->where('specialty_id', $categoryId);
+    }
+
+    /**
+     * Scope a query to only include operators.
+     */
+    public function scopeOperators($query)
+    {
+        return $query->where('role', 'operator');
+    }
 
     protected static function booted()
     {

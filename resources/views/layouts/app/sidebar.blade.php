@@ -28,6 +28,10 @@
                         :current="request()->routeIs('operators')" wire:navigate>
                         {{ __('Operators') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="folder" :href="route('categories', Auth::user()->company->slug)"
+                        :current="request()->routeIs('categories')" wire:navigate>
+                        {{ __('Categories') }}
+                    </flux:sidebar.item>
                 @endcan
             </flux:sidebar.group>
         </flux:sidebar.nav>
