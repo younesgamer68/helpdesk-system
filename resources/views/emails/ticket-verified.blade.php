@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             margin: 0 auto;
             padding: 20px;
         }
+
         .header {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
@@ -19,12 +21,14 @@
             border-radius: 8px 8px 0 0;
             text-align: center;
         }
+
         .content {
             background: #f9fafb;
             padding: 30px;
             border: 1px solid #e5e7eb;
             border-top: none;
         }
+
         .button {
             display: inline-block;
             padding: 14px 28px;
@@ -35,9 +39,11 @@
             font-weight: 600;
             margin: 20px 0;
         }
+
         .button:hover {
             background: #059669;
         }
+
         .success-badge {
             display: inline-block;
             background: #d1fae5;
@@ -48,6 +54,7 @@
             font-weight: 600;
             margin: 15px 0;
         }
+
         .ticket-info {
             background: white;
             padding: 20px;
@@ -55,6 +62,7 @@
             margin: 20px 0;
             border-left: 4px solid #10b981;
         }
+
         .info-box {
             background: #dbeafe;
             border: 1px solid #3b82f6;
@@ -62,6 +70,7 @@
             border-radius: 8px;
             margin: 20px 0;
         }
+
         .footer {
             text-align: center;
             color: #6b7280;
@@ -72,13 +81,16 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div style="margin-bottom: 16px;">
             <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="40" height="40" rx="8" fill="white"/>
-                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#10b981" text-anchor="middle">HD</text>
-                <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="white">HelpDesk</text>
+                <rect x="0" y="0" width="40" height="40" rx="8" fill="white" />
+                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#10b981"
+                    text-anchor="middle">HD</text>
+                <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700"
+                    fill="white">HelpDesk</text>
             </svg>
         </div>
         <h1 style="margin: 0; font-size: 24px;">✓ Ticket Verified Successfully!</h1>
@@ -88,17 +100,22 @@
     <div class="content">
         <p>Hello <strong>{{ $ticket->customer_name }}</strong>,</p>
 
-        <p>Great news! Your support ticket has been verified and is now in our queue. Our team will review it and respond as soon as possible.</p>
+        <p>Great news! Your support ticket has been verified and is now in our queue. Our team will review it and
+            respond as soon as possible.</p>
 
         <div class="ticket-info">
-            <p style="margin: 0 0 10px 0;"><strong>Ticket Number:</strong> <span style="font-family: monospace; color: #10b981;">{{ $ticket->ticket_number }}</span></p>
+            <p style="margin: 0 0 10px 0;"><strong>Ticket Number:</strong> <span
+                    style="font-family: monospace; color: #10b981;">{{ $ticket->ticket_number }}</span></p>
             <p style="margin: 0 0 10px 0;"><strong>Subject:</strong> {{ $ticket->subject }}</p>
-            <p style="margin: 0 0 10px 0;"><strong>Status:</strong> <span style="text-transform: capitalize;">{{ str_replace('_', ' ', $ticket->status) }}</span></p>
-            <p style="margin: 0;"><strong>Priority:</strong> <span style="text-transform: capitalize;">{{ $ticket->priority }}</span></p>
+            <p style="margin: 0 0 10px 0;"><strong>Status:</strong> <span
+                    style="text-transform: capitalize;">{{ str_replace('_', ' ', $ticket->status) }}</span></p>
+            <p style="margin: 0;"><strong>Priority:</strong> <span
+                    style="text-transform: capitalize;">{{ $ticket->priority }}</span></p>
         </div>
 
         <div style="text-align: center;">
-            <a href="{{ route('widget.track', ['ticketNumber' => $ticket->ticket_number, 'token' => $trackingToken]) }}" class="button">
+            <a href="{{ route('widget.track', ['company' => $ticket->company, 'ticketNumber' => $ticket->ticket_number, 'token' => $trackingToken]) }}"
+                class="button">
                 Track Your Ticket
             </a>
         </div>
@@ -113,7 +130,8 @@
             </ul>
         </div>
 
-        <p><strong>Important:</strong> Save the tracking link above to view your ticket status and communicate with our team. You can also bookmark it for easy access.</p>
+        <p><strong>Important:</strong> Save the tracking link above to view your ticket status and communicate with our
+            team. You can also bookmark it for easy access.</p>
 
         <p>If you have any questions, simply reply through your tracking page and our team will get back to you.</p>
     </div>
@@ -124,4 +142,5 @@
         <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
     </div>
 </body>
+
 </html>

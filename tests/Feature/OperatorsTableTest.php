@@ -54,7 +54,7 @@ test('admins can remove a operator', function () {
         ->call('removeUser', $operator->id)
         ->assertDispatched('show-toast');
 
-    $this->assertDatabaseMissing('users', ['id' => $operator->id]);
+    $this->assertSoftDeleted('users', ['id' => $operator->id]);
 });
 
 test('non-admins cannot access operators route via middleware', function () {

@@ -86,7 +86,7 @@
         </div>
 
         <div style="text-align: center;">
-            <a href="{{ route('widget.verify', ['ticketNumber' => $ticket->ticket_number, 'token' => $ticket->verification_token]) }}" class="button">
+            <a href="{{ route('widget.verify', ['company' => $ticket->company, 'ticketNumber' => $ticket->ticket_number, 'token' => $ticket->verification_token]) }}" class="button">
                 Verify Your Ticket
             </a>
         </div>
