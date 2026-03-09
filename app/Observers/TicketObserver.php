@@ -4,35 +4,49 @@ namespace App\Observers;
 
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\Automation\AutomationEngine;
 use App\Services\TicketAssignmentService;
 
 class TicketObserver
 {
     public function __construct(
-        protected TicketAssignmentService $assignmentService
+        protected TicketAssignmentService $assignmentService,
+        protected AutomationEngine $automationEngine
     ) {}
 
     /**
      * Handle the Ticket "created" event.
-     * Auto-assign ticket if not already assigned.
+     * Process automation rules for new tickets.
      */
     public function created(Ticket $ticket): void
     {
-        // Only auto-assign if ticket is verified and not already assigned
-        if ($ticket->verified && ! $ticket->assigned_to) {
-            $this->assignmentService->assignTicket($ticket);
+        // Only process if ticket is verified
+        if ($ticket->verified) {
+            $this->automationEngine->processNewTicket($ticket);
+
+            // Fallback: If still unassigned after automation, use default assignment
+            $ticket->refresh();
+            if (! $ticket->assigned_to) {
+                $this->assignmentService->assignTicket($ticket);
+            }
         }
     }
 
     /**
      * Handle the Ticket "updated" event.
-     * Auto-assign when ticket becomes verified.
+     * Process automation when ticket becomes verified.
      */
     public function updated(Ticket $ticket): void
     {
-        // Auto-assign when ticket becomes verified and has no assignment
-        if ($ticket->wasChanged('verified') && $ticket->verified && ! $ticket->assigned_to) {
-            $this->assignmentService->assignTicket($ticket);
+        // Process automation when ticket becomes verified
+        if ($ticket->wasChanged('verified') && $ticket->verified) {
+            $this->automationEngine->processNewTicket($ticket);
+
+            // Fallback: If still unassigned after automation, use default assignment
+            $ticket->refresh();
+            if (! $ticket->assigned_to) {
+                $this->assignmentService->assignTicket($ticket);
+            }
         }
 
         // Decrement count when ticket is resolved or closed

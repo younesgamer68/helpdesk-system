@@ -79,6 +79,9 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::get('/categories', fn () => view('dashboard.categories'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('categories');
+            Route::get('/automation', fn () => view('dashboard.automation'))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('automation');
         });
     });
 });

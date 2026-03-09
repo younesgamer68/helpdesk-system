@@ -87,7 +87,8 @@ class TicketAssignmentService
     protected function performAssignment(Ticket $ticket, User $operator): void
     {
         DB::transaction(function () use ($ticket, $operator) {
-            $ticket->update(['assigned_to' => $operator->id]);
+            $ticket->assigned_to = $operator->id;
+            $ticket->saveQuietly();
             $operator->increment('assigned_tickets_count');
         });
     }
@@ -108,7 +109,8 @@ class TicketAssignmentService
                 $previousOperator->decrement('assigned_tickets_count');
             }
 
-            $ticket->update(['assigned_to' => null]);
+            $ticket->assigned_to = null;
+            $ticket->saveQuietly();
         });
     }
 
@@ -127,7 +129,8 @@ class TicketAssignmentService
             }
 
             // Assign to new operator
-            $ticket->update(['assigned_to' => $newOperator->id]);
+            $ticket->assigned_to = $newOperator->id;
+            $ticket->saveQuietly();
             $newOperator->increment('assigned_tickets_count');
         });
     }

@@ -210,7 +210,7 @@
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
 
-                const response = await fetch('{{ route("widget.submit", ["company"=> Auth::user()->company->slug, "key" => $widget->widget_key]) }}', {
+                const response = await fetch('{{ route("widget.submit", ["company"=> $widget->company->slug, "key" => $widget->widget_key]) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
