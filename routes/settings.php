@@ -24,7 +24,7 @@ Route::domain('{company}.'.config('app.domain'))
     ->group(function () {
         Route::redirect('settings', 'settings/profile');
         Route::livewire('settings/profile', Profile::class)->name('profile.edit');
-        Route::get('/settings/form-widget', FormWidget::class)->name('form-widget.edit');
+        Route::get('/widget-settings', FormWidget::class)->name('form-widget.edit');
         Route::livewire('settings/password', Password::class)->name('user-password.edit');
         Route::livewire('settings/appearance', Appearance::class)->name('appearance.edit');
 

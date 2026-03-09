@@ -151,6 +151,6 @@ class FormWidget extends Component
 
     public function render()
     {
-        return view('livewire.settings.form-widget');
+        return view('livewire.settings.form-widget')->title(__('Form Widget'));
     }
 }

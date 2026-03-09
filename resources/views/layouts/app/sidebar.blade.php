@@ -36,6 +36,10 @@
                         :current="request()->routeIs('automation')" wire:navigate>
                         {{ __('Automation') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="layout-grid" :href="route('form-widget.edit', Auth::user()->company->slug)"
+                        :current="request()->routeIs('form-widget.edit')" wire:navigate>
+                        {{ __('Form Widget') }}
+                    </flux:sidebar.item>
                 @endcan
             </flux:sidebar.group>
         </flux:sidebar.nav>
