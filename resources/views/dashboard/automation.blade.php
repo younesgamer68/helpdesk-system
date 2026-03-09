@@ -5,8 +5,7 @@
             <p class="text-zinc-400 mt-1">Configure automatic actions for your tickets</p>
         </div>
         <button 
-            x-data 
-            @click="$wire.openCreateModal()"
+            onclick="Livewire.dispatch('openCreateModal')"
             class="px-4 py-2 bg-teal-500 text-white text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-teal-600 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
