@@ -22,3 +22,16 @@ yarn-error.log
 /.vscode
 /.zed
 .editorconfig
+
+# AI and local system files
+.agents/
+.codex/
+.cursor/
+.gemini/
+.junie/
+.mcp.json
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+boost.json
+opencode.json
