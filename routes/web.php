@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatbotFaqController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\QuickRegisterController;
 use App\Http\Controllers\TicketsController;
@@ -11,6 +12,19 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+// ====== CHATBOT ======
+Route::get('/chatbot/faqs', [ChatbotFaqController::class, 'random'])->name('chatbot.faqs');
+Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatbot.chat');
+
+// ====== DASHBOARD REDIRECT ======
+Route::get('/dashboard', function () {
+    $user = Auth::user();
+    if ($user->company_id && $user->company) {
+        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
+    }
+    return redirect()->route('setup-company');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {

@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+@source '../views';
+
+@theme {
+    --color-brand: #007260;
+    --color-brand-light: #00A983;
+    --color-brand-dark: #17494D;
+    --color-cta: #17494D;
+}
+
+/* Toggle bounce animation */
+@keyframes bounce-once {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(0.8);
+    }
+
+    60% {
+        transform: scale(1.15);
+    }
+
+    80% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-bounce-once {
+    animation: bounce-once 0.5s ease-in-out;
+}
+
+/* Chatbot widget animations */
+@keyframes chatbot-pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes chatbot-bounce {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-4px);
+    }
+}
