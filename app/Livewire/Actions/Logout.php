@@ -12,6 +12,10 @@ class Logout
      */
     public function __invoke()
     {
+        if (Auth::check()) {
+            Auth::user()->update(['status' => 'offline']);
+        }
+
         Auth::guard('web')->logout();
 
         Session::invalidate();

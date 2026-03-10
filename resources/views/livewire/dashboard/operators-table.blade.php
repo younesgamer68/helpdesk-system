@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.30s>
     <x-flash-message />
 
     <!-- Filters Section -->
@@ -42,6 +42,8 @@
                     <option value="">All Statuses</option>
                     <option value="active">Active Members</option>
                     <option value="pending">Pending Invites</option>
+                    <option value="online">Online Now</option>
+                    <option value="offline">Currently Offline</option>
                 </select>
             </div>
         </div>
@@ -156,6 +158,19 @@
                                     </svg>
                                     Active
                                 </span>
+
+                                <!-- Online/Offline Dot -->
+                                @if($user->status === 'online')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20 ml-2">
+                                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                        Online
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-400 text-xs font-medium rounded-full border border-red-500/20 ml-2">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                                        Offline
+                                    </span>
+                                @endif
                             @endif
                         </td>
                         <td class="px-4 py-3 text-right text-sm text-zinc-400 whitespace-nowrap">

@@ -27,6 +27,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_available',
         'assigned_tickets_count',
         'last_assigned_at',
+        'status',
+        'last_activity',
     ];
 
     protected $hidden = [
@@ -42,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_available' => 'boolean',
         'assigned_tickets_count' => 'integer',
         'last_assigned_at' => 'datetime',
+        'last_activity' => 'datetime',
     ];
 
     public function initials(): string
@@ -49,7 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -70,17 +73,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function specialty()
     {
-        return $this->belongsTo(TicketCategory::class, 'specialty_id');
+        return $this->belongsTo(TicketCategory::class , 'specialty_id');
     }
 
     public function assignedTickets()
     {
-        return $this->hasMany(Ticket::class, 'assigned_to');
+        return $this->hasMany(Ticket::class , 'assigned_to');
     }
 
     public function tickets()
     {
-        return $this->hasMany(Ticket::class, 'ticket_number');
+        return $this->hasMany(Ticket::class , 'ticket_number');
     }
 
     /**
@@ -89,6 +92,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeAvailable($query)
     {
         return $query->where('is_available', true);
+    }
+
+    /**
+     * Scope a query to only include online users.
+     */
+    public function scopeOnline($query)
+    {
+        return $query->where('status', 'online');
+    }
+
+    /**
+     * Check if the user is currently online.
+     */
+    public function isOnline(): bool
+    {
+        return $this->status === 'online';
     }
 
     /**
