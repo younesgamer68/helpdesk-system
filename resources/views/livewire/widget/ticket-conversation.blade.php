@@ -102,70 +102,9 @@
                     <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
                     
                     <div class="relative">
-                        <div x-data="tiptapEditor" class="w-full bg-white border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
-                            
-                            {{-- Toolbar --}}
-                            <div class="flex items-center gap-1 p-2 border-b border-gray-200 flex-wrap relative" x-data="{ showLinkInput: false, linkUrl: '' }">
-                                <button type="button" @mousedown.prevent @click="bold()"
-                                    :class="isActive('bold') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Bold">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M14 12a4 4 0 0 0 0-8H6v8"/><path d="M15 20a4 4 0 0 0 0-8H6v8"/></svg>
-                                </button>
-                                <button type="button" @mousedown.prevent @click="italic()"
-                                    :class="isActive('italic') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Italic">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
-                                </button>
-                                <button type="button" @mousedown.prevent @click="underline()"
-                                    :class="isActive('underline') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Underline">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
-                                </button>
-                                <div class="w-px h-4 bg-gray-300 mx-1"></div>
-                                <button type="button" @mousedown.prevent @click="bulletList()"
-                                    :class="isActive('bulletList') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Bullet List">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/></svg>
-                                </button>
-                                <button type="button" @mousedown.prevent @click="orderedList()"
-                                    :class="isActive('orderedList') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Numbered List">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M10 6h11"/><path d="M10 12h11"/><path d="M10 18h11"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
-                                </button>
-                                <div class="w-px h-4 bg-gray-300 mx-1"></div>
-                                <button type="button" @mousedown.prevent @click="codeBlock()"
-                                    :class="isActive('codeBlock') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Code Block">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                                </button>
-                                <button type="button" @mousedown.prevent @click="showLinkInput = !showLinkInput; if(showLinkInput) { $nextTick(() => $refs.linkInput.focus()); linkUrl = getLinkUrl(); }"
-                                    :class="isActive('link') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-200'"
-                                    class="p-1.5 rounded transition" title="Link">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                                </button>
-
-                                <!-- Link Input Popover -->
-                                <div x-show="showLinkInput" @click.away="showLinkInput = false" style="display: none;"
-                                     class="absolute top-full left-0 mt-1 z-10 w-72 p-2 bg-white border border-gray-200 rounded-lg shadow-lg flex gap-2 items-center">
-                                    <input x-ref="linkInput" type="url" x-model="linkUrl" placeholder="https://example.com"
-                                           @keydown.enter.prevent="setLink(linkUrl); showLinkInput = false; linkUrl = ''"
-                                           class="flex-1 bg-white border border-gray-300 text-gray-900 text-sm rounded px-2 py-1.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                                    <button type="button" @click="setLink(linkUrl); showLinkInput = false; linkUrl = ''"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1.5 rounded transition">
-                                        Set
-                                    </button>
-                                    <button type="button" @click="setLink(null); showLinkInput = false; linkUrl = ''"
-                                            class="text-gray-400 hover:text-red-500 p-1.5" title="Remove Link">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {{-- Editor area --}}
-                            <div wire:ignore>
-                                <div x-ref="editorEl"></div>
-                            </div>
-                        </div>
+                        <textarea wire:model="message" id="message" rows="5"
+                            class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 text-gray-700 sm:text-sm"
+                            placeholder="Write your message here..."></textarea>
                     </div>
                     
                     <div class="flex justify-between items-center mt-1">
