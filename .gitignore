@@ -21,6 +21,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+.editorconfig
 
 # AI and local system files
 .agents/
