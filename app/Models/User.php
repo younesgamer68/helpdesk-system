@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'specialty_id',
         'is_available',
         'assigned_tickets_count',
+        'last_assigned_at',
     ];
 
     protected $hidden = [
@@ -40,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
         'is_available' => 'boolean',
         'assigned_tickets_count' => 'integer',
+        'last_assigned_at' => 'datetime',
     ];
 
     public function initials(): string

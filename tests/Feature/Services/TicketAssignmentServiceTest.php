@@ -63,14 +63,30 @@ test('assigns ticket to operator with lowest workload', function () {
         'company_id' => $this->company->id,
         'specialty_id' => $category->id,
         'is_available' => true,
-        'assigned_tickets_count' => 5,
+    ]);
+
+    // Give busy operator 3 open tickets in the same category
+    Ticket::factory()->count(3)->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => $busyOperator->id,
+        'status' => 'open',
+        'verified' => false,
     ]);
 
     $freeOperator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
         'specialty_id' => $category->id,
         'is_available' => true,
-        'assigned_tickets_count' => 1,
+    ]);
+
+    // Give free operator 1 open ticket in the same category
+    Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => $freeOperator->id,
+        'status' => 'open',
+        'verified' => false,
     ]);
 
     $ticket = Ticket::factory()->create([
@@ -83,6 +99,188 @@ test('assigns ticket to operator with lowest workload', function () {
     $assignedOperator = $this->service->assignTicket($ticket);
 
     expect($assignedOperator->id)->toBe($freeOperator->id);
+});
+
+test('assigns to specialist with fewest open tickets in same category', function () {
+    $categoryA = TicketCategory::factory()->create(['company_id' => $this->company->id]);
+    $categoryB = TicketCategory::factory()->create(['company_id' => $this->company->id]);
+
+    $operatorA = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryA->id,
+        'is_available' => true,
+    ]);
+
+    $operatorB = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryA->id,
+        'is_available' => true,
+    ]);
+
+    // Operator A has 3 open tickets in category A
+    Ticket::factory()->count(3)->create([
+        'company_id' => $this->company->id,
+        'category_id' => $categoryA->id,
+        'assigned_to' => $operatorA->id,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+
+    // Operator B has 1 open ticket in category A, but 5 in category B (irrelevant)
+    Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $categoryA->id,
+        'assigned_to' => $operatorB->id,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+    Ticket::factory()->count(5)->create([
+        'company_id' => $this->company->id,
+        'category_id' => $categoryB->id,
+        'assigned_to' => $operatorB->id,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $categoryA->id,
+        'assigned_to' => null,
+        'verified' => false,
+    ]);
+
+    $assignedOperator = $this->service->assignTicket($ticket);
+
+    // Should pick operator B (1 open in cat A) over operator A (3 open in cat A)
+    expect($assignedOperator->id)->toBe($operatorB->id);
+});
+
+test('uses round-robin when operators have equal category workload', function () {
+    $category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
+
+    $operatorA = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $category->id,
+        'is_available' => true,
+        'last_assigned_at' => now()->subHour(),
+    ]);
+
+    $operatorB = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $category->id,
+        'is_available' => true,
+        'last_assigned_at' => null, // Never assigned → should go first
+    ]);
+
+    // Both have 0 open tickets in this category
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => null,
+        'verified' => false,
+    ]);
+
+    $assignedOperator = $this->service->assignTicket($ticket);
+
+    // Operator B has null last_assigned_at (treated as oldest) → gets ticket first
+    expect($assignedOperator->id)->toBe($operatorB->id);
+});
+
+test('updates last_assigned_at on assignment', function () {
+    $category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
+
+    $operator = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $category->id,
+        'is_available' => true,
+        'last_assigned_at' => null,
+    ]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => null,
+        'verified' => false,
+    ]);
+
+    $this->service->assignTicket($ticket);
+
+    expect($operator->fresh()->last_assigned_at)->not->toBeNull();
+});
+
+test('distributes 3 tickets fairly across operators with same specialty', function () {
+    $category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
+
+    // Create 3 operators with the same specialty, all available, never assigned
+    $operatorA = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $category->id,
+        'is_available' => true,
+        'last_assigned_at' => null,
+    ]);
+
+    $operatorB = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $category->id,
+        'is_available' => true,
+        'last_assigned_at' => null,
+    ]);
+
+    $operatorC = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'specialty_id' => $category->id,
+        'is_available' => true,
+        'last_assigned_at' => null,
+    ]);
+
+    // Ticket 1 → should go to first available (all tied, DB order = A)
+    $ticket1 = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => null,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+    $assigned1 = $this->service->assignTicket($ticket1);
+    expect($assigned1->id)->toBe($operatorA->id);
+
+    // Ticket 2 → A has 1 open, B and C have 0 → goes to B (first with 0)
+    $ticket2 = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => null,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+    $assigned2 = $this->service->assignTicket($ticket2);
+    expect($assigned2->id)->toBe($operatorB->id);
+
+    // Ticket 3 → A=1, B=1, C=0 → goes to C
+    $ticket3 = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => null,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+    $assigned3 = $this->service->assignTicket($ticket3);
+    expect($assigned3->id)->toBe($operatorC->id);
+
+    // All 3 operators now have exactly 1 open ticket each
+    // Verify all 3 assigned to different operators
+    $assignedIds = [$assigned1->id, $assigned2->id, $assigned3->id];
+    expect(array_unique($assignedIds))->toHaveCount(3);
+
+    // Ticket 4 → all have 1 open ticket, round-robin: A was assigned first → A gets it
+    $ticket4 = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $category->id,
+        'assigned_to' => null,
+        'status' => 'open',
+        'verified' => false,
+    ]);
+    $assigned4 = $this->service->assignTicket($ticket4);
+    expect($assigned4->id)->toBe($operatorA->id);
 });
 
 test('does not assign to unavailable operators', function () {
