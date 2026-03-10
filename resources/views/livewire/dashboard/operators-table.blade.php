@@ -95,6 +95,9 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                         Status
                     </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                        Activity
+                    </th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                         Joined
                     </th>
@@ -158,19 +161,23 @@
                                     </svg>
                                     Active
                                 </span>
-
-                                <!-- Online/Offline Dot -->
+                            @endif
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            @if (!is_null($user->password))
                                 @if($user->status === 'online')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20 ml-2">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20">
                                         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                                         Online
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-400 text-xs font-medium rounded-full border border-red-500/20 ml-2">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-400 text-xs font-medium rounded-full border border-red-500/20">
                                         <span class="w-2 h-2 bg-red-500 rounded-full"></span>
                                         Offline
                                     </span>
                                 @endif
+                            @else
+                                <span class="text-zinc-500 text-xs">—</span>
                             @endif
                         </td>
                         <td class="px-4 py-3 text-right text-sm text-zinc-400 whitespace-nowrap">
@@ -229,7 +236,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-12 text-center">
+                        <td colspan="6" class="px-4 py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-zinc-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

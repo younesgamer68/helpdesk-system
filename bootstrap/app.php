@@ -10,10 +10,7 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-    )
-    ->withMiddleware(function (Middleware $middleware): void {
-        RedirectIfAuthenticated::redirectUsing(fn () => route('verification.notice'));
-    })->withMiddleware(function (Middleware $middleware): void {
+    )->withMiddleware(function (Middleware $middleware): void {
         RedirectIfAuthenticated::redirectUsing(fn () => route('verification.notice'));
 
         $middleware->alias([
@@ -25,8 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Append web middleware
         $middleware->web(append: [
             \App\Http\Middleware\IdentifyCompanyFromSubdomain::class,
+            \App\Http\Middleware\TrackUserActivity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+
+

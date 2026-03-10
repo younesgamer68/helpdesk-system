@@ -24,6 +24,10 @@
                     {{ __('Tickets') }}
                 </flux:sidebar.item>
                 @can('view-operators')
+                    <flux:sidebar.item icon="users" :href="route('customers', Auth::user()->company->slug)"
+                        :current="request()->routeIs('customers*')" wire:navigate>
+                        {{ __('Customers') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="users" :href="route('operators', Auth::user()->company->slug)"
                         :current="request()->routeIs('operators')" wire:navigate>
                         {{ __('Operators') }}

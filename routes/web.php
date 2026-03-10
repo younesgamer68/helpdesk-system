@@ -14,21 +14,21 @@ Route::get('/', function () {
 })->name('home');
 
 // ====== CHATBOT ======
-Route::get('/chatbot/faqs', [ChatbotFaqController::class, 'random'])->name('chatbot.faqs');
-Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatbot.chat');
+Route::get('/chatbot/faqs', [ChatbotFaqController::class , 'random'])->name('chatbot.faqs');
+Route::post('/chatbot/chat', [ChatbotFaqController::class , 'chat'])->name('chatbot.chat');
 
 // ====== DASHBOARD REDIRECT ======
 Route::get('/dashboard', function () {
     $user = Auth::user();
     if ($user->company_id && $user->company) {
-        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
+        return redirect()->to('https://' . $user->company->slug . '.' . config('app.domain') . '/tickets');
     }
     return redirect()->route('setup-company');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn () => view('auth.login'))->name('login');
+    Route::get('/login', fn() => view('auth.login'))->name('login');
     Route::get('/set-password', App\Livewire\Auth\SetPassword::class)
         ->name('set-password')
         ->middleware('user.pending');
@@ -38,15 +38,18 @@ Route::middleware('guest')->group(function () {
         ->name('invitations.accept')
         ->middleware('signed');
 
-    Route::post('/register/quick', [QuickRegisterController::class, 'store'])
+    Route::post('/register/quick', [QuickRegisterController::class , 'store'])
         ->name('register.quick');
 
     // Google OAuth
-    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
-    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
+    Route::get('/auth/google', [GoogleController::class , 'redirect'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleController::class , 'callback'])->name('auth.google.callback');
 });
 
 Route::post('/logout', function () {
+    if (Auth::check()) {
+        Auth::user()->update(['status' => 'offline']);
+    }
     Auth::logout();
 
     return redirect()->route('home');
@@ -69,7 +72,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
     // Si l'utilisateur a déjà une company → dashboard
     if ($user->company_id && $user->company) {
-        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
+        return redirect()->to('https://' . $user->company->slug . '.' . config('app.domain') . '/tickets');
     }
 
     // Sinon → formulaire setup company
@@ -77,27 +80,35 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // ====== SUBDOMAIN (company) ======
-Route::domain('{company}.'.config('app.domain'))->group(function () {
+Route::domain('{company}.' . config('app.domain'))->group(function () {
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
 
-        // Onboarding form for the company
-        Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
+            // Onboarding form for the company
+            Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
 
-        // Dashboard routes (require onboarding)
-        Route::middleware(['company.is_onboarded'])->group(function () {
-            Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
-            Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
-            Route::get('/operators', fn () => view('dashboard.operators'))
-                ->middleware('can:view-operators,App\Models\User')
-                ->name('operators');
-            Route::get('/categories', fn () => view('dashboard.categories'))
-                ->middleware('can:view-operators,App\Models\User')
-                ->name('categories');
-            Route::get('/automation', fn () => view('dashboard.automation'))
-                ->middleware('can:view-operators,App\Models\User')
-                ->name('automation');
+            // Dashboard routes (require onboarding)
+            Route::middleware(['company.is_onboarded'])->group(function () {
+                    Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
+                    Route::get('tickets/{ticket}', [TicketsController::class , 'show'])->name('details');
+                    Route::get('/customers', fn() => view('dashboard.customers'))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('customers');
+                    Route::get('/customers/{customer}', fn($company, $customer) => view('dashboard.customer-details-page', ['customer' => $customer]))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('customers.details');
+                    Route::get('/operators', fn() => view('dashboard.operators'))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('operators');
+                    Route::get('/categories', fn() => view('dashboard.categories'))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('categories');
+                    Route::get('/automation', fn() => view('dashboard.automation'))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('automation');
+                }
+                );
+            }
+            );
         });
-    });
-});
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

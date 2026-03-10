@@ -1,0 +1,77 @@
+[
+    {
+        "id": 5,
+        "company_id": 7,
+        "name": "Mots-cl\u00e9s urgents",
+        "description": "",
+        "type": "priority",
+        "conditions": {
+            "keywords": [
+                "urgent",
+                "down",
+                "panne",
+                "critique"
+            ],
+            "category_id": null,
+            "current_priority": []
+        },
+        "actions": {
+            "set_priority": "high"
+        },
+        "is_active": true,
+        "priority": 0,
+        "executions_count": 1,
+        "last_executed_at": "2026-03-09T18:34:28.000000Z",
+        "created_at": "2026-03-09T18:31:26.000000Z",
+        "updated_at": "2026-03-09T18:34:28.000000Z"
+    },
+    {
+        "id": 6,
+        "company_id": 8,
+        "name": "Urgence mots-cl\u00e9s",
+        "description": "",
+        "type": "priority",
+        "conditions": {
+            "keywords": [
+                "urgent ",
+                " bloqu\u00e9",
+                " panne "
+            ],
+            "category_id": 25,
+            "current_priority": []
+        },
+        "actions": {
+            "set_priority": "urgent"
+        },
+        "is_active": true,
+        "priority": 0,
+        "executions_count": 1,
+        "last_executed_at": "2026-03-10T02:43:09.000000Z",
+        "created_at": "2026-03-10T01:51:55.000000Z",
+        "updated_at": "2026-03-10T02:43:09.000000Z"
+    },
+    {
+        "id": 7,
+        "company_id": 9,
+        "name": "Mots-cl\u00e9s urgents",
+        "description": "",
+        "type": "priority",
+        "conditions": {
+            "keywords": [
+                "urgent",
+                "down"
+            ],
+            "category_id": 28,
+            "current_priority": []
+        },
+        "actions": {
+            "set_priority": "urgent"
+        },
+        "is_active": true,
+        "priority": 0,
+        "executions_count": 0,
+        "last_executed_at": null,
+        "created_at": "2026-03-10T16:21:03.000000Z",
+        "updated_at": "2026-03-10T16:23:56.000000Z"
+    }
+]

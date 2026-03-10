@@ -1,0 +1,3 @@
+SQL: select * from "tickets" where "company_id" = ? and "verified" = ? and (("category_id" = ? and "assigned_to" is null) or "assigned_to" = ?) and "tickets"."deleted_at" is null
+Bindings: [8,1,25,27]
+Tickets found for wow:

@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class TrackUserActivity
@@ -17,10 +18,11 @@ class TrackUserActivity
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            $cacheKey = 'user-activity-' . Auth::id();
+            $user = Auth::user();
+            $cacheKey = 'user-activity-' . $user->id;
 
             if (!Cache::has($cacheKey)) {
-                Auth::user()->update([
+                $user->update([
                     'status' => 'online',
                     'last_activity' => now(),
                 ]);

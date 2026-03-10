@@ -48,6 +48,7 @@ class TicketAssignmentService
             ->operators()
             ->available()
             ->online()
+            ->where('assigned_tickets_count', '<', 10)
             ->withSpecialty($ticket->category_id)
             ->withCount(['assignedTickets as open_category_tickets_count' => function ($query) use ($ticket) {
             $query->where('category_id', $ticket->category_id)
@@ -71,6 +72,7 @@ class TicketAssignmentService
             ->operators()
             ->available()
             ->online()
+            ->where('assigned_tickets_count', '<', 10)
             ->whereNull('specialty_id')
             ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
             $query->whereNotIn('status', ['resolved', 'closed']);
@@ -86,6 +88,7 @@ class TicketAssignmentService
                 ->operators()
                 ->available()
                 ->online()
+                ->where('assigned_tickets_count', '<', 10)
                 ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
                 $query->whereNotIn('status', ['resolved', 'closed']);
             }])
