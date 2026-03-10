@@ -29,9 +29,13 @@ yarn-error.log
 .cursor/
 .gemini/
 .junie/
+.github/
 .mcp.json
 AGENTS.md
 CLAUDE.md
 GEMINI.md
 boost.json
 opencode.json
+
+.claude/
+.github/
