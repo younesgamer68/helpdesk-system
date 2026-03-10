@@ -1,6 +1,26 @@
 {{-- =====================================================================
 Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
 ===================================================================== --}}
+
+{{-- ════════ UTILITY BAR ════════ --}}
+<div class="w-full border-b transition-colors duration-300"
+    :class="$store.ui.darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-[#e5e5e5]'">
+    <div class="mx-auto flex h-8 max-w-7xl items-center justify-end gap-6 px-6">
+        <a href="#"
+            class="text-xs font-medium transition-colors duration-200"
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Sign in</a>
+        <a href="#"
+            class="text-xs font-medium transition-colors duration-200"
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Zendesk Help center</a>
+        <a href="#"
+            class="text-xs font-medium transition-colors duration-200"
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Company</a>
+        <a href="#"
+            class="text-xs font-medium transition-colors duration-200"
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Contact us</a>
+    </div>
+</div>
+
 <nav x-data="{
         langOpen: false,
         mobileOpen: false,
@@ -75,76 +95,69 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
         </div>
 
         {{-- RIGHT Controls --}}
-        <div class="flex items-center gap-3">
-            {{-- Sun/Moon toggle with animation --}}
+        <div class="flex items-center gap-4">
+            {{-- Dark mode toggle (moon/sun icon) with spin animation --}}
             <button type="button"
-                @click="$store.ui.darkMode = !$store.ui.darkMode; $el.querySelector('.toggle-knob').classList.add('animate-bounce-once'); setTimeout(() => $el.querySelector('.toggle-knob').classList.remove('animate-bounce-once'), 500)"
-                class="group relative flex h-8 w-14 cursor-pointer items-center rounded-full p-1 transition-all duration-500 ease-in-out"
-                :class="$store.ui.darkMode ? 'bg-indigo-600 shadow-indigo-500/30 shadow-lg' : 'bg-amber-100 shadow-amber-300/30 shadow-lg'"
-                title="Toggle dark mode">
-                {{-- Background stars/rays decoration --}}
-                <span class="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
-                    <span class="absolute inset-0 transition-opacity duration-500"
-                        :class="$store.ui.darkMode ? 'opacity-100' : 'opacity-0'">
-                        <span class="absolute left-1.5 top-1 h-0.5 w-0.5 rounded-full bg-white/60"></span>
-                        <span class="absolute left-3 top-2.5 h-[3px] w-[3px] rounded-full bg-white/40"></span>
-                        <span class="absolute right-3 top-1.5 h-0.5 w-0.5 rounded-full bg-white/50"></span>
-                    </span>
-                </span>
-                {{-- Knob --}}
-                <span
-                    class="toggle-knob relative flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.265,1.55)]"
-                    :class="$store.ui.darkMode ? 'translate-x-6' : 'translate-x-0'">
-                    <svg x-show="!$store.ui.darkMode" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 rotate-[-180deg] scale-50"
-                        x-transition:enter-end="opacity-100 rotate-0 scale-100" class="h-3.5 w-3.5 text-amber-500"
-                        viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4.222 4.222a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM15.778 4.222a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 7a3 3 0 100 6 3 3 0 000-6zm-8 3a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm14 0a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM5.636 14.364a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.435-.707a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zM10 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <svg x-show="$store.ui.darkMode" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 rotate-[180deg] scale-50"
-                        x-transition:enter-end="opacity-100 rotate-0 scale-100" class="h-3.5 w-3.5 text-indigo-500"
-                        viewBox="0 0 20 20" fill="currentColor" style="display:none">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                    </svg>
-                </span>
+                @click="$store.ui.darkMode = !$store.ui.darkMode; $el.classList.add('theme-spin'); setTimeout(() => $el.classList.remove('theme-spin'), 600)"
+                class="flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200"
+                :class="$store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-[#1F1F1F] hover:bg-gray-100'"
+                title="Toggle dark mode"
+                style="transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, color 0.2s;">
+                {{-- Moon icon (shown in light mode) --}}
+                <svg x-show="!$store.ui.darkMode"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="opacity-0 rotate-[-180deg] scale-50"
+                    x-transition:enter-end="opacity-100 rotate-0 scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 rotate-0 scale-100"
+                    x-transition:leave-end="opacity-0 rotate-[180deg] scale-50"
+                    width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M15.5 11.5A7 7 0 016.5 2.5a7 7 0 109 9z" fill="none" stroke="currentColor"
+                        stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+                {{-- Sun icon (shown in dark mode) --}}
+                <svg x-show="$store.ui.darkMode"
+                    x-transition:enter="transition ease-out duration-500"
+                    x-transition:enter-start="opacity-0 rotate-[180deg] scale-50"
+                    x-transition:enter-end="opacity-100 rotate-0 scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100 rotate-0 scale-100"
+                    x-transition:leave-end="opacity-0 rotate-[-180deg] scale-50"
+                    width="18" height="18" viewBox="0 0 20 20" fill="currentColor"
+                    class="text-amber-400" style="display:none">
+                    <path fill-rule="evenodd"
+                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4.222 4.222a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM15.778 4.222a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 7a3 3 0 100 6 3 3 0 000-6zm-8 3a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm14 0a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM5.636 14.364a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.435-.707a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zM10 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
             </button>
+            <style>
+                @keyframes theme-spin {
+                    0%   { transform: rotate(0deg) scale(1); }
+                    30%  { transform: rotate(180deg) scale(1.2); }
+                    60%  { transform: rotate(360deg) scale(0.95); }
+                    100% { transform: rotate(360deg) scale(1); }
+                }
+                .theme-spin { animation: theme-spin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+            </style>
 
             {{-- Language dropdown --}}
             <div class="relative" @click.outside="langOpen = false">
                 <button type="button" @click="langOpen = !langOpen"
-                    :class="$store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-[#17494D] hover:bg-[#17494D]/5'"
-                    class="flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors duration-200">
-                    {{-- Active language flag (replaces globe icon) --}}
-                    <template x-if="$store.ui.lang === 'English'">
-                        <svg class="h-4 w-6 shrink-0 overflow-hidden rounded-sm shadow-sm" viewBox="0 0 60 30">
-                            <clipPath id="uk-trigger">
-                                <rect width="60" height="30" />
-                            </clipPath>
-                            <g clip-path="url(#uk-trigger)">
-                                <path d="M0 0h60v30H0z" fill="#012169" />
-                                <path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6" />
-                                <path d="M0 0l60 30m0-30L0 30" stroke="#C8102E" stroke-width="4"
-                                    clip-path="url(#uk-trigger)" />
-                                <path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10" />
-                                <path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6" />
-                            </g>
-                        </svg>
-                    </template>
-                    <template x-if="$store.ui.lang === 'French'">
-                        <svg class="h-4 w-6 shrink-0 overflow-hidden rounded-sm shadow-sm" viewBox="0 0 60 40">
-                            <rect width="20" height="40" fill="#002395" />
-                            <rect x="20" width="20" height="40" fill="#fff" />
-                            <rect x="40" width="20" height="40" fill="#ED2939" />
-                        </svg>
-                    </template>
+                    :class="$store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-[#1F1F1F] hover:bg-gray-100'"
+                    class="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200">
+                    {{-- Globe icon --}}
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="shrink-0">
+                        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3" />
+                        <ellipse cx="8" cy="8" rx="2.8" ry="6.5" stroke="currentColor" stroke-width="1.3" />
+                        <line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.3" />
+                        <line x1="1.5" y1="10" x2="14.5" y2="10" stroke="currentColor" stroke-width="1.3" />
+                    </svg>
                     <span x-text="$store.ui.lang"></span>
+                    {{-- Chevron --}}
                     <svg class="h-3 w-3 transition-transform duration-200" :class="langOpen ? 'rotate-180' : ''"
-                        viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <polyline points="2.5 4.5 6 8 9.5 4.5" />
+                        width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.4"
+                            stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
 
@@ -162,19 +175,6 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             $store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-50'
                         ]"
                         class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors duration-150">
-                        {{-- UK Flag --}}
-                        <svg class="h-4 w-6 shrink-0 overflow-hidden rounded-sm shadow-sm" viewBox="0 0 60 30">
-                            <clipPath id="uk">
-                                <rect width="60" height="30" />
-                            </clipPath>
-                            <g clip-path="url(#uk)">
-                                <path d="M0 0h60v30H0z" fill="#012169" />
-                                <path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6" />
-                                <path d="M0 0l60 30m0-30L0 30" stroke="#C8102E" stroke-width="4" clip-path="url(#uk)" />
-                                <path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10" />
-                                <path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6" />
-                            </g>
-                        </svg>
                         English
                     </button>
                     <div :class="$store.ui.darkMode ? 'border-gray-700' : 'border-gray-200'" class="border-t"></div>
@@ -183,37 +183,31 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             $store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-50'
                         ]"
                         class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors duration-150">
-                        {{-- France Flag --}}
-                        <svg class="h-4 w-6 shrink-0 overflow-hidden rounded-sm shadow-sm" viewBox="0 0 60 40">
-                            <rect width="20" height="40" fill="#002395" />
-                            <rect x="20" width="20" height="40" fill="#fff" />
-                            <rect x="40" width="20" height="40" fill="#ED2939" />
-                        </svg>
                         Fran&ccedil;ais
                     </button>
                 </div>
             </div>
 
-            {{-- Auth buttons (desktop) --}}
+            {{-- CTA buttons (desktop) --}}
             <div class="hidden items-center gap-3 md:flex">
                 @if (Route::has('login'))
                     @auth
                         <a href="{{ url('/dashboard') }}"
-                            class="rounded-full bg-[#42D742] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#38c738] hover:shadow-md">
+                            class="rounded-full bg-[#5EDB56] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#4cc944] hover:shadow-md">
                             <span x-text="$store.ui.t('dashboard')"></span>
                         </a>
                     @else
+                        <a href="{{ route('login') }}"
+                            :class="$store.ui.darkMode ? 'border-gray-500 text-gray-200 hover:bg-white/10 hover:border-gray-300' : 'border-[#1F1F1F] text-[#1F1F1F] hover:bg-gray-50'"
+                            class="rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-200 hover:shadow-md">
+                            <span x-text="$store.ui.t('viewDemo')"></span>
+                        </a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}"
-                                class="rounded-xl bg-[#007260] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#00A983] hover:shadow-md">
+                                class="rounded-full bg-[#5EDB56] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#4cc944] hover:shadow-md">
                                 <span x-text="$store.ui.t('tryFree')"></span>
                             </a>
                         @endif
-                        <a href="{{ route('login') }}"
-                            :class="$store.ui.darkMode ? 'border-gray-500 bg-transparent text-gray-200 hover:bg-white/10 hover:border-gray-300' : 'border-[#17494D] bg-transparent text-[#17494D] hover:bg-[#17494D]/5'"
-                            class="rounded-xl border px-5 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200 hover:shadow-md">
-                            <span x-text="$store.ui.t('viewDemo')"></span>
-                        </a>
                     @endauth
                 @endif
             </div>
@@ -552,21 +546,21 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                 @if (Route::has('login'))
                     @auth
                         <a href="{{ url('/dashboard') }}"
-                            class="block rounded-xl bg-[#007260] px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#00A983] hover:shadow-md">
+                            class="block rounded-full bg-[#5EDB56] px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#4cc944] hover:shadow-md">
                             <span x-text="$store.ui.t('dashboard')"></span>
                         </a>
                     @else
+                        <a href="{{ route('login') }}"
+                            :class="$store.ui.darkMode ? 'border-gray-500 text-gray-200 hover:border-gray-300' : 'border-[#1F1F1F] text-[#1F1F1F] hover:bg-gray-50'"
+                            class="block rounded-full border px-5 py-2.5 text-center text-sm font-semibold shadow-sm transition-all duration-200 hover:shadow-md">
+                            <span x-text="$store.ui.t('viewDemo')"></span>
+                        </a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}"
-                                class="block rounded-xl bg-[#007260] px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#00A983] hover:shadow-md">
+                                class="block rounded-full bg-[#5EDB56] px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#4cc944] hover:shadow-md">
                                 <span x-text="$store.ui.t('tryFree')"></span>
                             </a>
                         @endif
-                        <a href="{{ route('login') }}"
-                            :class="$store.ui.darkMode ? 'border-gray-500 text-gray-200 hover:border-gray-300' : 'border-[#17494D] text-[#17494D] hover:bg-[#17494D]/5'"
-                            class="block rounded-xl border px-5 py-2.5 text-center text-sm font-semibold shadow-sm transition-all duration-200 hover:shadow-md">
-                            <span x-text="$store.ui.t('viewDemo')"></span>
-                        </a>
                     @endauth
                 @endif
             </div>
