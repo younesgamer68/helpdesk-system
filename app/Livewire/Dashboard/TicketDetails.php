@@ -3,15 +3,33 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Ticket;
+use App\Models\TicketReply;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class TicketDetails extends Component
 {
+    use WithFileUploads;
+
     public Ticket $ticket;
 
     public $state = '';
+
+    public $senderId = null;
+
+    public $agentSearch = '';
+
+    #[Validate('required|string|max:5000')]
+    public $message = '';
+
+    public $internalNote = '';
+
+    #[Validate(['attachments.*' => 'nullable|file|max:10240'])] // 10MB Max for admins
+    public $attachments = [];
 
     public function mount(Ticket $ticket)
     {
@@ -22,14 +40,15 @@ class TicketDetails extends Component
     #[Computed]
     public function agents()
     {
-        return cache()->remember(
-            'company.'.Auth::user()->company_id.'.agents',
-            3600,
-            fn () => Auth::user()->company->user()
-                ->select('id', 'name', 'email')
-                ->orderBy('name')
-                ->get()
-        );
+        $query = User::where('company_id', '=', Auth::user()->company_id)
+            ->select('id', 'name', 'email')
+            ->orderBy('name');
+
+        if (! empty($this->agentSearch)) {
+            $query->where('name', 'like', '%'.$this->agentSearch.'%');
+        }
+
+        return $query->get();
     }
 
     public function resolve()
@@ -158,12 +177,99 @@ class TicketDetails extends Component
         $this->dispatch('show-toast', message: 'Ticket closed successfully!', type: 'success');
     }
 
+    public function addReply()
+    {
+        if ($this->ticket->status === 'closed') {
+            $this->dispatch('show-toast', message: 'Cannot reply to a closed ticket!', type: 'error');
+
+            return;
+        }
+
+        $this->validate();
+
+        $attachmentPaths = [];
+
+        if ($this->attachments) {
+            foreach ($this->attachments as $attachment) {
+                $path = $attachment->store('ticket-attachments', 'public');
+                $attachmentPaths[] = [
+                    'name' => $attachment->getClientOriginalName(),
+                    'path' => $path,
+                    'mime_type' => $attachment->getMimeType(),
+                    'size' => $attachment->getSize(),
+                ];
+            }
+        }
+
+        $userId = $this->senderId ?: Auth::id();
+
+        TicketReply::create([
+            'ticket_id' => $this->ticket->id,
+            'user_id' => $userId,
+            'customer_name' => $this->ticket->customer_name,
+            'message' => clean($this->message),
+            'is_internal' => false,
+            'is_technician' => false,
+            'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
+        ]);
+
+        if (in_array($this->ticket->status, ['resolved'])) {
+            $this->ticket->update(['status' => 'open']);
+            $this->state = 'open';
+        }
+
+        $this->reset(['message', 'attachments']);
+        $this->dispatch('resetEditor');
+        $this->dispatch('show-toast', message: 'Reply added successfully!', type: 'success');
+    }
+
+    public function removeAttachment($index)
+    {
+        array_splice($this->attachments, $index, 1);
+    }
+
+    public function addInternalNote()
+    {
+        if ($this->ticket->status === 'closed') {
+            $this->dispatch('show-toast', message: 'Cannot add notes to a closed ticket!', type: 'error');
+
+            return;
+        }
+
+        $this->validate([
+            'internalNote' => 'required|string|max:5000',
+        ]);
+
+        TicketReply::create([
+            'ticket_id' => $this->ticket->id,
+            'user_id' => Auth::id(),
+            'customer_name' => $this->ticket->customer_name,
+            'message' => $this->internalNote,
+            'is_internal' => true,
+            'is_technician' => false,
+            'attachments' => null,
+        ]);
+
+        $this->reset(['internalNote']);
+        $this->dispatch('show-toast', message: 'Internal note added successfully!', type: 'success');
+    }
+
     public function render()
     {
         return view('livewire.dashboard.ticket-details', [
             'ticket' => $this->ticket,
             'state' => $this->state,
             'agents' => $this->agents(),
+            'replies' => TicketReply::where('ticket_id', $this->ticket->id)
+                ->where('is_internal', false)
+                ->with('user:id,name')
+                ->orderBy('created_at', 'asc')
+                ->get(),
+            'internal_notes' => TicketReply::where('ticket_id', $this->ticket->id)
+                ->where('is_internal', true)
+                ->with('user:id,name')
+                ->orderBy('created_at', 'asc')
+                ->get(),
         ]);
     }
 }

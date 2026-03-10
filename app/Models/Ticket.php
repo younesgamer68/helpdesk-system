@@ -32,4 +32,9 @@ class Ticket extends Model
     {
         return 'ticket_number';
     }
+
+    public function replies()
+    {
+        return $this->hasMany(TicketReply::class);
+    }
 }

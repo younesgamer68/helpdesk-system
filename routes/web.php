@@ -23,6 +23,7 @@ Route::get('/dashboard', function () {
     if ($user->company_id && $user->company) {
         return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
     }
+
     return redirect()->route('setup-company');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
