@@ -14,7 +14,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700|righteous:400" rel="stylesheet" />
 
     @vite(['resources/css/welcome.css'])
 
@@ -31,71 +31,265 @@
 
 <body x-data
     class="welcome-body flex min-h-screen flex-col font-[Instrument_Sans,ui-sans-serif,system-ui,sans-serif] antialiased transition-colors duration-300"
-    :class="$store.ui.darkMode ? 'bg-black text-white' : 'bg-[#FFF0E5] text-[#17494D]'">
+    :class="$store.ui.darkMode ? 'bg-black text-white' : 'bg-[#ffffff] text-[#17494D]'">
 
     <!-- Navigation -->
     <x-nav-bar />
+    <x-loading-overlay />
 
     {{-- ═══════════════════════════════════════════════════════════════════
-        HERO — Full-width centered w/ badge, headline, subtitle, CTAs
+        HERO — Minimal centered w/ headline, email form, privacy note
     ═══════════════════════════════════════════════════════════════════ --}}
-    <section class="relative overflow-hidden">
-        {{-- Background glow --}}
-        <div class="pointer-events-none absolute inset-0"
-            :class="$store.ui.darkMode ? 'opacity-100' : 'opacity-0'" style="transition: opacity 0.3s">
-            <div class="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-brand/10 blur-[120px]"></div>
+<section class="relative overflow-hidden" x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }">
+    {{-- Background wave — dark mode only --}}
+    <div class="pointer-events-none absolute inset-0 transition-opacity duration-300"
+        :class="$store.ui.darkMode ? 'opacity-100' : 'opacity-0'">
+        <img src="{{ asset('images/Backgrounds/Wave SVG_DM.png') }}" alt=""
+            class="h-full w-full object-cover object-center" style="max-width: 1280px; max-height: 720px; margin: auto;" />
+    </div>
+
+ 
+
+    <div class="relative mx-auto max-w-5xl px-6 pb-16 pt-16 text-center sm:pb-20 sm:pt-24 lg:pb-10 lg:pt-17">
+        {{-- Headlines container with controlled width --}}
+        <div class="mx-auto max-w-4xl">
+            <h1 class="text-5xl font-extralight leading-[1.1] tracking-tight sm:text-6xl lg:text-[4.5rem]"
+                :class="$store.ui.darkMode ? 'text-white' : 'text-gray-950'"
+                x-text="$store.ui.t('heroHeadline1')">
+            </h1>
+            <h1 class="mt-1 text-5xl font-extralight leading-[1.1] tracking-tight sm:text-6xl lg:text-[4.5rem]"
+                :class="$store.ui.darkMode ? 'text-white' : 'text-gray-950'"
+                x-text="$store.ui.t('heroHeadline2')">
+            </h1>
         </div>
 
-        <div class="relative mx-auto max-w-4xl px-6 pb-20 pt-28 text-center sm:pb-28 sm:pt-36">
-            {{-- Badge --}}
-            <div class="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium uppercase tracking-widest transition-colors duration-300"
-                :class="$store.ui.darkMode ? 'border-brand/30 text-brand' : 'border-brand/40 bg-brand/5 text-brand-dark'">
-                <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                Support made simple
+        {{-- Subtitle with better width control --}}
+        <p class="mx-auto mt-6 max-w-3xl text-lg sm:mt-7 sm:text-xl lg:text-2xl"
+            :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'"
+            x-text="$store.ui.t('heroSubtitle')">
+        </p>
+
+        {{-- Flash message --}}
+        <p x-show="heroMsg" x-text="heroMsg" x-transition
+            class="mt-4 text-sm font-medium"
+            :class="heroMsgOk ? 'text-green-500' : 'text-red-500'"></p>
+
+        {{-- CTA area --}}
+        @if (Route::has('login'))
+            @auth
+                {{-- Logged-in → Dashboard --}}
+                <div class="mt-10 flex justify-center sm:mt-12">
+                    <a href="{{ route('tickets', Auth::user()->company->slug) }}"
+                        class="inline-flex items-center gap-2 rounded-full bg-green-600 px-8 py-4 text-[1.05rem] font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-green-500 hover:shadow-xl">
+                        <span x-text="$store.ui.t('heroDashboard')"></span>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </a>
+                </div>
+            @else
+                {{-- Guest → Email sign-up form --}}
+                <form class="mx-auto mt-10 flex w-full max-w-[550px] flex-col items-center gap-3.5 sm:mt-12 sm:flex-row sm:max-w-[600px]"
+                    @submit.prevent="
+                        const em = heroEmail.trim();
+                        if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+                            heroMsg = $store.ui.t('heroInvalidEmail');
+                            heroMsgOk = false;
+                            return;
+                        }
+                        heroMsg = $store.ui.t('heroThankYou');
+                        heroMsgOk = true;
+                        heroEmail = '';
+                    ">
+                    <input type="email" x-model="heroEmail"
+                        class="w-full flex-1 rounded-lg border px-5 py-4 text-base outline-none transition-colors duration-200 sm:w-auto sm:px-6 sm:py-[15px] sm:text-[17px]"
+                        :class="$store.ui.darkMode
+                            ? 'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20'
+                            : 'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
+                        :placeholder="$store.ui.t('heroPlaceholder')" />
+                    <button type="submit"
+                        class="w-full flex-shrink-0 cursor-pointer rounded-full bg-[#5EDB56] px-8 py-4 text-base font-bold text-white transition hover:bg-green-500 sm:w-auto sm:px-[30px] sm:py-[15px] sm:text-[17px]"
+                        x-text="$store.ui.t('heroTryFree')"></button>
+                </form>
+            @endauth
+        @endif
+
+        {{-- Privacy note --}}
+        <p class="mt-6 text-sm sm:mt-5"
+            :class="$store.ui.darkMode ? 'text-white/35' : 'text-gray-500'">
+            <span x-text="$store.ui.t('heroPrivacy')"></span>
+            <a href="#" class="underline transition-colors duration-200"
+                :class="$store.ui.darkMode ? 'text-white/50 hover:text-white' : 'text-gray-700 hover:text-black'"
+                x-text="$store.ui.t('heroPrivacyLink')"></a>.
+        </p>
+    </div>
+</section>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+        SCENE — Animated card strip with side photos + center showcase
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <section class="w-full overflow-hidden py-0 transition-colors duration-300"
+        :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-[#ffffff]'">
+        <div class="scene mx-auto flex max-w-[1100px] items-center justify-center px-8">
+
+            {{-- Left Far Image --}}
+            <div class="side-card side-card--left-far relative flex-shrink-0 overflow-hidden rounded-2xl shadow-lg">
+                <div class="img-placeholder h-full w-full overflow-hidden rounded-2xl"
+                    style="background: linear-gradient(160deg, #c7d2fe 0%, #a5b4fc 100%);">
+                    <img src="{{ asset('images/Personnes/close-up-volunteer-oganizing-stuff-donation.jpg') }}" alt="Team member 1" class="absolute inset-0 h-full w-full object-cover" />
+                </div>
             </div>
 
-            {{-- Headline --}}
-            <h1 class="mb-6 text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
-                Get help fast.
-                <br>
-                <span class="text-brand">Stay organized.</span>
-            </h1>
-
-            {{-- Subtitle --}}
-            <p class="mx-auto mb-10 max-w-2xl text-lg leading-relaxed sm:text-xl"
-                :class="$store.ui.darkMode ? 'text-white/55' : 'text-[#17494D]/80'">
-                The complete helpdesk platform to manage tickets, collaborate with your team and deliver outstanding customer support — all in one place.
-            </p>
-
-            {{-- CTA buttons --}}
-            <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                @if (Route::has('login'))
-                    @auth
-                        <a href="{{ url('/dashboard') }}"
-                            class="inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3.5 text-[0.9375rem] font-semibold text-black shadow-lg shadow-brand/25 transition hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-xl hover:shadow-brand/30">
-                            Go to Dashboard
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                        </a>
-                    @else
-                        <a href="{{ route('register') }}"
-                            class="inline-flex items-center gap-2 rounded-xl bg-brand px-8 py-3.5 text-[0.9375rem] font-semibold text-white shadow-lg shadow-brand/25 transition hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-xl hover:shadow-brand/30">
-                            Start free trial
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                        </a>
-                        <a href="{{ route('login') }}"
-                            class="inline-flex items-center gap-2 rounded-xl border px-8 py-3.5 text-[0.9375rem] font-semibold transition hover:-translate-y-0.5"
-                            :class="$store.ui.darkMode ? 'border-white/20 text-white hover:border-white/40 hover:bg-white/5' : 'border-[#17494D]/30 text-[#17494D] hover:border-[#17494D]/50 hover:bg-[#17494D]/5'">
-                            View demo
-                        </a>
-                    @endauth
-                @endif
+            {{-- Left Near Image --}}
+            <div class="side-card side-card--left-near relative flex-shrink-0 overflow-hidden rounded-2xl shadow-lg">
+                <div class="img-placeholder h-full w-full overflow-hidden rounded-2xl"
+                    style="background: linear-gradient(160deg, #fda4af 0%, #fb7185 100%);">
+                    <img src="{{ asset('images/Personnes/image.png') }}" alt="Team member 2" class="absolute inset-0 h-full w-full object-cover" />
+                </div>
             </div>
 
-            {{-- Social proof line --}}
-            <p class="mt-8 text-sm"
-                :class="$store.ui.darkMode ? 'text-white/35' : 'text-gray-400'">
-                Trusted by 2,000+ support teams worldwide
-            </p>
+            {{-- CENTER CARD --}}
+            <div class="center-card relative z-10 flex-shrink-0 overflow-hidden rounded-[20px] shadow-2xl"
+                :class="$store.ui.darkMode ? 'bg-gray-800' : 'bg-white'"
+                x-data="{ visible: false }"
+                x-init="setTimeout(() => visible = true, 80)"
+                :style="visible ? 'opacity:1; transform:translateY(0) scale(1)' : 'opacity:0; transform:translateY(24px) scale(0.97)'"
+                style="transition: opacity 0.5s ease, transform 0.7s ease;">
+                <div class="center-card__inner flex h-full">
+                    <div class="flex h-full w-full items-center justify-center overflow-hidden rounded-2xl"
+                        style="background: linear-gradient(135deg, #ff0000, #000000); min-height: 300px;">
+                        <img src="{{ asset('images/Personnes/image-1773113418059.png') }}" alt="Center image" class="max-h-full max-w-full object-cover" />
+                    </div>
+                </div>
+            </div>
+
+
+            
+            {{-- Right Near Image --}}
+            <div class="side-card side-card--right-near relative flex-shrink-0 overflow-hidden rounded-2xl shadow-lg">
+                <div class="img-placeholder h-full w-full overflow-hidden rounded-2xl"
+                    style="background: linear-gradient(160deg, #fcd34d 0%, #f59e0b 100%);">
+                    <img src="{{ asset('images/Personnes/man-woman-working-together-startup-company.jpg') }}" alt="Team member 3" class="absolute inset-0 h-full w-full object-cover" />
+                </div>
+            </div>
+
+            {{-- Right Far Image --}}
+            <div class="side-card side-card--right-far relative flex-shrink-0 overflow-hidden rounded-2xl shadow-lg">
+                <div class="img-placeholder h-full w-full overflow-hidden rounded-2xl"
+                    style="background: linear-gradient(160deg, #6ee7b7 0%, #34d399 100%);">
+                    <img src="{{ asset('images/Personnes/smiley-man-working-laptop-while-standing.jpg') }}" alt="Team member 4" class="absolute inset-0 h-full w-full object-cover" />
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+        DISCOVER — Tabbed image showcase
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <section class="w-full py-20 px-6 flex flex-col items-center transition-colors duration-300"
+        :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-white'"
+        x-data="{
+            activeTab: 'automations',
+            tabs: ['ticketList', 'ticketView', 'automations', 'reports'],
+            colorMap: {
+                ticketList: 'bg-red-500',
+                ticketView: 'bg-blue-500',
+                automations: 'bg-violet-500',
+                reports: 'bg-yellow-400'
+            }
+        }">
+
+        {{-- Badges --}}
+        <div class="mb-6 flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-red-400">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1L7.2 4.4H10.8L7.9 6.5L9.1 9.9L6 7.8L2.9 9.9L4.1 6.5L1.2 4.4H4.8L6 1Z" fill="white"/></svg>
+                </div>
+                <span class="text-xs font-medium"
+                    :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-500'"
+                    x-text="$store.ui.t('discoverBadge1')"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-400">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.2"/><path d="M3.5 6L5 7.5L8.5 4" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>
+                </div>
+                <span class="text-xs font-medium"
+                    :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-500'"
+                    x-text="$store.ui.t('discoverBadge2')"></span>
+            </div>
+        </div>
+
+        {{-- Title --}}
+        <h2 class="mb-10 text-center text-4xl font-extrabold tracking-tight sm:text-5xl"
+            :class="$store.ui.darkMode ? 'text-white' : 'text-gray-950'"
+            x-text="$store.ui.t('discoverTitle')"></h2>
+
+        {{-- Tabs --}}
+        <div class="mb-12 flex border-b transition-colors duration-300"
+            :class="$store.ui.darkMode ? 'border-white/10' : 'border-gray-200'">
+            <template x-for="tab in tabs" :key="tab">
+                <button
+                    class="relative cursor-pointer border-none bg-transparent px-8 py-3 text-sm font-normal transition-colors duration-200"
+                    :class="{
+                        'text-blue-600 font-semibold': activeTab === tab,
+                        [$store.ui.darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700']: activeTab !== tab
+                    }"
+                    @click="activeTab = tab"
+                    x-text="$store.ui.t('discoverTab_' + tab)">
+                </button>
+            </template>
+        </div>
+
+        {{-- Active tab indicator (separate for cleaner styling) --}}
+        <style>
+            [x-cloak] { display: none !important; }
+        </style>
+
+        {{-- Image container --}}
+        <div class="w-full max-w-[960px]">
+            <div class="h-[420px] w-full overflow-hidden rounded-[18px] border transition-colors duration-300"
+                :class="[
+                    colorMap[activeTab],
+                    $store.ui.darkMode ? 'border-white/10' : 'border-gray-200'
+                ]">
+                <img src="" alt="" class="h-full w-full rounded-[18px] object-cover" />
+            </div>
+        </div>
+
+        {{-- CTA --}}
+        <a href="{{ Route::has('register') ? route('register') : '#' }}"
+            class="mt-14 inline-block rounded-lg bg-red-600 px-10 py-3 text-base font-bold text-white transition hover:opacity-90"
+            x-text="$store.ui.t('discoverCta')"></a>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+        SUPPORT HEROES — 24/7 support showcase
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <section class="w-full py-24 px-6 transition-colors duration-300"
+        :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-white'">
+        <div class="mx-auto flex max-w-[1050px] flex-col items-center justify-center gap-12 md:flex-row md:gap-20">
+
+            {{-- Image --}}
+            <div class="w-full flex-shrink-0 overflow-hidden rounded-[18px] md:w-[420px]"
+                :class="$store.ui.darkMode ? 'bg-gray-800' : 'bg-white'">
+                <img src="" alt="Support hero"
+                    class="aspect-square w-full object-cover" />
+            </div>
+
+            {{-- Text --}}
+            <div class="max-w-[420px] text-center md:text-left">
+                <h2 class="mb-5 text-4xl font-extrabold leading-[1.15] tracking-tight sm:text-[2.8rem]"
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
+                    <span x-text="$store.ui.t('heroesTitle1')"></span><br>
+                    <span x-text="$store.ui.t('heroesTitle2')"></span>
+                </h2>
+                <p class="mb-7 text-[1.05rem] leading-relaxed"
+                    :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'"
+                    x-text="$store.ui.t('heroesDescription')"></p>
+                <a href="#"
+                    class="inline-block rounded-lg bg-[#5edb56] px-7 py-3.5 text-base font-bold text-white transition hover:opacity-90"
+                    x-text="$store.ui.t('heroesCta')"></a>
+            </div>
+
         </div>
     </section>
 

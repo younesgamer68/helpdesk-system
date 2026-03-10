@@ -9,11 +9,7 @@
     <flux:sidebar sticky collapsible="mobile"
         class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.header class="flex justify-center items-center">
-            <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-                class="text-center flex flex-col items-center justify-center">
-                <img src="{{ asset('images/logodm.png') }}" alt="" style="width:30px;heigh:30px;">
-                <span>Helpdesk</span>
-            </a>
+            <x-logo variant="full" size="sm" :href="route('tickets', Auth::user()->company->slug)" darkOnly />
 
             <flux:sidebar.collapse class="lg:hidden" />
         </flux:sidebar.header>

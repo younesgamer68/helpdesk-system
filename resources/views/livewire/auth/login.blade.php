@@ -6,12 +6,7 @@
         <div class="absolute top-0 left-0 right-0 px-6 py-4 flex justify-between items-center border-b border-white">
 
             <!-- Logo -->
-            <a href="{{ route('home') }}" class="flex flex-col items-center gap-1 hover:opacity-80 transition">
-                <img src="{{ asset('images/logodm.png') }}" alt="HelpDesk Logo" class="w-10 h-10 object-contain">
-                <span class="text-white font-semibold text-xs">
-                    HelpDesk
-                </span>
-            </a>
+            <x-logo variant="full" size="md" :href="route('home')" darkOnly textClass="text-white" />
 
             <!-- Sign up button -->
             <a href="{{ route('register') }}"

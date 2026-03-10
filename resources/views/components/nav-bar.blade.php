@@ -6,18 +6,32 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
 <div class="w-full border-b transition-colors duration-300"
     :class="$store.ui.darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-[#e5e5e5]'">
     <div class="mx-auto flex h-8 max-w-7xl items-center justify-end gap-6 px-6">
+        @auth
+            <form method="POST" action="{{ route('logout') }}" class="inline">
+                @csrf
+                <button type="submit"
+                    class="text-xs font-medium transition-colors duration-200 cursor-pointer"
+                    :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'"
+                    x-text="$store.ui.t('utilityLogout')"></button>
+            </form>
+        @else
+            <a href="{{ route('login') }}"
+                class="text-xs font-medium transition-colors duration-200"
+                :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'"
+                x-text="$store.ui.t('utilitySignIn')"></a>
+        @endauth
         <a href="#"
             class="text-xs font-medium transition-colors duration-200"
-            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Sign in</a>
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'"
+            x-text="$store.ui.t('utilityHelpCenter')"></a>
         <a href="#"
             class="text-xs font-medium transition-colors duration-200"
-            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Zendesk Help center</a>
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'"
+            x-text="$store.ui.t('utilityCompany')"></a>
         <a href="#"
             class="text-xs font-medium transition-colors duration-200"
-            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Company</a>
-        <a href="#"
-            class="text-xs font-medium transition-colors duration-200"
-            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'">Contact us</a>
+            :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-[#68737D] hover:text-[#17494D]'"
+            x-text="$store.ui.t('utilityContactUs')"></a>
     </div>
 </div>
 
@@ -27,19 +41,14 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
         activeDropdown: null,
         openDropdown(name) { this.activeDropdown = name },
         closeDropdown() { this.activeDropdown = null },
-    }" :class="$store.ui.darkMode ? 'bg-gray-950 border-gray-800' : 'bg-[#F8F9F9] border-[#17494D]/10'"
+    }" :class="$store.ui.darkMode ? 'bg-gray-950 border-gray-800' : 'bg-[#fffff] border-[#17494D]/10'"
     class="relative w-full border-b transition-colors duration-300">
 
     {{-- Main bar (h-[72px] taller) --}}
     <div class="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6">
 
-        {{-- LEFT Logo — adjust h-[XXpx] to resize --}}
-        <a href="/" class="shrink-0">
-            <img x-show="!$store.ui.darkMode" src="/images/Logos/logo%20with%20text%20LM.png" alt="HD Logo"
-                style="height: 80px; width: auto;" class="transition-opacity duration-300" />
-            <img x-show="$store.ui.darkMode" src="/images/Logos/Logo%20with%20text%20DM.png" alt="HD Logo"
-                style="height: 80px; width: auto; display: none;" class="transition-opacity duration-300" />
-        </a>
+        {{-- LEFT Logo + Brand Name --}}
+        <x-logo variant="landing" size="lg" href="/" />
 
         {{-- CENTER Desktop nav links --}}
         <div class="hidden flex-1 items-center justify-center gap-1 md:flex">
@@ -96,68 +105,52 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
 
         {{-- RIGHT Controls --}}
         <div class="flex items-center gap-4">
-            {{-- Dark mode toggle (moon/sun icon) with spin animation --}}
+            {{-- Dark mode toggle — clean fade --}}
             <button type="button"
-                @click="$store.ui.darkMode = !$store.ui.darkMode; $el.classList.add('theme-spin'); setTimeout(() => $el.classList.remove('theme-spin'), 600)"
-                class="flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200"
+                @click="$store.ui.showLoading(400); setTimeout(() => { $store.ui.darkMode = !$store.ui.darkMode }, 150)"
+                class="relative flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200"
                 :class="$store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-[#1F1F1F] hover:bg-gray-100'"
-                title="Toggle dark mode"
-                style="transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, color 0.2s;">
+                title="Toggle dark mode">
                 {{-- Moon icon (shown in light mode) --}}
                 <svg x-show="!$store.ui.darkMode"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0 rotate-[-180deg] scale-50"
-                    x-transition:enter-end="opacity-100 rotate-0 scale-100"
-                    x-transition:leave="transition ease-in duration-300"
-                    x-transition:leave-start="opacity-100 rotate-0 scale-100"
-                    x-transition:leave-end="opacity-0 rotate-[180deg] scale-50"
-                    width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="absolute" width="18" height="18" viewBox="0 0 18 18" fill="none">
                     <path d="M15.5 11.5A7 7 0 016.5 2.5a7 7 0 109 9z" fill="none" stroke="currentColor"
                         stroke-width="1.4" stroke-linecap="round" />
                 </svg>
-                {{-- Sun icon (shown in dark mode) --}}
+                {{-- Sun icon (shown in dark mode) — outline only, no yellow --}}
                 <svg x-show="$store.ui.darkMode"
-                    x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0 rotate-[180deg] scale-50"
-                    x-transition:enter-end="opacity-100 rotate-0 scale-100"
-                    x-transition:leave="transition ease-in duration-300"
-                    x-transition:leave-start="opacity-100 rotate-0 scale-100"
-                    x-transition:leave-end="opacity-0 rotate-[-180deg] scale-50"
-                    width="18" height="18" viewBox="0 0 20 20" fill="currentColor"
-                    class="text-amber-400" style="display:none">
-                    <path fill-rule="evenodd"
-                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4.222 4.222a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM15.778 4.222a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 7a3 3 0 100 6 3 3 0 000-6zm-8 3a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zm14 0a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM5.636 14.364a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.435-.707a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zM10 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z"
-                        clip-rule="evenodd" />
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="absolute" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                    style="display:none">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
                 </svg>
             </button>
-            <style>
-                @keyframes theme-spin {
-                    0%   { transform: rotate(0deg) scale(1); }
-                    30%  { transform: rotate(180deg) scale(1.2); }
-                    60%  { transform: rotate(360deg) scale(0.95); }
-                    100% { transform: rotate(360deg) scale(1); }
-                }
-                .theme-spin { animation: theme-spin 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-            </style>
 
-            {{-- Language dropdown --}}
+            {{-- Language dropdown — globe icon only, flags in menu --}}
             <div class="relative" @click.outside="langOpen = false">
                 <button type="button" @click="langOpen = !langOpen"
                     :class="$store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-[#1F1F1F] hover:bg-gray-100'"
-                    class="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200">
+                    class="flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200"
+                    title="Language">
                     {{-- Globe icon --}}
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
                         <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3" />
                         <ellipse cx="8" cy="8" rx="2.8" ry="6.5" stroke="currentColor" stroke-width="1.3" />
                         <line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.3" />
                         <line x1="1.5" y1="10" x2="14.5" y2="10" stroke="currentColor" stroke-width="1.3" />
-                    </svg>
-                    <span x-text="$store.ui.lang"></span>
-                    {{-- Chevron --}}
-                    <svg class="h-3 w-3 transition-transform duration-200" :class="langOpen ? 'rotate-180' : ''"
-                        width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.4"
-                            stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
 
@@ -168,21 +161,23 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                     x-transition:leave-start="opacity-100 translate-y-0"
                     x-transition:leave-end="opacity-0 -translate-y-1"
                     :class="$store.ui.darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'"
-                    class="absolute right-0 z-50 mt-2 w-36 overflow-hidden rounded-xl border shadow-xl drop-shadow-lg"
+                    class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border shadow-xl drop-shadow-lg"
                     style="display:none">
-                    <button @click="$store.ui.lang = 'English'; langOpen = false" :class="[
+                    <button @click="$store.ui.showLoading(400); setTimeout(() => { $store.ui.lang = 'English'; langOpen = false }, 150)" :class="[
                             $store.ui.lang === 'English' ? 'font-bold' : 'font-normal',
                             $store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-50'
                         ]"
                         class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors duration-150">
+                        <span class="text-lg leading-none">&#127468;&#127463;</span>
                         English
                     </button>
                     <div :class="$store.ui.darkMode ? 'border-gray-700' : 'border-gray-200'" class="border-t"></div>
-                    <button @click="$store.ui.lang = 'French'; langOpen = false" :class="[
+                    <button @click="$store.ui.showLoading(400); setTimeout(() => { $store.ui.lang = 'French'; langOpen = false }, 150)" :class="[
                             $store.ui.lang === 'French' ? 'font-bold' : 'font-normal',
                             $store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-gray-700 hover:bg-gray-50'
                         ]"
                         class="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors duration-150">
+                        <span class="text-lg leading-none">&#127467;&#127479;</span>
                         Fran&ccedil;ais
                     </button>
                 </div>

@@ -10,12 +10,7 @@ Footer — reads darkMode / lang / t() from Alpine.store('ui')
 
             {{-- Brand column --}}
             <div class="col-span-2 md:col-span-1">
-                <a href="/" class="mb-4 inline-block">
-                    <img x-show="!$store.ui.darkMode" src="/images/Logos/logo%20with%20text%20LM.png" alt="HD Logo"
-                        style="height: 48px; width: auto;" class="transition-opacity duration-300" />
-                    <img x-show="$store.ui.darkMode" src="/images/Logos/Logo%20with%20text%20DM.png" alt="HD Logo"
-                        style="height: 48px; width: auto; display: none;" class="transition-opacity duration-300" />
-                </a>
+                <x-logo variant="landing" size="md" href="/" />
                 <p class="mt-3 text-sm leading-relaxed" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-white/70'"
                     x-text="$store.ui.t('footerTagline')"></p>
 

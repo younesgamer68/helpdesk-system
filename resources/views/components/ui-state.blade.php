@@ -7,11 +7,45 @@ Wrap your page content with <x-ui-state> ... </x-ui-state>
         Alpine.store('ui', {
             darkMode: false,
             lang: 'English',
+            loading: false,
+
+            showLoading(ms = 800) {
+                this.loading = true;
+                setTimeout(() => { this.loading = false; }, ms);
+            },
 
             /* -- i18n translation map -- */
             t(key) {
                 const dict = {
                     English: {
+                        /* Hero */
+                        heroHeadline1: 'Deliver beautifully simple',
+                        heroHeadline2: 'service with HelpDesk',
+                        heroSubtitle: 'The preferred help desk for customer-first companies.',
+                        heroPlaceholder: 'Enter your email',
+                        heroTryFree: 'Try for free',
+                        heroPrivacy: 'By submitting, I agree to HelpDesk\'s',
+                        heroPrivacyLink: 'Privacy Notice',
+                        heroInvalidEmail: 'Please enter a valid email address.',
+                        heroThankYou: 'Thank you! Check your email.',
+                        heroDashboard: 'Go to Dashboard',
+
+                        /* Discover */
+                        discoverBadge1: 'Users Love Us',
+                        discoverBadge2: 'Happiest Users 2023',
+                        discoverTitle: 'Discover HelpDesk',
+                        discoverTab_ticketList: 'Ticket list',
+                        discoverTab_ticketView: 'Ticket view',
+                        discoverTab_automations: 'Automations',
+                        discoverTab_reports: 'Reports',
+                        discoverCta: 'Sign up free',
+
+                        /* Support Heroes */
+                        heroesTitle1: 'We\'re here for you',
+                        heroesTitle2: '24/7/365',
+                        heroesDescription: 'When you need assistance, you can count on our Support Heroes. They\'re strong, they\'re swift, and they\'ll help you no matter the time!',
+                        heroesCta: 'Chat with us \uD83D\uDE0A',
+
                         /* Navbar */
                         products: 'Products',
                         solutions: 'Solutions',
@@ -54,6 +88,13 @@ Wrap your page content with <x-ui-state> ... </x-ui-state>
                         partnerProgram: 'Partner program',
                         support: 'Support',
 
+                        /* Utility Bar */
+                        utilitySignIn: 'Sign in',
+                        utilityLogout: 'Logout',
+                        utilityHelpCenter: 'Help Desk center',
+                        utilityCompany: 'Company',
+                        utilityContactUs: 'Contact us',
+
                         /* Footer */
                         footerTagline: 'Modern helpdesk for modern teams.',
                         footerProducts: 'Products',
@@ -79,6 +120,34 @@ Wrap your page content with <x-ui-state> ... </x-ui-state>
                         footerRights: 'All rights reserved.',
                     },
                     French: {
+                        /* Hero */
+                        heroHeadline1: 'Offrez un service',
+                        heroHeadline2: 'simple et élégant avec HelpDesk',
+                        heroSubtitle: 'Le helpdesk préféré des entreprises centrées sur le client.',
+                        heroPlaceholder: 'Entrez votre e-mail',
+                        heroTryFree: 'Essayer gratuitement',
+                        heroPrivacy: 'En soumettant, j\'accepte la',
+                        heroPrivacyLink: 'Politique de confidentialité',
+                        heroInvalidEmail: 'Veuillez entrer une adresse e-mail valide.',
+                        heroThankYou: 'Merci ! Vérifiez votre e-mail.',
+                        heroDashboard: 'Aller au tableau de bord',
+
+                        /* Discover */
+                        discoverBadge1: 'Les utilisateurs nous adorent',
+                        discoverBadge2: 'Utilisateurs les plus heureux 2023',
+                        discoverTitle: 'Découvrez HelpDesk',
+                        discoverTab_ticketList: 'Liste des tickets',
+                        discoverTab_ticketView: 'Vue du ticket',
+                        discoverTab_automations: 'Automatisations',
+                        discoverTab_reports: 'Rapports',
+                        discoverCta: 'Inscription gratuite',
+
+                        /* Support Heroes */
+                        heroesTitle1: 'Nous sommes l\u00e0 pour vous',
+                        heroesTitle2: '24h/24, 7j/7, 365j/an',
+                        heroesDescription: 'Quand vous avez besoin d\u2019aide, comptez sur nos H\u00e9ros du Support. Ils sont forts, rapides et vous aideront \u00e0 tout moment\u00a0!',
+                        heroesCta: 'Discutez avec nous \uD83D\uDE0A',
+
                         /* Navbar */
                         products: 'Produits',
                         solutions: 'Solutions',
@@ -120,6 +189,13 @@ Wrap your page content with <x-ui-state> ... </x-ui-state>
                         events: '\u00c9v\u00e9nements',
                         partnerProgram: 'Programme partenaire',
                         support: 'Assistance',
+
+                        /* Utility Bar */
+                        utilitySignIn: 'Se connecter',
+                        utilityLogout: 'Se déconnecter',
+                        utilityHelpCenter: 'Centre d\'aide',
+                        utilityCompany: 'Entreprise',
+                        utilityContactUs: 'Nous contacter',
 
                         /* Footer */
                         footerTagline: 'Un helpdesk moderne pour des \u00e9quipes modernes.',
