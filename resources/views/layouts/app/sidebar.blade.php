@@ -36,8 +36,8 @@
                         :current="request()->routeIs('categories')" wire:navigate>
                         {{ __('Categories') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="cog" :href="route('automation', Auth::user()->company->slug)"
-                        :current="request()->routeIs('automation')" wire:navigate>
+                    <flux:sidebar.item icon="cog" :href="route('automation.ticket-rules', Auth::user()->company->slug)"
+                        :current="request()->routeIs('automation.*')" wire:navigate>
                         {{ __('Automation') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="layout-grid" :href="route('form-widget.edit', Auth::user()->company->slug)"

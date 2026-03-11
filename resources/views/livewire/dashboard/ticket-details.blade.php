@@ -247,6 +247,75 @@
                         </div>
                     </div>
 
+                    {{-- SLA Information Section --}}
+                    @if ($ticket->due_time)
+                    <div class="mt-6 pt-6 border-t border-zinc-800 space-y-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                SLA Information
+                            </h3>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-zinc-500 mb-2">Response Time Limit</p>
+                            <p class="text-sm text-white">{{ ucfirst($ticket->priority) }} Priority</p>
+                            <p class="text-xs text-zinc-500">Due: {{ $ticket->due_time->format('l - H:i') }} CET</p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-zinc-500 mb-2">Remaining Time</p>
+                            <div x-data="{
+                                    dueTime: new Date('{{ is_string($ticket->due_time) ? \Carbon\Carbon::parse($ticket->due_time)->toISOString() : $ticket->due_time->toISOString() }}').getTime(),
+                                    now: new Date().getTime(),
+                                    status: '{{ $ticket->status }}',
+                                    slaStatus: '{{ $ticket->sla_status }}',
+                                    get isStopped() { return ['resolved', 'closed'].includes(this.status); },
+                                    get remaining() { return Math.max(0, this.dueTime - this.now); },
+                                    get isBreached() { return this.slaStatus === 'breached' || (!this.isStopped && this.remaining === 0); },
+                                    get isWarning() { return !this.isBreached && !this.isStopped && this.remaining > 0 && this.remaining < 3600000; },
+                                    get formatted() {
+                                        if (this.isStopped) return this.slaStatus === 'breached' ? 'Breached' : '-';
+                                        if (this.isBreached) return 'Breached';
+                                        let totalSeconds = Math.floor(this.remaining / 1000);
+                                        let h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+                                        let m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+                                        let s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+                                        return `${h}h ${m}m ${s}s`;
+                                    }
+                                }"
+                                x-init="if (!isStopped) setInterval(() => now = new Date().getTime(), 1000)"
+                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border"
+                                :class="{
+                                    'bg-red-500/10 text-red-400 border-red-500/20': isBreached,
+                                    'bg-orange-500/10 text-orange-400 border-orange-500/20': !isBreached && isWarning,
+                                    'bg-green-500/10 text-green-400 border-green-500/20': !isBreached && !isWarning && !isStopped,
+                                    'bg-slate-500/10 text-slate-400 border-slate-500/20': !isBreached && !isWarning && isStopped
+                                }">
+                                <svg x-show="isBreached" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <svg x-show="!isBreached" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span x-text="formatted"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-xs text-zinc-500 mb-2">SLA Status</p>
+                            @php
+                                $slaBadgeClass = match($ticket->sla_status) {
+                                    'on_time' => 'bg-green-500/10 text-green-400 border-green-500/20',
+                                    'breached' => 'bg-red-500/10 text-red-400 border-red-500/20',
+                                    default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+                                };
+                            @endphp
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border {{ $slaBadgeClass }}">
+                                {{ str_replace('_', ' ', ucfirst($ticket->sla_status)) }}
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="mt-6 pt-6 border-t border-zinc-800 space-y-2">
                         {{-- Assign / Reassign --}}
 

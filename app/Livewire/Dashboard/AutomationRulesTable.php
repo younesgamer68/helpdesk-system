@@ -17,6 +17,8 @@ class AutomationRulesTable extends Component
 
     public string $search = '';
 
+    public string $filterMode = 'all';
+
     public string $filterType = '';
 
     public string $filterStatus = '';
@@ -86,10 +88,20 @@ class AutomationRulesTable extends Component
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'type' => 'required|in:assignment,priority,auto_reply,escalation',
+            'type' => 'required|in:assignment,priority,auto_reply,escalation,sla_breach',
             'is_active' => 'boolean',
             'priority' => 'required|integer|min:0|max:1000',
         ];
+    }
+
+    public function mount()
+    {
+        if ($this->filterMode === 'assignment') {
+            $this->type = 'assignment';
+            $this->filterType = 'assignment';
+        } elseif ($this->filterMode === 'ticket') {
+            $this->type = 'priority';
+        }
     }
 
     public function updatingSearch(): void
@@ -128,6 +140,12 @@ class AutomationRulesTable extends Component
                 $q->where('name', 'like', '%'.$this->search.'%')
                     ->orWhere('description', 'like', '%'.$this->search.'%');
             });
+        }
+
+        if ($this->filterMode === 'assignment') {
+            $query->where('type', 'assignment');
+        } elseif ($this->filterMode === 'ticket') {
+            $query->whereIn('type', ['priority', 'auto_reply', 'escalation', 'sla_breach']);
         }
 
         if ($this->filterType) {
@@ -309,7 +327,6 @@ class AutomationRulesTable extends Component
             'escalation' => [
                 'idle_hours' => $this->idle_hours,
                 'status' => $this->conditionStatuses,
-                'category_id' => $this->category_id,
             ],
             default => [],
         };
@@ -367,7 +384,8 @@ class AutomationRulesTable extends Component
     {
         $this->name = '';
         $this->description = '';
-        $this->type = 'assignment';
+        // Set type default depending on filterMode
+        $this->type = $this->filterMode === 'assignment' ? 'assignment' : 'priority';
         $this->is_active = true;
         $this->priority = 0;
         $this->category_id = null;

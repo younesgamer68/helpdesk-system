@@ -102,9 +102,15 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
                     Route::get('/categories', fn() => view('dashboard.categories'))
                         ->middleware('can:view-operators,App\Models\User')
                         ->name('categories');
-                    Route::get('/automation', fn() => view('dashboard.automation'))
+                    Route::get('/automation/ticket-rules', fn() => view('dashboard.automation', ['filterMode' => 'ticket']))
                         ->middleware('can:view-operators,App\Models\User')
-                        ->name('automation');
+                        ->name('automation.ticket-rules');
+                    Route::get('/automation/assignment-rules', fn() => view('dashboard.automation', ['filterMode' => 'assignment']))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('automation.assignment-rules');
+                    Route::get('/automation/sla-policy', fn() => view('dashboard.sla-policy'))
+                        ->middleware('can:view-operators,App\Models\User')
+                        ->name('automation.sla-policy');
                 }
                 );
             }

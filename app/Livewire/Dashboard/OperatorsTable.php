@@ -140,7 +140,7 @@ class OperatorsTable extends Component
         }
 
         $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
-        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+        \Illuminate\Support\Facades\Mail::to($user->email)->queue(new \App\Mail\UserInvitationMail($user, $signedUrl));
 
         $this->dispatch('show-toast', message: 'Invitation resent successfully.', type: 'success');
     }
@@ -210,7 +210,7 @@ class OperatorsTable extends Component
         ]);
 
         $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
-        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+        \Illuminate\Support\Facades\Mail::to($user->email)->queue(new \App\Mail\UserInvitationMail($user, $signedUrl));
 
         $this->dispatch('show-toast', message: 'Agent invited successfully.', type: 'success');
 

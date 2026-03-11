@@ -177,4 +177,33 @@ class TicketAssignmentService
             $operator->update(['assigned_tickets_count' => $count]);
         });
     }
+
+    /**
+     * Assign all pending unassigned tickets for a company.
+     * Called when an operator comes online to pick up queued tickets.
+     */
+    public function assignPendingTickets(int $companyId): int
+    {
+        $unassignedTickets = Ticket::where('company_id', $companyId)
+            ->whereNull('assigned_to')
+            ->where('verified', true)
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $assignedCount = 0;
+
+        foreach ($unassignedTickets as $ticket) {
+            $operator = $this->assignTicket($ticket);
+
+            if ($operator) {
+                $assignedCount++;
+            } else {
+                // No more online operators available, stop trying
+                break;
+            }
+        }
+
+        return $assignedCount;
+    }
 }

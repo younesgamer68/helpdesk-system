@@ -13,6 +13,15 @@ class Ticket extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'due_time' => 'datetime',
+            'resolved_at' => 'datetime',
+            'closed_at' => 'datetime',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, foreignKey: 'assigned_to');

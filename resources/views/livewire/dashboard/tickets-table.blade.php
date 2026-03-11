@@ -188,6 +188,17 @@
                             @endif
                         </div>
                     </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
+                        wire:click="setSortBy('due_time')">
+                        <div class="flex items-center gap-1">
+                            SLA
+                            @if ($sortBy === 'due_time')
+                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="opacity-0 group-hover:opacity-50">↕</span>
+                            @endif
+                        </div>
+                    </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                         Category</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider"></th>
@@ -248,6 +259,43 @@
                                 {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                             </span>
                         </td>
+                        <td class="px-4 py-3 text-sm">
+                            @if ($ticket->due_time)
+                                <div x-data="{
+                                        dueTime: new Date('{{ is_string($ticket->due_time) ? \Carbon\Carbon::parse($ticket->due_time)->toISOString() : $ticket->due_time->toISOString() }}').getTime(),
+                                        now: new Date().getTime(),
+                                        status: '{{ $ticket->status }}',
+                                        slaStatus: '{{ $ticket->sla_status }}',
+                                        get isStopped() { return ['resolved', 'closed'].includes(this.status); },
+                                        get remaining() { return Math.max(0, this.dueTime - this.now); },
+                                        get isBreached() { return this.slaStatus === 'breached' || (!this.isStopped && this.remaining === 0); },
+                                        get isWarning() { return !this.isBreached && !this.isStopped && this.remaining > 0 && this.remaining < 3600000; }, // Less than 1 hour
+                                        get formatted() {
+                                            if (this.isStopped) return this.slaStatus === 'breached' ? 'Breached' : 'Completed';
+                                            if (this.isBreached) return 'Breached';
+                                            let totalSeconds = Math.floor(this.remaining / 1000);
+                                            let h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+                                            let m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+                                            let s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+                                            return `${h}:${m}:${s}`;
+                                        }
+                                    }"
+                                    x-init="if (!isStopped) setInterval(() => now = new Date().getTime(), 1000)"
+                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border"
+                                    :class="{
+                                        'bg-red-500/10 text-red-400 border-red-500/20': isBreached,
+                                        'bg-orange-500/10 text-orange-400 border-orange-500/20': !isBreached && isWarning,
+                                        'bg-green-500/10 text-green-400 border-green-500/20': !isBreached && !isWarning && !isStopped,
+                                        'bg-slate-500/10 text-slate-400 border-slate-500/20': !isBreached && !isWarning && isStopped
+                                    }">
+                                    <svg x-show="isBreached" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <svg x-show="!isBreached" class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span x-text="formatted"></span>
+                                </div>
+                            @else
+                                <span class="text-zinc-500 text-xs text-center block">-</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3 text-sm text-zinc-300">{{ $ticket->category->name ?? 'N/A' }}</td>
                         <td class="px-4 py-3 text-sm">
                             <div x-data="{ open: false }" @click.away="open = false" class="relative">
@@ -296,7 +344,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-12 text-center">
+                        <td colspan="9" class="px-4 py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-zinc-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -20,3 +20,9 @@ Schedule::command('tickets:process-escalations')
     ->everyFifteenMinutes()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Check for SLA breaches every minute
+Schedule::command('helpdesk:check-sla-breaches')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->runInBackground();

@@ -1,4 +1,4 @@
-<div wire:poll.30s>
+<div wire:poll.2s>
     <x-flash-message />
 
     <!-- Filters Section -->
