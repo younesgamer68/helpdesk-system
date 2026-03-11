@@ -36,8 +36,15 @@ document.addEventListener('alpine:init', () => {
                     }
                 });
 
-                this.$el.addEventListener('resetEditor', () => {
-                    editor.commands.clearContent();
+                window.addEventListener('resetEditor', () => {
+                    editor.commands.setContent('');
+                    this.content = '';
+                });
+
+                window.addEventListener('loadAiSuggestion', (event) => {
+                    const text = event.detail[0]?.content || event.detail?.content || '';
+                    editor.commands.setContent(text);
+                    editor.commands.focus();
                 });
             },
 
@@ -67,3 +74,11 @@ document.addEventListener('alpine:init', () => {
         };
     });
 });
+
+/**
+ * Echo exposes an expressive API for subscribing to channels and listening
+ * for events that are broadcast by Laravel. Echo and event broadcasting
+ * allow your team to quickly build robust real-time web applications.
+ */
+
+import './echo';

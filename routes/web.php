@@ -21,7 +21,7 @@ Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatb
 Route::get('/dashboard', function () {
     $user = Auth::user();
     if ($user->company_id && $user->company) {
-        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
+        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/home');
     }
 
     return redirect()->route('setup-company');
@@ -70,7 +70,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
     // Si l'utilisateur a déjà une company → dashboard
     if ($user->company_id && $user->company) {
-        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/tickets');
+        return redirect()->to('https://'.$user->company->slug.'.'.config('app.domain').'/home');
     }
 
     // Sinon → formulaire setup company
@@ -86,8 +86,15 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
 
         // Dashboard routes (require onboarding)
         Route::middleware(['company.is_onboarded'])->group(function () {
+            Route::livewire('home', \App\Livewire\Dashboard\AgentDashboard::class)
+                ->name('agent.dashboard')
+                ->middleware(\App\Http\Middleware\AgentOnly::class);
+            Route::livewire('admin/dashboard', \App\Livewire\Dashboard\AdminDashboard::class)
+                ->name('admin.dashboard')
+                ->middleware(\App\Http\Middleware\AdminOnly::class);
             Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
             Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
+            Route::livewire('notifications', \App\Livewire\Dashboard\NotificationsPage::class)->name('notifications');
             Route::get('/operators', fn () => view('dashboard.operators'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operators');

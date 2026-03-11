@@ -13,17 +13,29 @@
             @endif
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
             <!-- Search Input -->
-            <div class="relative">
+            <div class="relative lg:col-span-1">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text"
-                    placeholder="Search ticket ID, subject, customer..."
+                    placeholder="Search..."
                     class="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+            </div>
+
+            <!-- Date From -->
+            <div>
+                <input wire:model.live="dateFrom" type="date"
+                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+            </div>
+
+            <!-- Date To -->
+            <div>
+                <input wire:model.live="dateTo" type="date"
+                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
             </div>
 
             <!-- Status Filter -->
@@ -48,7 +60,7 @@
                 </select>
             </div>
 
-            <!-- Category Filter (Admin only - operators see their specialty automatically) -->
+            <!-- Category Filter (Admin only) -->
             @if (Auth::user()->isAdmin())
                 <div>
                     <select wire:model.live="categoryFilter"
@@ -99,6 +111,18 @@
                     Search: {{ $search }}
                 </span>
             @endif
+            @if ($dateFrom)
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-500/10 text-zinc-400 text-xs font-medium rounded-full border border-zinc-500/20">
+                    From: {{ $dateFrom }}
+                </span>
+            @endif
+            @if ($dateTo)
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-500/10 text-zinc-400 text-xs font-medium rounded-full border border-zinc-500/20">
+                    To: {{ $dateTo }}
+                </span>
+            @endif
             @if ($statusFilter)
                 <span
                     class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-medium rounded-full border border-blue-500/20">
@@ -126,11 +150,36 @@
         </div>
     @endif
 
+    <!-- Bulk Actions Bar -->
+    @if (!empty($selectedTickets))
+        <div class="mb-4 p-3 bg-zinc-800 border border-zinc-700 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-white">{{ count($selectedTickets) }} tickets selected</span>
+                <div class="w-px h-4 bg-zinc-700"></div>
+                <button wire:click="deleteSelectedTickets" 
+                    wire:confirm="Are you sure you want to delete {{ count($selectedTickets) }} tickets?"
+                    class="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-zinc-700/50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete Selected
+                </button>
+            </div>
+            <button wire:click="$set('selectedTickets', [])" class="text-sm text-zinc-400 hover:text-white transition-colors">
+                Cancel selection
+            </button>
+        </div>
+    @endif
+
     <!-- Table -->
     <div class=" rounded-lg border border-zinc-800">
         <table class="w-full">
             <thead>
                 <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                    <th class="px-4 py-3 text-left">
+                        <input type="checkbox" wire:model.live="selectAll"
+                            class="w-4 h-4 bg-zinc-800 border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-zinc-900">
+                    </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
                         wire:click="setSortBy('ticket_number')">
                         <div class="flex items-center gap-1">
@@ -195,7 +244,11 @@
             </thead>
             <tbody class="divide-y divide-zinc-800">
                 @forelse ($this->tickets as $ticket)
-                    <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="{{ $ticket->id }}">
+                    <tr class="hover:bg-zinc-900/30 transition-colors {{ in_array($ticket->id, $selectedTickets) ? 'bg-teal-500/5' : '' }}" wire:key="{{ $ticket->id }}">
+                        <td class="px-4 py-3 text-left">
+                            <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
+                                class="w-4 h-4 bg-zinc-800 border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-zinc-900">
+                        </td>
                         <td class="px-4 py-3 text-sm text-zinc-300 font-mono">{{ $ticket->ticket_number }}</td>
                         <td class="px-4 py-3 text-sm text-white font-medium">{{ Str::limit($ticket->subject, 50) }}
                         </td>
@@ -296,7 +349,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-12 text-center">
+                        <td colspan="9" class="px-4 py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-zinc-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

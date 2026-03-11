@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "concurrently \"vite\" \"php artisan reverb:start\""
     },
     "dependencies": {
         "@tailwindcss/typography": "^0.5.19",
@@ -26,7 +26,9 @@
     },
     "devDependencies": {
         "autoprefixer": "^10.4.24",
+        "laravel-echo": "^2.3.1",
         "postcss": "^8.5.6",
+        "pusher-js": "^8.4.0",
         "tailwindcss": "^4.1.18"
     }
 }

@@ -24,9 +24,17 @@ class TicketsTable extends Component
 
     public $categoryFilter = '';
 
+    public $dateFrom = '';
+
+    public $dateTo = '';
+
     public $sortBy = 'id';
 
     public $sortDirection = 'desc';
+
+    public $selectedTickets = [];
+
+    public $selectAll = false;
 
     public $statuses = ['open', 'in_progress', 'resolved', 'closed', 'pending'];
 
@@ -128,6 +136,30 @@ class TicketsTable extends Component
         $this->resetPage();
     }
 
+    public function updatingDateFrom()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateTo()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedTickets = $this->tickets->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+        } else {
+            $this->selectedTickets = [];
+        }
+    }
+
+    public function updatedSelectedTickets()
+    {
+        $this->selectAll = count($this->selectedTickets) === count($this->tickets->items());
+    }
+
     public function setSortBy($column)
     {
         if ($this->sortBy === $column) {
@@ -145,6 +177,8 @@ class TicketsTable extends Component
         $this->priorityFilter = '';
         $this->assignedFilter = '';
         $this->categoryFilter = '';
+        $this->dateFrom = '';
+        $this->dateTo = '';
         $this->resetPage();
     }
 
@@ -192,13 +226,21 @@ class TicketsTable extends Component
             $query->where('assigned_to', $this->assignedFilter);
         }
 
+        if ($this->dateFrom) {
+            $query->whereDate('created_at', '>=', $this->dateFrom);
+        }
+
+        if ($this->dateTo) {
+            $query->whereDate('created_at', '<=', $this->dateTo);
+        }
+
         return $query->orderBy($this->sortBy, $this->sortDirection)->paginate(9);
     }
 
     #[Computed]
     public function hasActiveFilters()
     {
-        return $this->search || $this->statusFilter || $this->priorityFilter || $this->assignedFilter || $this->categoryFilter;
+        return $this->search || $this->statusFilter || $this->priorityFilter || $this->assignedFilter || $this->categoryFilter || $this->dateFrom || $this->dateTo;
     }
 
     #[Computed]
@@ -321,6 +363,25 @@ class TicketsTable extends Component
         $ticket->delete();
 
         $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} deleted successfully!", type: 'success');
+
+        // Remove from selected if it was there
+        $this->selectedTickets = array_diff($this->selectedTickets, [$ticketId]);
+    }
+
+    public function deleteSelectedTickets()
+    {
+        if (empty($this->selectedTickets)) {
+            return;
+        }
+
+        $count = count($this->selectedTickets);
+        Ticket::whereIn('id', $this->selectedTickets)->delete();
+
+        $this->dispatch('show-toast', message: "{$count} tickets deleted successfully!", type: 'success');
+
+        $this->selectedTickets = [];
+        $this->selectAll = false;
+        $this->resetPage();
     }
 
     public function render()

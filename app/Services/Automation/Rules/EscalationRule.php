@@ -147,8 +147,10 @@ class EscalationRule implements RuleInterface
     protected function reassignTicket(Ticket $ticket, array $actions): void
     {
         if (! empty($actions['reassign_to_operator_id'])) {
-            $ticket->assigned_to = $actions['reassign_to_operator_id'];
-            $ticket->saveQuietly();
+            $newOperator = User::find($actions['reassign_to_operator_id']);
+            if ($newOperator) {
+                app(\App\Services\TicketAssignmentService::class)->reassignTicket($ticket, $newOperator);
+            }
         }
     }
 }

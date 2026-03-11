@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
@@ -115,7 +116,7 @@ it('allows admin to reply disguised as another agent', function () {
     ]);
 });
 
-it('reopens closed or resolved ticket on new customer reply', function () {
+it('sets ticket to pending on new customer reply', function () {
     $this->ticket->update(['status' => 'resolved']);
 
     Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
@@ -123,5 +124,36 @@ it('reopens closed or resolved ticket on new customer reply', function () {
         ->call('submitReply')
         ->assertHasNoErrors();
 
-    expect($this->ticket->fresh()->status)->toBe('open');
+    expect($this->ticket->fresh()->status)->toBe('pending');
+});
+
+it('notifies assigned agent when client replies', function () {
+    Notification::fake();
+
+    $agent = User::factory()->create(['company_id' => $this->company->id, 'role' => 'operator']);
+    $this->ticket->update(['assigned_to' => $agent->id]);
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->set('message', 'Client reply')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    Notification::assertSentTo($agent, \App\Notifications\ClientReplied::class);
+});
+
+it('notifies agent even when ticket was assigned after widget loaded', function () {
+    Notification::fake();
+
+    $agent = User::factory()->create(['company_id' => $this->company->id, 'role' => 'operator']);
+
+    $component = Livewire::test(TicketConversation::class, ['ticket' => $this->ticket]);
+
+    $this->ticket->update(['assigned_to' => $agent->id]);
+
+    $component
+        ->set('message', 'Late assignment reply')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    Notification::assertSentTo($agent, \App\Notifications\ClientReplied::class);
 });

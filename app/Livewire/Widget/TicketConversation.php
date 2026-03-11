@@ -4,6 +4,7 @@ namespace App\Livewire\Widget;
 
 use App\Models\Ticket;
 use App\Models\TicketReply;
+use App\Notifications\ClientReplied;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -61,9 +62,16 @@ class TicketConversation extends Component
             'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
         ]);
 
-        // Update ticket status if it was closed/resolved
-        if (in_array($this->ticket->status, ['closed', 'resolved'])) {
-            $this->ticket->update(['status' => 'open']);
+        if ($this->ticket->status !== 'closed') {
+            $this->ticket->update(['status' => 'pending']);
+        }
+
+        // Refresh ticket to pick up any assignment changes made after the widget was loaded
+        $this->ticket->refresh();
+
+        // Notify assigned agent
+        if ($this->ticket->user) {
+            $this->ticket->user->notify(new ClientReplied($this->ticket));
         }
 
         $this->reset(['message', 'attachments']);

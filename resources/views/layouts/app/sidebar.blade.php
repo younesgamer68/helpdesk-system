@@ -19,6 +19,18 @@
         </flux:sidebar.header>
         <flux:sidebar.nav>
             <flux:sidebar.group :heading="__('Welcome back!')" class="grid">
+                @if (Auth::user()->role === 'operator')
+                    <flux:sidebar.item icon="home" :href="route('agent.dashboard', Auth::user()->company->slug)"
+                        :current="request()->routeIs('agent.dashboard')" wire:navigate>
+                        {{ __('Dashboard') }}
+                    </flux:sidebar.item>
+                @endif
+                @if (Auth::user()->role === 'admin')
+                    <flux:sidebar.item icon="home" :href="route('admin.dashboard', Auth::user()->company->slug)"
+                        :current="request()->routeIs('admin.dashboard')" wire:navigate>
+                        {{ __('Dashboard') }}
+                    </flux:sidebar.item>
+                @endif
                 <flux:sidebar.item icon="ticket" :href=" route('tickets', Auth::user()->company->slug)"
                     :current="request()->routeIs('tickets')" wire:navigate>
                     {{ __('Tickets') }}
@@ -56,6 +68,10 @@
                 target="_blank">
                 {{ __('Documentation') }}
             </flux:sidebar.item>
+
+            <div class="mt-2 text-zinc-500">
+                <livewire:notification-bell />
+            </div>
         </flux:sidebar.nav>
 
         <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
@@ -64,6 +80,14 @@
     <!-- Mobile User Menu -->
     <flux:header class="lg:hidden">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+
+        <div class="ml-2 flex items-center gap-1">
+            <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
+                class="flex items-center gap-2">
+                <img src="{{ asset('images/logodm.png') }}" alt="" style="width:24px;height:24px;">
+                <span class="font-bold text-sm">Helpdesk</span>
+            </a>
+        </div>
 
         <flux:spacer />
 

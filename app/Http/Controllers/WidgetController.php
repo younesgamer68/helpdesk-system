@@ -7,7 +7,11 @@ use App\Mail\TicketVerified;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketReply;
+use App\Models\User;
 use App\Models\WidgetSetting;
+use App\Notifications\ClientReplied;
+use App\Notifications\TicketSubmitted;
+use App\Notifications\TicketUnassigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -80,6 +84,22 @@ class WidgetController extends Controller
 
         // Send verification email
         Mail::to($ticket->customer_email)->send(new TicketVerification($ticket));
+
+        // Notify admins about the new ticket submission
+        $admins = User::where('company_id', $ticket->company_id)
+            ->whereIn('role', ['admin', 'super_admin'])
+            ->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new TicketSubmitted($ticket));
+        }
+
+        // If ticket is unassigned (automation or default), notify admins
+        if (! $ticket->assigned_to) {
+            foreach ($admins as $admin) {
+                $admin->notify(new TicketUnassigned($ticket));
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -164,6 +184,11 @@ class WidgetController extends Controller
         // Update ticket status if it was closed/resolved
         if (in_array($ticket->status, ['closed', 'resolved'])) {
             $ticket->update(['status' => 'open']);
+        }
+
+        // Notify assigned agent about client reply
+        if ($ticket->assigned_to && $ticket->user) {
+            $ticket->user->notify(new ClientReplied($ticket));
         }
 
         return back()->with('success', 'Your reply has been submitted!');

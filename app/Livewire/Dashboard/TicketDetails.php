@@ -2,15 +2,23 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Ai\Agents\SupportReplyAgent;
 use App\Models\Ticket;
+use App\Models\TicketLog;
 use App\Models\TicketReply;
 use App\Models\User;
+use App\Notifications\InternalNoteAdded;
+use App\Notifications\TicketAssigned;
+use App\Notifications\TicketPriorityChanged;
+use App\Notifications\TicketReassigned;
+use App\Notifications\TicketStatusChanged;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
+#[Layout('layouts.dashboard')]
 class TicketDetails extends Component
 {
     use WithFileUploads;
@@ -20,6 +28,16 @@ class TicketDetails extends Component
     public $state = '';
 
     public $senderId = null;
+
+    public $keepOpen = false;
+
+    public $aiSuggestion = '';
+
+    public $aiTone = 'professional';
+
+    public $showAiSuggestion = false;
+
+    public $aiLoading = false;
 
     public $agentSearch = '';
 
@@ -51,6 +69,16 @@ class TicketDetails extends Component
         return $query->get();
     }
 
+    private function logAction($action, $description)
+    {
+        TicketLog::create([
+            'ticket_id' => $this->ticket->id,
+            'user_id' => Auth::id(),
+            'action' => $action,
+            'description' => $description,
+        ]);
+    }
+
     public function resolve()
     {
         if ($this->ticket->status === 'resolved') {
@@ -59,6 +87,8 @@ class TicketDetails extends Component
             return;
         }
 
+        $oldStatus = $this->ticket->status;
+
         $this->ticket->update([
             'status' => 'resolved',
             'resolved_at' => now(),
@@ -66,6 +96,12 @@ class TicketDetails extends Component
 
         $this->ticket->refresh();
         $this->state = $this->ticket->status;
+
+        if ($this->ticket->user && $this->ticket->user->id !== Auth::id()) {
+            $this->ticket->user->notify(new TicketStatusChanged($this->ticket, str_replace('_', ' ', ucfirst($oldStatus)), 'Resolved'));
+        }
+
+        $this->logAction('status_changed', 'Ticket resolved.');
 
         $this->dispatch('show-toast', message: 'Ticket marked as resolved!', type: 'success');
     }
@@ -78,13 +114,21 @@ class TicketDetails extends Component
             return;
         }
 
+        $oldStatus = $this->ticket->status;
+
         $this->ticket->update([
-            'status' => 'in_progress',
+            'status' => 'open',
             'resolved_at' => null,
         ]);
 
         $this->ticket->refresh();
         $this->state = $this->ticket->status;
+
+        if ($this->ticket->user && $this->ticket->user->id !== Auth::id()) {
+            $this->ticket->user->notify(new TicketStatusChanged($this->ticket, 'Resolved', 'Open'));
+        }
+
+        $this->logAction('status_changed', 'Ticket unresolved.');
 
         $this->dispatch('show-toast', message: 'Ticket reopened!', type: 'success');
     }
@@ -99,8 +143,23 @@ class TicketDetails extends Component
             return;
         }
 
+        $oldAgentId = $this->ticket->assigned_to;
         $this->ticket->update(['assigned_to' => $agentId]);
         $this->ticket->refresh();
+        $this->ticket->load('user');
+
+        if ($agentId !== Auth::id()) {
+            $agent->notify(new TicketAssigned($this->ticket));
+        }
+
+        if ($oldAgentId && $oldAgentId !== $agentId) {
+            $oldAgent = User::find($oldAgentId);
+            if ($oldAgent) {
+                $oldAgent->notify(new TicketReassigned($this->ticket));
+            }
+        }
+
+        $this->logAction('assigned', "Assigned to {$agent->name}.");
 
         $this->dispatch('show-toast', message: "Ticket assigned to {$agent->name}!", type: 'success');
     }
@@ -121,8 +180,15 @@ class TicketDetails extends Component
             return;
         }
 
+        $oldPriority = $this->ticket->priority;
         $this->ticket->update(['priority' => $normalizedPriority]);
         $this->ticket->refresh();
+
+        if ($this->ticket->user && $this->ticket->assigned_to !== Auth::id()) {
+            $this->ticket->user->notify(new TicketPriorityChanged($this->ticket, ucfirst($oldPriority), ucfirst($normalizedPriority)));
+        }
+
+        $this->logAction('priority_changed', 'Priority changed to '.ucfirst($normalizedPriority).'.');
 
         $this->dispatch('show-toast', message: 'Priority changed to '.ucfirst($normalizedPriority).'!', type: 'success');
     }
@@ -145,9 +211,16 @@ class TicketDetails extends Component
             return;
         }
 
+        $oldStatus = $this->ticket->status;
         $this->ticket->update(['status' => $dbStatus]);
         $this->ticket->refresh();
         $this->state = $this->ticket->status;
+
+        if ($this->ticket->user && $this->ticket->user->id !== Auth::id()) {
+            $this->ticket->user->notify(new TicketStatusChanged($this->ticket, str_replace('_', ' ', ucfirst($oldStatus)), str_replace('_', ' ', ucfirst($dbStatus))));
+        }
+
+        $this->logAction('status_changed', 'Status changed to '.str_replace('_', ' ', ucfirst($dbStatus)).'.');
 
         $this->dispatch('show-toast', message: 'Status changed to '.str_replace('_', ' ', ucfirst($dbStatus)).'!', type: 'success');
     }
@@ -160,12 +233,7 @@ class TicketDetails extends Component
             return;
         }
 
-        if ($this->ticket->status !== 'resolved') {
-            $this->dispatch('show-toast', message: 'Ticket must be resolved before closing!', type: 'error');
-
-            return;
-        }
-
+        $oldStatus = $this->ticket->status;
         $this->ticket->update([
             'status' => 'closed',
             'closed_at' => now(),
@@ -173,6 +241,12 @@ class TicketDetails extends Component
 
         $this->ticket->refresh();
         $this->state = $this->ticket->status;
+
+        if ($this->ticket->user && $this->ticket->user->id !== Auth::id()) {
+            $this->ticket->user->notify(new TicketStatusChanged($this->ticket, str_replace('_', ' ', ucfirst($oldStatus)), 'Closed'));
+        }
+
+        $this->logAction('status_changed', 'Ticket closed.');
 
         $this->dispatch('show-toast', message: 'Ticket closed successfully!', type: 'success');
     }
@@ -213,14 +287,108 @@ class TicketDetails extends Component
             'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
         ]);
 
-        if (in_array($this->ticket->status, ['resolved'])) {
-            $this->ticket->update(['status' => 'open']);
-            $this->state = 'open';
+        // TRIGGER 2: Agent sends a reply
+        if ($this->ticket->status !== 'closed' && ! $this->keepOpen) {
+            $this->ticket->update(['status' => 'in_progress']);
+            $this->state = 'in_progress';
         }
 
         $this->reset(['message', 'attachments']);
         $this->dispatch('resetEditor');
+
+        // Notify assigned agent about the new reply if they aren't the sender
+        if ($this->ticket->assigned_to && $this->ticket->assigned_to !== Auth::id() && $this->ticket->user) {
+            $this->ticket->user->notify(new \App\Notifications\ClientReplied($this->ticket));
+        }
+
+        $this->logAction('reply_added', 'Added a reply.');
+
         $this->dispatch('show-toast', message: 'Reply added successfully!', type: 'success');
+    }
+
+    public function startAiSuggestion()
+    {
+        if ($this->ticket->status === 'closed') {
+            return;
+        }
+
+        $this->showAiSuggestion = true;
+        $this->aiLoading = true;
+        $this->aiSuggestion = '';
+        $this->js('$wire.generateAiSuggestion()');
+    }
+
+    public function generateAiSuggestion()
+    {
+        if ($this->ticket->status === 'closed') {
+            return;
+        }
+
+        $this->aiLoading = true;
+        $this->showAiSuggestion = true;
+
+        $context = "Company name: Example Helpdesk\n";
+        $context .= 'Ticket category: '.($this->ticket->category->name ?? 'None')."\n";
+        $context .= 'Ticket priority: '.$this->ticket->priority."\n";
+        $context .= 'Customer name: '.($this->ticket->customer->name ?? 'Unknown')."\n";
+        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
+        $context .= "Full conversation history:\n";
+
+        foreach ($this->ticket->replies as $reply) {
+            $sender = $reply->is_admin_reply ? 'Agent' : 'Customer';
+            $context .= "{$sender}: ".strip_tags($reply->message)."\n";
+        }
+
+        $context .= "\n\nPlease rewrite the suggested reply according to this tone:\n";
+        switch ($this->aiTone) {
+            case 'friendly':
+                $context .= 'Reply in a warm, friendly and approachable tone.';
+                break;
+            case 'formal':
+                $context .= 'Reply in a formal and official tone.';
+                break;
+            case 'professional':
+            default:
+                $context .= 'Reply in a professional and clear tone.';
+                break;
+        }
+
+        try {
+            $agent = new SupportReplyAgent;
+            $result = $agent->prompt($context);
+
+            $this->aiSuggestion = (string) $result;
+        } catch (\Exception $e) {
+            $this->aiSuggestion = 'Failed to generate suggestion: '.$e->getMessage();
+        }
+
+        $this->aiLoading = false;
+    }
+
+    public function regenerateWithTone($tone)
+    {
+        if ($this->ticket->status === 'closed') {
+            return;
+        }
+
+        $this->aiTone = $tone;
+        $this->aiLoading = true;
+        // Do not clear $this->aiSuggestion here, so Alpine can fade it out.
+        // We defer to let Alpine pick up the aiLoading = true state,
+        // and then we generate the suggestion.
+        $this->js('$wire.generateAiSuggestion()');
+    }
+
+    public function useAiSuggestion()
+    {
+        $this->dispatch('loadAiSuggestion', ['content' => $this->aiSuggestion]);
+        $this->showAiSuggestion = false;
+    }
+
+    public function dismissAiSuggestion()
+    {
+        $this->showAiSuggestion = false;
+        $this->aiSuggestion = '';
     }
 
     public function removeAttachment($index)
@@ -251,6 +419,12 @@ class TicketDetails extends Component
         ]);
 
         $this->reset(['internalNote']);
+
+        // Notify assigned agent about internal note
+        if ($this->ticket->assigned_to && $this->ticket->assigned_to !== Auth::id() && $this->ticket->user) {
+            $this->ticket->user->notify(new InternalNoteAdded($this->ticket));
+        }
+
         $this->dispatch('show-toast', message: 'Internal note added successfully!', type: 'success');
     }
 
