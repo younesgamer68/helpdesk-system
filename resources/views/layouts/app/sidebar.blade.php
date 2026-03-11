@@ -18,59 +18,74 @@
             <flux:sidebar.collapse class="lg:hidden" />
         </flux:sidebar.header>
         <flux:sidebar.nav>
-            <flux:sidebar.group :heading="__('Welcome back!')" class="grid">
-                @if (Auth::user()->role === 'operator')
-                    <flux:sidebar.item icon="home" :href="route('agent.dashboard', Auth::user()->company->slug)"
-                        :current="request()->routeIs('agent.dashboard')" wire:navigate>
+            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                {{ __('Welcome back!') }}
+            </div>
+            <nav class="flex flex-col gap-1 px-2">
+
+                @php
+                    function sidebarClass(bool $active): string
+                    {
+                        $base =
+                            'flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors duration-150';
+                        $active
+                            ? ($state = 'bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-white')
+                            : ($state =
+                                'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white');
+                        return "$base $state";
+                    }
+                @endphp
+
+                @if (in_array(Auth::user()->role, ['admin', 'operator']))
+                    <a href="/dashboard" wire:navigate
+                        class="{{ sidebarClass(request()->is('dashboard') || request()->is('admin/dashboard') || request()->is('home')) }}">
+                        <flux:icon.home class="size-5 shrink-0" />
                         {{ __('Dashboard') }}
-                    </flux:sidebar.item>
+                    </a>
                 @endif
-                @if (Auth::user()->role === 'admin')
-                    <flux:sidebar.item icon="home" :href="route('admin.dashboard', Auth::user()->company->slug)"
-                        :current="request()->routeIs('admin.dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </flux:sidebar.item>
-                @endif
-                <flux:sidebar.item icon="ticket" :href=" route('tickets', Auth::user()->company->slug)"
-                    :current="request()->routeIs('tickets')" wire:navigate>
+
+                <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
+                    class="{{ sidebarClass(request()->routeIs('tickets')) }}">
+                    <flux:icon.ticket class="size-5 shrink-0" />
                     {{ __('Tickets') }}
-                </flux:sidebar.item>
+                </a>
+
                 @can('view-operators')
-                    <flux:sidebar.item icon="users" :href="route('operators', Auth::user()->company->slug)"
-                        :current="request()->routeIs('operators')" wire:navigate>
+                    <a href="{{ route('operators', Auth::user()->company->slug) }}" wire:navigate
+                        class="{{ sidebarClass(request()->routeIs('operators')) }}">
+                        <flux:icon.users class="size-5 shrink-0" />
                         {{ __('Operators') }}
-                    </flux:sidebar.item>
-                    <flux:sidebar.item icon="folder" :href="route('categories', Auth::user()->company->slug)"
-                        :current="request()->routeIs('categories')" wire:navigate>
+                    </a>
+
+                    <a href="{{ route('categories', Auth::user()->company->slug) }}" wire:navigate
+                        class="{{ sidebarClass(request()->routeIs('categories')) }}">
+                        <flux:icon.folder class="size-5 shrink-0" />
                         {{ __('Categories') }}
-                    </flux:sidebar.item>
-                    <flux:sidebar.item icon="cog" :href="route('automation', Auth::user()->company->slug)"
-                        :current="request()->routeIs('automation')" wire:navigate>
+                    </a>
+
+                    <a href="{{ route('automation', Auth::user()->company->slug) }}" wire:navigate
+                        class="{{ sidebarClass(request()->routeIs('automation')) }}">
+                        <flux:icon.cog class="size-5 shrink-0" />
                         {{ __('Automation') }}
-                    </flux:sidebar.item>
-                    <flux:sidebar.item icon="layout-grid" :href="route('form-widget.edit', Auth::user()->company->slug)"
-                        :current="request()->routeIs('form-widget.edit')" wire:navigate>
+                    </a>
+
+                    <a href="{{ route('form-widget.edit', Auth::user()->company->slug) }}" wire:navigate
+                        class="{{ sidebarClass(request()->routeIs('form-widget.edit')) }}">
+                        <flux:icon.layout-grid class="size-5 shrink-0" />
                         {{ __('Form Widget') }}
-                    </flux:sidebar.item>
+                    </a>
                 @endcan
-            </flux:sidebar.group>
+
+            </nav>
         </flux:sidebar.nav>
 
         <flux:spacer />
 
         <flux:sidebar.nav>
-            <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                target="_blank">
-                {{ __('Repository') }}
-            </flux:sidebar.item>
-
-            <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
-                {{ __('Documentation') }}
-            </flux:sidebar.item>
-
             <div class="mt-2 text-zinc-500">
+
                 <livewire:notification-bell />
+                Notification
             </div>
         </flux:sidebar.nav>
 
