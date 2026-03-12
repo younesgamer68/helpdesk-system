@@ -12,11 +12,27 @@ class TicketDetails extends Component
     public Ticket $ticket;
 
     public $state = '';
+    public $replyMessage = '';
 
     public function mount(Ticket $ticket)
     {
         $this->ticket = $ticket->load(['user:id,name,email', 'category:id,name,description']);
         $this->state = $ticket->status;
+    }
+
+    public function searchKbArticles($query)
+    {
+        if (empty($query)) {
+            return [];
+        }
+        
+        return \App\Models\KbArticle::where('company_id', Auth::user()->company_id)
+            ->where('status', 'published')
+            ->where('title', 'like', "%{$query}%")
+            ->select('id', 'title', 'slug')
+            ->take(5)
+            ->get()
+            ->toArray();
     }
 
     #[Computed]

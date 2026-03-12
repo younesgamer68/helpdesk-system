@@ -36,6 +36,16 @@ class Company extends Model
         return $this->hasOne(WidgetSetting::class, foreignKey: 'company_id');
     }
 
+    public function kbCategories()
+    {
+        return $this->hasMany(KbCategory::class, foreignKey: 'company_id');
+    }
+
+    public function kbArticles()
+    {
+        return $this->hasMany(KbArticle::class, foreignKey: 'company_id');
+    }
+
     protected function casts(): array
     {
         return [

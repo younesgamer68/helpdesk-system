@@ -81,6 +81,17 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
 // ====== SUBDOMAIN (company) ======
 Route::domain('{company}.' . config('app.domain'))->group(function () {
+    
+    // Public Knowledge Base Portal
+    Route::prefix('kb')->name('kb.public.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\KbPortalController::class, 'home'])->name('home');
+        Route::get('/category/{category}', [\App\Http\Controllers\KbPortalController::class, 'category'])->name('category');
+        Route::get('/article/{article:slug}', [\App\Http\Controllers\KbPortalController::class, 'article'])->name('article');
+        Route::get('/search', [\App\Http\Controllers\KbPortalController::class, 'search'])->name('search');
+        Route::post('/article/{article:slug}/vote', [\App\Http\Controllers\KbPortalController::class, 'vote'])->name('vote');
+        Route::get('/widget.js', [\App\Http\Controllers\KbWidgetController::class, 'snippet'])->name('widget');
+    });
+
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
 
             // Onboarding form for the company
@@ -102,6 +113,14 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
                     Route::get('/categories', fn() => view('dashboard.categories'))
                         ->middleware('can:view-operators,App\Models\User')
                         ->name('categories');
+                    
+                    // Knowledge Base Admin Routes
+                    Route::prefix('kb')->name('kb.')->group(function () {
+                        Route::get('/categories', \App\Livewire\Dashboard\Kb\Categories::class)->name('categories');
+                        Route::get('/articles', \App\Livewire\Dashboard\Kb\ArticlesList::class)->name('articles');
+                        Route::get('/articles/create', \App\Livewire\Dashboard\Kb\ArticleEditor::class)->name('articles.create');
+                        Route::get('/articles/{article}/edit', \App\Livewire\Dashboard\Kb\ArticleEditor::class)->name('articles.edit');
+                    });
                     Route::get('/automation/ticket-rules', fn() => view('dashboard.automation', ['filterMode' => 'ticket']))
                         ->middleware('can:view-operators,App\Models\User')
                         ->name('automation.ticket-rules');

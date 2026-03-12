@@ -123,26 +123,146 @@
                                     </flux:menu>
                                 </flux:dropdown>
                             </div>
-                            <div class="relative">
-                                <textarea rows="4" placeholder="Write a reply..."
-                                    class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 resize-none"></textarea>
-                                <div class="absolute bottom-3 right-3 flex items-center gap-2">
-                                    <button class="p-2 hover:bg-zinc-700 rounded-lg transition">
-                                        <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                        </svg>
+                            <div class="relative" x-data="ticketReplyEditor()" x-init="initEditor($refs.editorBox)">
+                                <!-- TipTap Editor toolbar omitted for brevity (compact) -->
+                                <div class="flex items-center gap-1 bg-zinc-800/50 p-1.5 border border-b-0 border-zinc-700 rounded-t-lg">
+                                    <button type="button" @click="editor.chain().focus().toggleBold().run()" class="p-1 rounded text-zinc-400 hover:bg-zinc-700 hover:text-white transition" title="Bold">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"></path></svg>
                                     </button>
-                                    <button class="p-2 hover:bg-zinc-700 rounded-lg transition">
-                                        <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <button type="button" @click="editor.chain().focus().toggleItalic().run()" class="p-1 rounded text-zinc-400 hover:bg-zinc-700 hover:text-white transition" title="Italic">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                                     </button>
                                 </div>
+                                <div x-ref="editorBox" class="w-full min-h-[100px] bg-zinc-800 border border-zinc-700 rounded-b-lg p-3 text-zinc-200 focus:outline-none overflow-y-auto prose prose-invert max-w-none"></div>
+
+                                <!-- Slash Command Popup -->
+                                <div x-show="showSlashMenu" 
+                                     x-transition 
+                                     class="absolute z-10 w-64 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg overflow-hidden flex flex-col mt-2"
+                                     style="display: none;"
+                                     :style="`left: ${menuCoords.left}px; top: ${menuCoords.top}px;`">
+                                    
+                                    <div class="p-2 border-b border-zinc-700">
+                                        <p class="text-xs text-zinc-400 font-medium">Search Knowledge Base...</p>
+                                    </div>
+                                    
+                                    <ul class="max-h-48 overflow-y-auto w-full py-1 text-sm bg-zinc-800" role="listbox">
+                                        <template x-for="(article, index) in kbResults" :key="article.id">
+                                            <li @click="insertKbLink(article)" 
+                                                class="px-3 py-2 text-zinc-300 hover:bg-zinc-700 hover:text-white cursor-pointer transition select-none flex items-center gap-2">
+                                                <svg class="w-4 h-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                                                <span x-text="article.title" class="truncate"></span>
+                                            </li>
+                                        </template>
+                                        <li x-show="kbResults.length === 0" class="px-3 py-2 text-zinc-500 text-xs italic">
+                                            No articles found.
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
+                            
+                            <script type="module">
+                                import { Editor } from 'https://esm.sh/@tiptap/core';
+                                import StarterKit from 'https://esm.sh/@tiptap/starter-kit';
+                                import Link from 'https://esm.sh/@tiptap/extension-link';
+
+                                document.addEventListener('alpine:init', () => {
+                                    Alpine.data('ticketReplyEditor', () => ({
+                                        editor: null,
+                                        content: @entangle('replyMessage'),
+                                        showSlashMenu: false,
+                                        menuCoords: { left: 0, top: 0 },
+                                        searchQuery: '',
+                                        fullSearchTerm: '', // includes "/kb "
+                                        kbResults: [],
+
+                                        initEditor(element) {
+                                            const vm = this;
+                                            this.editor = new Editor({
+                                                element: element,
+                                                extensions: [
+                                                    StarterKit,
+                                                    Link.configure({ openOnClick: false }),
+                                                ],
+                                                content: this.content,
+                                                onUpdate: ({ editor }) => {
+                                                    this.content = editor.getHTML();
+                                                    this.checkSlashCommand();
+                                                },
+                                                editorProps: {
+                                                    attributes: {
+                                                        class: 'prose prose-invert max-w-none focus:outline-none min-h-[100px]',
+                                                    },
+                                                    handleKeyDown(view, event) {
+                                                        if (vm.showSlashMenu && event.key === 'Escape') {
+                                                            vm.showSlashMenu = false;
+                                                            return true;
+                                                        }
+                                                        return false;
+                                                    }
+                                                },
+                                            });
+                                        },
+
+                                        async checkSlashCommand() {
+                                            const { state, view } = this.editor;
+                                            const { selection } = state;
+                                            const { $cursor } = selection;
+                                            
+                                            if (!$cursor) {
+                                                this.showSlashMenu = false;
+                                                return;
+                                            }
+                                            
+                                            const textBefore = $cursor.parent.textContent.slice(0, $cursor.parentOffset);
+                                            const match = textBefore.match(/\/kb\s*(.*)$/);
+
+                                            if (match) {
+                                                this.searchQuery = match[1];
+                                                this.fullSearchTerm = match[0];
+                                                
+                                                // Calculate popup position relative to text wrapper
+                                                const coords = view.coordsAtPos($cursor.pos);
+                                                const editorBox = this.$refs.editorBox.getBoundingClientRect();
+                                                
+                                                this.menuCoords.left = coords.left - editorBox.left;
+                                                this.menuCoords.top = (coords.bottom - editorBox.top) + 20; 
+
+                                                // Fetch results
+                                                this.kbResults = await this.$wire.searchKbArticles(this.searchQuery);
+                                                this.showSlashMenu = true;
+                                            } else {
+                                                this.showSlashMenu = false;
+                                            }
+                                        },
+
+                                        insertKbLink(article) {
+                                            const baseUrl = '{{ rtrim(config("app.url"), "/") }}';
+                                            const companySlug = '{{ $ticket->company->slug }}';
+                                            const scheme = baseUrl.startsWith('https') ? 'https://' : 'http://';
+                                            // The URL format based on routes/web.php domain group
+                                            const domain = '{{ config("app.domain") }}';
+                                            const linkUrl = `${scheme}${companySlug}.${domain}/kb/articles/${article.slug}`;
+
+                                            // Delete the /kb query from editor
+                                            const { state, view } = this.editor;
+                                            const { $cursor } = state.selection;
+                                            const pos = $cursor.pos;
+                                            
+                                            const from = pos - this.fullSearchTerm.length;
+                                            const to = pos;
+
+                                            this.editor.chain()
+                                                .focus()
+                                                .deleteRange({ from, to })
+                                                .insertContent(`<a href="${linkUrl}" target="_blank" class="text-teal-400 underline">${article.title}</a> `)
+                                                .run();
+
+                                            this.showSlashMenu = false;
+                                        }
+                                    }));
+                                });
+                            </script>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">

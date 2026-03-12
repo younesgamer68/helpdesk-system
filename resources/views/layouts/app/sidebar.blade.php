@@ -36,6 +36,10 @@
                         :current="request()->routeIs('categories')" wire:navigate>
                         {{ __('Categories') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="book-open" :href="route('kb.articles', Auth::user()->company->slug)"
+                        :current="request()->routeIs('kb.*')" wire:navigate>
+                        {{ __('Knowledge Base') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="cog" :href="route('automation.ticket-rules', Auth::user()->company->slug)"
                         :current="request()->routeIs('automation.*')" wire:navigate>
                         {{ __('Automation') }}
