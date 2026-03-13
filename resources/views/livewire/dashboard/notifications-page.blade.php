@@ -1,19 +1,19 @@
 <div>
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl text-white">Notifications</h1>
+        <h1 class="text-3xl text-zinc-900 dark:text-zinc-100">Notifications</h1>
         <div class="flex items-center gap-3">
             <button wire:click="markAllRead" @class([
                 'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
                 'bg-teal-500 hover:bg-teal-600 text-white' => $this->unreadCount > 0,
-                'bg-zinc-800 text-zinc-500 cursor-not-allowed' => $this->unreadCount === 0,
+                'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 cursor-not-allowed' => $this->unreadCount === 0,
             ]) @if ($this->unreadCount === 0) disabled @endif>
                 Mark all read
             </button>
             <button wire:click="clearAll" @class([
                 'px-4 py-2 text-sm font-medium rounded-lg transition-colors border',
                 'bg-transparent border-red-500/50 hover:bg-red-500/10 text-red-500' => $this->notifications->isNotEmpty(),
-                'bg-transparent border-zinc-800 text-zinc-600 cursor-not-allowed' => $this->notifications->isEmpty(),
+                'bg-transparent border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-600 cursor-not-allowed' => $this->notifications->isEmpty(),
             ]) @if ($this->notifications->isEmpty()) disabled @endif>
                 Clear all
             </button>
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Filter Tabs -->
-    <div class="flex gap-1 mb-6 border-b border-zinc-800">
+    <div class="flex gap-1 mb-6 border-b border-zinc-200 dark:border-zinc-800">
         @php
             $tabs = [
                 'all' => 'All',
@@ -35,7 +35,7 @@
             <button wire:click="setTab('{{ $key }}')" @class([
                 'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
                 'border-teal-500 text-teal-400' => $activeTab === $key,
-                'border-transparent text-zinc-400 hover:text-zinc-200' =>
+                'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200' =>
                     $activeTab !== $key,
             ])>
                 {{ $label }}
@@ -46,7 +46,7 @@
             <button wire:click="setTab('system')" @class([
                 'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
                 'border-teal-500 text-teal-400' => $activeTab === 'system',
-                'border-transparent text-zinc-400 hover:text-zinc-200' =>
+                'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200' =>
                     $activeTab !== 'system',
             ])>
                 System
@@ -58,14 +58,14 @@
     @if ($this->notifications->isEmpty())
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-20">
-            <div class="w-16 h-16 rounded-full bg-zinc-800/80 flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
             </div>
-            <p class="text-white text-lg font-medium">You're all caught up!</p>
-            <p class="text-zinc-500 text-sm mt-1">No notifications here</p>
+            <p class="text-zinc-900 dark:text-zinc-100 text-lg font-medium">You're all caught up!</p>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">No notifications here</p>
         </div>
     @else
         <div class="space-y-6">
@@ -76,13 +76,13 @@
                         {{ $label }}</p>
 
                     <div
-                        class="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden divide-y divide-zinc-800/60">
+                        class="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden divide-y divide-zinc-200 dark:divide-zinc-800/60">
                         @foreach ($group as $notification)
                             <button wire:click="markRead('{{ $notification->id }}')"
                                 wire:key="notification-{{ $notification->id }}" @class([
                                     'w-full text-left flex items-center gap-4 px-4 py-3.5 transition-colors relative group',
-                                    ' bg-zinc-800/20 hover:bg-zinc-800/50' => is_null($notification->read_at),
-                                    'border-l-2 border-transparent hover:bg-zinc-800/30' => !is_null(
+                                    ' bg-zinc-50 dark:bg-zinc-800/20 hover:bg-zinc-100 dark:hover:bg-zinc-800/50' => is_null($notification->read_at),
+                                    'border-l-2 border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800/30' => !is_null(
                                         $notification->read_at),
                                 ])>
                                 <!-- Unread Dot -->
@@ -165,7 +165,7 @@
                                         </div>
                                     @else
                                         <div
-                                            class="w-9 h-9 rounded-full bg-zinc-500/10 flex items-center justify-center text-zinc-400">
+                                            class="w-9 h-9 rounded-full bg-zinc-500/10 flex items-center justify-center text-zinc-500 dark:text-zinc-400">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -180,8 +180,8 @@
                                 <div class="flex-1 min-w-0">
                                     <p @class([
                                         'text-sm leading-snug truncate',
-                                        'text-white font-semibold' => is_null($notification->read_at),
-                                        'text-zinc-200' => !is_null($notification->read_at),
+                                        'text-zinc-900 dark:text-zinc-100 font-semibold' => is_null($notification->read_at),
+                                        'text-zinc-600 dark:text-zinc-200' => !is_null($notification->read_at),
                                     ])>
                                         {{ $notification->data['message'] ?? 'New notification' }}
                                     </p>
@@ -207,7 +207,7 @@
         @if ($this->hasMoreNotifications)
             <div class="mt-6 text-center">
                 <button wire:click="loadMore"
-                    class="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-medium rounded-lg transition-colors border border-zinc-700">
+                    class="px-6 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700">
                     <span wire:loading.remove wire:target="loadMore">Load more</span>
                     <span wire:loading wire:target="loadMore">Loading...</span>
                 </button>

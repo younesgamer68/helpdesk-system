@@ -1,13 +1,13 @@
 <div>
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-white">Dashboard</h1>
-        <p class="mt-1 text-sm text-zinc-400">Welcome back, {{ Auth::user()->name }}</p>
+        <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Dashboard</h1>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Welcome back, {{ Auth::user()->name }}</p>
     </div>
 
     <!-- KPI Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
-        <button type="button" x-on:click="$flux.modal('open-tickets-modal').show()" class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-800/80">
+        <button type="button" x-on:click="$flux.modal('open-tickets-modal').show()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-400 uppercase tracking-wider">Open Tickets</span>
                 <div class="p-1.5 bg-blue-500/10 rounded-lg">
@@ -17,7 +17,7 @@
             <p class="text-3xl font-bold text-white">{{ $this->openTicketsCount }}</p>
         </button>
 
-        <button type="button" x-on:click="$flux.modal('resolved-tickets-modal').show()" class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-800/80">
+        <button type="button" x-on:click="$flux.modal('resolved-tickets-modal').show()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-400 uppercase tracking-wider">Resolved Today</span>
                 <div class="p-1.5 bg-green-500/10 rounded-lg">
@@ -27,7 +27,7 @@
             <p class="text-3xl font-bold text-white">{{ $this->resolvedTodayCount }}</p>
         </button>
 
-        <button type="button" x-on:click="$flux.modal('pending-tickets-modal').show()" class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-800/80">
+        <button type="button" x-on:click="$flux.modal('pending-tickets-modal').show()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-400 uppercase tracking-wider">Pending Reply</span>
                 <div class="p-1.5 bg-yellow-500/10 rounded-lg">
@@ -99,7 +99,7 @@
                                     <p class="text-sm text-zinc-200 truncate group-hover:text-white transition-colors">{{ $ticket->subject }}</p>
                                     <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->customer_name }}</p>
                                 </div>
-                                <span class="text-[11px] text-zinc-500 whitespace-nowrap">{{ $ticket->updated_at->diffForHumans() }}</span>
+                                <span class="text-[11px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap">{{ $ticket->updated_at->diffForHumans() }}</span>
                             </a>
                         @endforeach
                     </div>
@@ -142,7 +142,7 @@
                                             </span>
                                         </div>
                                         <p class="text-sm text-zinc-200 truncate">{{ $ticket->subject }}</p>
-                                        <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->customer_name }} · {{ $ticket->category->name ?? 'N/A' }}</p>
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{{ $ticket->customer_name }} · {{ $ticket->category->name ?? 'N/A' }}</p>
                                     </div>
                                     <button wire:click="assignToMe({{ $ticket->id }})"
                                             wire:loading.attr="disabled"
@@ -184,7 +184,7 @@
                                     <p class="text-sm text-zinc-300 {{ is_null($notification->read_at) ? 'font-medium text-zinc-100' : '' }}">
                                         {{ $notification->data['message'] ?? 'Notification' }}
                                     </p>
-                                    <p class="text-[11px] text-zinc-500 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
+                                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -206,12 +206,12 @@
             @if($this->openTicketsList->isEmpty())
                 <p class="text-zinc-400 py-4 text-center">No open tickets at this time.</p>
             @else
-                <div class="divide-y divide-zinc-800/60">
+                <div class="divide-y divide-zinc-800/90">
                     @foreach($this->openTicketsList as $ticket)
                         <div class="py-3 flex items-center justify-between group cursor-pointer" onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p class="text-sm font-medium text-white group-hover:text-teal-400 transition-colors">{{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
                             </div>
                             <flux:badge variant="primary" size="sm">{{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</flux:badge>
                         </div>
@@ -228,12 +228,12 @@
             @if($this->resolvedTodayList->isEmpty())
                 <p class="text-zinc-400 py-4 text-center">No tickets resolved today.</p>
             @else
-                <div class="divide-y divide-zinc-800/60">
+                <div class="divide-y divide-zinc-800/90">
                     @foreach($this->resolvedTodayList as $ticket)
                         <div class="py-3 flex items-center justify-between group cursor-pointer" onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p class="text-sm font-medium text-white group-hover:text-teal-400 transition-colors">{{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
                             </div>
                             <flux:badge variant="success" size="sm">Resolved</flux:badge>
                         </div>
@@ -250,12 +250,12 @@
             @if($this->pendingTicketsList->isEmpty())
                 <p class="text-zinc-400 py-4 text-center">No tickets pending reply.</p>
             @else
-                <div class="divide-y divide-zinc-800/60">
+                <div class="divide-y divide-zinc-800/90">
                     @foreach($this->pendingTicketsList as $ticket)
                         <div class="py-3 flex items-center justify-between group cursor-pointer" onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p class="text-sm font-medium text-white group-hover:text-teal-400 transition-colors">{{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
                             </div>
                             <flux:badge variant="warning" size="sm">Pending</flux:badge>
                         </div>

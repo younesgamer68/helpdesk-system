@@ -16,6 +16,7 @@ class NotificationBell extends Component
         $this->userId = Auth::id();
     }
 
+    #[On('notifications-updated')]
     #[On('echo-private:App.Models.User.{userId},.Illuminate\Notifications\Events\BroadcastNotificationCreated')]
     public function refreshNotifications($event = [])
     {
@@ -59,6 +60,8 @@ class NotificationBell extends Component
             $notification->markAsRead();
 
             if (isset($notification->data['ticket_number'])) {
+                $this->dispatch('notifications-updated');
+
                 return redirect()->route('details', [
                     'company' => Auth::user()->company->slug,
                     'ticket' => $notification->data['ticket_number'],
@@ -70,6 +73,7 @@ class NotificationBell extends Component
     public function markAllRead()
     {
         Auth::user()->unreadNotifications()->update(['read_at' => now()]);
+        $this->dispatch('notifications-updated');
     }
 
     #[Computed]

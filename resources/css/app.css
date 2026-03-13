@@ -96,3 +96,26 @@ select:focus[data-flux-control] {
     border-radius: 0 !important;
     font-size: inherit !important;
 }
+
+@media print {
+
+    #app-sidebar,
+    #reports-controls,
+    .mobile-header,
+    .expdf-btn,
+    .export-overlay {
+        display: none !important;
+    }
+
+    .mt-print {
+        margin-top: 20px;
+    }
+
+    #main-content {
+        margin-left: 0 !important;
+    }
+
+    body {
+        background: white !important;
+    }
+}

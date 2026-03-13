@@ -2,7 +2,7 @@
     <div class="mb-5 flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold">Automation Rules</h1>
-            <p class="text-zinc-400 mt-1">Configure automatic actions for your tickets</p>
+            <p class="text-zinc-500 dark:text-zinc-400 mt-1">Configure automatic actions for your tickets</p>
         </div>
         <button 
             onclick="Livewire.dispatch('openCreateModal')"

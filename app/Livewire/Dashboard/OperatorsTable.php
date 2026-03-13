@@ -102,9 +102,11 @@ class OperatorsTable extends Component
 
         if ($this->statusFilter) {
             if ($this->statusFilter === 'pending') {
-                $query->whereNull('password');
+                $query->whereNull('password')->whereNull('google_id');
             } elseif ($this->statusFilter === 'active') {
-                $query->whereNotNull('password');
+                $query->where(function ($q) {
+                    $q->whereNotNull('password')->orWhereNotNull('google_id');
+                });
             }
         }
 
@@ -121,7 +123,7 @@ class OperatorsTable extends Component
             abort(403, 'You cannot remove yourself.');
         }
 
-        $isPending = is_null($user->password);
+        $isPending = $user->isPendingInvite();
         $user->delete();
 
         if ($isPending) {
@@ -135,7 +137,7 @@ class OperatorsTable extends Component
     {
         $user = User::where('company_id', Auth::user()->company_id)->findOrFail($userId);
 
-        if ($user->password !== null) {
+        if (! $user->isPendingInvite()) {
             abort(400, 'User has already accepted their invitation.');
         }
 

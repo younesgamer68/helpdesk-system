@@ -37,9 +37,6 @@ class IdentifyCompanyFromSubdomain
 
     private function getSubdomain(string $host): ?string
     {
-        // Remove port if present
-        $host = explode(':', $host)[0];
-
         // For .test domains (Herd/Valet)
         if (str_contains($host, '.test')) {
             // Split by dots
@@ -49,9 +46,6 @@ class IdentifyCompanyFromSubdomain
             if (count($parts) === 3) {
                 return $parts[0]; // Return the subdomain
             }
-
-            // If we have just helpdesk-system.test (2 parts)
-            return null; // No subdomain
         }
 
         return null;

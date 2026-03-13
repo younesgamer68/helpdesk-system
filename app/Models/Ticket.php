@@ -38,6 +38,16 @@ class Ticket extends Model
         return $this->hasMany(TicketReply::class);
     }
 
+    public function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'resolved_at' => 'datetime',
+            'closed_at' => 'datetime',
+        ];
+    }
+
     public function logs()
     {
         return $this->hasMany(TicketLog::class);

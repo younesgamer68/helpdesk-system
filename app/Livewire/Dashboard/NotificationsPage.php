@@ -26,6 +26,7 @@ class NotificationsPage extends Component
         $this->userId = Auth::id();
     }
 
+    #[On('notifications-updated')]
     #[On('echo-private:App.Models.User.{userId},.Illuminate\Notifications\Events\BroadcastNotificationCreated')]
     public function onNewNotification(): void
     {
@@ -55,6 +56,8 @@ class NotificationsPage extends Component
             $notification->markAsRead();
 
             if (isset($notification->data['ticket_number'])) {
+                $this->dispatch('notifications-updated');
+
                 return redirect()->route('details', [
                     'company' => Auth::user()->company->slug,
                     'ticket' => $notification->data['ticket_number'],
@@ -69,12 +72,14 @@ class NotificationsPage extends Component
     {
         Auth::user()->unreadNotifications()->update(['read_at' => now()]);
         unset($this->notifications, $this->groupedNotifications, $this->unreadCount, $this->hasMoreNotifications);
+        $this->dispatch('notifications-updated');
     }
 
     public function clearAll(): void
     {
         Auth::user()->notifications()->delete();
         unset($this->notifications, $this->groupedNotifications, $this->unreadCount, $this->hasMoreNotifications);
+        $this->dispatch('notifications-updated');
     }
 
     #[Computed]

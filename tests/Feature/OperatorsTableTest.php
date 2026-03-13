@@ -43,6 +43,25 @@ test('operators table filters by pending vs active statuses', function () {
         ->assertDontSee('Active Guy');
 });
 
+test('operators table treats google users without password as active', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    User::factory()->create([
+        'company_id' => $company->id,
+        'name' => 'Google Active Guy',
+        'password' => null,
+        'google_id' => '12345',
+    ]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(OperatorsTable::class)
+        ->set('statusFilter', 'active')
+        ->assertSee('Google Active Guy')
+        ->set('statusFilter', 'pending')
+        ->assertDontSee('Google Active Guy');
+});
+
 test('admins can remove a operator', function () {
     $company = Company::factory()->create();
     $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);

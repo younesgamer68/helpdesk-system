@@ -2,9 +2,9 @@
     <x-flash-message />
 
     <!-- Filters Section -->
-    <div class="mb-3 p-4 rounded-lg border border-zinc-800 bg-zinc-900 shadow-sm">
+    <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-white">Filters</h3>
+            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Filters</h3>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -17,12 +17,12 @@
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text"
                     placeholder="Search rules..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
             </div>
 
             <!-- Type Filter -->
             <select wire:model.live="filterType"
-                class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
                 <option value="">All Types</option>
                 <option value="assignment">Auto Assignment</option>
                 <option value="priority">Priority Change</option>
@@ -32,7 +32,7 @@
 
             <!-- Status Filter -->
             <select wire:model.live="filterStatus"
-                class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
                 <option value="">All Status</option>
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
@@ -41,11 +41,11 @@
     </div>
 
     <!-- Table -->
-    <div class="rounded-lg border border-zinc-800 bg-zinc-900 shadow-sm">
+    <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
         <table class="w-full">
             <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
+                <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
                         wire:click="setSortBy('priority')">
                         <div class="flex items-center gap-1">
                             Priority
@@ -56,7 +56,7 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
                             Name
@@ -67,13 +67,13 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Type
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Status
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
                         wire:click="setSortBy('executions_count')">
                         <div class="flex items-center gap-1">
                             Executions
@@ -89,17 +89,17 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-800">
+            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                 @forelse ($this->automationRules as $rule)
-                    <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="rule-{{ $rule->id }}">
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors" wire:key="rule-{{ $rule->id }}">
                         <td class="px-4 py-3 text-sm">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 text-zinc-300 font-medium text-xs">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-medium text-xs">
                                 {{ $rule->priority }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <div>
-                                <span class="font-medium text-white">{{ $rule->name }}</span>
+                                <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $rule->name }}</span>
                                 @if($rule->description)
                                     <p class="text-xs text-zinc-500 mt-0.5">{{ Str::limit($rule->description, 50) }}</p>
                                 @endif
@@ -126,11 +126,11 @@
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <button wire:click="toggleRuleStatus({{ $rule->id }})"
-                                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $rule->is_active ? 'bg-teal-500' : 'bg-zinc-700' }}">
+                                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $rule->is_active ? 'bg-teal-500' : 'bg-zinc-300 dark:bg-zinc-700' }}">
                                 <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $rule->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
                             </button>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-400">
+                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                             <div>
                                 <span class="font-medium text-white">{{ number_format($rule->executions_count) }}</span>
                                 @if($rule->last_executed_at)
@@ -141,7 +141,7 @@
                         <td class="px-4 py-3 text-sm text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button wire:click="editRule({{ $rule->id }})"
-                                    class="p-1.5 text-zinc-400 hover:text-teal-400 hover:bg-zinc-800 rounded-lg transition-colors"
+                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -149,7 +149,7 @@
                                     </svg>
                                 </button>
                                 <button wire:click="confirmDelete({{ $rule->id }})"
-                                    class="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
+                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -163,13 +163,13 @@
                     <tr>
                         <td colspan="6" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <svg class="w-12 h-12 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <p class="text-zinc-400">No automation rules found</p>
+                                <p class="text-zinc-500 dark:text-zinc-400">No automation rules found</p>
                                 <button wire:click="openCreateModal"
                                     class="mt-2 px-4 py-2 bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors">
                                     Create your first rule
@@ -182,7 +182,7 @@
         </table>
 
         @if ($this->automationRules->hasPages())
-            <div class="px-4 py-3 border-t border-zinc-800">
+            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
                 {{ $this->automationRules->links() }}
             </div>
         @endif
@@ -227,8 +227,8 @@
                 </div>
 
                 <!-- Conditions Section -->
-                <div class="border border-zinc-700 rounded-lg p-4 space-y-4">
-                    <h4 class="text-sm font-semibold text-white">Conditions</h4>
+                <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
+                    <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Conditions</h4>
 
                     @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation']))
                         <flux:field>
@@ -252,7 +252,7 @@
                             @if(count($keywords) > 0)
                                 <div class="flex flex-wrap gap-2 mt-2">
                                     @foreach($keywords as $index => $keyword)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded-full">
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
                                             {{ $keyword }}
                                             <button type="button" wire:click="removeKeyword({{ $index }})" class="hover:text-red-400">×</button>
                                         </span>
@@ -274,16 +274,16 @@
                                 <flux:label>Ticket Statuses</flux:label>
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="pending" class="rounded bg-zinc-800 border-zinc-700 text-teal-500 focus:ring-teal-500">
-                                        <span class="text-sm text-zinc-300">Pending</span>
+                                        <input type="checkbox" wire:model="conditionStatuses" value="pending" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-300">Pending</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="open" class="rounded bg-zinc-800 border-zinc-700 text-teal-500 focus:ring-teal-500">
-                                        <span class="text-sm text-zinc-300">Open</span>
+                                        <input type="checkbox" wire:model="conditionStatuses" value="open" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-300">Open</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress" class="rounded bg-zinc-800 border-zinc-700 text-teal-500 focus:ring-teal-500">
-                                        <span class="text-sm text-zinc-300">In Progress</span>
+                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-300">In Progress</span>
                                     </label>
                                 </div>
                             </flux:field>
@@ -299,8 +299,8 @@
                 </div>
 
                 <!-- Actions Section -->
-                <div class="border border-zinc-700 rounded-lg p-4 space-y-4">
-                    <h4 class="text-sm font-semibold text-white">Actions</h4>
+                <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
+                    <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Actions</h4>
 
                     @if($type === 'assignment')
                         <flux:field variant="inline">
@@ -438,8 +438,8 @@
                 </div>
 
                 <!-- Conditions Section -->
-                <div class="border border-zinc-700 rounded-lg p-4 space-y-4">
-                    <h4 class="text-sm font-semibold text-white">Conditions</h4>
+                <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
+                    <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Conditions</h4>
 
                     @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation']))
                         <flux:field>
@@ -463,7 +463,7 @@
                             @if(count($keywords) > 0)
                                 <div class="flex flex-wrap gap-2 mt-2">
                                     @foreach($keywords as $index => $keyword)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-800 text-zinc-300 text-xs rounded-full">
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
                                             {{ $keyword }}
                                             <button type="button" wire:click="removeKeyword({{ $index }})" class="hover:text-red-400">×</button>
                                         </span>
@@ -485,16 +485,16 @@
                                 <flux:label>Ticket Statuses</flux:label>
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="pending" class="rounded bg-zinc-800 border-zinc-700 text-teal-500 focus:ring-teal-500">
-                                        <span class="text-sm text-zinc-300">Pending</span>
+                                        <input type="checkbox" wire:model="conditionStatuses" value="pending" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-300">Pending</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="open" class="rounded bg-zinc-800 border-zinc-700 text-teal-500 focus:ring-teal-500">
-                                        <span class="text-sm text-zinc-300">Open</span>
+                                        <input type="checkbox" wire:model="conditionStatuses" value="open" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-300">Open</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress" class="rounded bg-zinc-800 border-zinc-700 text-teal-500 focus:ring-teal-500">
-                                        <span class="text-sm text-zinc-300">In Progress</span>
+                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-300">In Progress</span>
                                     </label>
                                 </div>
                             </flux:field>
@@ -510,8 +510,8 @@
                 </div>
 
                 <!-- Actions Section -->
-                <div class="border border-zinc-700 rounded-lg p-4 space-y-4">
-                    <h4 class="text-sm font-semibold text-white">Actions</h4>
+                <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
+                    <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Actions</h4>
 
                     @if($type === 'assignment')
                         <flux:field variant="inline">
@@ -615,7 +615,7 @@
         <div class="space-y-6">
             <flux:heading size="lg">Delete Rule</flux:heading>
 
-            <p class="text-zinc-400">
+            <p class="text-zinc-500 dark:text-zinc-400">
                 Are you sure you want to delete this automation rule? This action cannot be undone.
             </p>
 

@@ -103,6 +103,9 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::get('/automation', fn () => view('dashboard.automation'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('automation');
+            Route::livewire('reports', \App\Livewire\Dashboard\ReportsAnalytics::class)
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('reports');
         });
     });
 });

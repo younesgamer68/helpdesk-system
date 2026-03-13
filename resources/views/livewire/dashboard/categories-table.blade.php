@@ -2,9 +2,9 @@
     <x-flash-message />
 
     <!-- Filters Section -->
-    <div class="mb-3 p-4 rounded-lg border border-zinc-800 bg-zinc-900 shadow-sm">
+    <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-white">Search</h3>
+            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Search</h3>
         </div>
 
         <div class="grid grid-cols-1 gap-3">
@@ -17,16 +17,16 @@
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text"
                     placeholder="Search by name or description..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
             </div>
         </div>
     </div>
 
     <!-- Table -->
-    <div class="rounded-lg border border-zinc-800 bg-zinc-900 shadow-sm">
+    <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
         <table class="w-full">
             <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
@@ -38,10 +38,10 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Description
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Color
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
@@ -60,22 +60,22 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-800">
+            <tbody class="divide-y divide-zinc-800/10">
                 @forelse ($this->categories as $category)
-                    <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="category-{{ $category->id }}">
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors" wire:key="category-{{ $category->id }}">
                         <td class="px-4 py-3 text-sm">
                             <div class="flex items-center gap-3">
                                 <div class="w-3 h-3 rounded-full" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
-                                <span class="font-medium text-white">{{ $category->name }}</span>
+                                <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $category->name }}</span>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-400">
+                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                             {{ Str::limit($category->description, 50) ?? '-' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded border border-zinc-700" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
-                                <span class="text-zinc-400 text-xs font-mono">{{ $category->color ?? '#6B7280' }}</span>
+                                <div class="w-6 h-6 rounded border border-zinc-200 dark:border-zinc-700" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
+                                <span class="text-zinc-500 dark:text-zinc-400 text-xs font-mono">{{ $category->color ?? '#6B7280' }}</span>
                             </div>
                         </td>
                         <td class="px-4 py-3 text-sm">
@@ -94,7 +94,7 @@
                         <td class="px-4 py-3 text-sm text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button wire:click="editCategory({{ $category->id }})"
-                                    class="p-1.5 text-zinc-400 hover:text-teal-400 hover:bg-zinc-800 rounded-lg transition-colors"
+                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -102,7 +102,7 @@
                                     </svg>
                                 </button>
                                 <button wire:click="confirmDelete({{ $category->id }})"
-                                    class="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
+                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -116,11 +116,11 @@
                     <tr>
                         <td colspan="5" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <svg class="w-12 h-12 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                 </svg>
-                                <p class="text-zinc-400">No categories found</p>
+                                <p class="text-zinc-500 dark:text-zinc-400">No categories found</p>
                                 <button x-data @click="$dispatch('open-create-category-modal')"
                                     class="mt-2 px-4 py-2 bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors">
                                     Add your first category
@@ -133,7 +133,7 @@
         </table>
 
         @if ($this->categories->hasPages())
-            <div class="px-4 py-3 border-t border-zinc-800">
+            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
                 {{ $this->categories->links() }}
             </div>
         @endif
@@ -161,7 +161,7 @@
                     <flux:label>Color</flux:label>
                     <div class="flex items-center gap-3">
                         <input type="color" wire:model="color"
-                            class="w-12 h-10 rounded border border-zinc-700 bg-zinc-800 cursor-pointer">
+                            class="w-12 h-10 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 cursor-pointer">
                         <flux:input wire:model="color" placeholder="#0F766E" class="flex-1" />
                     </div>
                     <flux:error name="color" />
@@ -212,7 +212,7 @@
                     <flux:label>Color</flux:label>
                     <div class="flex items-center gap-3">
                         <input type="color" wire:model="color"
-                            class="w-12 h-10 rounded border border-zinc-700 bg-zinc-800 cursor-pointer">
+                            class="w-12 h-10 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 cursor-pointer">
                         <flux:input wire:model="color" placeholder="#0F766E" class="flex-1" />
                     </div>
                     <flux:error name="color" />
@@ -246,7 +246,7 @@
         <div class="space-y-6">
             <flux:heading size="lg">Delete Category</flux:heading>
 
-            <p class="text-zinc-400">
+            <p class="text-zinc-500 dark:text-zinc-400">
                 Are you sure you want to delete this category? This action cannot be undone.
                 Tickets using this category will have their category set to none.
             </p>

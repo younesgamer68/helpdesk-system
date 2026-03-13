@@ -97,10 +97,16 @@ class AdminDashboard extends Component
     #[Computed]
     public function agentsActivity(): Collection
     {
-        return User::whereIn('role', ['agent', 'admin', 'operator'])
-            ->withCount(['tickets as open_tickets_count' => function ($query) {
-                $query->whereIn('status', ['open', 'in_progress']);
-            }])
+        $companyId = Auth::user()->company_id;
+
+        return User::whereIn('role', ['agent', 'operator'], 'and', false)
+            ->where('company_id', '=', $companyId, 'and')
+            ->withCount([
+                'tickets as active_count' => function ($query) use ($companyId) {
+                    $query->where('company_id', $companyId)
+                        ->whereIn('status', ['open', 'in_progress', 'pending']);
+                },
+            ])
             ->get();
     }
 

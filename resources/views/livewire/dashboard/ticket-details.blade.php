@@ -9,7 +9,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-4">
                     <a href="{{ route('tickets', ['company' => $ticket->company->slug]) }}"
-                        class="text-zinc-400 hover:text-white transition">
+                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -20,7 +20,7 @@
                             <span class="text-xs text-zinc-600">Last updated
                                 {{ $ticket->updated_at->diffForHumans() }}</span>
                         </div>
-                        <h1 class="text-2xl font-semibold text-white">{{ $ticket->subject }}</h1>
+                        <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{{ $ticket->subject }}</h1>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -36,7 +36,7 @@
                         </button>
                     @else
                         <button wire:click="unresolve" wire:confirm="Are you sure you want to unresolve this ticket?"
-                            class="px-4 py-2 bg-zinc-600 hover:bg-zinc-700 text-white rounded-lg transition flex items-center gap-2">
+                            class="px-4 py-2 bg-zinc-200 dark:bg-zinc-600 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg transition flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 10h10a8 8 0 018 8v2M3 10l3-3m0 0l3 3m-3-3v9" />
@@ -77,7 +77,8 @@
 
                 @if ($ticket->category)
                     <span
-                        class="px-2.5 py-1 bg-zinc-800 text-zinc-400 text-xs font-medium rounded-full border border-zinc-700">
+                        class="px-2.5 py-1  text-white dark:text-zinc-400 text-xs font-medium rounded-full border border-zinc-200 dark:border-zinc-700"
+                        style="background-color:{{ $ticket->category->color }}">
                         <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -94,9 +95,10 @@
             <div class="lg:col-span-2 space-y-6" x-data="{ activeTab: 'conversation' }">
                 {{-- Conversation & Notes Tabs --}}
                 <div class="flex items-center justify-between mb-4">
-                    <div class="flex space-x-1 p-1 bg-zinc-900 border border-zinc-800 rounded-lg max-w-[320px]">
+                    <div
+                        class="flex space-x-1 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-[320px]">
                         <button @click="activeTab = 'conversation'"
-                            :class="{ 'bg-zinc-800 text-white shadow': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50': activeTab !== 'conversation' }"
+                            :class="{ 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'conversation' }"
                             class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,7 +107,7 @@
                             Conversation
                         </button>
                         <button @click="activeTab = 'internal-notes'"
-                            :class="{ 'bg-zinc-800 text-white shadow': activeTab === 'internal-notes', 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50': activeTab !== 'internal-notes' }"
+                            :class="{ 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'internal-notes', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'internal-notes' }"
                             class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -116,7 +118,7 @@
                     </div>
 
                     <button @click="activeTab = 'logs'"
-                        :class="{ 'text-zinc-300 bg-zinc-800 border-zinc-700': activeTab === 'logs', 'text-zinc-500 bg-transparent border-transparent hover:text-zinc-300 hover:bg-zinc-800/50': activeTab !== 'logs' }"
+                        :class="{ 'text-zinc-600 dark:text-zinc-300 bg-zinc-200 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700': activeTab === 'logs', 'text-zinc-500 bg-transparent border-transparent hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'logs' }"
                         class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -128,13 +130,14 @@
 
                 <div x-show="activeTab === 'conversation'">
                     {{-- Conversation Section --}}
-                    <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-                        <div class="p-6 border-b border-zinc-800">
+                    <div
+                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-semibold text-white">Conversation</h2>
-                                <span class="text-sm text-zinc-500">Visible to customer</span>
+                                <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Conversation</h2>
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible to customer</span>
                             </div>
-                            <p class="text-sm text-zinc-500 mt-1">{{ count($replies) + 1 }} messages</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ count($replies) + 1 }} messages</p>
                         </div>
 
                         <div class="p-6 space-y-6 max-h-[600px] overflow-y-auto">
@@ -147,12 +150,14 @@
                                     </div>
                                 </div>
                                 <div class="flex-1">
-                                    <div class="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">
+                                    <div
+                                        class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700/50">
                                         <div class="flex items-start justify-between mb-2">
                                             <div>
-                                                <div class="font-semibold text-white">{{ $ticket->customer_name }}
+                                                <div class="font-semibold text-zinc-900 dark:text-zinc-100">
+                                                    {{ $ticket->customer_name }}
                                                 </div>
-                                                <div class="text-xs text-zinc-400">
+                                                <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                                     {{ $ticket->created_at->format('M d, Y g:i A') }}</div>
                                             </div>
                                             <span
@@ -160,7 +165,8 @@
                                                 Customer
                                             </span>
                                         </div>
-                                        <div class="text-zinc-300 whitespace-pre-wrap">{{ $ticket->description }}
+                                        <div class="text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap">
+                                            {{ $ticket->description }}
                                         </div>
                                     </div>
                                 </div>
@@ -183,19 +189,25 @@
                                         @endif
                                     </div>
                                     <div class="flex-1">
-                                        <div class="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700/50">
+                                        <div
+                                            class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700/50">
                                             <div class="flex items-start justify-between mb-2">
                                                 <div>
-                                                    <div class="font-semibold text-white">
+                                                    <div class="font-semibold text-zinc-900 dark:text-zinc-100">
                                                         @if ($reply->is_technician)
                                                             Technician
                                                         @elseif ($reply->user_id)
-                                                            {{ $reply->user->name }}
+                                                            @if ($reply->user->id === Auth::id())
+                                                                You <span
+                                                                    class="text-xs text-zinc-500 dark:text-zinc-400 font-normal">({{ $reply->user->name }})</span>
+                                                            @else
+                                                                {{ $reply->user->name }}
+                                                            @endif
                                                         @else
                                                             {{ $reply->customer_name }}
                                                         @endif
                                                     </div>
-                                                    <div class="text-xs text-zinc-400">
+                                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                                         {{ $reply->created_at->format('M d, Y g:i A') }}</div>
                                                 </div>
                                                 @if ($reply->user_id || $reply->is_technician)
@@ -210,7 +222,8 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="prose prose-sm prose-invert max-w-none mt-1 text-zinc-300">
+                                            <div
+                                                class="prose prose-sm prose-invert max-w-none mt-1 text-zinc-600 dark:text-zinc-300">
                                                 {!! $reply->message !!}</div>
 
                                             {{-- Attachments --}}
@@ -227,14 +240,15 @@
                                                         @if ($isImage)
                                                             <a href="{{ Storage::url($attachment['path']) }}"
                                                                 target="_blank"
-                                                                class="block relative group rounded-lg overflow-hidden border border-zinc-700 hover:border-zinc-500 transition-colors w-32 h-32">
+                                                                class="block relative group rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 transition-colors w-32 h-32">
                                                                 <img src="{{ Storage::url($attachment['path']) }}"
                                                                     alt="{{ $attachment['name'] }}"
                                                                     class="w-full h-full object-cover">
                                                                 <div
                                                                     class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                    <svg class="w-6 h-6 text-white" fill="none"
-                                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg class="w-6 h-6 text-zinc-900 dark:text-zinc-100"
+                                                                        fill="none" stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round"
                                                                             stroke-linejoin="round" stroke-width="2"
                                                                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
@@ -244,8 +258,8 @@
                                                         @else
                                                             <a href="{{ Storage::url($attachment['path']) }}"
                                                                 target="_blank"
-                                                                class="flex items-center gap-2 p-3 rounded-lg border border-zinc-700 hover:border-zinc-500 bg-zinc-800 transition-colors w-full sm:w-auto">
-                                                                <svg class="w-8 h-8 text-zinc-400 flex-shrink-0"
+                                                                class="flex items-center gap-2 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 bg-zinc-800 transition-colors w-full sm:w-auto">
+                                                                <svg class="w-8 h-8 text-zinc-500 dark:text-zinc-400 flex-shrink-0"
                                                                     fill="none" stroke="currentColor"
                                                                     viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round"
@@ -254,7 +268,7 @@
                                                                 </svg>
                                                                 <div class="flex flex-col min-w-0">
                                                                     <span
-                                                                        class="text-sm font-medium text-zinc-200 truncate">{{ $attachment['name'] }}</span>
+                                                                        class="text-sm font-medium text-zinc-600 dark:text-zinc-200 truncate">{{ $attachment['name'] }}</span>
                                                                     <span
                                                                         class="text-xs text-zinc-500">{{ number_format($attachment['size'] / 1024, 1) }}
                                                                         KB</span>
@@ -272,24 +286,34 @@
 
                         {{-- Reply Form --}}
                         @if (!in_array($state, ['closed']))
-                            <div class="p-6 border-t border-zinc-800 bg-zinc-900">
+                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800">
                                 <form wire:submit="addReply">
                                     <div class="mb-4">
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center gap-2">
                                                 <flux:dropdown>
                                                     <flux:button variant="ghost"
-                                                        class="px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition border border-zinc-700"
+                                                        class="px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition border border-zinc-200 dark:border-zinc-700"
                                                         size="sm">
                                                         Reply as
-                                                        {{ $senderId ? $agents->find($senderId)?->name ?? Auth::user()->name : Auth::user()->name }}
+                                                        @if ($senderId && ($agent = $agents->find($senderId)))
+                                                            @if ($agent->id === Auth::id())
+                                                                You <span
+                                                                    class="text-xs opacity-75">({{ Auth::user()->name }})</span>
+                                                            @else
+                                                                {{ $agent->name }}
+                                                            @endif
+                                                        @else
+                                                            You <span
+                                                                class="text-xs opacity-75">({{ Auth::user()->name }})</span>
+                                                        @endif
                                                     </flux:button>
                                                     <flux:menu class="max-h-80 overflow-y-auto">
                                                         @if (Auth::user()->role === 'admin')
                                                             <div class="px-2 py-1 mb-1 sticky top-0 z-10 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700"
                                                                 @keydown.stop>
                                                                 <div class="flex items-center gap-2">
-                                                                    <svg class="w-4 h-4 text-zinc-400 flex-shrink-0"
+                                                                    <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400 flex-shrink-0"
                                                                         fill="none" stroke="currentColor"
                                                                         viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round"
@@ -299,13 +323,14 @@
                                                                     <input type="text"
                                                                         wire:model.live.debounce.300ms="agentSearch"
                                                                         placeholder="Search agents..."
-                                                                        class="w-full bg-transparent border-none text-sm focus:ring-0 p-1 text-zinc-800 dark:text-zinc-200 placeholder-zinc-400" />
+                                                                        class="w-full bg-transparent border-none text-sm focus:ring-0 p-1 text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 dark:placeholder-zinc-400" />
                                                                 </div>
                                                             </div>
                                                         @endif
 
                                                         <flux:menu.item wire:click="$set('senderId', null)">
-                                                            {{ Auth::user()->name }} (You)
+                                                            You <span
+                                                                class="text-xs opacity-75">({{ Auth::user()->name }})</span>
                                                         </flux:menu.item>
 
                                                         @if (Auth::user()->role === 'admin')
@@ -397,7 +422,7 @@
                                                     {{-- Editable Content Block --}}
                                                     <div x-show="suggestionText || isTyping" x-transition>
                                                         <div x-ref="editableSuggestion" :contenteditable="!isTyping"
-                                                            class="text-zinc-300 text-sm whitespace-pre-wrap outline-none p-2 -mx-2 rounded border border-transparent focus:border-teal-500/50 focus:bg-zinc-800/50 transition-colors"
+                                                            class="text-zinc-600 dark:text-zinc-300 text-sm whitespace-pre-wrap outline-none p-2 -mx-2 rounded border border-transparent focus:border-teal-500/50 focus:bg-zinc-50 dark:focus:bg-zinc-800/50 transition-colors"
                                                             x-html="displayedSuggestion + (isTyping ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-teal-400\'></span>' : '')">
                                                         </div>
                                                         <div x-show="!isTyping && suggestionText"
@@ -413,13 +438,13 @@
                                                                     class="text-xs font-medium text-zinc-500 px-1 uppercase tracking-wider">Tone:</span>
                                                                 <button wire:click="regenerateWithTone('professional')"
                                                                     type="button"
-                                                                    class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'professional' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300' }}">Professional</button>
+                                                                    class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'professional' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Professional</button>
                                                                 <button wire:click="regenerateWithTone('friendly')"
                                                                     type="button"
-                                                                    class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'friendly' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300' }}">Friendly</button>
+                                                                    class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'friendly' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Friendly</button>
                                                                 <button wire:click="regenerateWithTone('formal')"
                                                                     type="button"
-                                                                    class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'formal' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-800 text-zinc-400 hover:text-zinc-300' }}">Formal</button>
+                                                                    class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'formal' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Formal</button>
                                                             </div>
                                                         </div>
                                                     @endif
@@ -433,7 +458,7 @@
 
                                                         <button wire:click="regenerateWithTone($wire.aiTone)"
                                                             :disabled="isTyping || $wire.aiLoading" type="button"
-                                                            class="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 text-white rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            class="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
                                                             <svg x-show="$wire.aiLoading && suggestionText"
                                                                 class="w-3.5 h-3.5 animate-spin" fill="none"
                                                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -446,7 +471,7 @@
 
                                                         <button wire:click="dismissAiSuggestion"
                                                             :disabled="isTyping || $wire.aiLoading" type="button"
-                                                            class="text-xs px-3 py-1.5 bg-transparent border border-zinc-700 hover:border-zinc-500 text-zinc-400 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            class="text-xs px-3 py-1.5 bg-transparent border border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 text-zinc-500 dark:text-zinc-400 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
                                                             Dismiss
                                                         </button>
                                                     </div>
@@ -456,14 +481,15 @@
 
                                         <div class="relative">
                                             <div x-data="tiptapEditor"
-                                                class="w-full bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-zinc-600">
+                                                class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-600">
 
                                                 {{-- Toolbar --}}
-                                                <div class="flex items-center gap-1 p-2 border-b border-zinc-700/50 flex-wrap relative"
+                                                <div class="flex items-center gap-1 p-2 border-b border-zinc-200 dark:border-zinc-700/50 flex-wrap relative"
                                                     x-data="{ showLinkInput: false, linkUrl: '' }">
                                                     <button type="button" @mousedown.prevent @click="bold()"
-                                                        :class="isActive('bold') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('bold') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Bold">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -472,8 +498,9 @@
                                                         </svg>
                                                     </button>
                                                     <button type="button" @mousedown.prevent @click="italic()"
-                                                        :class="isActive('italic') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('italic') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Italic">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -486,8 +513,9 @@
                                                         </svg>
                                                     </button>
                                                     <button type="button" @mousedown.prevent @click="underline()"
-                                                        :class="isActive('underline') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('underline') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Underline">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -496,10 +524,11 @@
                                                                 y2="21" />
                                                         </svg>
                                                     </button>
-                                                    <div class="w-px h-4 bg-zinc-700 mx-1"></div>
+                                                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
                                                     <button type="button" @mousedown.prevent @click="bulletList()"
-                                                        :class="isActive('bulletList') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('bulletList') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Bullet List">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -512,8 +541,9 @@
                                                         </svg>
                                                     </button>
                                                     <button type="button" @mousedown.prevent @click="orderedList()"
-                                                        :class="isActive('orderedList') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('orderedList') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Numbered List">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -525,10 +555,11 @@
                                                             <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
                                                         </svg>
                                                     </button>
-                                                    <div class="w-px h-4 bg-zinc-700 mx-1"></div>
+                                                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
                                                     <button type="button" @mousedown.prevent @click="codeBlock()"
-                                                        :class="isActive('codeBlock') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('codeBlock') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Code Block">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -538,8 +569,9 @@
                                                     </button>
                                                     <button type="button" @mousedown.prevent
                                                         @click="showLinkInput = !showLinkInput; if(showLinkInput) { $nextTick(() => $refs.linkInput.focus()); linkUrl = getLinkUrl(); }"
-                                                        :class="isActive('link') ? 'bg-zinc-600 text-white' :
-                                                            'text-zinc-400 hover:bg-zinc-700 hover:text-white'"
+                                                        :class="isActive('link') ?
+                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Link">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24" stroke-width="2">
@@ -553,19 +585,19 @@
                                                     <!-- Link Input Popover -->
                                                     <div x-show="showLinkInput" @click.away="showLinkInput = false"
                                                         style="display: none;"
-                                                        class="absolute top-full left-0 mt-1 z-10 w-72 p-2 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg flex gap-2 items-center">
+                                                        class="absolute top-full left-0 mt-1 z-10 w-72 p-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg flex gap-2 items-center">
                                                         <input x-ref="linkInput" type="url" x-model="linkUrl"
                                                             placeholder="https://example.com"
                                                             @keydown.enter.prevent="setLink(linkUrl); showLinkInput = false; linkUrl = ''"
-                                                            class="flex-1 bg-zinc-900 border border-zinc-700 text-white text-sm rounded px-2 py-1.5 focus:outline-none focus:border-zinc-500">
+                                                            class="flex-1 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm rounded px-2 py-1.5 focus:outline-none focus:border-zinc-500">
                                                         <button type="button"
                                                             @click="setLink(linkUrl); showLinkInput = false; linkUrl = ''"
-                                                            class="bg-zinc-700 hover:bg-zinc-600 text-white text-sm px-3 py-1.5 rounded transition">
+                                                            class="bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 text-sm px-3 py-1.5 rounded transition">
                                                             Set
                                                         </button>
                                                         <button type="button"
                                                             @click="setLink(null); showLinkInput = false; linkUrl = ''"
-                                                            class="text-zinc-400 hover:text-red-400 p-1.5"
+                                                            class="text-zinc-500 dark:text-zinc-400 hover:text-red-400 p-1.5"
                                                             title="Remove Link">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                                 viewBox="0 0 24 24" stroke-width="2">
@@ -584,10 +616,10 @@
 
                                             <div class="absolute bottom-3 right-3 flex items-center gap-2">
                                                 <label
-                                                    class="p-2 hover:bg-zinc-700 rounded-lg transition cursor-pointer"
+                                                    class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition cursor-pointer"
                                                     title="Attach Files">
-                                                    <svg class="w-5 h-5 text-zinc-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="w-5 h-5 text-zinc-500 dark:text-zinc-400"
+                                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
                                                             d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -609,9 +641,9 @@
                                             <div class="flex flex-wrap gap-2">
                                                 @foreach ($attachments as $index => $attachment)
                                                     <div
-                                                        class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg">
+                                                        class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg">
                                                         <span
-                                                            class="text-sm text-zinc-300 truncate max-w-[200px]">{{ $attachment->getClientOriginalName() }}</span>
+                                                            class="text-sm text-zinc-600 dark:text-zinc-300 truncate max-w-[200px]">{{ $attachment->getClientOriginalName() }}</span>
                                                         <button type="button"
                                                             wire:click="removeAttachment({{ $index }})"
                                                             class="text-zinc-500 hover:text-red-400 transition-colors">
@@ -631,7 +663,7 @@
                                         <div class="flex items-center gap-2">
                                             {{-- Loading state indicator --}}
                                             <div wire:loading wire:target="attachments"
-                                                class="text-sm text-zinc-400 flex items-center gap-2">
+                                                class="text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
                                                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                                     fill="none" viewBox="0 0 24 24">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10"
@@ -645,9 +677,9 @@
                                         </div>
                                         <div class="flex gap-2 items-center">
                                             <label
-                                                class="flex items-center gap-2 text-sm text-zinc-400 hover:text-white cursor-pointer mr-2">
+                                                class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 cursor-pointer mr-2">
                                                 <input type="checkbox" wire:model="keepOpen"
-                                                    class="rounded bg-zinc-800 border-zinc-700 text-teal-600 focus:ring-teal-500 focus:ring-offset-zinc-900" />
+                                                    class="rounded bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-600 focus:ring-teal-500 focus:ring-offset-zinc-900" />
                                                 Keep open
                                             </label>
                                             <button type="submit" wire:loading.attr="disabled"
@@ -665,7 +697,8 @@
                                 </form>
                             </div>
                         @else
-                            <div class="p-6 border-t border-zinc-800 bg-zinc-900 text-center">
+                            <div
+                                class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-center">
                                 <p class="text-zinc-500">This ticket is closed and cannot receive replies.</p>
                             </div>
                         @endif
@@ -673,10 +706,11 @@
                 </div>
 
                 <div x-show="activeTab === 'internal-notes'" x-cloak>
-                    <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-                        <div class="p-6 border-b border-zinc-800">
+                    <div
+                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-semibold text-white">Internal Notes</h2>
+                                <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Internal Notes</h2>
                                 <span class="text-sm text-zinc-500">Visible only to your team</span>
                             </div>
                             <p class="text-sm text-zinc-500 mt-1">{{ count($internal_notes) }} notes</p>
@@ -695,9 +729,15 @@
                                         <div class="bg-indigo-900/20 rounded-lg p-4 border border-indigo-500/30">
                                             <div class="flex items-start justify-between mb-2">
                                                 <div>
-                                                    <div class="font-semibold text-white">
-                                                        {{ $note->user->name ?? 'Unknown' }}</div>
-                                                    <div class="text-xs text-zinc-400">
+                                                    <div class="font-semibold text-zinc-900 dark:text-zinc-100">
+                                                        @if ($note->user && $note->user->id === Auth::id())
+                                                            You <span
+                                                                class="text-xs text-zinc-500 dark:text-zinc-400 font-normal">({{ $note->user->name }})</span>
+                                                        @else
+                                                            {{ $note->user->name ?? 'Unknown' }}
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                                         {{ $note->created_at->format('M d, Y g:i A') }}</div>
                                                 </div>
                                                 <span
@@ -705,7 +745,8 @@
                                                     Internal Note
                                                 </span>
                                             </div>
-                                            <div class="text-zinc-300 whitespace-pre-wrap">{{ $note->message }}</div>
+                                            <div class="text-zinc-600 dark:text-zinc-300 whitespace-pre-wrap">
+                                                {{ $note->message }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -724,11 +765,11 @@
 
                         {{-- Add Internal Note Form --}}
                         @if (!in_array($state, ['closed']))
-                            <div class="p-6 border-t border-zinc-800 bg-indigo-900/10">
+                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-indigo-900/10">
                                 <form wire:submit="addInternalNote">
                                     <div class="relative">
                                         <textarea wire:model="internalNote" rows="3" placeholder="Add a new internal note..." required
-                                            class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none disabled:opacity-50"
+                                            class="w-full bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-3 text-zinc-600 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none disabled:opacity-50"
                                             wire:loading.attr="disabled"></textarea>
                                     </div>
                                     <div class="flex justify-end mt-3">
@@ -746,7 +787,8 @@
                                 </form>
                             </div>
                         @else
-                            <div class="p-6 border-t border-zinc-800 bg-zinc-900 text-center">
+                            <div
+                                class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-center">
                                 <p class="text-zinc-500">This ticket is closed and cannot receive notes.</p>
                             </div>
                         @endif
@@ -755,10 +797,11 @@
 
                 <div x-show="activeTab === 'logs'" x-cloak style="display: none;">
                     {{-- Logs Section --}}
-                    <div class="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
-                        <div class="p-6 border-b border-zinc-800">
+                    <div
+                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
                             <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-semibold text-white">Activity Log</h2>
+                                <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Activity Log</h2>
                                 <span class="text-sm text-zinc-500">{{ count($ticket->logs) }} events</span>
                             </div>
                             <p class="text-sm text-zinc-500 mt-1">Timeline of ticket interactions</p>
@@ -770,7 +813,7 @@
                                     <div
                                         class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                         <div
-                                            class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-800 bg-zinc-900 text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow sm:mx-0 mx-auto z-10">
+                                            class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow sm:mx-0 mx-auto z-10">
                                             @if (str_contains($log->action, 'status'))
                                                 <svg class="w-4 h-4 text-emerald-500" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -793,7 +836,7 @@
                                                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                                 </svg>
                                             @else
-                                                <svg class="w-4 h-4 text-zinc-400" fill="none"
+                                                <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
@@ -802,14 +845,21 @@
                                             @endif
                                         </div>
                                         <div
-                                            class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-800 bg-zinc-800/50">
+                                            class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-800/50">
                                             <div class="flex items-center justify-between mb-1">
-                                                <div class="text-xs text-zinc-400 font-medium">
-                                                    {{ $log->user->name ?? 'System' }}</div>
+                                                <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+                                                    @if ($log->user && $log->user->id === Auth::id())
+                                                        You <span
+                                                            class="text-[10px] text-zinc-500 font-normal">({{ $log->user->name }})</span>
+                                                    @else
+                                                        {{ $log->user->name ?? 'System' }}
+                                                    @endif
+                                                </div>
                                                 <time
                                                     class="text-[10px] text-zinc-500">{{ $log->created_at->diffForHumans() }}</time>
                                             </div>
-                                            <div class="text-sm text-zinc-300">{{ $log->description }}</div>
+                                            <div class="text-sm text-zinc-600 dark:text-zinc-300">
+                                                {{ $log->description }}</div>
                                         </div>
                                     </div>
                                 @empty
@@ -825,9 +875,10 @@
             <div class="space-y-6">
 
                 {{-- Ticket Details --}}
-                <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-6 space-y-4">
+                <div
+                    class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-white">Ticket details</h3>
+                        <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Ticket details</h3>
                     </div>
                     <p class="text-xs text-zinc-500 mb-4">Context for this request</p>
 
@@ -841,7 +892,8 @@
                                     {{ substr($ticket->customer_name, 0, 1) }}
                                 </div>
                                 <div>
-                                    <p class="text-sm text-white">{{ $ticket->customer_name }}</p>
+                                    <p class="text-sm text-zinc-900 dark:text-zinc-100">{{ $ticket->customer_name }}
+                                    </p>
                                     <p class="text-xs text-zinc-500">{{ $ticket->customer_email }}</p>
                                 </div>
                             </div>
@@ -856,7 +908,14 @@
                                     {{ substr($ticket->user->name ?? 'U', 0, 1) }}
                                 </div>
                                 <div>
-                                    <p class="text-sm text-white">{{ $ticket->user->name ?? 'Unassigned' }}</p>
+                                    <p class="text-sm text-zinc-900 dark:text-zinc-100">
+                                        @if ($ticket->user && $ticket->user->id === Auth::id())
+                                            You <span
+                                                class="text-xs text-zinc-500 font-normal">({{ $ticket->user->name }})</span>
+                                        @else
+                                            {{ $ticket->user->name ?? 'Unassigned' }}
+                                        @endif
+                                    </p>
                                     @if ($ticket->user)
                                         <p class="text-xs text-zinc-500">{{ $ticket->user->email }}</p>
                                     @endif
@@ -868,13 +927,14 @@
                         <div>
                             <p class="text-xs text-zinc-500 mb-2">Category</p>
                             <div class="flex items-start gap-2">
-                                <svg class="w-4 h-4 text-zinc-400 mt-0.5" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400 mt-0.5" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                 </svg>
                                 <div>
-                                    <p class="text-sm text-white">{{ $ticket->category->name ?? 'Uncategorized' }}</p>
+                                    <p class="text-sm text-zinc-900 dark:text-zinc-100">
+                                        {{ $ticket->category->name ?? 'Uncategorized' }}</p>
                                     @if ($ticket->category)
                                         <p class="text-xs text-zinc-500">{{ $ticket->category->description ?? '' }}
                                         </p>
@@ -886,19 +946,23 @@
                         {{-- Created --}}
                         <div>
                             <p class="text-xs text-zinc-500 mb-2">Created</p>
-                            <p class="text-sm text-white">{{ $ticket->created_at->format('l - H:i') }} CET</p>
+                            <p class="text-sm text-zinc-900 dark:text-zinc-100">
+                                {{ $ticket->created_at->format('l - H:i') }} CET</p>
                             <p class="text-xs text-zinc-500">via Web form</p>
                         </div>
 
                         {{-- Last Updated --}}
                         <div>
                             <p class="text-xs text-zinc-500 mb-2">Last updated</p>
-                            <p class="text-sm text-white">{{ $ticket->updated_at->diffForHumans() }}</p>
-                            <p class="text-xs text-zinc-500">via {{ Auth::user()->name ?? 'System' }}</p>
+                            <p class="text-sm text-zinc-900 dark:text-zinc-100">
+                                {{ $ticket->updated_at->diffForHumans() }}</p>
+                            <p class="text-xs text-zinc-500">via You <span
+                                    class="text-[10px] text-zinc-600 font-normal">({{ Auth::user()->name }})</span>
+                            </p>
                         </div>
                     </div>
 
-                    <div class="mt-6 pt-6 border-t border-zinc-800 space-y-2">
+                    <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
                         {{-- Assign / Reassign --}}
                         @can('view-operators')
                             <x-dropdown-btn>
@@ -913,8 +977,12 @@
                                 @foreach ($agents as $agent)
                                     <button wire:click="assign({{ $agent->id }})"
                                         wire:confirm="Assign to {{ $agent->name }}?" @click="open = false"
-                                        class="w-full px-4 py-2 text-left text-sm text-white hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
-                                        {{ $agent->name === Auth::user()->name ? $agent->name . ' (You)' : $agent->name }}
+                                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                                        @if ($agent->id === Auth::id())
+                                            You <span class="text-xs opacity-75">({{ $agent->name }})</span>
+                                        @else
+                                            {{ $agent->name }}
+                                        @endif
                                     </button>
                                 @endforeach
                             </x-dropdown-btn>
@@ -934,7 +1002,7 @@
                             @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
                                 <button wire:click="changePriority('{{ $priority }}')"
                                     wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
-                                    class="w-full px-4 py-2 text-left text-sm text-white hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                                     {{ ucfirst($priority) }}
                                 </button>
                             @endforeach
@@ -954,7 +1022,7 @@
                             @foreach (['pending', 'open', 'in progress', 'resolved', 'closed'] as $status)
                                 <button wire:click="changeStatus({{ json_encode($status) }})"
                                     wire:confirm="Change status to {{ $status }}?" @click="open = false"
-                                    class="w-full px-4 py-2 text-left text-sm text-white hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                                     {{ $status }}
                                 </button>
                             @endforeach
@@ -962,7 +1030,7 @@
 
                         {{-- Close Ticket --}}
                         <button wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?"
-                            class="w-full px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                            class="w-full px-4 py-2 bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />
