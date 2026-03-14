@@ -4,7 +4,7 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <x-flash-message />
+        <x-ui.flash-message />
         <div class="space-y-8 col-span-2">
             {{-- Widget Status Toggle --}}
             <div
@@ -149,7 +149,7 @@
                                 {{ __('Save Settings') }}
                             </button>
 
-                            <x-action-message on="widget-updated">
+                            <x-ui.action-message on="widget-updated">
                                 {{ __('Saved.') }}
                             </x-action-message>
                         </div>

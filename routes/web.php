@@ -85,28 +85,28 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
                 return redirect('/home');
             })->name('dashboard');
 
-            Route::livewire('home', \App\Livewire\Dashboard\AgentDashboard::class)
+            Route::livewire('home', \App\Livewire\App\AgentDashboard::class)
                 ->name('agent.dashboard')
                 ->middleware(\App\Http\Middleware\AgentOnly::class);
-            Route::livewire('admin/dashboard', \App\Livewire\Dashboard\AdminDashboard::class)
+            Route::livewire('admin/dashboard', \App\Livewire\App\AdminDashboard::class)
                 ->name('admin.dashboard')
                 ->middleware(\App\Http\Middleware\AdminOnly::class);
-            Route::view('tickets', 'dashboard.tickets.index')->name('tickets');
+            Route::view('tickets', 'app.tickets.index')->name('tickets');
             Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
-            Route::livewire('notifications', \App\Livewire\Dashboard\NotificationsPage::class)->name('notifications');
-            Route::get('/operators', fn () => view('dashboard.operators'))
+            Route::livewire('notifications', \App\Livewire\Notifications\NotificationsPage::class)->name('notifications');
+            Route::get('/operators', fn () => view('app.operators'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operators');
-            Route::get('/operators/{operator}', \App\Livewire\Dashboard\OperatorProfile::class)
+            Route::get('/operators/{operator}', \App\Livewire\Operators\OperatorProfile::class)
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operator.profile');
-            Route::get('/categories', fn () => view('dashboard.categories'))
+            Route::get('/categories', fn () => view('app.categories'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('categories');
-            Route::get('/automation', fn () => view('dashboard.automation'))
+            Route::get('/automation', fn () => view('app.automation'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('automation');
-            Route::livewire('reports', \App\Livewire\Dashboard\ReportsAnalytics::class)
+            Route::livewire('reports', \App\Livewire\Reports\ReportsAnalytics::class)
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('reports');
         });

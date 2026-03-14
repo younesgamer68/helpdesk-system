@@ -13,9 +13,9 @@ class Ticket extends Model
 
     protected $guarded = [];
 
-    public function user()
+    public function assignedTo()
     {
-        return $this->belongsTo(User::class, foreignKey: 'assigned_to');
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     public function company()

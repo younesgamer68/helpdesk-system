@@ -19,7 +19,7 @@
     @vite(['resources/css/welcome.css'])
 
     <!-- Alpine.js — ui-state store must load before Alpine starts -->
-    <x-ui-state />
+    <x-ui.ui-state />
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.8/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <style>
@@ -34,7 +34,7 @@
     :class="$store.ui.darkMode ? 'bg-black text-white' : 'bg-[#FFF0E5] text-[#17494D]'">
 
     <!-- Navigation -->
-    <x-nav-bar />
+    <x-layout.nav-bar />
 
     {{-- ═══════════════════════════════════════════════════════════════════
         HERO — Full-width centered w/ badge, headline, subtitle, CTAs
@@ -565,7 +565,7 @@
     </section>
 
     <!-- Footer -->
-    <x-footer />
+    <x-layout.footer />
 
     <!-- Chatbot -->
     <x-chatbot />

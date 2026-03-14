@@ -10,7 +10,7 @@
         <flux:sidebar.toggle class="lg:hidden mr-2" icon="bars-2" inset="left" />
 
         <div class="flex items-center gap-2">
-            <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
+            <x-layout.app-logo href="{{ route('dashboard') }}" wire:navigate />
             <livewire:notification-bell />
         </div>
 
@@ -39,7 +39,7 @@
             </flux:tooltip>
         </flux:navbar>
 
-        <x-desktop-user-menu />
+        <x-app.desktop-user-menu />
     </flux:header>
 
     <!-- Mobile Menu -->
@@ -47,7 +47,7 @@
         class="lg:hidden border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.header class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-layout.app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 <livewire:notification-bell />
             </div>
             <flux:sidebar.collapse

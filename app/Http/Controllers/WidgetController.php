@@ -32,7 +32,7 @@ class WidgetController extends Controller
             ->with(['company', 'company.categories'])
             ->firstOrFail();
 
-        return view('widget.form', compact('widget'));
+        return view('portal.form', compact('widget'));
     }
 
     /**
@@ -132,7 +132,7 @@ class WidgetController extends Controller
         // Send tracking email
         Mail::to($ticket->customer_email)->send(new TicketVerified($ticket, $trackingToken));
 
-        return view('widget.verified', compact('ticket'));
+        return view('portal.verified', compact('ticket'));
     }
 
     /**
@@ -154,7 +154,7 @@ class WidgetController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return view('widget.track', compact('ticket', 'replies'));
+        return view('portal.track', compact('ticket', 'replies'));
     }
 
     /**

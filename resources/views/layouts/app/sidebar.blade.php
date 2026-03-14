@@ -113,7 +113,7 @@
         <nav class="flex-1 flex flex-col items-center gap-1 py-3 ">
 
             @if (in_array(Auth::user()->role, ['admin', 'operator']))
-                @php $active = request()->routeIs('dashboard.home', 'admin.dashboard', 'agent.dashboard'); @endphp
+                @php $active = request()->routeIs('dashboard', 'admin.dashboard', 'agent.dashboard'); @endphp
                 <a href="{{ route('dashboard', Auth::user()->company->slug) }}" wire:navigate
                    data-tip="{{ __('Dashboard') }}"
                    class="sb-tip w-10 h-10 flex items-center justify-center rounded-lg transition-colors no-underline
@@ -202,7 +202,7 @@
 
                     {{-- Profile: full row, sidebar clips it to just the avatar --}}
                     <div class="w-full overflow-hidden px-3">
-                        <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+                        <x-app.desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
                     </div>
 
                 </div>

@@ -129,7 +129,7 @@
             <p><strong>Created:</strong> {{ $ticket->created_at->format('M d, Y H:i') }}</p>
             <p><strong>Last Updated:</strong> {{ $ticket->updated_at->format('M d, Y H:i') }}</p>
             @if($ticket->assigned_to)
-                <p><strong>Assigned To:</strong> {{ $ticket->user?->name ?? 'Unknown' }}</p>
+                <p><strong>Assigned To:</strong> {{ $ticket->assignedTo?->name ?? 'Unknown' }}</p>
             @else
                 <p><strong>Assigned To:</strong> <span style="color: #ef4444;">Unassigned</span></p>
             @endif
