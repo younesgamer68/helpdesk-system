@@ -81,6 +81,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(TicketCategory::class, 'specialty_id');
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(TicketCategory::class, 'category_user', 'user_id', 'ticket_category_id')->withTimestamps();
+    }
+
     public function assignedTickets()
     {
         return $this->hasMany(Ticket::class, 'assigned_to');

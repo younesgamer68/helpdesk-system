@@ -97,6 +97,9 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::get('/operators', fn () => view('dashboard.operators'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operators');
+            Route::get('/operators/{operator}', \App\Livewire\Dashboard\OperatorProfile::class)
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('operator.profile');
             Route::get('/categories', fn () => view('dashboard.categories'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('categories');

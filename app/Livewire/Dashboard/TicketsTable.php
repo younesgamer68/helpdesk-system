@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Models\SavedFilterView;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -31,6 +32,8 @@ class TicketsTable extends Component
     public $sortBy = 'id';
 
     public $sortDirection = 'desc';
+
+    public $showDeletedOnly = false;
 
     public $selectedTickets = [];
 
@@ -63,6 +66,10 @@ class TicketsTable extends Component
     public $assigned_to = '';
 
     public $category_id = '';
+
+    public $customViewName = '';
+
+    public $showSaveViewModal = false;
 
     protected function rules()
     {
@@ -111,6 +118,17 @@ class TicketsTable extends Component
         );
     }
 
+    public function refreshTickets()
+    {
+        unset($this->tickets);
+    }
+
+    #[Computed]
+    public function savedViews()
+    {
+        return SavedFilterView::where('user_id', Auth::id())->orderBy('name')->get();
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -144,6 +162,12 @@ class TicketsTable extends Component
     public function updatingDateTo()
     {
         $this->resetPage();
+    }
+
+    public function updatingShowDeletedOnly()
+    {
+        $this->resetPage();
+        $this->clearFilters();
     }
 
     public function updatedSelectAll($value)
@@ -182,13 +206,68 @@ class TicketsTable extends Component
         $this->resetPage();
     }
 
+    public function applyPreset(string $preset): void
+    {
+        $this->clearFilters();
+
+        if ($preset === 'unassigned_high') {
+            $this->priorityFilter = 'high';
+            $this->statusFilter = 'open';
+            $this->assignedFilter = '';
+        } elseif ($savedView = SavedFilterView::where('user_id', Auth::id())->where('id', (int) $preset)->first()) {
+            foreach ($savedView->filters as $key => $value) {
+                if (property_exists($this, $key)) {
+                    $this->{$key} = $value;
+                }
+            }
+        }
+
+        $this->resetPage();
+    }
+
+    public function saveCustomView()
+    {
+        $this->validate([
+            'customViewName' => 'required|string|max:255',
+        ]);
+
+        SavedFilterView::create([
+            'user_id' => Auth::id(),
+            'name' => $this->customViewName,
+            'filters' => [
+                'search' => $this->search,
+                'statusFilter' => $this->statusFilter,
+                'priorityFilter' => $this->priorityFilter,
+                'assignedFilter' => $this->assignedFilter,
+                'categoryFilter' => $this->categoryFilter,
+                'dateFrom' => $this->dateFrom,
+                'dateTo' => $this->dateTo,
+            ],
+        ]);
+
+        $this->dispatch('show-toast', message: 'View saved successfully!', type: 'success');
+        $this->customViewName = '';
+        $this->showSaveViewModal = false;
+    }
+
+    public function deleteSavedView($id)
+    {
+        SavedFilterView::where('user_id', Auth::id())->where('id', $id)->delete();
+        $this->dispatch('show-toast', message: 'View removed successfully!', type: 'success');
+    }
+
     #[Computed]
     public function tickets()
     {
         $user = Auth::user();
 
-        $query = Ticket::where('company_id', $user->company_id)->where('verified', 1)
-            ->with(['user:id,name', 'category:id,name']);
+        $query = Ticket::where('company_id', $user->company_id)->where('verified', 1);
+
+        if ($this->showDeletedOnly) {
+            $query->onlyTrashed();
+        }
+
+        $query->with(['user:id,name', 'category:id,name']);
 
         // Filter for non-admin users (operators)
         if ($user->role !== 'admin') {
@@ -240,7 +319,7 @@ class TicketsTable extends Component
     #[Computed]
     public function hasActiveFilters()
     {
-        return $this->search || $this->statusFilter || $this->priorityFilter || $this->assignedFilter || $this->categoryFilter || $this->dateFrom || $this->dateTo;
+        return $this->search || $this->statusFilter || $this->priorityFilter || $this->assignedFilter || $this->categoryFilter || $this->dateFrom || $this->dateTo || $this->showDeletedOnly;
     }
 
     #[Computed]
@@ -342,7 +421,7 @@ class TicketsTable extends Component
         $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} created successfully!", type: 'success');
         $this->closeCreateModal();
         $this->clearForm();
-        unset($this->tickets);
+        $this->refreshTickets();
         $this->resetPage();
     }
 
@@ -368,6 +447,16 @@ class TicketsTable extends Component
         $this->selectedTickets = array_diff($this->selectedTickets, [$ticketId]);
     }
 
+    public function restoreTicket($ticketId)
+    {
+        $ticket = Ticket::withTrashed()->findOrFail($ticketId);
+        $ticketNumber = $ticket->ticket_number;
+        $ticket->restore();
+
+        $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} restored successfully!", type: 'success');
+        $this->refreshTickets();
+    }
+
     public function deleteSelectedTickets()
     {
         if (empty($this->selectedTickets)) {
@@ -382,6 +471,48 @@ class TicketsTable extends Component
         $this->selectedTickets = [];
         $this->selectAll = false;
         $this->resetPage();
+    }
+
+    public function bulkSetStatus(string $status): void
+    {
+        if (empty($this->selectedTickets)) {
+            return;
+        }
+
+        Ticket::whereIn('id', $this->selectedTickets)->update(['status' => $status]);
+
+        $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets updated to '.str($status)->replace('_', ' ')->title(), type: 'success');
+        $this->selectedTickets = [];
+        $this->selectAll = false;
+        $this->refreshTickets();
+    }
+
+    public function bulkSetPriority(string $priority): void
+    {
+        if (empty($this->selectedTickets)) {
+            return;
+        }
+
+        Ticket::whereIn('id', $this->selectedTickets)->update(['priority' => $priority]);
+
+        $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets set to '.ucfirst($priority).' priority', type: 'success');
+        $this->selectedTickets = [];
+        $this->selectAll = false;
+        $this->refreshTickets();
+    }
+
+    public function bulkAssignAgent(int $agentId): void
+    {
+        if (empty($this->selectedTickets)) {
+            return;
+        }
+
+        Ticket::whereIn('id', $this->selectedTickets)->update(['assigned_to' => $agentId]);
+
+        $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets assigned successfully', type: 'success');
+        $this->selectedTickets = [];
+        $this->selectAll = false;
+        $this->refreshTickets();
     }
 
     public function render()

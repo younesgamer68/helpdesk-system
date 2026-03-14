@@ -52,4 +52,12 @@ class Ticket extends Model
     {
         return $this->hasMany(TicketLog::class);
     }
+
+    /**
+     * Scope a query to only include open tickets.
+     */
+    public function scopeOpen($query)
+    {
+        return $query->whereIn('status', ['open', 'in_progress', 'pending']);
+    }
 }

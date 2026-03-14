@@ -16,7 +16,8 @@
                     </a>
                     <div>
                         <div class="flex items-center gap-3 mb-1">
-                            <span class="text-sm text-zinc-500 dark:text-zinc-400">Ticket #{{ $ticket->ticket_number }}</span>
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400">Ticket
+                                #{{ $ticket->ticket_number }}</span>
                             <span class="text-xs text-zinc-600 dark:text-zinc-400">Last updated
                                 {{ $ticket->updated_at->diffForHumans() }}</span>
                         </div>
@@ -96,9 +97,9 @@
                 {{-- Conversation & Notes Tabs --}}
                 <div class="flex items-center justify-between mb-4">
                     <div
-                        class="flex space-x-1 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg max-w-[320px]">
+                        class="flex space-x-1 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg max-w-[320px]">
                         <button @click="activeTab = 'conversation'"
-                            :class="{ 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'conversation' }"
+                            :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'conversation' }"
                             class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -107,7 +108,7 @@
                             Conversation
                         </button>
                         <button @click="activeTab = 'internal-notes'"
-                            :class="{ 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'internal-notes', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'internal-notes' }"
+                            :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'internal-notes', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'internal-notes' }"
                             class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -131,8 +132,8 @@
                 <div x-show="activeTab === 'conversation'">
                     {{-- Conversation Section --}}
                     <div
-                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
+                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Conversation</h2>
                                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible to customer</span>
@@ -152,7 +153,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <div
-                                        class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700/50">
+                                        cclass="bg-zinc-50 dark:bg-zinc-700/40 rounded-lg p-4 border border-zinc-200 dark:border-zinc-600/50">
                                         <div class="flex items-start justify-between mb-2">
                                             <div>
                                                 <div class="font-semibold text-zinc-900 dark:text-zinc-100">
@@ -287,7 +288,7 @@
 
                         {{-- Reply Form --}}
                         @if (!in_array($state, ['closed']))
-                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800">
+                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
                                 <form wire:submit="addReply">
                                     <div class="mb-4">
                                         <div class="flex items-center justify-between mb-3">
@@ -699,7 +700,7 @@
                             </div>
                         @else
                             <div
-                                class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-center">
+                                class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-center">
                                 <p class="text-zinc-500">This ticket is closed and cannot receive replies.</p>
                             </div>
                         @endif
@@ -708,13 +709,14 @@
 
                 <div x-show="activeTab === 'internal-notes'" x-cloak>
                     <div
-                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
+                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Internal Notes</h2>
                                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible only to your team</span>
                             </div>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ count($internal_notes) }} notes</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ count($internal_notes) }}
+                                notes</p>
                         </div>
 
                         <div class="p-6 space-y-6 max-h-[600px] overflow-y-auto">
@@ -727,7 +729,8 @@
                                         </div>
                                     </div>
                                     <div class="flex-1">
-                                        <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4 border border-indigo-200 dark:border-indigo-500/30">
+                                        <div
+                                            class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4 border border-indigo-200 dark:border-indigo-500/30">
                                             <div class="flex items-start justify-between mb-2">
                                                 <div>
                                                     <div class="font-semibold text-zinc-900 dark:text-zinc-100">
@@ -753,8 +756,8 @@
                                 </div>
                             @empty
                                 <div class="text-center py-8 text-zinc-500 dark:text-zinc-400">
-                                    <svg class="w-12 h-12 mx-auto mb-3 text-zinc-500 dark:text-zinc-500" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-zinc-500 dark:text-zinc-500"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                         </path>
@@ -766,7 +769,8 @@
 
                         {{-- Add Internal Note Form --}}
                         @if (!in_array($state, ['closed']))
-                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-indigo-50/50 dark:bg-indigo-900/10">
+                            <div
+                                class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-indigo-50/50 dark:bg-indigo-900/10">
                                 <form wire:submit="addInternalNote">
                                     <div class="relative">
                                         <textarea wire:model="internalNote" rows="3" placeholder="Add a new internal note..." required
@@ -789,7 +793,7 @@
                             </div>
                         @else
                             <div
-                                class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-center">
+                                class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-center">
                                 <p class="text-zinc-500">This ticket is closed and cannot receive notes.</p>
                             </div>
                         @endif
@@ -799,13 +803,15 @@
                 <div x-show="activeTab === 'logs'" x-cloak style="display: none;">
                     {{-- Logs Section --}}
                     <div
-                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
+                        class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                        <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Activity Log</h2>
-                                <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ count($ticket->logs) }} events</span>
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ count($ticket->logs) }}
+                                    events</span>
                             </div>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Timeline of ticket interactions</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Timeline of ticket interactions
+                            </p>
                         </div>
                         <div class="p-6">
                             <div
@@ -814,7 +820,7 @@
                                     <div
                                         class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                         <div
-                                            class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow sm:mx-0 mx-auto z-10">
+                                            class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow sm:mx-0 mx-auto z-10">
                                             @if (str_contains($log->action, 'status'))
                                                 <svg class="w-4 h-4 text-emerald-500" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -846,7 +852,7 @@
                                             @endif
                                         </div>
                                         <div
-                                            class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50">
+                                            class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
                                             <div class="flex items-center justify-between mb-1">
                                                 <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
                                                     @if ($log->user && $log->user->id === Auth::id())
@@ -877,7 +883,7 @@
 
                 {{-- Ticket Details --}}
                 <div
-                    class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
+                    class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Ticket details</h3>
                     </div>
@@ -963,7 +969,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-2">
+                    <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 space-y-2">
                         {{-- Assign / Reassign --}}
                         @can('view-operators')
                             <x-dropdown-btn>
@@ -1033,7 +1039,7 @@ transition-colors first:rounded-t-lg last:rounded-b-lg">
 
                         {{-- Close Ticket --}}
                         <button wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?"
-                            class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                            class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-900 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />

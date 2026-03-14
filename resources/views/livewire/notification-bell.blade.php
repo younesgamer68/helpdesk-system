@@ -15,7 +15,8 @@
 
         <flux:menu
             class="w-80 sm:w-80 md:w-96 !p-0 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80 rounded-xl shadow-2xl overflow-hidden min-w-[320px]">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+            <div
+                class="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
                 <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Notifications</h3>
                 @if ($this->unreadCount > 0)
                     <button wire:click.stop="markAllRead" type="button"
@@ -90,8 +91,10 @@
                     </button>
                 @empty
                     <div class="p-8 text-center flex flex-col items-center justify-center">
-                        <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-3">
-                            <svg class="w-6 h-6 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div
+                            class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-3">
+                            <svg class="w-6 h-6 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -101,7 +104,8 @@
                 @endforelse
             </div>
 
-            <div class="flex items-center justify-center px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+            <div
+                class="flex items-center justify-center px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
                 <a href="{{ route('notifications', ['company' => Auth::user()->company->slug]) }}"
                     class="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300 font-medium transition-colors">
                     View all notifications →
@@ -148,14 +152,16 @@
                 x-transition:enter-start="translate-y-10 opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
                 x-transition:leave="transition ease-in duration-200 transform"
                 x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-2 opacity-0"
-                @click="visit(notification)" :class="notification.url ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800' : ''"
-                class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 shadow-2xl rounded-xl p-4 flex items-start space-x-3 pointer-events-auto overflow-hidden relative transition-colors">
+                @click="visit(notification)"
+                :class="notification.url ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800' : ''"
+                class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 shadow-2xl rounded-xl p-4 flex items-start space-x-3 pointer-events-auto overflow-hidden !absolute left-[95vw] transition-colors">
 
                 <!-- Subtle side accent line -->
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"></div>
 
                 <!-- Bell Icon -->
-                <div class="flex-shrink-0 mt-0.5 ml-1 text-teal-500 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-400/10 p-1.5 rounded-full">
+                <div
+                    class="flex-shrink-0 mt-0.5 ml-1 text-teal-500 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-400/10 p-1.5 rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -164,7 +170,8 @@
                 </div>
 
                 <div class="flex-1 w-0">
-                    <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate" x-text="notification.title"></p>
+                    <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate" x-text="notification.title">
+                    </p>
                     <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400" x-text="notification.message"></p>
                 </div>
 

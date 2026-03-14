@@ -5,12 +5,49 @@
     <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Filters & Search</h3>
-            @if ($this->hasActiveFilters)
-                <button wire:click="clearFilters"
-                    class="px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    Clear all filters
-                </button>
-            @endif
+            <div class="flex items-center gap-2">
+                @if ($this->hasActiveFilters)
+                    <button wire:click="$set('showSaveViewModal', true)"
+                        class="px-3 py-1.5 text-sm text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-100 transition-colors font-medium">
+                        Save current view
+                    </button>
+                    <button wire:click="clearFilters"
+                        class="px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                        Clear all filters
+                    </button>
+                @endif
+            </div>
+        </div>
+
+        <!-- Saved Filters (Presets) -->
+        <div class="mb-6 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mr-2">Saved
+                Views:</span>
+            <button wire:click="applyPreset('unassigned_high')"
+                class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/50 hover:bg-teal-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500">
+                <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Unassigned High Priority
+            </button>
+
+            @foreach ($this->savedViews as $view)
+                <div class="flex items-center gap-1 group">
+                    <button wire:click="applyPreset('{{ $view->id }}')"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/50 hover:bg-teal-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500">
+                        {{ $view->name }}
+                    </button>
+                    <button wire:click="deleteSavedView({{ $view->id }})"
+                        wire:confirm="Are you sure you want to delete this view?"
+                        class="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-red-500 transition-all">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            @endforeach
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
@@ -72,20 +109,10 @@
                 </div>
             @endif
 
-            <!-- Assigned To Filter (Admin only) -->
-            @if (Auth::user()->isAdmin())
-                <div>
-                    <select wire:model.live="assignedFilter"
-                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
-                        <option value="">All Agents</option>
-                        @foreach ($this->agents as $agent)
-                            <option value="{{ $agent->id }}">
-                                {{ $agent->name === Auth::user()->name ? $agent->name . ' (You)' : $agent->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            @endif
+            <!-- Show Deleted Only Toggle -->
+            <div class="flex items-center gap-2 h-full py-1">
+                <flux:switch wire:model.live="showDeletedOnly" label="Show Deleted Only" />
+            </div>
         </div>
     </div>
 
@@ -148,6 +175,12 @@
                     Assigned: {{ $this->agents->find($assignedFilter)?->name ?? 'Unassigned' }}
                 </span>
             @endif
+            @if ($showDeletedOnly)
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-500/10 text-red-400 text-xs font-medium rounded-full border border-red-500/20">
+                    Showing Deleted Only
+                </span>
+            @endif
         </div>
     @endif
 
@@ -156,8 +189,80 @@
         <div
             class="mb-4 p-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
             <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ count($selectedTickets) }} tickets selected</span>
+                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ count($selectedTickets) }}
+                    tickets selected</span>
                 <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                <!-- Bulk Status -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                        class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                        Set Status
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute left-0 mt-2 w-40 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                        @foreach ($statuses as $status)
+                            <button wire:click="bulkSetStatus('{{ $status }}')" @click="open = false"
+                                class="w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                {{ ucfirst(str_replace('_', ' ', $status)) }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                <!-- Bulk Priority -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                        class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                        Set Priority
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false"
+                        class="absolute left-0 mt-2 w-40 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                        @foreach ($priorities as $priority)
+                            <button wire:click="bulkSetPriority('{{ $priority }}')" @click="open = false"
+                                class="w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                {{ ucfirst($priority) }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                @if (Auth::user()->isAdmin())
+                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                    <!-- Bulk Assign -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open"
+                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                            Assign To
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute left-0 mt-2 w-48 max-h-60 overflow-y-auto bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                            @foreach ($this->agents as $agent)
+                                <button wire:click="bulkAssignAgent({{ $agent->id }})" @click="open = false"
+                                    class="w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                    {{ $agent->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
                 <button wire:click="deleteSelectedTickets"
                     wire:confirm="Are you sure you want to delete {{ count($selectedTickets) }} tickets?"
                     class="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700/50">
@@ -217,7 +322,8 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Assigned To</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
                         wire:click="setSortBy('priority')">
@@ -241,9 +347,12 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Category</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider"></th>
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    </th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800/10">
@@ -256,11 +365,13 @@
                             <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
                                 class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 font-mono">{{ $ticket->ticket_number }}</td>
+                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 font-mono">
+                            {{ $ticket->ticket_number }}</td>
                         <td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 font-medium">
                             {{ Str::limit($ticket->subject, 50) }}
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300">{{ $ticket->customer_name }}</td>
+                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300">{{ $ticket->customer_name }}
+                        </td>
                         <td class="px-4 py-3 text-sm">
                             <div class="flex items-center gap-2">
                                 @if ($ticket->user)
@@ -269,7 +380,7 @@
                                         {{ substr($ticket->user->name, 0, 1) }}
                                     </div>
                                     <span class="text-zinc-600 dark:text-zinc-300">
-                                        @if($ticket->user->id === Auth::id())
+                                        @if ($ticket->user->id === Auth::id())
                                             You <span class="text-xs text-zinc-500">({{ $ticket->user->name }})</span>
                                         @else
                                             {{ $ticket->user->name }}
@@ -315,12 +426,14 @@
                                 {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300">{{ $ticket->category->name ?? 'N/A' }}</td>
+                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300">
+                            {{ $ticket->category->name ?? 'N/A' }}</td>
                         <td class="px-4 py-3 text-sm" wire:click.stop>
                             <div x-data="{ open: false }" @click.away="open = false" class="relative">
                                 <button @click="open = !open"
                                     class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
-                                    <svg class="w-5 h-5 text-zinc-500 dark:text-zinc-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-5 h-5 text-zinc-500 dark:text-zinc-400" fill="currentColor"
+                                        viewBox="0 0 20 20">
                                         <path
                                             d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                     </svg>
@@ -346,17 +459,29 @@
                                         </svg>
                                         View details
                                     </a>
-                                    <button wire:click="deleteTicket({{ $ticket->id }})"
-                                        wire:confirm="Are you sure you want to soft delete this ticket?"
-                                        @click="open = false"
-                                        class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-red-300 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                        Delete
-                                    </button>
+                                    @if ($ticket->trashed())
+                                        <button wire:click="restoreTicket({{ $ticket->id }})" @click="open = false"
+                                            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-teal-300 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Restore
+                                        </button>
+                                    @else
+                                        <button wire:click="deleteTicket({{ $ticket->id }})"
+                                            wire:confirm="Are you sure you want to soft delete this ticket?"
+                                            @click="open = false"
+                                            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-red-300 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </td>
@@ -365,12 +490,13 @@
                 @empty
                     <tr>
                         <td colspan="9" class="px-4 py-12 text-center">
-                            <svg class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                            <svg class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                             </svg>
-                            <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting your filters.</p>
+                            <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting your
+                                filters.</p>
                         </td>
                     </tr>
                 @endforelse
@@ -397,7 +523,8 @@
                     class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
                     <div>
                         <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Create New Ticket</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Fill in the details to create a support ticket</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Fill in the details to create a
+                            support ticket</p>
                     </div>
                     <button wire:click="attemptCloseCreateModal"
                         class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
@@ -432,7 +559,8 @@
 
                     <!-- Customer Information Section -->
                     <div>
-                        <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
+                        <h4
+                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
                             <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -485,7 +613,8 @@
 
                     <!-- Ticket Details Section -->
                     <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
+                        <h4
+                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
                             <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -514,7 +643,7 @@
                                     Description <span class="text-red-400">*</span>
                                 </label>
                                 <textarea wire:model.blur="description" rows="5"
-                                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
                                     placeholder="Detailed description of the issue..."></textarea>
                                 @error('description')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -562,7 +691,8 @@
 
                     <!-- Assignment Section -->
                     <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
+                        <h4
+                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
                             <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -668,7 +798,8 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard changes?</h3>
+                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard changes?
+                                </h3>
                                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
                                     You have unsaved changes. If you close now, your progress will be lost.
                                 </p>
@@ -689,5 +820,21 @@
             </div>
         </div>
     @endif
-</div>
+
+    <!-- Save View Modal -->
+    <flux:modal name="save-view" wire:model="showSaveViewModal" class="min-w-[20rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">Save Current View</flux:heading>
+                <flux:subheading>Give your filter combination a name to use it later.</flux:subheading>
+            </div>
+
+            <flux:input wire:model="customViewName" label="View Name" placeholder="e.g. My Urgent Tickets" />
+
+            <div class="flex">
+                <flux:spacer />
+                <flux:button type="submit" variant="primary" wire:click="saveCustomView">Save View</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>
