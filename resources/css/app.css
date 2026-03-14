@@ -97,33 +97,108 @@ select:focus[data-flux-control] {
     font-size: inherit !important;
 }
 
-/* Force light/printable theme when capturing for PDF */
-#reports-pdf-content.pdf-exporting,
-#reports-pdf-content.pdf-exporting * {
+/* ─── PDF EXPORT CAPTURE ───────────────────────────────────────────────────
+   These rules apply during html2canvas capture (screen, not print).
+   Keep ALL of this OUTSIDE any @media block.
+──────────────────────────────────────────────────────────────────────────── */
+
+#reports-pdf-content.pdf-exporting {
+    overflow: visible !important;
+    min-height: 400px;
     background-color: #ffffff !important;
-    border-color: #e5e5e5 !important;
     color: #171717 !important;
 }
+
+/* Kill transitions/animations to avoid mid-capture artifacts */
+#reports-pdf-content.pdf-exporting,
+#reports-pdf-content.pdf-exporting * {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Container backgrounds — only target layout wrappers, not every element */
+#reports-pdf-content.pdf-exporting .bg-white,
+#reports-pdf-content.pdf-exporting .dark\:bg-zinc-800,
+#reports-pdf-content.pdf-exporting .dark\:bg-zinc-900\/50 {
+    background-color: #ffffff !important;
+}
+
+#reports-pdf-content.pdf-exporting .bg-zinc-50,
+#reports-pdf-content.pdf-exporting .dark\:bg-zinc-900 {
+    background-color: #fafafa !important;
+}
+
+/* Borders */
+#reports-pdf-content.pdf-exporting .border-zinc-200,
+#reports-pdf-content.pdf-exporting .dark\:border-zinc-800,
+#reports-pdf-content.pdf-exporting .dark\:border-zinc-700 {
+    border-color: #e5e5e5 !important;
+}
+
+/* Dividers */
+#reports-pdf-content.pdf-exporting .divide-zinc-200>*,
+#reports-pdf-content.pdf-exporting .dark\:divide-zinc-800>* {
+    border-color: #e5e5e5 !important;
+}
+
+/* Text */
+#reports-pdf-content.pdf-exporting .text-zinc-900,
+#reports-pdf-content.pdf-exporting .dark\:text-zinc-100 {
+    color: #171717 !important;
+}
+
+#reports-pdf-content.pdf-exporting .text-zinc-600,
+#reports-pdf-content.pdf-exporting .dark\:text-zinc-300 {
+    color: #404040 !important;
+}
+
 #reports-pdf-content.pdf-exporting .text-zinc-500,
 #reports-pdf-content.pdf-exporting .text-zinc-400,
-#reports-pdf-content.pdf-exporting .text-zinc-600 {
+#reports-pdf-content.pdf-exporting .dark\:text-zinc-400 {
     color: #525252 !important;
 }
-#reports-pdf-content.pdf-exporting .text-teal-400,
-#reports-pdf-content.pdf-exporting .text-green-400 {
+
+#reports-pdf-content.pdf-exporting .text-teal-400 {
     color: #0d9488 !important;
 }
+
+#reports-pdf-content.pdf-exporting .text-green-400 {
+    color: #16a34a !important;
+}
+
 #reports-pdf-content.pdf-exporting .text-red-400 {
     color: #dc2626 !important;
 }
+
 #reports-pdf-content.pdf-exporting .text-blue-400 {
     color: #2563eb !important;
 }
 
-#reports-pdf-content.pdf-exporting {
-    min-height: 400px;
+/* Progress/sparkline track backgrounds */
+#reports-pdf-content.pdf-exporting .bg-zinc-200,
+#reports-pdf-content.pdf-exporting .dark\:bg-zinc-700 {
+    background-color: #e5e5e5 !important;
 }
 
+/* Teal fills (progress bars, sparklines) */
+#reports-pdf-content.pdf-exporting .bg-teal-500 {
+    background-color: #14b8a6 !important;
+}
+
+#reports-pdf-content.pdf-exporting .bg-teal-500\/40 {
+    background-color: rgba(20, 184, 166, 0.4) !important;
+}
+
+/* Avatar/initials circles */
+#reports-pdf-content.pdf-exporting .bg-zinc-100,
+#reports-pdf-content.pdf-exporting .dark\:bg-zinc-800:not(.bg-white) {
+    background-color: #f5f5f5 !important;
+}
+
+/* Inline style="background-color:..." is intentionally NOT overridden —
+   category dots, priority bar fills, and chart colors are preserved. */
+
+/* ─── PRINT MEDIA (browser Ctrl+P) ────────────────────────────────────────── */
 @media print {
 
     #app-sidebar,

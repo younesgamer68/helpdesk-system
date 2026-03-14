@@ -47,7 +47,7 @@ document.addEventListener('alpine:init', () => {
             const keepStatus = preserveStatusForTab === 'overview' && this.charts.status;
             Object.entries(this.charts).forEach(([key, ch]) => {
                 if (key === 'status' && keepStatus) return;
-                try { ch?.destroy?.(); } catch (e) {}
+                try { ch?.destroy?.(); } catch (e) { }
             });
             if (!keepStatus) {
                 this.charts = {};
@@ -177,90 +177,174 @@ document.addEventListener('alpine:init', () => {
         },
 
         async exportPdf() {
-    this.exportingPdf = true;
+            this.exportingPdf = true;
 
-    const pdfContent = document.getElementById('reports-pdf-content');
-    if (!pdfContent) {
-        this.exportingPdf = false;
-        alert('PDF content not found.');
-        return;
-    }
+            const pdfContent = document.getElementById('reports-pdf-content');
+            if (!pdfContent) { this.exportingPdf = false; return; }
 
-    pdfContent.classList.add('pdf-exporting');
-    await this.$nextTick();
-    pdfContent.scrollIntoView({ behavior: 'instant', block: 'start' });
-    await new Promise(r => setTimeout(r, 350));
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            await new Promise(r => setTimeout(r, 300));
 
-    try {
-        const canvas = await html2canvas(pdfContent, {
-            backgroundColor: '#ffffff',
-            scale: 1.5,
-            useCORS: true,
-            logging: false,
-            scrollX: -window.scrollX,
-            scrollY: -window.scrollY,
-            ignoreElements: (el) => el.classList?.contains('pdf-exclude') || el.classList?.contains('export-overlay'),
-            onclone: (clonedDoc, clonedNode) => {
-                clonedNode.querySelectorAll('canvas').forEach((clonedCanvas) => {
-                    const id = clonedCanvas.id;
-                    if (id) {
-                        const original = document.getElementById(id);
-                        if (original && original !== clonedCanvas) {
-                            const ctx = clonedCanvas.getContext('2d');
-                            if (ctx) {
-                                ctx.drawImage(original, 0, 0);
-                            }
-                        }
-                    }
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = `position:fixed;top:0;left:-99999px;width:${pdfContent.offsetWidth}px;z-index:-1;pointer-events:none;`;
+
+            const removedFluxEls = [];
+            const fluxTags = ['ui-dropdown', 'ui-select', 'ui-options', 'ui-option', 'ui-checkbox', 'ui-radio', 'ui-button'];
+
+            // Canvas-based color resolver — converts oklab/oklch/color-mix → rgb()
+            // Canvas always resolves to sRGB so html2canvas can read it
+            const colorCache = new Map();
+            const resolveCanvas = document.createElement('canvas');
+            resolveCanvas.width = resolveCanvas.height = 1;
+            const resolveCtx = resolveCanvas.getContext('2d');
+
+            function toRgb(cssColor) {
+                if (!cssColor) return null;
+                if (!cssColor.includes('oklab') && !cssColor.includes('oklch') && !cssColor.includes('color-mix')) return null;
+                if (colorCache.has(cssColor)) return colorCache.get(cssColor);
+                try {
+                    resolveCtx.clearRect(0, 0, 1, 1);
+                    resolveCtx.fillStyle = '#000'; // reset
+                    resolveCtx.fillStyle = cssColor;
+                    resolveCtx.fillRect(0, 0, 1, 1);
+                    const [r, g, b, a] = resolveCtx.getImageData(0, 0, 1, 1).data;
+                    const result = a < 255
+                        ? `rgba(${r},${g},${b},${(a / 255).toFixed(3)})`
+                        : `rgb(${r},${g},${b})`;
+                    colorCache.set(cssColor, result);
+                    return result;
+                } catch (e) { return null; }
+            }
+
+            function stampColors(liveEl, cloneEl) {
+                if (liveEl.nodeType !== 1 || cloneEl.nodeType !== 1) return;
+                const cs = window.getComputedStyle(liveEl);
+                ['color', 'background-color', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'].forEach(prop => {
+                    const val = cs.getPropertyValue(prop);
+                    const rgb = toRgb(val);
+                    if (rgb) cloneEl.style.setProperty(prop, rgb, 'important');
                 });
-            },
-        });
+                const liveKids = liveEl.children;
+                const cloneKids = cloneEl.children;
+                for (let i = 0; i < liveKids.length; i++) {
+                    if (cloneKids[i]) stampColors(liveKids[i], cloneKids[i]);
+                }
+            }
 
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            try {
+                // 1. Build clean clone
+                const clone = pdfContent.cloneNode(true);
 
-        const pageW = pdf.internal.pageSize.getWidth();
-        const pageH = pdf.internal.pageSize.getHeight();
-        const imgW = pageW - 20;
-        const imgH = (canvas.height * imgW) / canvas.width;
+                // 2. Strip Flux elements from clone
+                fluxTags.forEach(tag => clone.querySelectorAll(tag).forEach(el => el.remove()));
+                clone.querySelectorAll('[data-flux-dropdown],[data-flux-select],[data-flux-field]').forEach(el => el.remove());
+                clone.querySelectorAll('[x-data],[x-init]').forEach(el => {
+                    el.removeAttribute('x-data');
+                    el.removeAttribute('x-init');
+                });
 
-        let remaining = imgH;
-        let srcY = 0;
-        let firstPage = true;
+                // 3. Copy canvas pixel data by index
+                const liveCanvases = Array.from(pdfContent.querySelectorAll('canvas'));
+                const cloneCanvases = Array.from(clone.querySelectorAll('canvas'));
+                liveCanvases.forEach((live, i) => {
+                    const cloned = cloneCanvases[i];
+                    if (!cloned || live.width === 0 || live.height === 0) return;
+                    cloned.width = live.width;
+                    cloned.height = live.height;
+                    cloned.style.width = live.offsetWidth + 'px';
+                    cloned.style.height = live.offsetHeight + 'px';
+                    const ctx = cloned.getContext('2d');
+                    if (ctx) ctx.drawImage(live, 0, 0);
+                });
 
-        while (remaining > 0) {
-            if (!firstPage) pdf.addPage();
-            firstPage = false;
+                // 4. Mount clone so layout is available
+                wrapper.appendChild(clone);
+                document.body.appendChild(wrapper);
+                await new Promise(r => setTimeout(r, 100));
 
-            const sliceH = Math.min(remaining, pageH - 20);
-            const srcSliceH = (sliceH / imgH) * canvas.height;
+                // 5. Stamp oklab→rgb on every element (reads live, writes clone)
+                stampColors(pdfContent, clone);
 
-            const slice = document.createElement('canvas');
-            slice.width = canvas.width;
-            slice.height = Math.ceil(srcSliceH);
-            slice.getContext('2d').drawImage(
-                canvas, 0, srcY, canvas.width, srcSliceH,
-                0, 0, canvas.width, srcSliceH
-            );
+                clone.style.cssText = `background:#ffffff;color:#171717;overflow:visible;width:${pdfContent.offsetWidth}px;`;
 
-            pdf.addImage(slice.toDataURL('image/png'), 'PNG', 10, 10, imgW, sliceH);
-            remaining -= sliceH;
-            srcY += srcSliceH;
-        }
+                // 6. *** CRITICAL: Remove Flux elements from LIVE DOM ***
+                //    html2canvas clones document internally — Flux boots during that clone and crashes.
+                //    We temporarily replace them with comment nodes and restore after.
+                fluxTags.forEach(tag => {
+                    document.querySelectorAll(tag).forEach(el => {
+                        if (!el.parentNode) return;
+                        const marker = document.createComment('__flux_temp__');
+                        el.parentNode.replaceChild(marker, el);
+                        removedFluxEls.push({ el, marker });
+                    });
+                });
 
-        const tab = this.$wire?.activeTab ?? 'overview';
-        const start = this.$wire?.startDate ?? '';
-        const end = this.$wire?.endDate ?? '';
-        pdf.save(`helpdesk-${tab}-${start}-to-${end}.pdf`);
+                // 7. Capture
+                const canvas = await html2canvas(clone, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0,
+                    windowWidth: pdfContent.offsetWidth,
+                });
 
-    } catch (e) {
-        console.error('PDF export failed:', e);
-        alert('PDF generation failed: ' + e.message);
-    } finally {
-        pdfContent.classList.remove('pdf-exporting');
-        this.exportingPdf = false;
-    }
-},
+                // 8. Restore Flux elements immediately
+                removedFluxEls.forEach(({ el, marker }) => {
+                    if (marker.parentNode) marker.parentNode.replaceChild(el, marker);
+                });
+                removedFluxEls.length = 0;
+
+                document.body.removeChild(wrapper);
+
+                // 9. Build PDF with page slicing
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const pageW = pdf.internal.pageSize.getWidth();
+                const pageH = pdf.internal.pageSize.getHeight();
+                const margin = 10;
+                const imgW = pageW - margin * 2;
+                const imgH = (canvas.height * imgW) / canvas.width;
+
+                let remaining = imgH;
+                let srcY = 0;
+                let firstPage = true;
+
+                while (remaining > 0) {
+                    if (!firstPage) pdf.addPage();
+                    firstPage = false;
+                    const sliceH = Math.min(remaining, pageH - margin * 2);
+                    const srcSliceH = (sliceH / imgH) * canvas.height;
+                    const slice = document.createElement('canvas');
+                    slice.width = canvas.width;
+                    slice.height = Math.ceil(srcSliceH);
+                    const sliceCtx = slice.getContext('2d');
+                    sliceCtx.fillStyle = '#ffffff';
+                    sliceCtx.fillRect(0, 0, slice.width, slice.height);
+                    sliceCtx.drawImage(canvas, 0, srcY, canvas.width, srcSliceH, 0, 0, canvas.width, srcSliceH);
+                    pdf.addImage(slice.toDataURL('image/png'), 'PNG', margin, margin, imgW, sliceH);
+                    remaining -= sliceH;
+                    srcY += srcSliceH;
+                }
+
+                const tab = this.$wire?.activeTab ?? 'overview';
+                const start = this.$wire?.startDate ?? '';
+                const end = this.$wire?.endDate ?? '';
+                pdf.save(`helpdesk-${tab}-${start}-to-${end}.pdf`);
+
+            } catch (e) {
+                // Always restore Flux elements even on failure
+                removedFluxEls.forEach(({ el, marker }) => {
+                    if (marker.parentNode) marker.parentNode.replaceChild(el, marker);
+                });
+                if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+                console.error('PDF export failed:', e);
+                alert('PDF generation failed: ' + e.message);
+            } finally {
+                this.exportingPdf = false;
+            }
+        },
     }));
 
     Alpine.data('tiptapEditor', () => {
