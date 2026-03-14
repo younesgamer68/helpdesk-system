@@ -137,7 +137,8 @@
                                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Conversation</h2>
                                 <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible to customer</span>
                             </div>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ count($replies) + 1 }} messages</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ count($replies) + 1 }} messages
+                            </p>
                         </div>
 
                         <div class="p-6 space-y-6 max-h-[600px] overflow-y-auto">
@@ -863,7 +864,7 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="text-center py-6 text-zinc-500 text-sm">No activity recorded yet.</div>
+                                    a
                                 @endforelse
                             </div>
                         </div>
