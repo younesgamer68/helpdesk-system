@@ -11,7 +11,7 @@
     expandedCategoryDetails: @js($activeTab === 'categories' ? $this->expandedCategoryDetails : null),
     categoryHealth: @js($activeTab === 'categories' ? $this->categoryHealth : null),
 })" x-init="init()" id="reports-page">
-    <div class="p-4 lg:p-6 space-y-8">
+    <div class="space-y-8">
         <x-dashboard.reports.header :date-preset="$datePreset" :start-date="$startDate" :end-date="$endDate" />
 
         <x-dashboard.reports.tabs :active-tab="$activeTab" />

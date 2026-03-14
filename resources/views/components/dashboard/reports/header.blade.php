@@ -2,8 +2,8 @@
 
 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
     <div>
-        <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Reports & Analytics</h1>
-        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Insights and performance metrics for your helpdesk</p>
+    <x-tab-title>Reports & Analytics</x-tab-title>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400">Insights and performance metrics for your helpdesk</p>
     </div>
     <div class="flex items-center gap-3" id="reports-controls">
         <flux:select wire:model.live="datePreset" class="w-50px">

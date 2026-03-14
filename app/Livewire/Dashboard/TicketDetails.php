@@ -3,6 +3,7 @@
 namespace App\Livewire\Dashboard;
 
 use App\Ai\Agents\SupportReplyAgent;
+use App\Mail\AgentRepliedToTicket;
 use App\Models\Ticket;
 use App\Models\TicketLog;
 use App\Models\TicketReply;
@@ -13,6 +14,7 @@ use App\Notifications\TicketPriorityChanged;
 use App\Notifications\TicketReassigned;
 use App\Notifications\TicketStatusChanged;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -277,7 +279,7 @@ class TicketDetails extends Component
 
         $userId = $this->senderId ?: Auth::id();
 
-        TicketReply::create([
+        $reply = TicketReply::create([
             'ticket_id' => $this->ticket->id,
             'user_id' => $userId,
             'customer_name' => $this->ticket->customer_name,
@@ -286,6 +288,12 @@ class TicketDetails extends Component
             'is_technician' => false,
             'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
         ]);
+
+        // Notify customer with tracking link when agent replies to a verified ticket
+        if ($this->ticket->verified && $this->ticket->verification_token && $this->ticket->customer_email) {
+            $this->ticket->load('company');
+            Mail::to($this->ticket->customer_email)->send(new AgentRepliedToTicket($this->ticket, $reply));
+        }
 
         // TRIGGER 2: Agent sends a reply
         if ($this->ticket->status !== 'closed' && ! $this->keepOpen) {

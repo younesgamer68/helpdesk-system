@@ -7,7 +7,7 @@
 
             @if ($this->unreadCount > 0)
                 <span
-                    class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-zinc-900 border-none">
+                    class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-zinc-900 border-none">
                     {{ $this->unreadCount > 99 ? '99+' : $this->unreadCount }}
                 </span>
             @endif
@@ -101,7 +101,7 @@
                 @endforelse
             </div>
 
-            <div class="border-t border-zinc-800 bg-zinc-900/50 p-2 text-center">
+            <div class="flex items-center justify-center px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
                 <a href="{{ route('notifications', ['company' => Auth::user()->company->slug]) }}"
                     class="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300 font-medium transition-colors">
                     View all notifications →
@@ -141,21 +141,21 @@
             }
         }
     }"
-        class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 items-end pointer-events-none w-80 sm:w-96">
+        class="fixed bottom-24 right-6 z-[100] flex flex-col gap-3 items-end pointer-events-none w-80 sm:w-96">
 
         <template x-for="notification in notifications" :key="notification.id">
             <div x-show="true" x-transition:enter="transition ease-out duration-300 transform"
                 x-transition:enter-start="translate-y-10 opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
                 x-transition:leave="transition ease-in duration-200 transform"
                 x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-2 opacity-0"
-                @click="visit(notification)" :class="notification.url ? 'cursor-pointer hover:bg-zinc-800' : ''"
-                class="w-full bg-zinc-900 border border-zinc-700/80 shadow-2xl rounded-xl p-4 text-white flex items-start space-x-3 pointer-events-auto overflow-hidden relative transition-colors">
+                @click="visit(notification)" :class="notification.url ? 'cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800' : ''"
+                class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 shadow-2xl rounded-xl p-4 flex items-start space-x-3 pointer-events-auto overflow-hidden relative transition-colors">
 
                 <!-- Subtle side accent line -->
                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"></div>
 
                 <!-- Bell Icon -->
-                <div class="flex-shrink-0 mt-0.5 ml-1 text-teal-400 bg-teal-400/10 p-1.5 rounded-full">
+                <div class="flex-shrink-0 mt-0.5 ml-1 text-teal-500 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-400/10 p-1.5 rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -171,7 +171,7 @@
                 <!-- Close Button -->
                 <div class="flex-shrink-0 flex">
                     <button @click.stop="remove(notification.id)"
-                        class="bg-transparent rounded-md inline-flex text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300 focus:outline-none transition-colors">
+                        class="bg-transparent rounded-md inline-flex text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 focus:outline-none transition-colors">
                         <span class="sr-only">Close</span>
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

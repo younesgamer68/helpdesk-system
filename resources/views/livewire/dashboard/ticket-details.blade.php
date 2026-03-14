@@ -16,8 +16,8 @@
                     </a>
                     <div>
                         <div class="flex items-center gap-3 mb-1">
-                            <span class="text-sm text-zinc-500">Ticket #{{ $ticket->ticket_number }}</span>
-                            <span class="text-xs text-zinc-600">Last updated
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400">Ticket #{{ $ticket->ticket_number }}</span>
+                            <span class="text-xs text-zinc-600 dark:text-zinc-400">Last updated
                                 {{ $ticket->updated_at->diffForHumans() }}</span>
                         </div>
                         <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{{ $ticket->subject }}</h1>
@@ -224,7 +224,7 @@
                                                 @endif
                                             </div>
                                             <div
-                                                class="prose prose-sm prose-invert max-w-none mt-1 text-zinc-600 dark:text-zinc-300">
+                                                class="prose prose-sm prose-zinc dark:prose-invert max-w-none mt-1 text-zinc-600 dark:text-zinc-300">
                                                 {!! $reply->message !!}</div>
 
                                             {{-- Attachments --}}
@@ -259,7 +259,7 @@
                                                         @else
                                                             <a href="{{ Storage::url($attachment['path']) }}"
                                                                 target="_blank"
-                                                                class="flex items-center gap-2 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 bg-zinc-800 transition-colors w-full sm:w-auto">
+                                                                class="flex items-center gap-2 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 bg-zinc-100 dark:bg-zinc-800 transition-colors w-full sm:w-auto">
                                                                 <svg class="w-8 h-8 text-zinc-500 dark:text-zinc-400 flex-shrink-0"
                                                                     fill="none" stroke="currentColor"
                                                                     viewBox="0 0 24 24">
@@ -489,7 +489,7 @@
                                                     x-data="{ showLinkInput: false, linkUrl: '' }">
                                                     <button type="button" @mousedown.prevent @click="bold()"
                                                         :class="isActive('bold') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Bold">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -500,7 +500,7 @@
                                                     </button>
                                                     <button type="button" @mousedown.prevent @click="italic()"
                                                         :class="isActive('italic') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Italic">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -515,7 +515,7 @@
                                                     </button>
                                                     <button type="button" @mousedown.prevent @click="underline()"
                                                         :class="isActive('underline') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Underline">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -528,7 +528,7 @@
                                                     <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
                                                     <button type="button" @mousedown.prevent @click="bulletList()"
                                                         :class="isActive('bulletList') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Bullet List">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -543,7 +543,7 @@
                                                     </button>
                                                     <button type="button" @mousedown.prevent @click="orderedList()"
                                                         :class="isActive('orderedList') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Numbered List">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -559,7 +559,7 @@
                                                     <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
                                                     <button type="button" @mousedown.prevent @click="codeBlock()"
                                                         :class="isActive('codeBlock') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Code Block">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -571,7 +571,7 @@
                                                     <button type="button" @mousedown.prevent
                                                         @click="showLinkInput = !showLinkInput; if(showLinkInput) { $nextTick(() => $refs.linkInput.focus()); linkUrl = getLinkUrl(); }"
                                                         :class="isActive('link') ?
-                                                            'bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
+                                                            'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' :
                                                             'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:text-zinc-100'"
                                                         class="p-1.5 rounded transition" title="Link">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
@@ -642,7 +642,7 @@
                                             <div class="flex flex-wrap gap-2">
                                                 @foreach ($attachments as $index => $attachment)
                                                     <div
-                                                        class="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+                                                        class="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg">
                                                         <span
                                                             class="text-sm text-zinc-600 dark:text-zinc-300 truncate max-w-[200px]">{{ $attachment->getClientOriginalName() }}</span>
                                                         <button type="button"
@@ -680,7 +680,7 @@
                                             <label
                                                 class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 cursor-pointer mr-2">
                                                 <input type="checkbox" wire:model="keepOpen"
-                                                    class="rounded bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-600 focus:ring-teal-500 focus:ring-offset-zinc-900" />
+                                                    class="rounded bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-teal-600 focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900" />
                                                 Keep open
                                             </label>
                                             <button type="submit" wire:loading.attr="disabled"
@@ -712,9 +712,9 @@
                         <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Internal Notes</h2>
-                                <span class="text-sm text-zinc-500">Visible only to your team</span>
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible only to your team</span>
                             </div>
-                            <p class="text-sm text-zinc-500 mt-1">{{ count($internal_notes) }} notes</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{{ count($internal_notes) }} notes</p>
                         </div>
 
                         <div class="p-6 space-y-6 max-h-[600px] overflow-y-auto">
@@ -727,7 +727,7 @@
                                         </div>
                                     </div>
                                     <div class="flex-1">
-                                        <div class="bg-indigo-900/20 rounded-lg p-4 border border-indigo-500/30">
+                                        <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4 border border-indigo-200 dark:border-indigo-500/30">
                                             <div class="flex items-start justify-between mb-2">
                                                 <div>
                                                     <div class="font-semibold text-zinc-900 dark:text-zinc-100">
@@ -752,8 +752,8 @@
                                     </div>
                                 </div>
                             @empty
-                                <div class="text-center py-8 text-zinc-500">
-                                    <svg class="w-12 h-12 mx-auto mb-3 text-zinc-600" fill="none"
+                                <div class="text-center py-8 text-zinc-500 dark:text-zinc-400">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-zinc-500 dark:text-zinc-500" fill="none"
                                         stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
@@ -766,11 +766,11 @@
 
                         {{-- Add Internal Note Form --}}
                         @if (!in_array($state, ['closed']))
-                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-indigo-900/10">
+                            <div class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-indigo-50/50 dark:bg-indigo-900/10">
                                 <form wire:submit="addInternalNote">
                                     <div class="relative">
                                         <textarea wire:model="internalNote" rows="3" placeholder="Add a new internal note..." required
-                                            class="w-full bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-3 text-zinc-600 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none disabled:opacity-50"
+                                            class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-4 py-3 text-zinc-600 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none disabled:opacity-50"
                                             wire:loading.attr="disabled"></textarea>
                                     </div>
                                     <div class="flex justify-end mt-3">
@@ -803,13 +803,13 @@
                         <div class="p-6 border-b border-zinc-200 dark:border-zinc-800">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Activity Log</h2>
-                                <span class="text-sm text-zinc-500">{{ count($ticket->logs) }} events</span>
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ count($ticket->logs) }} events</span>
                             </div>
-                            <p class="text-sm text-zinc-500 mt-1">Timeline of ticket interactions</p>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Timeline of ticket interactions</p>
                         </div>
                         <div class="p-6">
                             <div
-                                class="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-800 before:to-transparent">
+                                class="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-300 dark:before:via-zinc-800 before:to-transparent">
                                 @forelse($ticket->logs()->with('user')->latest()->get() as $log)
                                     <div
                                         class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
@@ -846,7 +846,7 @@
                                             @endif
                                         </div>
                                         <div
-                                            class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-800/50">
+                                            class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50">
                                             <div class="flex items-center justify-between mb-1">
                                                 <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
                                                     @if ($log->user && $log->user->id === Auth::id())
@@ -1023,7 +1023,9 @@
                             @foreach (['pending', 'open', 'in progress', 'resolved', 'closed'] as $status)
                                 <button wire:click="changeStatus({{ json_encode($status) }})"
                                     wire:confirm="Change status to {{ $status }}?" @click="open = false"
-                                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                                    class="w-full px-4 py-2 text-left text-sm text-zinc-800 dark:text-zinc-100
+hover:bg-zinc-50 dark:hover:bg-zinc-700
+transition-colors first:rounded-t-lg last:rounded-b-lg">
                                     {{ $status }}
                                 </button>
                             @endforeach
@@ -1031,7 +1033,7 @@
 
                         {{-- Close Ticket --}}
                         <button wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?"
-                            class="w-full px-4 py-2 bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                            class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 18L18 6M6 6l12 12" />

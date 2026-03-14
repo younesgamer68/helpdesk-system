@@ -2,11 +2,13 @@
 
 use App\Livewire\Dashboard\TicketDetails;
 use App\Livewire\Widget\TicketConversation;
+use App\Mail\AgentRepliedToTicket;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
@@ -139,6 +141,37 @@ it('notifies assigned agent when client replies', function () {
         ->assertHasNoErrors();
 
     Notification::assertSentTo($agent, \App\Notifications\ClientReplied::class);
+});
+
+it('sends email to customer with tracking link when agent replies', function () {
+    Mail::fake();
+
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->set('message', 'We are looking into your request')
+        ->call('addReply')
+        ->assertHasNoErrors();
+
+    Mail::assertSent(AgentRepliedToTicket::class, function ($mail) {
+        return $mail->hasTo($this->ticket->customer_email)
+            && $mail->ticket->id === $this->ticket->id
+            && str_contains($mail->reply->message, 'We are looking into your request');
+    });
+});
+
+it('does not send agent reply email when ticket is not verified', function () {
+    Mail::fake();
+
+    $this->ticket->update(['verified' => false, 'verification_token' => null]);
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->set('message', 'Agent reply to unverified ticket')
+        ->call('addReply')
+        ->assertHasNoErrors();
+
+    Mail::assertNotSent(AgentRepliedToTicket::class);
 });
 
 it('notifies agent even when ticket was assigned after widget loaded', function () {
