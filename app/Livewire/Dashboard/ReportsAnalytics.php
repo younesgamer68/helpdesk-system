@@ -236,8 +236,8 @@ class ReportsAnalytics extends Component
         }
 
         $start = Carbon::parse($this->startDate);
-        $end   = Carbon::parse($this->endDate);
-        $days  = $start->diffInDays($end) + 1;
+        $end = Carbon::parse($this->endDate);
+        $days = $start->diffInDays($end) + 1;
 
         return $this->_prevDates = [
             $start->copy()->subDays($days)->format('Y-m-d'),
@@ -351,7 +351,7 @@ class ReportsAnalytics extends Component
             ->where('t.company_id', $this->companyId())
             ->whereDate('t.created_at', '>=', $this->startDate)
             ->whereDate('t.created_at', '<=', $this->endDate)
-            ->selectRaw('AVG(' . $this->diffMinutesSql('t.created_at', 'fr.first_reply_at') . ') AS avg_min')
+            ->selectRaw('AVG('.$this->diffMinutesSql('t.created_at', 'fr.first_reply_at').') AS avg_min')
             ->value('avg_min');
 
         return $avg !== null ? round((float) $avg, 1) : null;
@@ -491,10 +491,10 @@ class ReportsAnalytics extends Component
     {
         return $this->allAgentPerformance
             ->map(fn (array $row) => [
-                'agent'    => $row['agent'],
+                'agent' => $row['agent'],
                 'assigned' => $row['tickets_assigned'],
                 'resolved' => $row['tickets_resolved'],
-                'rate'     => $row['resolution_rate'],
+                'rate' => $row['resolution_rate'],
             ])
             ->sortByDesc('rate')
             ->values();
@@ -523,14 +523,14 @@ class ReportsAnalytics extends Component
             ->whereDate('created_at', '<=', $this->endDate)
             ->whereNotNull('category_id')
             ->whereNotNull('resolved_at')
-            ->selectRaw('category_id, AVG(' . $this->diffMinutesSql('created_at', 'resolved_at') . ') AS avg_min')
+            ->selectRaw('category_id, AVG('.$this->diffMinutesSql('created_at', 'resolved_at').') AS avg_min')
             ->groupBy('category_id')
             ->pluck('avg_min', 'category_id')
             ->map(fn ($v) => $v !== null ? round((float) $v, 1) : null);
 
         // Sparkline clamped to the active date range (max 7 days from range end)
         // so it never queries data outside the current filter window.
-        $rangeEnd  = Carbon::parse($this->endDate);
+        $rangeEnd = Carbon::parse($this->endDate);
         $rangeStart = Carbon::parse($this->startDate);
         $sparkDays = min(7, (int) $rangeStart->diffInDays($rangeEnd) + 1);
 
@@ -633,7 +633,7 @@ class ReportsAnalytics extends Component
             return null;
         }
 
-        $cid  = $this->companyId();
+        $cid = $this->companyId();
         $base = $this->baseQuery()->where('assigned_to', $agentId);
         $assigned = (clone $base)->count();
         $resolved = (clone $base)->where('status', 'resolved')->count();
@@ -647,7 +647,7 @@ class ReportsAnalytics extends Component
             ->where('t.assigned_to', $agentId)
             ->whereDate('t.created_at', '>=', $this->startDate)
             ->whereDate('t.created_at', '<=', $this->endDate)
-            ->selectRaw('AVG(' . $this->diffMinutesSql('t.created_at', 'fr.first_reply_at') . ') AS avg_min')
+            ->selectRaw('AVG('.$this->diffMinutesSql('t.created_at', 'fr.first_reply_at').') AS avg_min')
             ->value('avg_min');
         $responseMinutes = $responseMinutes !== null ? round((float) $responseMinutes, 1) : null;
 
@@ -658,7 +658,7 @@ class ReportsAnalytics extends Component
             ->whereDate('created_at', '>=', $this->startDate)
             ->whereDate('created_at', '<=', $this->endDate)
             ->whereNotNull('resolved_at')
-            ->selectRaw('AVG(' . $this->diffMinutesSql('created_at', 'resolved_at') . ') AS avg_min')
+            ->selectRaw('AVG('.$this->diffMinutesSql('created_at', 'resolved_at').') AS avg_min')
             ->value('avg_min');
         $resolutionMinutes = $resolutionMinutes !== null ? round((float) $resolutionMinutes, 1) : null;
 
@@ -756,7 +756,7 @@ class ReportsAnalytics extends Component
             ->whereDate('t.created_at', '>=', $this->startDate)
             ->whereDate('t.created_at', '<=', $this->endDate)
             ->whereNotNull('t.assigned_to')
-            ->selectRaw('t.assigned_to, AVG(' . $this->diffMinutesSql('t.created_at', 'fr.first_reply_at') . ') AS avg_response')
+            ->selectRaw('t.assigned_to, AVG('.$this->diffMinutesSql('t.created_at', 'fr.first_reply_at').') AS avg_response')
             ->groupBy('t.assigned_to')
             ->pluck('avg_response', 'assigned_to')
             ->map(fn ($v) => $v !== null ? round((float) $v, 1) : null);
@@ -767,7 +767,7 @@ class ReportsAnalytics extends Component
             ->whereDate('created_at', '<=', $this->endDate)
             ->whereNotNull('assigned_to')
             ->whereNotNull('resolved_at')
-            ->selectRaw('assigned_to, AVG(' . $this->diffMinutesSql('created_at', 'resolved_at') . ') AS avg_resolution')
+            ->selectRaw('assigned_to, AVG('.$this->diffMinutesSql('created_at', 'resolved_at').') AS avg_resolution')
             ->groupBy('assigned_to')
             ->pluck('avg_resolution', 'assigned_to')
             ->map(fn ($v) => $v !== null ? round((float) $v, 1) : null);
@@ -993,12 +993,14 @@ class ReportsAnalytics extends Component
             'categoryHealth' => null,
         ];
     }
+
     protected function diffMinutesSql(string $from, string $to): string
     {
         return DB::connection()->getDriverName() === 'sqlite'
             ? "(strftime('%s', $to) - strftime('%s', $from)) / 60.0"
             : "TIMESTAMPDIFF(MINUTE, $from, $to)";
     }
+
     public function toJSON(): string
     {
         return json_encode($this->getChartConfig());

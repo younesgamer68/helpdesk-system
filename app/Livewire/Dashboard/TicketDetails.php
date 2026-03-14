@@ -41,6 +41,13 @@ class TicketDetails extends Component
 
     public $aiLoading = false;
 
+    // AI Summary properties
+    public $aiSummary = '';
+
+    public $summaryLoading = false;
+
+    public $showSummary = true;
+
     public $agentSearch = '';
 
     #[Validate('required|string|max:5000')]
@@ -53,7 +60,7 @@ class TicketDetails extends Component
 
     public function mount(Ticket $ticket)
     {
-        $this->ticket = $ticket->load(['user:id,name,email', 'category:id,name,description']);
+        $this->ticket = $ticket->load(['user:id,name,email', 'category:id,name,description', 'replies.user']);
         $this->state = $ticket->status;
     }
 
@@ -65,10 +72,10 @@ class TicketDetails extends Component
             ->orderBy('name');
 
         if (! empty($this->agentSearch)) {
-            $query->where('name', 'like', '%'.$this->agentSearch.'%');
+            $query->where('name', 'like', '%'.$this->agentSearch.'%', 'and');
         }
 
-        return $query->get();
+        return $query->get(['*']);
     }
 
     private function logAction($action, $description)
@@ -385,6 +392,77 @@ class TicketDetails extends Component
         // We defer to let Alpine pick up the aiLoading = true state,
         // and then we generate the suggestion.
         $this->js('$wire.generateAiSuggestion()');
+    }
+
+    // AI Summary methods
+    public function generateAiSummary()
+    {
+        $this->summaryLoading = true;
+
+        // Load replies with user relationship to avoid lazy loading
+        $replies = $this->ticket->replies()->with('user:id,name')->orderBy('created_at', 'desc')->get();
+        $replyCount = $replies->count();
+
+        $prompt = "You are a helpdesk assistant summarizing a support ticket for an agent.\n\n";
+        $prompt .= "Ticket Information:\n";
+        $prompt .= '- Subject: '.$this->ticket->subject."\n";
+        $prompt .= '- Customer: '.($this->ticket->customer->name ?? $this->ticket->customer_name ?? 'Unknown')."\n";
+        $prompt .= '- Category: '.($this->ticket->category->name ?? 'None')."\n";
+        $prompt .= '- Priority: '.$this->ticket->priority."\n";
+        $prompt .= '- Status: '.str_replace('_', ' ', ucfirst($this->ticket->status))."\n\n";
+        $prompt .= "Original Description:\n".$this->ticket->description."\n\n";
+
+        if ($replyCount > 0) {
+            $prompt .= "Reply History (most recent first):\n";
+            foreach ($replies as $reply) {
+                // Safely access user without triggering lazy loading
+                $senderName = null;
+                if ($reply->user_id && $reply->relationLoaded('user') && $reply->user) {
+                    $senderName = $reply->user->name;
+                }
+                $sender = $reply->is_internal ? 'Internal Note' : ($reply->user_id ? ($senderName ?? 'Agent') : ($reply->customer_name ?? 'Customer'));
+                $senderType = $reply->is_internal ? 'Note' : ($reply->user_id ? 'Agent' : 'Customer');
+                $prompt .= "[{$senderType}: {$sender}]: ".strip_tags($reply->message)."\n";
+            }
+        } else {
+            $prompt .= "No replies yet.\n";
+        }
+
+        $prompt .= "\n\nPlease provide a concise summary covering exactly three points:\n";
+        $prompt .= "1. Issue: What is the customer asking about? (1-2 sentences)\n";
+        $prompt .= "2. Progress: What has been tried or discussed so far? (1-2 sentences)\n";
+        $prompt .= "3. Next Step: What needs to happen next to resolve this ticket? (1-2 sentences)\n\n";
+        $prompt .= "Format your response exactly as:\n";
+        $prompt .= "Issue: <text>\n";
+        $prompt .= "Progress: <text>\n";
+        $prompt .= "Next Step: <text>\n";
+        $prompt .= 'Do not include any preamble or extra text.';
+
+        try {
+            $agent = new SupportReplyAgent;
+            $result = $agent->prompt($prompt);
+            $this->aiSummary = (string) $result;
+        } catch (\Exception $e) {
+            $this->aiSummary = 'Issue: Unable to generate summary.\nProgress: -\nNext Step: -';
+        }
+
+        $this->summaryLoading = false;
+    }
+
+    public function toggleSummary()
+    {
+        $this->showSummary = ! $this->showSummary;
+    }
+
+    public function regenerateSummary()
+    {
+        $this->aiSummary = '';
+        $this->summaryLoading = true;
+        // Dispatch event to clear displayedSummary in Alpine
+        $this->dispatch('clearSummaryDisplay');
+        // Defer to let Alpine pick up the summaryLoading = true state,
+        // and then generate the summary.
+        $this->js('$wire.generateAiSummary()');
     }
 
     public function useAiSuggestion()
