@@ -568,7 +568,7 @@
     <x-layout.footer />
 
     <!-- Chatbot -->
-    <x-chatbot />
+    <x-portal.chatbot />
 </body>
 
 </html>

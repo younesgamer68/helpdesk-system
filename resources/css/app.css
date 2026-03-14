@@ -97,13 +97,41 @@ select:focus[data-flux-control] {
     font-size: inherit !important;
 }
 
+/* Force light/printable theme when capturing for PDF */
+#reports-pdf-content.pdf-exporting,
+#reports-pdf-content.pdf-exporting * {
+    background-color: #ffffff !important;
+    border-color: #e5e5e5 !important;
+    color: #171717 !important;
+}
+#reports-pdf-content.pdf-exporting .text-zinc-500,
+#reports-pdf-content.pdf-exporting .text-zinc-400,
+#reports-pdf-content.pdf-exporting .text-zinc-600 {
+    color: #525252 !important;
+}
+#reports-pdf-content.pdf-exporting .text-teal-400,
+#reports-pdf-content.pdf-exporting .text-green-400 {
+    color: #0d9488 !important;
+}
+#reports-pdf-content.pdf-exporting .text-red-400 {
+    color: #dc2626 !important;
+}
+#reports-pdf-content.pdf-exporting .text-blue-400 {
+    color: #2563eb !important;
+}
+
+#reports-pdf-content.pdf-exporting {
+    min-height: 400px;
+}
+
 @media print {
 
     #app-sidebar,
     #reports-controls,
     .mobile-header,
     .expdf-btn,
-    .export-overlay {
+    .export-overlay,
+    .pdf-exclude {
         display: none !important;
     }
 

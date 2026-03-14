@@ -22,6 +22,7 @@ class ReportsAnalytics extends Component
 {
     use WithPagination;
 
+    #[Url(as: 'tab')]
     public string $activeTab = 'overview';
 
     public string $datePreset = 'this_week';
@@ -842,7 +843,7 @@ class ReportsAnalytics extends Component
         $query = Ticket::where('company_id', $this->companyId())
             ->whereDate('created_at', '>=', $this->startDate)
             ->whereDate('created_at', '<=', $this->endDate)
-            ->with(['user:id,name', 'category:id,name']);
+            ->with(['assignedTo:id,name', 'category:id,name']);
 
         if ($this->filterStatus) {
             $query->where('status', $this->filterStatus);
@@ -877,7 +878,7 @@ class ReportsAnalytics extends Component
         $query = Ticket::where('company_id', $this->companyId())
             ->whereDate('created_at', '>=', $this->startDate)
             ->whereDate('created_at', '<=', $this->endDate)
-            ->with(['user', 'category']);
+            ->with(['assignedTo', 'category']);
 
         if ($this->filterStatus) {
             $query->where('status', $this->filterStatus);
@@ -932,7 +933,7 @@ class ReportsAnalytics extends Component
                         $ticket->category?->name ?? '',
                         $ticket->priority ?? '',
                         $ticket->status ?? '',
-                        $ticket->user?->name ?? '',
+                        $ticket->assignedTo?->name ?? '',
                         $ticket->created_at ? Carbon::parse($ticket->created_at)->format('Y-m-d H:i:s') : '',
                         $ticket->resolved_at ? Carbon::parse($ticket->resolved_at)->format('Y-m-d H:i:s') : '',
                         $responseMin,

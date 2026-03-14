@@ -16,55 +16,20 @@
                 <p class="text-xs text-zinc-500 mb-2">Customer</p>
                 <div class="flex items-center gap-2">
                     <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs">
-                        {{ strtoupper(substr($ticket->customer_name ?? $ticket->user->name ?? '?', 0, 1)) }}
+                        {{ strtoupper(substr($ticket->customer_name ?? '?', 0, 1)) }}
                     </div>
                     <div>
                         <p class="text-sm text-zinc-900 dark:text-zinc-100">
-                            {{ $ticket->customer_name ?? $ticket->user->name ?? 'Unknown' }}
+                            {{ $ticket->customer_name ?? 'Unknown' }}
                         </p>
-                        <p class="text-xs text-zinc-500">{{ $ticket->customer_email ?? $ticket->user->email ?? 'no-email@example.com' }}</p>
+                        <p class="text-xs text-zinc-500">{{ $ticket->customer_email ?? 'no-email@example.com' }}</p>
                     </div>
                 </div>
             </div>
 
             {{-- Assigned Agent --}}
             <div>
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-xs text-zinc-500">Assigned agent</p>
-                    @if(auth()->user()->isAdmin())
-                        <flux:dropdown>
-                            <button type="button" class="text-[10px] text-teal-400 font-medium hover:text-teal-300 transition flex items-center gap-1">
-                                {{ $ticket->assignedTo ? 'Reassign' : 'Assign' }}
-                                <flux:icon.chevron-down variant="micro" />
-                            </button>
-
-                            <flux:menu class="min-w-[200px]">
-                                <flux:menu.item wire:click="assign(null)">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</div>
-                                        <span>Unassigned</span>
-                                    </div>
-                                </flux:menu.item>
-
-                                <flux:separator />
-
-                                @foreach($agents as $agent)
-                                    <flux:menu.item wire:click="assign({{ $agent->id }})">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center text-white text-[10px]">
-                                                {{ strtoupper(substr($agent->name, 0, 1)) }}
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-medium">{{ $agent->name }}</span>
-                                                <span class="text-[10px] text-zinc-500">{{ $agent->email }}</span>
-                                            </div>
-                                        </div>
-                                    </flux:menu.item>
-                                @endforeach
-                            </flux:menu>
-                        </flux:dropdown>
-                    @endif
-                </div>
+                <p class="text-xs text-zinc-500 mb-2">Assigned agent</p>
                 <div class="flex items-center gap-2">
                     @if($ticket->assignedTo)
                         <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">
@@ -124,37 +89,65 @@
 
         {{-- Actions --}}
         <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 space-y-2">
-            <flux:dropdown class="w-full">
-                <flux:button variant="ghost" class="w-full justify-center gap-2" icon="exclamation-triangle">
+            @if(auth()->user()->isAdmin())
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.user-plus class="w-4 h-4 shrink-0" />
+                        {{ $ticket->assignedTo ? 'Reassign' : 'Assign' }}
+                    </x-slot:title>
+                    <button type="button" wire:click="assign(null)" wire:confirm="Unassign this ticket?"
+                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
+                        <span class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
+                            Unassigned
+                        </span>
+                    </button>
+                    @foreach($agents as $agent)
+                        <button type="button" wire:click="assign({{ $agent->id }})" wire:confirm="Assign to {{ $agent->name }}?" @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
+                            <span class="flex items-center gap-2">
+                                <span class="w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
+                                <span class="flex flex-col">
+                                    <span class="font-medium">{{ $agent->name }}</span>
+                                    <span class="text-[10px] text-zinc-500">{{ $agent->email }}</span>
+                                </span>
+                            </span>
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+            @endif
+
+            <x-ui.dropdown-btn>
+                <x-slot:title>
+                    <flux:icon.exclamation-triangle class="w-4 h-4 shrink-0" />
                     Change Priority
-                </flux:button>
+                </x-slot:title>
+                @foreach(['low', 'medium', 'high', 'urgent'] as $priority)
+                    <button type="button" wire:click="changePriority('{{ $priority }}')" wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
+                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                        {{ ucfirst($priority) }}
+                    </button>
+                @endforeach
+            </x-ui.dropdown-btn>
 
-                <flux:menu>
-                    @foreach(['low', 'medium', 'high', 'urgent'] as $priority)
-                        <flux:menu.item wire:click="changePriority('{{ $priority }}')" wire:confirm="Change priority to {{ $priority }}?">
-                            {{ ucfirst($priority) }}
-                        </flux:menu.item>
-                    @endforeach
-                </flux:menu>
-            </flux:dropdown>
-
-            <flux:dropdown class="w-full">
-                <flux:button variant="ghost" class="w-full justify-center gap-2" icon="adjustments-horizontal">
+            <x-ui.dropdown-btn>
+                <x-slot:title>
+                    <flux:icon.adjustments-horizontal class="w-4 h-4 shrink-0" />
                     Change Status
-                </flux:button>
+                </x-slot:title>
+                @foreach(['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
+                    <button type="button" wire:click="changeStatus('{{ $status }}')" wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?" @click="open = false"
+                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                        {{ str_replace('_', ' ', ucfirst($status)) }}
+                    </button>
+                @endforeach
+            </x-ui.dropdown-btn>
 
-                <flux:menu>
-                    @foreach(['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
-                        <flux:menu.item wire:click="changeStatus('{{ $status }}')" wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?">
-                            {{ str_replace('_', ' ', ucfirst($status)) }}
-                        </flux:menu.item>
-                    @endforeach
-                </flux:menu>
-            </flux:dropdown>
-
-            <flux:button wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?" variant="ghost" class="w-full justify-center gap-2 text-red-500 dark:text-red-400 hover:text-red-600" icon="x-mark">
+            <button type="button" wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?"
+                class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                <flux:icon.x-mark class="w-4 h-4 shrink-0" />
                 Close ticket
-            </flux:button>
+            </button>
         </div>
     </div>
 </div>

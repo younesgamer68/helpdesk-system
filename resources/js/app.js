@@ -2,7 +2,7 @@ import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-oklch';
 import { jsPDF } from 'jspdf';
 window.html2canvas = html2canvas;
 window.jspdf = { jsPDF };
@@ -38,7 +38,9 @@ document.addEventListener('alpine:init', () => {
 
             const handleRefresh = () => refreshCharts();
             window.addEventListener('reports-charts-refresh', handleRefresh);
-            this.$cleanup(() => window.removeEventListener('reports-charts-refresh', handleRefresh));
+            if (typeof this.$cleanup === 'function') {
+                this.$cleanup(() => window.removeEventListener('reports-charts-refresh', handleRefresh));
+            }
         },
 
         destroyCharts(preserveStatusForTab) {
@@ -79,6 +81,8 @@ document.addEventListener('alpine:init', () => {
                 if (vol.labels?.length) {
                     const el = document.getElementById('chart-volume');
                     if (el) {
+                        const existing = Chart.getChart?.(el);
+                        if (existing) existing.destroy();
                         this.charts.volume = new Chart(el, {
                             type: 'line',
                             data: {
@@ -118,6 +122,8 @@ document.addEventListener('alpine:init', () => {
                 if (pr.labels?.length) {
                     const el = document.getElementById('chart-priority');
                     if (el) {
+                        const existing = Chart.getChart?.(el);
+                        if (existing) existing.destroy();
                         this.charts.priority = new Chart(el, {
                             type: 'bar',
                             data: { labels: pr.labels, datasets: [{ data: pr.values, backgroundColor: pr.colors, borderRadius: 4, barPercentage: 0.6 }] },
@@ -130,6 +136,8 @@ document.addEventListener('alpine:init', () => {
                 if (cv.labels?.length) {
                     const el = document.getElementById('chart-category-vol');
                     if (el) {
+                        const existing = Chart.getChart?.(el);
+                        if (existing) existing.destroy();
                         this.charts.catVol = new Chart(el, {
                             type: 'bar',
                             data: { labels: cv.labels, datasets: [{ data: cv.values, backgroundColor: 'rgba(20,184,166,0.6)', borderRadius: 4, barPercentage: 0.6 }] },
@@ -144,6 +152,8 @@ document.addEventListener('alpine:init', () => {
                 if (ad.daily_labels?.length) {
                     const el = document.getElementById('chart-agent-daily');
                     if (el) {
+                        const existing = Chart.getChart?.(el);
+                        if (existing) existing.destroy();
                         this.charts.agentDaily = new Chart(el, {
                             type: 'line',
                             data: { labels: ad.daily_labels, datasets: [{ label: 'Resolved', data: ad.daily_resolved, borderColor: '#14b8a6', backgroundColor: 'rgba(20,184,166,0.1)', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
@@ -154,6 +164,8 @@ document.addEventListener('alpine:init', () => {
                 if (ad.category_labels?.length) {
                     const el = document.getElementById('chart-agent-cats');
                     if (el) {
+                        const existing = Chart.getChart?.(el);
+                        if (existing) existing.destroy();
                         this.charts.agentCats = new Chart(el, {
                             type: 'bar',
                             data: { labels: ad.category_labels, datasets: [{ data: ad.category_values, backgroundColor: 'rgba(20,184,166,0.6)', borderRadius: 4, barPercentage: 0.6 }] },
@@ -167,20 +179,41 @@ document.addEventListener('alpine:init', () => {
         async exportPdf() {
     this.exportingPdf = true;
 
-    const controls = document.getElementById('reports-controls');
-    if (controls) controls.style.visibility = 'hidden';
+    const pdfContent = document.getElementById('reports-pdf-content');
+    if (!pdfContent) {
+        this.exportingPdf = false;
+        alert('PDF content not found.');
+        return;
+    }
 
+    pdfContent.classList.add('pdf-exporting');
     await this.$nextTick();
-    await new Promise(r => setTimeout(r, 200));
+    pdfContent.scrollIntoView({ behavior: 'instant', block: 'start' });
+    await new Promise(r => setTimeout(r, 350));
 
     try {
-        const target = document.getElementById('reports-page');
-        const canvas = await html2canvas(target, {
-            backgroundColor: '#18181b',
+        const canvas = await html2canvas(pdfContent, {
+            backgroundColor: '#ffffff',
             scale: 1.5,
             useCORS: true,
             logging: false,
-            ignoreElements: (el) => el.id === 'reports-controls',
+            scrollX: -window.scrollX,
+            scrollY: -window.scrollY,
+            ignoreElements: (el) => el.classList?.contains('pdf-exclude') || el.classList?.contains('export-overlay'),
+            onclone: (clonedDoc, clonedNode) => {
+                clonedNode.querySelectorAll('canvas').forEach((clonedCanvas) => {
+                    const id = clonedCanvas.id;
+                    if (id) {
+                        const original = document.getElementById(id);
+                        if (original && original !== clonedCanvas) {
+                            const ctx = clonedCanvas.getContext('2d');
+                            if (ctx) {
+                                ctx.drawImage(original, 0, 0);
+                            }
+                        }
+                    }
+                });
+            },
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -216,7 +249,7 @@ document.addEventListener('alpine:init', () => {
         }
 
         const tab = this.$wire?.activeTab ?? 'overview';
-        const start = this.$wire?.startDate ?? '';1
+        const start = this.$wire?.startDate ?? '';
         const end = this.$wire?.endDate ?? '';
         pdf.save(`helpdesk-${tab}-${start}-to-${end}.pdf`);
 
@@ -224,7 +257,7 @@ document.addEventListener('alpine:init', () => {
         console.error('PDF export failed:', e);
         alert('PDF generation failed: ' + e.message);
     } finally {
-        if (controls) controls.style.visibility = '';
+        pdfContent.classList.remove('pdf-exporting');
         this.exportingPdf = false;
     }
 },

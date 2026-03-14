@@ -148,10 +148,19 @@ class TicketDetails extends Component
 
     public function assign($agentId)
     {
-        $agent = $this->agents()->where('id', '=', $agentId)->first();
+        $agent = $agentId !== null ? $this->agents()->where('id', '=', $agentId)->first() : null;
+
+        if ($agentId !== null && $agent === null) {
+            $this->dispatch('show-toast', message: 'Invalid agent selected.', type: 'error');
+
+            return;
+        }
 
         if ($this->ticket->assigned_to === $agentId) {
-            $this->dispatch('show-toast', message: "Ticket is already assigned to {$agent->name}!", type: 'error');
+            $message = $agentId === null
+                ? 'Ticket is already unassigned!'
+                : "Ticket is already assigned to {$agent->name}!";
+            $this->dispatch('show-toast', message: $message, type: 'error');
 
             return;
         }
@@ -161,7 +170,7 @@ class TicketDetails extends Component
         $this->ticket->refresh();
         $this->ticket->load('assignedTo');
 
-        if ($agentId !== Auth::id()) {
+        if ($agentId !== null && $agentId !== Auth::id() && $agent) {
             $agent->notify(new TicketAssigned($this->ticket));
         }
 
@@ -173,9 +182,9 @@ class TicketDetails extends Component
             }
         }
 
-        $this->logAction('assigned', "Assigned to {$agent->name}.");
+        $this->logAction('assigned', $agentId === null ? 'Unassigned.' : "Assigned to {$agent->name}.");
 
-        $this->dispatch('show-toast', message: "Ticket assigned to {$agent->name}!", type: 'success');
+        $this->dispatch('show-toast', message: $agentId === null ? 'Ticket unassigned!' : "Ticket assigned to {$agent->name}!", type: 'success');
     }
 
     public function changePriority($priority)

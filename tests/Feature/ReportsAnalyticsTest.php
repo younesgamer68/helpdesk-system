@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\Dashboard\ReportsAnalytics;
+use App\Livewire\Reports\ReportsAnalytics;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketCategory;

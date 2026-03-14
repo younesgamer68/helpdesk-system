@@ -68,7 +68,10 @@
         </a>
         <div class="flex-1"></div>
         <flux:dropdown position="top" align="end">
-            <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
+            <flux:button variant="ghost" icon-trailing="chevron-down" class="gap-2">
+                <flux:avatar :initials="auth()->user()->initials()" class="size-7" />
+                <span class="truncate max-w-[120px]">{{ auth()->user()->name }}</span>
+            </flux:button>
             <flux:menu>
                 <flux:menu.radio.group>
                     <div class="p-0 text-sm font-normal">

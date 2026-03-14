@@ -12,19 +12,24 @@
     categoryHealth: @js($activeTab === 'categories' ? $this->categoryHealth : null),
 })" x-init="init()" id="reports-page">
     <div class="space-y-8">
-        <x-app.reports.header :date-preset="$datePreset" :start-date="$startDate" :end-date="$endDate" />
+        <div class="pdf-exclude">
+            <x-app.reports.header :date-preset="$datePreset" :start-date="$startDate" :end-date="$endDate" />
+        </div>
+        <div class="pdf-exclude">
+            <x-app.reports.tabs :active-tab="$activeTab" />
+        </div>
 
-        <x-app.reports.tabs :active-tab="$activeTab" />
-
+        <div id="reports-pdf-content">
         @if ($activeTab === 'overview')
-            @include('livewire.reports.overview')
+            <div wire:key="reports-tab-overview">@include('livewire.reports.overview')</div>
         @elseif($activeTab === 'agents')
-            @include('livewire.reports.agents-tab')
+            <div wire:key="reports-tab-agents">@include('livewire.reports.agents-tab')</div>
         @elseif($activeTab === 'tickets')
-            @include('livewire.reports.tickets-tab')
+            <div wire:key="reports-tab-tickets">@include('livewire.reports.tickets-tab')</div>
         @elseif($activeTab === 'categories')
-            @include('livewire.reports.categories-tab')
+            <div wire:key="reports-tab-categories">@include('livewire.reports.categories-tab')</div>
         @endif
+        </div>
     </div>
 
     <x-app.reports.export-overlay />

@@ -1,7 +1,7 @@
 @if ($this->categoryHealth->isNotEmpty())
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
         @foreach ($this->categoryHealth as $item)
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <div wire:key="category-card-{{ $item['category']->id }}" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
                 <button wire:click="toggleCategory({{ $item['category']->id }})"
                     class="w-full p-5 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
                     <div class="flex items-center justify-between mb-3">
@@ -9,7 +9,7 @@
                             <div class="w-2.5 h-2.5 rounded-full" style="background-color: {{ $item['category']->color ?? '#14b8a6' }}"></div>
                             <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $item['category']->name }}</span>
                         </div>
-                        <svg class="w-4 h-4 text-zinc-500 transition-transform {{ $expandedCategoryId === $item['category']->id ? 'rotate-180' : '' }}"
+                        <svg class="w-4 h-4 text-zinc-500 transition-transform {{ (int) $expandedCategoryId === (int) $item['category']->id ? 'rotate-180' : '' }}"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
@@ -51,10 +51,11 @@
                     <p class="text-[10px] text-zinc-500 dark:text-zinc-600 mt-1">Last 7 days</p>
                 </button>
 
-                {{-- Expanded Details --}}
-                @if ($expandedCategoryId === $item['category']->id && $this->expandedCategoryDetails)
+                {{-- Expanded Details - only show for this specific category --}}
+                @if ((int) $expandedCategoryId === (int) $item['category']->id && $this->expandedCategoryDetails)
+
                     @php $details = $this->expandedCategoryDetails; @endphp
-                    <div class="border-t border-zinc-200 dark:border-zinc-800 p-5 space-y-4">
+                    <div wire:key="category-expanded-{{ $item['category']->id }}" class="border-t border-zinc-200 dark:border-zinc-800 p-5 space-y-4">
                         <div>
                             <h4 class="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Top Agents</h4>
                             @forelse($details['agents'] as $topAgent)
@@ -91,5 +92,5 @@
         @endforeach
     </div>
 @else
-    <x-reports-empty :show="true" />
+    <x-app.reports.reports-empty :show="true" />
 @endif

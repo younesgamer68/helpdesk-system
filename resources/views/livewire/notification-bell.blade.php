@@ -1,9 +1,9 @@
 <div class="relative inline-flex items-center">
     <!-- Using Flux component so floating-ui handles putting it above the sidebar context -->
     <flux:dropdown position="bottom" align="start">
-        <button type="button"
-            class="relative p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors rounded-full ">
-            <flux:icon.bell class="size-5 shrink-0 text-teal-500 hover:text-white" />
+        <flux:button variant="ghost" square
+            class="group relative text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100">
+            <flux:icon.bell class="size-5 shrink-0 text-teal-500 group-hover:text-white" />
 
             @if ($this->unreadCount > 0)
                 <span
@@ -11,7 +11,7 @@
                     {{ $this->unreadCount > 99 ? '99+' : $this->unreadCount }}
                 </span>
             @endif
-        </button>
+        </flux:button>
 
         <flux:menu
             class="w-80 sm:w-80 md:w-96 !p-0 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80 rounded-xl shadow-2xl overflow-hidden min-w-[320px]">

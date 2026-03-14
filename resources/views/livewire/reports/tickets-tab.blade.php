@@ -86,7 +86,7 @@
                     @empty
                         <tr>
                             <td colspan="9" class="py-12 text-center">
-                                <x-reports-empty :show="true" />
+                                <x-app.reports.reports-empty :show="true" />
                             </td>
                         </tr>
                     @endforelse
