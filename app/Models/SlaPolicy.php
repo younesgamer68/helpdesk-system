@@ -2,10 +2,16 @@
 
 namespace App\Models;
 
+use App\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Model;
 
 class SlaPolicy extends Model
 {
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new CompanyScope);
+    }
+
     protected $guarded = [];
 
     protected function casts(): array

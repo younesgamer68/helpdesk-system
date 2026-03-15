@@ -66,7 +66,7 @@ class ArticlesList extends Component
             $query->where('status', $this->status);
         }
 
-        return view('livewire.dashboard.kb.articles-list', [
+        return view('livewire.tickets.kb.articles-list', [
             'articles' => $query->latest()->paginate(15),
         ]);
     }

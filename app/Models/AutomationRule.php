@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,11 @@ class AutomationRule extends Model
 {
     /** @use HasFactory<\Database\Factories\AutomationRuleFactory> */
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new CompanyScope);
+    }
 
     public const TYPE_ASSIGNMENT = 'assignment';
 

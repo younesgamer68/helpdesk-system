@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\CompanyScope;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -144,8 +145,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $query->where('role', 'operator');
     }
 
-    protected static function booted()
+    protected static function booted(): void
     {
+        static::addGlobalScope(new CompanyScope);
+
         static::updated(function ($user) {
             // Clear company cache when user is updated
             cache()->forget("company.{$user->company_id}.agents");

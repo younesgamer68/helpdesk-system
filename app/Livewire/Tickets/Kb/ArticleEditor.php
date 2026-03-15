@@ -163,7 +163,7 @@ class ArticleEditor extends Component
     {
         $categories = KbCategory::where('company_id', Auth::user()->company_id)->get();
 
-        return view('livewire.dashboard.kb.article-editor', [
+        return view('livewire.tickets.kb.article-editor', [
             'categories' => $categories,
         ]);
     }

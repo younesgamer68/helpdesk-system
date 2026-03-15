@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -17,8 +18,10 @@ class KbArticle extends Model
         return 'slug';
     }
 
-    protected static function booted()
+    protected static function booted(): void
     {
+        static::addGlobalScope(new CompanyScope);
+
         static::creating(function ($article) {
             if (empty($article->slug)) {
                 $slug = Str::slug($article->title);

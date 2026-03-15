@@ -157,9 +157,11 @@
                           {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                        <rect x="3" y="4" width="18" height="16" rx="2" />
+                        <circle cx="9" cy="10" r="2.5" />
+                        <path d="M7 16.5c.7-1.4 2-2.5 4-2.5s3.3 1.1 4 2.5" />
+                        <path d="M15.5 9h3" />
+                        <path d="M15.5 12h3" />
                     </svg>
                 </a>
 

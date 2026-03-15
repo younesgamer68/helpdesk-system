@@ -97,14 +97,10 @@ class AdminDashboard extends Component
     #[Computed]
     public function agentsActivity(): Collection
     {
-        $companyId = Auth::user()->company_id;
-
         return User::whereIn('role', ['agent', 'operator'], 'and', false)
-            ->where('company_id', '=', $companyId, 'and')
             ->withCount([
-                'tickets as active_count' => function ($query) use ($companyId) {
-                    $query->where('company_id', $companyId)
-                        ->whereIn('status', ['open', 'in_progress', 'pending']);
+                'tickets as active_count' => function ($query) {
+                    $query->whereIn('status', ['open', 'in_progress', 'pending']);
                 },
             ])
             ->get();
@@ -113,7 +109,8 @@ class AdminDashboard extends Component
     #[Computed]
     public function recentActivity(): Collection
     {
-        return TicketLog::with(['ticket', 'user'])
+        return TicketLog::whereHas('ticket')
+            ->with(['ticket', 'user'])
             ->latest()
             ->take(10)
             ->get();

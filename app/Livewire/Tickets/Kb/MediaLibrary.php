@@ -59,7 +59,7 @@ class MediaLibrary extends Component
     {
         $medias = KbMedia::where('company_id', Auth::user()->company_id)->latest()->get();
 
-        return view('livewire.dashboard.kb.media-library', [
+        return view('livewire.tickets.kb.media-library', [
             'medias' => $medias,
         ]);
     }

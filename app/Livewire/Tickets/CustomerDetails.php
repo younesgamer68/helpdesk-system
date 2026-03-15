@@ -60,6 +60,6 @@ class CustomerDetails extends Component
 
     public function render()
     {
-        return view('livewire.dashboard.customer-details');
+        return view('livewire.tickets.customer-details');
     }
 }

@@ -40,7 +40,7 @@ class OperatorProfile extends Component
     #[Computed]
     public function categories()
     {
-        return TicketCategory::where('company_id', Auth::user()->company_id)
+        return TicketCategory::query()
             ->orderBy('name')
             ->get();
     }
@@ -58,6 +58,7 @@ class OperatorProfile extends Component
     public function recentActivity()
     {
         return TicketLog::where('user_id', $this->operator->id)
+            ->whereHas('ticket')
             ->with('ticket')
             ->latest()
             ->limit(10)

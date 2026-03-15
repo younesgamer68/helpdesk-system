@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -16,8 +17,10 @@ class WidgetSetting extends Model
         'show_category' => 'boolean',
     ];
 
-    protected static function booted()
+    protected static function booted(): void
     {
+        static::addGlobalScope(new CompanyScope);
+
         static::creating(function ($widget) {
             if (! $widget->widget_key) {
                 $widget->widget_key = self::generateUniqueKey();

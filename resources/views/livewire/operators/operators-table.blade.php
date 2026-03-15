@@ -11,8 +11,7 @@
                         class="px-3 py-1.5 text-sm text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-100 transition-colors font-medium">
                         Save current view
                     </button>
-                    <button wire:click="clearFilters"
-                        wire:confirm="Are you sure you want to clear all active filters?"
+                    <button wire:click="clearFilters" wire:confirm="Are you sure you want to clear all active filters?"
                         class="px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                         Clear all filters
                     </button>
@@ -24,7 +23,7 @@
         <div class="mb-6 flex flex-wrap items-center gap-2">
             <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mr-2">Saved
                 Views:</span>
-            
+
             @foreach ($this->savedViews as $view)
                 <div class="flex items-center gap-1 group">
                     <button wire:click="applyPreset('{{ $view->id }}')"
@@ -88,25 +87,42 @@
                 <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
 
                 @php
-                    $selectedPending = $this->operators->whereIn('id', $selected)->every(fn($u) => $u->isPendingInvite());
-                    $selectedActive = $this->operators->whereIn('id', $selected)->every(fn($u) => $u->isActive() && $u->id !== Auth::id());
+                    $selectedPending = $this->operators
+                        ->whereIn('id', $selected)
+                        ->every(fn($u) => $u->isPendingInvite());
+                    $selectedActive = $this->operators
+                        ->whereIn('id', $selected)
+                        ->every(fn($u) => $u->isActive() && $u->id !== Auth::id());
                     $hasSelf = in_array(Auth::id(), $selected);
                 @endphp
 
                 @if ($selectedPending)
                     <button wire:click="bulkResendInvites"
                         wire:confirm="Are you sure you want to resend invitations to these {{ count($selected) }} members?"
+                        wire:loading.attr="disabled" wire:target="bulkResendInvites"
                         class="text-sm font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
-                        Resend Invites
+                        <span wire:loading.remove wire:target="bulkResendInvites">Resend Invites</span>
+                        <span wire:loading wire:target="bulkResendInvites"
+                            class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                            <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Sending...
+                        </span>
                     </button>
-                    <button wire:click="bulkRevokeInvites" wire:confirm="Are you sure you want to revoke these invitations?"
+                    <button wire:click="bulkRevokeInvites"
+                        wire:confirm="Are you sure you want to revoke these invitations?"
                         class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 transition-colors">
                         Revoke Invites
                     </button>
                 @endif
 
                 @if ($selectedActive && !$hasSelf)
-                    <button wire:click="bulkRemoveMembers" wire:confirm="Are you sure you want to remove these members? Their tickets will be unassigned."
+                    <button wire:click="bulkRemoveMembers"
+                        wire:confirm="Are you sure you want to remove these members? Their tickets will be unassigned."
                         class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 transition-colors">
                         Remove Members
                     </button>
@@ -115,10 +131,22 @@
                 @if (!$selectedPending && !$selectedActive && !$hasSelf)
                     <button wire:click="bulkResendInvites"
                         wire:confirm="Are you sure you want to resend invitations to all selected pending members?"
+                        wire:loading.attr="disabled" wire:target="bulkResendInvites"
                         class="text-sm font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
-                        Resend (Pending)
+                        <span wire:loading.remove wire:target="bulkResendInvites">Resend (Pending)</span>
+                        <span wire:loading wire:target="bulkResendInvites"
+                            class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                            <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Sending...
+                        </span>
                     </button>
-                    <button wire:click="bulkRemoveMembers" wire:confirm="Are you sure you want to remove active members? Their tickets will be unassigned."
+                    <button wire:click="bulkRemoveMembers"
+                        wire:confirm="Are you sure you want to remove active members? Their tickets will be unassigned."
                         class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 transition-colors">
                         Remove (Active)
                     </button>
@@ -161,8 +189,7 @@
             <thead>
                 <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
                     <th class="px-4 py-3 text-left">
-                <input type="checkbox" wire:model.live="selectAll"
-                            wire:loading.attr="disabled"
+                        <input type="checkbox" wire:model.live="selectAll" wire:loading.attr="disabled"
                             class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-teal-500 focus:ring-teal-500 bg-white dark:bg-zinc-800">
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
@@ -176,16 +203,20 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Role
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Status
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Specialities
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Open Tickets
                     </th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">
@@ -196,14 +227,13 @@
             </thead>
             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                 @forelse ($this->operators as $user)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors cursor-pointer group/row" 
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors cursor-pointer group/row"
                         wire:key="{{ $user->id }}"
                         @click="if (!$event.target.closest('input') && !$event.target.closest('button') && !$event.target.closest('a')) { Livewire.navigate('{{ route('operator.profile', ['company' => Auth::user()->company->slug, 'operator' => $user->id]) }}') }">
                         <td class="px-4 py-3 text-sm">
                             @if ($user->id !== Auth::id())
                                 <input type="checkbox" wire:model.live="selected" value="{{ $user->id }}"
-                                    wire:key="checkbox-{{ $user->id }}"
-                                    wire:loading.attr="disabled"
+                                    wire:key="checkbox-{{ $user->id }}" wire:loading.attr="disabled"
                                     class="rounded border-zinc-300 dark:border-zinc-700 text-teal-500 focus:ring-teal-500 bg-white dark:bg-zinc-800">
                             @endif
                         </td>
@@ -216,7 +246,8 @@
                                 <div>
                                     <div class="font-medium text-zinc-900 dark:text-zinc-100">
                                         @if ($user->id === Auth::id())
-                                            You <span class="text-xs text-zinc-500 font-normal">({{ $user->name }})</span>
+                                            You <span
+                                                class="text-xs text-zinc-500 font-normal">({{ $user->name }})</span>
                                         @else
                                             {{ $user->name }}
                                         @endif
@@ -248,7 +279,8 @@
                                 @if ($user->isPendingInvite())
                                     <span
                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-400 text-xs font-medium rounded-full border border-amber-500/20">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
@@ -263,7 +295,8 @@
                                 @else
                                     <span
                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7"></path>
                                         </svg>
@@ -305,7 +338,8 @@
                         </td>
                         <td class="px-4 py-3 text-sm">
                             @if ($user->open_tickets_count > 0)
-                                <span class="font-semibold {{ $user->open_tickets_count > 8 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100' }}">
+                                <span
+                                    class="font-semibold {{ $user->open_tickets_count > 8 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100' }}">
                                     {{ $user->open_tickets_count }}
                                 </span>
                             @else
@@ -352,16 +386,23 @@
                                         @else
                                             <a href="{{ route('operator.profile', ['company' => Auth::user()->company->slug, 'operator' => $user->id]) }}"
                                                 class="w-full flex items-center gap-2 px-4 py-2 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
                                                 View Profile
                                             </a>
 
-                                            <button @click="if(confirm('Are you sure you want to change this member\'s role to {{ $user->role === 'admin' ? 'Operator' : 'Admin' }}?')) { $wire.updateRole({{ $user->id }}, '{{ $user->role === 'admin' ? 'operator' : 'admin' }}') }"
+                                            <button
+                                                @click="if(confirm('Are you sure you want to change this member\'s role to {{ $user->role === 'admin' ? 'Operator' : 'Admin' }}?')) { $wire.updateRole({{ $user->id }}, '{{ $user->role === 'admin' ? 'operator' : 'admin' }}') }"
                                                 class="w-full flex items-center gap-2 px-4 py-2 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                                 </svg>
                                                 Make {{ $user->role === 'admin' ? 'Operator' : 'Admin' }}
                                             </button>
@@ -385,14 +426,16 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-12 text-center">
-                            <svg class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                        <td colspan="10" class="px-4 py-12 text-center">
+                            <svg class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <h3 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1 mt-4">No team members found</h3>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">We couldn't find anyone matching your current filters.</p>
+                            <h3 class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1 mt-4">No team members
+                                found</h3>
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">We couldn't find anyone matching your
+                                current filters.</p>
                         </td>
                     </tr>
                 @endforelse
@@ -416,7 +459,8 @@
                     class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
                     <div>
                         <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Invite Agent</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Send a secure invite link to onboard a new operator or
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Send a secure invite link to onboard a
+                            new operator or
                             admin.</p>
                     </div>
                     <button wire:click="attemptCloseCreateModal"
@@ -493,13 +537,27 @@
                             class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
                             Cancel
                         </button>
-                        <button type="submit"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Dispatch Invite
+                        <button type="submit" wire:loading.attr="disabled" wire:target="createAgent"
+                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
+                            <span wire:loading.remove wire:target="createAgent"
+                                class="inline-flex items-center gap-2 whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Dispatch Invite
+                            </span>
+                            <span wire:loading wire:target="createAgent"
+                                class="flex flex-row items-center gap-2 whitespace-nowrap">
+                                <svg class="w-4 h-4 shrink-0 animate-spin" viewBox="0 0 24 24" fill="none"
+                                    aria-hidden="true">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                Sending Invite...
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -522,7 +580,8 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard invitation?</h3>
+                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard invitation?
+                                </h3>
                                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
                                     You have unsaved changes. If you close now, your progress will be lost.
                                 </p>
@@ -551,15 +610,18 @@
             <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
                 @click.stop>
                 <!-- Header -->
-                <div class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
+                <div
+                    class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
                     <div>
                         <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Bulk Invite Agents</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Invite multiple team members by entering their email addresses.</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Invite multiple team members by
+                            entering their email addresses.</p>
                     </div>
                     <button wire:click="closeBulkInviteModal"
                         class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -602,7 +664,8 @@
                             </svg>
                             <div>
                                 <p class="text-sm text-blue-400 font-medium">Bulk Secure Email Invitations</p>
-                                <p class="text-xs text-blue-300/80 mt-1">Each email will receive a unique signed link. Duplicate or existing emails will be automatically skipped.</p>
+                                <p class="text-xs text-blue-300/80 mt-1">Each email will receive a unique signed link.
+                                    Duplicate or existing emails will be automatically skipped.</p>
                             </div>
                         </div>
                     </div>
@@ -613,12 +676,28 @@
                             class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
                             Cancel
                         </button>
-                        <button type="submit"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Dispatch Bulk Invites
+                        <button type="submit" wire:loading.attr="disabled" wire:target="processBulkInvite"
+                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
+                            <span wire:loading.remove wire:target="processBulkInvite"
+                                class="inline-flex items-center gap-2 whitespace-nowrap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                Dispatch Bulk Invites
+                            </span>
+
+                            <span wire:loading wire:target="processBulkInvite"
+                                class="inline-flex items-center gap-2 whitespace-nowrap">
+                                <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"
+                                    aria-hidden="true">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                Sending Invites...
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -629,7 +708,8 @@
     <!-- Save View Modal -->
     @if ($showSaveViewModal)
         <div class="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4"
-            @click.self="$wire.set('showSaveViewModal', false)" @keydown.escape.window="$wire.set('showSaveViewModal', false)">
+            @click.self="$wire.set('showSaveViewModal', false)"
+            @keydown.escape.window="$wire.set('showSaveViewModal', false)">
             <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200"
                 @click.stop>
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Save current view</h3>
@@ -638,7 +718,8 @@
 
                 <form wire:submit="saveCustomView" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">View Name</label>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">View
+                            Name</label>
                         <input wire:model="customViewName" type="text" placeholder="e.g., Pending Admins"
                             class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
                         @error('customViewName')

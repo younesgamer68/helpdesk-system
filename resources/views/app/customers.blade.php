@@ -1,10 +1,9 @@
 <x-layouts::app :title="__('Customers')">
-    <div class="p-6">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-white">Customers Management</h1>
-            <p class="text-sm text-zinc-400 mt-1">Manage, search, and view all clients who have submitted tickets.</p>
-        </div>
-
-        <livewire:tickets.customers-table />
+    <div class="mb-5">
+        <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Customers</h1>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage, search, and review everyone who has submitted a
+            ticket.</p>
     </div>
+
+    <livewire:tickets.customers-table />
 </x-layouts::app>

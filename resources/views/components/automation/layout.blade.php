@@ -1,21 +1,34 @@
-<div class="flex items-start max-md:flex-col">
-    <div class="me-10 w-full pb-4 md:w-[220px]">
-        <flux:navlist aria-label="{{ __('Automation') }}">
-            <flux:navlist.item :href="route('automation.ticket-rules', ['company' => Auth::user()->company->slug])" :current="request()->routeIs('automation.ticket-rules')" wire:navigate>{{ __('Ticket Rules') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('automation.sla-policy', ['company' => Auth::user()->company->slug])" :current="request()->routeIs('automation.sla-policy')" wire:navigate>{{ __('SLA Policy') }}</flux:navlist.item>
-        </flux:navlist>
+<div class="space-y-6">
+    <div>
+        <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Automation</h1>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage ticket rules, assignment flows, and SLA settings.
+        </p>
     </div>
 
-    <flux:separator class="md:hidden" />
+    <div class="flex items-start max-md:flex-col">
+        <div class="me-10 w-full pb-4 md:w-55">
+            <flux:navlist aria-label="{{ __('Automation') }}">
+                <flux:navlist.item :href="route('automation.ticket-rules', ['company' => Auth::user()->company->slug])"
+                    :current="request()->routeIs('automation.ticket-rules')" wire:navigate>{{ __('Ticket Rules') }}
+                </flux:navlist.item>
+                <flux:navlist.item :href="route('automation.sla-policy', ['company' => Auth::user()->company->slug])"
+                    :current="request()->routeIs('automation.sla-policy')" wire:navigate>{{ __('SLA Policy') }}
+                </flux:navlist.item>
+            </flux:navlist>
+        </div>
 
-    <div class="flex-1 self-stretch max-md:pt-6">
-        <flux:heading>{{ $heading ?? '' }}</flux:heading>
-        <flux:subheading>{{ $subheading ?? '' }}</flux:subheading>
+        <flux:separator class="md:hidden" />
 
-        <div {{ $attributes->merge([
-            'class' => 'mt-5 w-full ' . ($maxWidth ?? 'max-w-6xl'),
-        ]) }}>
-            {{ $slot }}
+        <div class="flex-1 self-stretch max-md:pt-6">
+            <flux:heading>{{ $heading ?? '' }}</flux:heading>
+            <flux:subheading>{{ $subheading ?? '' }}</flux:subheading>
+
+            <div
+                {{ $attributes->merge([
+                    'class' => 'mt-5 w-full ' . ($maxWidth ?? 'max-w-6xl'),
+                ]) }}>
+                {{ $slot }}
+            </div>
         </div>
     </div>
 </div>

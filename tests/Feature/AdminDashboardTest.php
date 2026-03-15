@@ -12,6 +12,7 @@ uses(RefreshDatabase::class);
 
 it('renders the dashboard for admins', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    /** @var User $user */
     $user = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
 
     $response = actingAs($user)
@@ -21,6 +22,7 @@ it('renders the dashboard for admins', function () {
 
 it('shows key elements on the dashboard', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    /** @var User $user */
     $user = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
 
     Livewire::actingAs($user)
@@ -30,4 +32,31 @@ it('shows key elements on the dashboard', function () {
         ->assertSee('Resolved Today')
         ->assertSee('Unassigned')
         ->assertSee('SLA Breaches');
+});
+
+it('does not show tickets from another company', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $otherCompany = Company::factory()->create(['onboarding_completed_at' => now()]);
+    /** @var User $user */
+    $user = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+
+    \App\Models\Ticket::factory()->create([
+        'company_id' => $company->id,
+        'ticket_number' => 'TKT-LOCAL1',
+        'subject' => 'Local company ticket',
+        'status' => 'open',
+    ]);
+
+    \App\Models\Ticket::factory()->create([
+        'company_id' => $otherCompany->id,
+        'ticket_number' => 'TKT-OTHER1',
+        'subject' => 'Other company ticket',
+        'status' => 'open',
+    ]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain').'/admin/dashboard')
+        ->assertSuccessful()
+        ->assertSee('TKT-LOCAL1')
+        ->assertDontSee('TKT-OTHER1');
 });

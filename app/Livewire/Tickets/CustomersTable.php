@@ -87,6 +87,6 @@ class CustomersTable extends Component
 
     public function render()
     {
-        return view('livewire.dashboard.customers-table');
+        return view('livewire.tickets.customers-table');
     }
 }

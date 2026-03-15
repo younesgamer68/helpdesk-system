@@ -109,7 +109,7 @@ class Categories extends Component
             ->latest()
             ->get();
 
-        return view('livewire.dashboard.kb.categories', [
+        return view('livewire.tickets.kb.categories', [
             'categories' => $categories,
             'allCategories' => $categories,
         ]);

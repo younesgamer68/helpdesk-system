@@ -196,11 +196,11 @@ class OperatorsTable extends Component
         if (! $isStatusPending) {
             $user->assignedTickets()->update(['assigned_to' => null]);
             $this->dispatch('show-toast', message: 'Team member removed and tickets unassigned.', type: 'success');
+            $user->delete();
         } else {
+            $user->forceDelete();
             $this->dispatch('show-toast', message: 'Invitation revoked successfully.', type: 'success');
         }
-
-        $user->delete();
     }
 
     public function resendInvite($userId)
@@ -245,7 +245,7 @@ class OperatorsTable extends Component
         $count = 0;
         foreach ($users as $user) {
             if ($user->isPendingInvite() && $user->id !== Auth::id()) {
-                $user->delete();
+                $user->forceDelete();
                 $count++;
             }
         }
@@ -380,7 +380,10 @@ class OperatorsTable extends Component
         $skipped = 0;
 
         foreach ($emails as $email) {
-            $existing = User::where('email', '=', $email)->first(['id']);
+            $existing = User::withoutGlobalScopes()
+                ->withTrashed()
+                ->where('email', '=', $email)
+                ->exists();
 
             if ($existing) {
                 $skipped++;

@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Onboarding;
 
+use App\Models\Company;
+use App\Models\SlaPolicy;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -11,6 +15,16 @@ class Wizard extends Component
 
     // Step 1: Profile
     public ?string $timezone = 'UTC';
+
+    public bool $slaIsEnabled = false;
+
+    public int $slaLowMinutes = 1440;
+
+    public int $slaMediumMinutes = 480;
+
+    public int $slaHighMinutes = 120;
+
+    public int $slaUrgentMinutes = 30;
 
     // Step 2: Categories
     public array $categories = [
@@ -37,17 +51,32 @@ class Wizard extends Component
 
     public bool $widgetShowCategory = true;
 
-    public function mount()
+    public function mount(): void
     {
-        $company = auth()->user()->company;
+        $company = Auth::user()->company;
         $this->timezone = $company->timezone ?? 'UTC';
+
+        $slaPolicy = SlaPolicy::query()->where('company_id', $company->id)->first();
+
+        if ($slaPolicy) {
+            $this->slaIsEnabled = $slaPolicy->is_enabled;
+            $this->slaLowMinutes = $slaPolicy->low_minutes;
+            $this->slaMediumMinutes = $slaPolicy->medium_minutes;
+            $this->slaHighMinutes = $slaPolicy->high_minutes;
+            $this->slaUrgentMinutes = $slaPolicy->urgent_minutes;
+        }
     }
 
-    public function nextStep()
+    public function nextStep(): void
     {
         if ($this->currentStep === 1) {
             $this->validate([
                 'timezone' => 'required|string|timezone',
+                'slaIsEnabled' => 'boolean',
+                'slaLowMinutes' => 'required|integer|min:1',
+                'slaMediumMinutes' => 'required|integer|min:1',
+                'slaHighMinutes' => 'required|integer|min:1',
+                'slaUrgentMinutes' => 'required|integer|min:1',
             ]);
         }
 
@@ -73,7 +102,7 @@ class Wizard extends Component
         }
     }
 
-    public function previousStep()
+    public function previousStep(): void
     {
         if ($this->currentStep > 1) {
             $this->currentStep--;
@@ -91,13 +120,15 @@ class Wizard extends Component
 
     public function skipEntireWizard()
     {
-        $company = auth()->user()->company;
+        $company = Auth::user()->company;
 
         // Save defaults for currently reachable data
         $company->update([
             'timezone' => $this->timezone ?? 'UTC',
             'onboarding_completed_at' => now(),
         ]);
+
+        $this->saveSlaPolicy($company);
 
         // Default categories if none exist
         if ($company->categories()->count() === 0) {
@@ -128,12 +159,12 @@ class Wizard extends Component
         return redirect()->route('tickets', ['company' => $company->slug]);
     }
 
-    public function addCategory()
+    public function addCategory(): void
     {
         $this->categories[] = ['name' => '', 'color' => '#3b82f6'];
     }
 
-    public function removeCategory($index)
+    public function removeCategory($index): void
     {
         if (count($this->categories) > 1) {
             unset($this->categories[$index]);
@@ -141,12 +172,12 @@ class Wizard extends Component
         }
     }
 
-    public function addInvite()
+    public function addInvite(): void
     {
         $this->invites[] = ['email' => '', 'name' => '', 'role' => 'operator'];
     }
 
-    public function removeInvite($index)
+    public function removeInvite($index): void
     {
         unset($this->invites[$index]);
         $this->invites = array_values($this->invites); // Re-index array
@@ -163,13 +194,15 @@ class Wizard extends Component
             'widgetShowCategory' => 'boolean',
         ]);
 
-        $company = auth()->user()->company;
+        $company = Auth::user()->company;
 
         // Save Step 1
         $company->update([
             'timezone' => $this->timezone,
             'onboarding_completed_at' => now(),
         ]);
+
+        $this->saveSlaPolicy($company);
 
         // Save Step 2
         foreach ($this->categories as $categoryData) {
@@ -212,8 +245,22 @@ class Wizard extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render()
+    public function render(): View
     {
         return view('livewire.onboarding.wizard');
+    }
+
+    protected function saveSlaPolicy(Company $company): void
+    {
+        SlaPolicy::query()->updateOrCreate(
+            ['company_id' => $company->id],
+            [
+                'is_enabled' => $this->slaIsEnabled,
+                'low_minutes' => $this->slaLowMinutes,
+                'medium_minutes' => $this->slaMediumMinutes,
+                'high_minutes' => $this->slaHighMinutes,
+                'urgent_minutes' => $this->slaUrgentMinutes,
+            ]
+        );
     }
 }

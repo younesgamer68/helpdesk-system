@@ -97,7 +97,6 @@ class AgentDashboard extends Component
     public function unassignedTickets(): Collection
     {
         return Ticket::query()
-            ->where('company_id', Auth::user()->company_id)
             ->whereNull('assigned_to')
             ->where('status', '!=', 'closed')
             ->with('category:id,name')
@@ -115,7 +114,6 @@ class AgentDashboard extends Component
     public function assignToMe(int $ticketId): void
     {
         $ticket = Ticket::query()
-            ->where('company_id', Auth::user()->company_id)
             ->whereNull('assigned_to')
             ->findOrFail($ticketId);
 

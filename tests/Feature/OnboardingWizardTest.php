@@ -10,6 +10,16 @@ use function Pest\Laravel\actingAs;
 
 uses(RefreshDatabase::class);
 
+it('renders the onboarding wizard page for non-onboarded companies', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => null]);
+    $user = User::factory()->create(['company_id' => $company->id]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain').'/onboarding')
+        ->assertSuccessful()
+        ->assertSee('Setup your Workspace');
+});
+
 it('redirects non-onboarded companies to the wizard', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => null]);
     $user = User::factory()->create(['company_id' => $company->id]);
@@ -36,6 +46,8 @@ it('completes the onboarding flow and saves data correctly', function () {
 
     Livewire::test(Wizard::class)
         ->set('timezone', 'Europe/Paris')
+        ->set('slaIsEnabled', true)
+        ->set('slaLowMinutes', 1500)
         ->call('nextStep')
         ->assertSet('currentStep', 2)
         ->set('categories', [
@@ -83,6 +95,15 @@ it('completes the onboarding flow and saves data correctly', function () {
         'theme_mode' => 'light',
         'welcome_message' => 'Hello World!',
         'is_active' => 1,
+    ]);
+
+    $this->assertDatabaseHas('sla_policies', [
+        'company_id' => $company->id,
+        'is_enabled' => 1,
+        'low_minutes' => 1500,
+        'medium_minutes' => 480,
+        'high_minutes' => 120,
+        'urgent_minutes' => 30,
     ]);
 });
 

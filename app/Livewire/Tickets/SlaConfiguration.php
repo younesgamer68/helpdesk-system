@@ -4,6 +4,7 @@ namespace App\Livewire\Tickets;
 
 use App\Models\SlaPolicy;
 use App\Models\Ticket;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -95,8 +96,8 @@ class SlaConfiguration extends Component
         }
     }
 
-    public function render()
+    public function render(): View
     {
-        return view('livewire.dashboard.sla-configuration');
+        return view('livewire.tickets.sla-configuration');
     }
 }
