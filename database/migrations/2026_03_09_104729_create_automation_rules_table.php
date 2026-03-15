@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('description')->nullable();
 
             // Rule type
-            $table->enum('type', ['assignment', 'priority', 'auto_reply', 'escalation']);
+            $table->enum('type', ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']);
 
             // Conditions and actions stored as JSON
             $table->json('conditions');
