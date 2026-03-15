@@ -469,3 +469,76 @@ test('only assigns to operators in same company', function () {
 
     expect($assignedOperator)->toBeNull();
 });
+
+test('assigns ticket matching specific constraints (available, online, <10 tickets, lowest workload)', function () {
+    $categoryBilling = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Billing']);
+    $categoryTechnical = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Technical']);
+    $categoryGeneral = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'General']);
+
+    // Sara : Billing, General, Disponible ✅, Tickets ouverts 2
+    $sara = User::factory()->operator()->create([
+        'name' => 'Sara',
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryBilling->id,
+        'is_available' => true,
+        'status' => 'online',
+        'assigned_tickets_count' => 2,
+    ]);
+    Ticket::factory()->count(2)->create(['company_id' => $this->company->id, 'category_id' => $categoryBilling->id, 'assigned_to' => $sara->id, 'status' => 'open', 'verified' => false]);
+
+    // Ahmed : Technical, Disponible ✅, Tickets ouverts 1
+    $ahmed = User::factory()->operator()->create([
+        'name' => 'Ahmed',
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryTechnical->id,
+        'is_available' => true,
+        'status' => 'online',
+        'assigned_tickets_count' => 1,
+    ]);
+    Ticket::factory()->count(1)->create(['company_id' => $this->company->id, 'category_id' => $categoryTechnical->id, 'assigned_to' => $ahmed->id, 'status' => 'open', 'verified' => false]);
+
+    // Karim : Technical, Billing, Disponible ✅, Tickets ouverts 3
+    $karim = User::factory()->operator()->create([
+        'name' => 'Karim',
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryBilling->id,
+        'is_available' => true,
+        'status' => 'online',
+        'assigned_tickets_count' => 3,
+    ]);
+    Ticket::factory()->count(3)->create(['company_id' => $this->company->id, 'category_id' => $categoryBilling->id, 'assigned_to' => $karim->id, 'status' => 'open', 'verified' => false]);
+
+    // Fatima : General, Disponible ❌, Tickets ouverts 0
+    $fatima = User::factory()->operator()->create([
+        'name' => 'Fatima',
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryGeneral->id,
+        'is_available' => false,
+        'status' => 'offline',
+        'assigned_tickets_count' => 0,
+    ]);
+
+    // Bob : Billing, Disponible ✅, Tickets ouverts 10 (Should not be assigned because >= 10 tickets)
+    $bob = User::factory()->operator()->create([
+        'name' => 'Bob',
+        'company_id' => $this->company->id,
+        'specialty_id' => $categoryBilling->id,
+        'is_available' => true,
+        'status' => 'online',
+        'assigned_tickets_count' => 10,
+    ]);
+    Ticket::factory()->count(10)->create(['company_id' => $this->company->id, 'category_id' => $categoryBilling->id, 'assigned_to' => $bob->id, 'status' => 'open', 'verified' => false]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $categoryBilling->id,
+        'assigned_to' => null,
+        'verified' => false,
+    ]);
+
+    $assignedOperator = $this->service->assignTicket($ticket);
+
+    // Sara should get it because she has 2 open tickets (less than 10) and lowest workload compared to Karim (3). Bob is ignored (10 >= 10), Ahmed is Technical, Fatima is offline.
+    expect($assignedOperator->id)->toBe($sara->id);
+    expect($assignedOperator->name)->toBe('Sara');
+});

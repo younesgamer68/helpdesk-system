@@ -21,7 +21,7 @@ class TicketAssignmentService
      */
     public function assignTicket(Ticket $ticket): ?User
     {
-        if (! $ticket->category_id) {
+        if (!$ticket->category_id) {
             return $this->assignToGeneralist($ticket);
         }
 
@@ -50,11 +50,13 @@ class TicketAssignmentService
             ->where('company_id', $ticket->company_id)
             ->operators()
             ->available()
+            ->online()
+            ->where('assigned_tickets_count', '<', 10)
             ->withSpecialty($ticket->category_id)
             ->withCount(['assignedTickets as open_category_tickets_count' => function ($query) use ($ticket) {
-                $query->where('category_id', $ticket->category_id)
-                    ->whereNotIn('status', ['resolved', 'closed']);
-            }])
+            $query->where('category_id', $ticket->category_id)
+                ->whereNotIn('status', ['resolved', 'closed']);
+        }])
             ->orderBy('open_category_tickets_count', 'asc')
             ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
             ->first();
@@ -72,23 +74,27 @@ class TicketAssignmentService
             ->where('company_id', $ticket->company_id)
             ->operators()
             ->available()
+            ->online()
+            ->where('assigned_tickets_count', '<', 10)
             ->whereNull('specialty_id')
             ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
-                $query->whereNotIn('status', ['resolved', 'closed']);
-            }])
+            $query->whereNotIn('status', ['resolved', 'closed']);
+        }])
             ->orderBy('open_tickets_count', 'asc')
             ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
             ->first();
 
         // If no generalist, try any available operator
-        if (! $generalist) {
+        if (!$generalist) {
             $generalist = User::query()
                 ->where('company_id', $ticket->company_id)
                 ->operators()
                 ->available()
+                ->online()
+                ->where('assigned_tickets_count', '<', 10)
                 ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
-                    $query->whereNotIn('status', ['resolved', 'closed']);
-                }])
+                $query->whereNotIn('status', ['resolved', 'closed']);
+            }])
                 ->orderBy('open_tickets_count', 'asc')
                 ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
                 ->first();
@@ -132,7 +138,7 @@ class TicketAssignmentService
      */
     public function unassignTicket(Ticket $ticket): void
     {
-        if (! $ticket->assigned_to) {
+        if (!$ticket->assigned_to) {
             return;
         }
 
@@ -188,11 +194,40 @@ class TicketAssignmentService
         User::where('company_id', $companyId)
             ->operators()
             ->each(function (User $operator) {
-                $count = Ticket::where('assigned_to', $operator->id)
-                    ->whereNotIn('status', ['resolved', 'closed'])
-                    ->count();
+            $count = Ticket::where('assigned_to', $operator->id)
+                ->whereNotIn('status', ['resolved', 'closed'])
+                ->count();
 
-                $operator->update(['assigned_tickets_count' => $count]);
-            });
+            $operator->update(['assigned_tickets_count' => $count]);
+        });
+    }
+
+    /**
+     * Assign all pending unassigned tickets for a company.
+     * Called when an operator comes online to pick up queued tickets.
+     */
+    public function assignPendingTickets(int $companyId): int
+    {
+        $unassignedTickets = Ticket::where('company_id', $companyId)
+            ->whereNull('assigned_to')
+            ->where('verified', true)
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $assignedCount = 0;
+
+        foreach ($unassignedTickets as $ticket) {
+            $operator = $this->assignTicket($ticket);
+
+            if ($operator) {
+                $assignedCount++;
+            } else {
+                // No more online operators available, stop trying
+                break;
+            }
+        }
+
+        return $assignedCount;
     }
 }

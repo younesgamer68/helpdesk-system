@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\TicketVerification;
 use App\Mail\TicketVerified;
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\User;
@@ -59,8 +60,28 @@ class WidgetController extends Controller
 
         // Generate unique ticket number
         do {
-            $ticketNumber = 'TKT-'.strtoupper(Str::random(6));
+            $ticketNumber = 'TKT-' . strtoupper(Str::random(6));
         } while (Ticket::where('ticket_number', $ticketNumber)->exists());
+
+        // Find or create customer
+        $customer = Customer::firstOrCreate(
+        [
+            'company_id' => $widget->company_id,
+            'email' => $validated['customer_email'],
+        ],
+        [
+            'name' => $validated['customer_name'],
+            'phone' => $validated['customer_phone'] ?? null,
+            'is_active' => true,
+        ]
+        );
+
+        if (!$customer->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account has been deactivated. You cannot submit new tickets.',
+            ], 403);
+        }
 
         // Generate verification token
         $verificationToken = Str::random(64);
@@ -68,6 +89,7 @@ class WidgetController extends Controller
         // Create the ticket (unverified)
         $ticket = Ticket::create([
             'company_id' => $widget->company_id,
+            'customer_id' => $customer->id,
             'ticket_number' => $ticketNumber,
             'customer_name' => $validated['customer_name'],
             'customer_email' => $validated['customer_email'],

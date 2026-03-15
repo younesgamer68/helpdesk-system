@@ -35,6 +35,22 @@
                         
                         <flux:input wire:model="timezone" label="Timezone" description="Used to calculate precise SLAs and business hours." />
                         
+                        <div class="pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-4">
+                            <div>
+                                <flux:heading size="md">Service Level Agreements (SLA)</flux:heading>
+                                <flux:subheading>Set target resolution times for different ticket priorities.</flux:subheading>
+                            </div>
+
+                            <flux:switch wire:model.live="slaIsEnabled" label="Enable SLA Tracking" />
+
+                            <div x-show="$wire.slaIsEnabled" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                <flux:input type="number" wire:model="slaLowMinutes" label="Low Priority (minutes)" min="1" description="Default: 1440 (24h)" />
+                                <flux:input type="number" wire:model="slaMediumMinutes" label="Medium Priority (minutes)" min="1" description="Default: 480 (8h)" />
+                                <flux:input type="number" wire:model="slaHighMinutes" label="High Priority (minutes)" min="1" description="Default: 120 (2h)" />
+                                <flux:input type="number" wire:model="slaUrgentMinutes" label="Urgent Priority (minutes)" min="1" description="Default: 30 (30m)" />
+                            </div>
+                        </div>
+                        
                         <div class="flex justify-between items-center pt-4 border-t border-zinc-200 dark:border-zinc-800 mt-6">
                             <flux:button wire:click="skipStep" variant="ghost">Skip step</flux:button>
                             <flux:button type="submit" variant="primary" icon-trailing="arrow-right">Next: Ticket Categories</flux:button>

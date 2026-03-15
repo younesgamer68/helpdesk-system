@@ -19,7 +19,7 @@ Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatb
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn () => view('auth.login'))->name('login');
+    Route::get('/login', fn() => view('auth.login'))->name('login');
     Route::get('/set-password', App\Livewire\Auth\SetPassword::class)
         ->name('set-password')
         ->middleware('user.pending');
@@ -29,15 +29,18 @@ Route::middleware('guest')->group(function () {
         ->name('invitations.accept')
         ->middleware('signed');
 
-    Route::post('/register/quick', [QuickRegisterController::class, 'store'])
+    Route::post('/register/quick', [QuickRegisterController::class , 'store'])
         ->name('register.quick');
 
     // Google OAuth
-    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
-    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
+    Route::get('/auth/google', [GoogleController::class , 'redirect'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleController::class , 'callback'])->name('auth.google.callback');
 });
 
 Route::post('/logout', function () {
+    if (Auth::check()) {
+        Auth::user()->update(['status' => 'offline']);
+    }
     Auth::logout();
 
     return redirect()->route('home');
@@ -68,11 +71,22 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // ====== SUBDOMAIN (company) ======
-Route::domain('{company}.'.config('app.domain'))->group(function () {
+Route::domain('{company}.' . config('app.domain'))->group(function () {
+    
+    // Public Knowledge Base Portal
+    Route::prefix('kb')->name('kb.public.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\KbPortalController::class, 'home'])->name('home');
+        Route::get('/category/{category}', [\App\Http\Controllers\KbPortalController::class, 'category'])->name('category');
+        Route::get('/article/{article:slug}', [\App\Http\Controllers\KbPortalController::class, 'article'])->name('article');
+        Route::get('/search', [\App\Http\Controllers\KbPortalController::class, 'search'])->name('search');
+        Route::post('/article/{article:slug}/vote', [\App\Http\Controllers\KbPortalController::class, 'vote'])->name('vote');
+        Route::get('/widget.js', [\App\Http\Controllers\KbWidgetController::class, 'snippet'])->name('widget');
+    });
+
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
 
-        // Onboarding form for the company
-        Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
+            // Onboarding form for the company
+            Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
 
         // Dashboard routes (require onboarding)
         Route::middleware(['company.is_onboarded'])->group(function () {
@@ -113,4 +127,4 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
     });
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

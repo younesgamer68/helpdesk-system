@@ -32,6 +32,8 @@ class AutomationRule extends Model
 
     public const TYPE_ESCALATION = 'escalation';
 
+    public const TYPE_SLA_BREACH = 'sla_breach';
+
     protected $guarded = [];
 
     /**
@@ -111,6 +113,7 @@ class AutomationRule extends Model
             self::TYPE_PRIORITY => 'Priority Change',
             self::TYPE_AUTO_REPLY => 'Auto Reply',
             self::TYPE_ESCALATION => 'Escalation',
+            self::TYPE_SLA_BREACH => 'SLA Breach',
         ];
     }
 }

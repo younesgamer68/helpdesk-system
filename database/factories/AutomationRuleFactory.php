@@ -146,6 +146,19 @@ class AutomationRuleFactory extends Factory
     }
 
     /**
+     * State for SLA breach rules.
+     */
+    public function slaBreach(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => AutomationRule::TYPE_SLA_BREACH,
+            'name' => 'SLA Breach Rule',
+            'conditions' => [],
+            'actions' => ['escalate_priority' => true, 'notify_admin' => true],
+        ]);
+    }
+
+    /**
      * State for inactive rules.
      */
     public function inactive(): static

@@ -24,10 +24,15 @@
             <select wire:model.live="filterType"
                 class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
                 <option value="">All Types</option>
+                @if($filterMode === 'all' || $filterMode === 'assignment')
                 <option value="assignment">Auto Assignment</option>
+                @endif
+                @if($filterMode === 'all' || $filterMode === 'ticket')
                 <option value="priority">Priority Change</option>
                 <option value="auto_reply">Auto Reply</option>
                 <option value="escalation">Escalation</option>
+                <option value="sla_breach">SLA Breach</option>
+                @endif
             </select>
 
             <!-- Status Filter -->
@@ -112,12 +117,14 @@
                                     'priority' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
                                     'auto_reply' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
                                     'escalation' => 'bg-red-500/10 text-red-400 border-red-500/20',
+                                    'sla_breach' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
                                 ];
                                 $typeLabels = [
                                     'assignment' => 'Auto Assignment',
                                     'priority' => 'Priority Change',
                                     'auto_reply' => 'Auto Reply',
                                     'escalation' => 'Escalation',
+                                    'sla_breach' => 'SLA Breach',
                                 ];
                             @endphp
                             <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $typeColors[$rule->type] }}">
@@ -210,10 +217,15 @@
                     <flux:field>
                         <flux:label>Rule Type</flux:label>
                         <flux:select wire:model.live="type">
+                            @if($filterMode === 'all' || $filterMode === 'assignment')
                             <flux:select.option value="assignment">Auto Assignment</flux:select.option>
+                            @endif
+                            @if($filterMode === 'all' || $filterMode === 'ticket')
                             <flux:select.option value="priority">Priority Change</flux:select.option>
                             <flux:select.option value="auto_reply">Auto Reply</flux:select.option>
                             <flux:select.option value="escalation">Escalation</flux:select.option>
+                            <flux:select.option value="sla_breach">SLA Breach</flux:select.option>
+                            @endif
                         </flux:select>
                         <flux:error name="type" />
                     </flux:field>
@@ -230,7 +242,7 @@
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
                     <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Conditions</h4>
 
-                    @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation']))
+                    @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']))
                         <flux:field>
                             <flux:label>Category (optional)</flux:label>
                             <flux:select wire:model="category_id">
@@ -357,7 +369,7 @@
                         @endif
                     @endif
 
-                    @if($type === 'escalation')
+                    @if(in_array($type, ['escalation', 'sla_breach']))
                         <flux:field variant="inline">
                             <flux:label>Escalate priority to next level</flux:label>
                             <flux:switch wire:model.live="escalate_priority" />
@@ -374,6 +386,16 @@
                                 </flux:select>
                             </flux:field>
                         @endif
+
+                        <flux:field>
+                            <flux:label>Assign to specific operator</flux:label>
+                            <flux:select wire:model="assign_to_operator_id">
+                                <flux:select.option value="">Leave Unchanged</flux:select.option>
+                                @foreach($this->operators as $operator)
+                                    <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </flux:field>
 
                         <flux:field variant="inline">
                             <flux:label>Notify administrators</flux:label>
@@ -421,10 +443,15 @@
                     <flux:field>
                         <flux:label>Rule Type</flux:label>
                         <flux:select wire:model.live="type">
+                            @if($filterMode === 'all' || $filterMode === 'assignment')
                             <flux:select.option value="assignment">Auto Assignment</flux:select.option>
+                            @endif
+                            @if($filterMode === 'all' || $filterMode === 'ticket')
                             <flux:select.option value="priority">Priority Change</flux:select.option>
                             <flux:select.option value="auto_reply">Auto Reply</flux:select.option>
                             <flux:select.option value="escalation">Escalation</flux:select.option>
+                            <flux:select.option value="sla_breach">SLA Breach</flux:select.option>
+                            @endif
                         </flux:select>
                         <flux:error name="type" />
                     </flux:field>
@@ -441,7 +468,7 @@
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
                     <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Conditions</h4>
 
-                    @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation']))
+                    @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']))
                         <flux:field>
                             <flux:label>Category (optional)</flux:label>
                             <flux:select wire:model="category_id">
@@ -568,7 +595,7 @@
                         @endif
                     @endif
 
-                    @if($type === 'escalation')
+                    @if(in_array($type, ['escalation', 'sla_breach']))
                         <flux:field variant="inline">
                             <flux:label>Escalate priority to next level</flux:label>
                             <flux:switch wire:model.live="escalate_priority" />
@@ -585,6 +612,16 @@
                                 </flux:select>
                             </flux:field>
                         @endif
+
+                        <flux:field>
+                            <flux:label>Assign to specific operator</flux:label>
+                            <flux:select wire:model="assign_to_operator_id">
+                                <flux:select.option value="">Leave Unchanged</flux:select.option>
+                                @foreach($this->operators as $operator)
+                                    <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}</flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </flux:field>
 
                         <flux:field variant="inline">
                             <flux:label>Notify administrators</flux:label>
