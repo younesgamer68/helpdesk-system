@@ -13,6 +13,6 @@ class TicketsController extends Controller
     {
         $agents = $ticket->company->user;
 
-        return view('dashboard.tickets.show', compact('ticket', 'agents'));
+        return view('app.tickets.show', compact('ticket', 'agents'));
     }
 }

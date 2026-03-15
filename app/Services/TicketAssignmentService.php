@@ -4,6 +4,9 @@ namespace App\Services;
 
 use App\Models\Ticket;
 use App\Models\User;
+use App\Notifications\TicketAssigned;
+use App\Notifications\TicketReassigned;
+use App\Notifications\TicketUnassigned;
 use Illuminate\Support\Facades\DB;
 
 class TicketAssignmentService
@@ -97,6 +100,15 @@ class TicketAssignmentService
             return $generalist;
         }
 
+        // Notify admins that auto-assignment failed
+        $admins = User::where('company_id', $ticket->company_id)
+            ->whereIn('role', ['admin', 'super_admin'])
+            ->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new TicketUnassigned($ticket));
+        }
+
         return null;
     }
 
@@ -111,6 +123,8 @@ class TicketAssignmentService
             $operator->increment('assigned_tickets_count');
             $operator->update(['last_assigned_at' => now()]);
         });
+
+        $operator->notify(new TicketAssigned($ticket));
     }
 
     /**
@@ -139,6 +153,7 @@ class TicketAssignmentService
      */
     public function reassignTicket(Ticket $ticket, User $newOperator): void
     {
+        $previousOperatorId = $ticket->assigned_to;
         DB::transaction(function () use ($ticket, $newOperator) {
             // Decrement previous operator's count
             if ($ticket->assigned_to) {
@@ -153,6 +168,15 @@ class TicketAssignmentService
             $ticket->saveQuietly();
             $newOperator->increment('assigned_tickets_count');
         });
+
+        if ($previousOperatorId && $previousOperatorId !== $newOperator->id) {
+            $previousOperator = User::find($previousOperatorId);
+            if ($previousOperator) {
+                $previousOperator->notify(new TicketReassigned($ticket));
+            }
+        }
+
+        $newOperator->notify(new TicketAssigned($ticket));
     }
 
     /**

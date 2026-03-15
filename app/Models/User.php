@@ -58,9 +58,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 'admin';
     }
 
-    public function isOperator()
+    public function isOperator(): bool
     {
         return $this->role === 'operator';
+    }
+
+    public function isPendingInvite(): bool
+    {
+        return is_null($this->password) && is_null($this->google_id);
+    }
+
+    public function isActive(): bool
+    {
+        return ! $this->isPendingInvite();
     }
 
     public function company()
@@ -73,6 +83,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(TicketCategory::class, 'specialty_id');
     }
 
+    public function categories()
+    {
+        return $this->belongsToMany(TicketCategory::class, 'category_user', 'user_id', 'ticket_category_id')->withTimestamps();
+    }
+
     public function assignedTickets()
     {
         return $this->hasMany(Ticket::class, 'assigned_to');
@@ -80,7 +95,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function tickets()
     {
-        return $this->hasMany(Ticket::class, 'ticket_number');
+        return $this->hasMany(Ticket::class, 'assigned_to');
     }
 
     /**

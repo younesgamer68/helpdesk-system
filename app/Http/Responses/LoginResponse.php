@@ -12,7 +12,7 @@ class LoginResponse implements LoginResponseContract
         $user = Auth::user();
 
         if ($user && $user->company) {
-            return redirect()->route('tickets', ['company' => $user->company->slug]);
+            return redirect()->route('dashboard', ['company' => $user->company->slug]);
         }
 
         return redirect('/');
