@@ -100,7 +100,8 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
-                @forelse ($this->operators as $user)
+                @if($this->operators->isNotEmpty())
+                    @foreach ($this->operators as $user)
                     <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="{{ $user->id }}">
                         <td class="px-4 py-3 text-sm">
                             <div class="flex items-center gap-3">
@@ -212,7 +213,8 @@
                             @endif
                         </td>
                     </tr>
-                @empty
+                    @endforeach
+                @else
                     <tr>
                         <td colspan="5" class="px-4 py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-zinc-600" fill="none" stroke="currentColor"
@@ -224,7 +226,7 @@
                             <p class="text-sm text-zinc-400">We couldn't find anyone matching your current filters.</p>
                         </td>
                     </tr>
-                @endforelse
+                @endif
             </tbody>
         </table>
     </div>

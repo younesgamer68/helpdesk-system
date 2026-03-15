@@ -61,58 +61,60 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
-                @forelse ($this->categories as $category)
-                    <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="category-{{ $category->id }}">
-                        <td class="px-4 py-3 text-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 rounded-full" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
-                                <span class="font-medium text-white">{{ $category->name }}</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-400">
-                            {{ Str::limit($category->description, 50) ?? '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-sm">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded border border-zinc-700" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
-                                <span class="text-zinc-400 text-xs font-mono">{{ $category->color ?? '#6B7280' }}</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-sm">
-                            @php
-                                $priorityColors = [
-                                    'low' => 'bg-green-500/10 text-green-400 border-green-500/20',
-                                    'medium' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                                    'high' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                                    'urgent' => 'bg-red-500/10 text-red-400 border-red-500/20',
-                                ];
-                            @endphp
-                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$category->default_priority] }}">
-                                {{ ucfirst($category->default_priority) }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <button wire:click="editCategory({{ $category->id }})"
-                                    class="p-1.5 text-zinc-400 hover:text-teal-400 hover:bg-zinc-800 rounded-lg transition-colors"
-                                    title="Edit">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </button>
-                                <button wire:click="confirmDelete({{ $category->id }})"
-                                    class="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
-                                    title="Delete">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
+                @if($this->categories->isNotEmpty())
+                    @foreach ($this->categories as $category)
+                        <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="category-{{ $category->id }}">
+                            <td class="px-4 py-3 text-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
+                                    <span class="font-medium text-white">{{ $category->name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-400">
+                                {{ Str::limit($category->description, 50) ?? '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded border border-zinc-700" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
+                                    <span class="text-zinc-400 text-xs font-mono">{{ $category->color ?? '#6B7280' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm">
+                                @php
+                                    $priorityColors = [
+                                        'low' => 'bg-green-500/10 text-green-400 border-green-500/20',
+                                        'medium' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+                                        'high' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+                                        'urgent' => 'bg-red-500/10 text-red-400 border-red-500/20',
+                                    ];
+                                @endphp
+                                <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$category->default_priority] }}">
+                                    {{ ucfirst($category->default_priority) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <button wire:click="editCategory({{ $category->id }})"
+                                        class="p-1.5 text-zinc-400 hover:text-teal-400 hover:bg-zinc-800 rounded-lg transition-colors"
+                                        title="Edit">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button wire:click="confirmDelete({{ $category->id }})"
+                                        class="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition-colors"
+                                        title="Delete">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
                     <tr>
                         <td colspan="5" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
@@ -128,7 +130,7 @@
                             </div>
                         </td>
                     </tr>
-                @endforelse
+                @endif
             </tbody>
         </table>
 

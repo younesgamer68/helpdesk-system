@@ -44,7 +44,8 @@ it('does not expose timestamps in response', function () {
 it('returns different faqs on subsequent requests', function () {
     ChatbotFaq::factory()->count(10)->create();
 
-    $results = collect(range(1, 10))->map(fn () => $this->getJson(route('chatbot.faqs'))->json()
+    $results = collect(range(1, 10))->map(
+        fn () => $this->getJson(route('chatbot.faqs'))->json()
     )->map(fn ($faqs) => collect($faqs)->pluck('id')->sort()->values()->all());
 
     expect($results->unique()->count())->toBeGreaterThan(1);

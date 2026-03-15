@@ -3,8 +3,8 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
 ===================================================================== --}}
 
 {{-- ════════ UTILITY BAR ════════ --}}
-<div class="w-full border-b transition-colors duration-300"
-    :class="$store.ui.darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-[#e5e5e5]'">
+<div class="navbar-animate relative z-50 w-full transition-colors duration-300"
+    :class="$store.ui.darkMode ? 'bg-gray-900' : 'bg-white'">
     <div class="mx-auto flex h-8 max-w-7xl items-center justify-end gap-6 px-6">
         @auth
             <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -41,13 +41,13 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
         activeDropdown: null,
         openDropdown(name) { this.activeDropdown = name },
         closeDropdown() { this.activeDropdown = null },
-    }" :class="$store.ui.darkMode ? 'bg-gray-950 border-gray-800' : 'bg-[#fffff] border-[#17494D]/10'"
-    class="relative w-full border-b transition-colors duration-300">
+    }" :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-[#fffff]'"
+    class="navbar-animate relative z-50 w-full transition-colors duration-300">
 
     {{-- Main bar (h-[72px] taller) --}}
     <div class="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6">
 
-        {{-- LEFT Logo + Brand Name --}}
+        {{-- LEFT Logo --}}
         <x-logo variant="landing" size="lg" href="/" />
 
         {{-- CENTER Desktop nav links --}}

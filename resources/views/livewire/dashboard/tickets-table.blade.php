@@ -194,7 +194,8 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
-                @forelse ($this->tickets as $ticket)
+                @if($this->tickets->isNotEmpty())
+                    @foreach ($this->tickets as $ticket)
                     <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="{{ $ticket->id }}">
                         <td class="px-4 py-3 text-sm text-zinc-300 font-mono">{{ $ticket->ticket_number }}</td>
                         <td class="px-4 py-3 text-sm text-white font-medium">{{ Str::limit($ticket->subject, 50) }}
@@ -294,7 +295,8 @@
                             </div>
                         </td>
                     </tr>
-                @empty
+                    @endforeach
+                @else
                     <tr>
                         <td colspan="8" class="px-4 py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-zinc-600" fill="none" stroke="currentColor"
@@ -305,7 +307,7 @@
                             <p class="mt-4 text-zinc-400">No tickets found. Try adjusting your filters.</p>
                         </td>
                     </tr>
-                @endforelse
+                @endif
             </tbody>
         </table>
     </div>

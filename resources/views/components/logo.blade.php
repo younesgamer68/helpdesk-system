@@ -32,17 +32,16 @@
     <{{ $href ? 'a href=' . $href : 'div' }} class="flex items-center gap-2 shrink-0 {{ $href ? '' : '' }}" {{ $href ? '' : '' }}>
         <div class="relative" style="{{ $s['img'] }}">
             @if($darkOnly)
-                <img src="{{ asset('images/Logos/logo without text DM.png') }}" alt="HelpDesk Logo"
+                <img src="{{ asset('images/Logos/logo with text DM.png') }}" alt="HelpDesk Logo"
                     style="{{ $s['img'] }}" class="transition-opacity duration-300 object-contain" />
             @else
-                <img x-show="!$store.ui.darkMode" src="{{ asset('images/Logos/logo without text LM.png') }}" alt="HelpDesk Logo"
+                <img x-show="!$store.ui.darkMode" src="{{ asset('images/Logos/logo with text LM.png') }}" alt="HelpDesk Logo"
                     style="{{ $s['img'] }}" class="transition-opacity duration-300 object-contain" />
-                <img x-show="$store.ui.darkMode" src="{{ asset('images/Logos/logo without text DM.png') }}" alt="HelpDesk Logo"
+                <img x-show="$store.ui.darkMode" src="{{ asset('images/Logos/logo with text DM.png') }}" alt="HelpDesk Logo"
                     style="{{ $s['img'] }} display: none;" class="transition-opacity duration-300 object-contain" />
             @endif
         </div>
-        <span class="{{ $s['text'] }} font-bold tracking-tight {{ $textClass }}" style="font-family: 'Righteous', cursive;"
-            :class="$store.ui.darkMode ? 'text-white' : 'text-[#17494D]'">HelpDesk</span>
+
     </{{ $href ? 'a' : 'div' }}>
 
 @elseif($variant === 'full')

@@ -1,3 +1,18 @@
+@php
+    /** @var \App\Livewire\Dashboard\AutomationRulesTable $this */
+    $typeColors = [
+        'assignment' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+        'priority' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+        'auto_reply' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+        'escalation' => 'bg-red-500/10 text-red-400 border-red-500/20',
+    ];
+    $typeLabels = [
+        'assignment' => 'Auto Assignment',
+        'priority' => 'Priority Change',
+        'auto_reply' => 'Auto Reply',
+        'escalation' => 'Escalation',
+    ];
+@endphp
 <div>
     <x-flash-message />
 
@@ -90,7 +105,8 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
-                @forelse ($this->automationRules as $rule)
+                @if($this->automationRules->isNotEmpty())
+                    @foreach ($this->automationRules as $rule)
                     <tr class="hover:bg-zinc-900/30 transition-colors" wire:key="rule-{{ $rule->id }}">
                         <td class="px-4 py-3 text-sm">
                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 text-zinc-300 font-medium text-xs">
@@ -101,27 +117,13 @@
                             <div>
                                 <span class="font-medium text-white">{{ $rule->name }}</span>
                                 @if($rule->description)
-                                    <p class="text-xs text-zinc-500 mt-0.5">{{ Str::limit($rule->description, 50) }}</p>
+                                    <p class="text-xs text-zinc-500 mt-0.5">{{ \Illuminate\Support\Str::limit($rule->description, 50) }}</p>
                                 @endif
                             </div>
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            @php
-                                $typeColors = [
-                                    'assignment' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                    'priority' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                                    'auto_reply' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                    'escalation' => 'bg-red-500/10 text-red-400 border-red-500/20',
-                                ];
-                                $typeLabels = [
-                                    'assignment' => 'Auto Assignment',
-                                    'priority' => 'Priority Change',
-                                    'auto_reply' => 'Auto Reply',
-                                    'escalation' => 'Escalation',
-                                ];
-                            @endphp
-                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $typeColors[$rule->type] }}">
-                                {{ $typeLabels[$rule->type] }}
+                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $typeColors[$rule->type] ?? '' }}">
+                                {{ $typeLabels[$rule->type] ?? $rule->type }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-sm">
@@ -159,7 +161,8 @@
                             </div>
                         </td>
                     </tr>
-                @empty
+                    @endforeach
+                @else
                     <tr>
                         <td colspan="6" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
@@ -177,7 +180,7 @@
                             </div>
                         </td>
                     </tr>
-                @endforelse
+                @endif
             </tbody>
         </table>
 
