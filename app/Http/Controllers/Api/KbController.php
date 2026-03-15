@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Company;
+use Illuminate\Http\Request;
 
 class KbController extends Controller
 {
@@ -16,7 +16,7 @@ class KbController extends Controller
     public function articles(Request $request, $companySlug)
     {
         $company = $this->getCompany($companySlug);
-        
+
         $articles = $company->kbArticles()
             ->where('status', 'published')
             ->with('category')
@@ -29,7 +29,7 @@ class KbController extends Controller
     public function article(Request $request, $companySlug, $slug)
     {
         $company = $this->getCompany($companySlug);
-        
+
         $article = $company->kbArticles()
             ->where('slug', $slug)
             ->where('status', 'published')
@@ -55,8 +55,8 @@ class KbController extends Controller
             ->where('status', 'published')
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('body', 'like', "%{$query}%")
-                  ->orWhere('tags', 'like', "%{$query}%");
+                    ->orWhere('body', 'like', "%{$query}%")
+                    ->orWhere('tags', 'like', "%{$query}%");
             })
             ->with('category')
             ->limit(10)

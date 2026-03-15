@@ -13,8 +13,8 @@ class PriorityRule implements RuleInterface
         $conditions = $rule->conditions;
 
         // Check for keywords in subject or description
-        if (!empty($conditions['keywords'])) {
-            $content = Str::lower($ticket->subject . ' ' . $ticket->description);
+        if (! empty($conditions['keywords'])) {
+            $content = Str::lower($ticket->subject.' '.$ticket->description);
             $keywords = array_map('strtolower', $conditions['keywords']);
 
             $found = false;
@@ -25,25 +25,25 @@ class PriorityRule implements RuleInterface
                 }
             }
 
-            if (!$found) {
+            if (! $found) {
                 return false;
             }
         }
 
         // Check category condition
-        if (!empty($conditions['category_id'])) {
+        if (! empty($conditions['category_id'])) {
             if ($ticket->category_id != $conditions['category_id']) {
                 return false;
             }
         }
 
         // Check current priority condition (only apply if priority is lower)
-        if (!empty($conditions['current_priority'])) {
+        if (! empty($conditions['current_priority'])) {
             $priorities = is_array($conditions['current_priority'])
                 ? $conditions['current_priority']
                 : [$conditions['current_priority']];
 
-            if (!in_array($ticket->priority, $priorities)) {
+            if (! in_array($ticket->priority, $priorities)) {
                 return false;
             }
         }
@@ -55,7 +55,7 @@ class PriorityRule implements RuleInterface
     {
         $actions = $rule->actions;
 
-        if (!empty($actions['set_priority'])) {
+        if (! empty($actions['set_priority'])) {
             $newPriority = $actions['set_priority'];
             $validPriorities = ['low', 'medium', 'high', 'urgent'];
 

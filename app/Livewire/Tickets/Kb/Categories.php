@@ -1,20 +1,29 @@
 <?php
 
-namespace App\Livewire\Dashboard\Kb;
+namespace App\Livewire\Tickets\Kb;
 
-use Livewire\Component;
 use App\Models\KbCategory;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
+#[Layout('layouts.app')]
+#[Title('KB Categories')]
 class Categories extends Component
 {
     public $showModal = false;
+
     public $isEditing = false;
+
     public $categoryId = null;
-    
+
     public $name = '';
+
     public $description = '';
+
     public $parentId = null;
+
     public $icon = '';
 
     protected function rules()
@@ -82,9 +91,10 @@ class Categories extends Component
     public function delete($id)
     {
         $category = KbCategory::where('company_id', Auth::user()->company_id)->findOrFail($id);
-        
+
         if ($category->articles()->exists()) {
             $this->dispatch('show-toast', message: 'Cannot delete category because it has articles attached.', type: 'error');
+
             return;
         }
 
@@ -102,6 +112,6 @@ class Categories extends Component
         return view('livewire.dashboard.kb.categories', [
             'categories' => $categories,
             'allCategories' => $categories,
-        ])->layout('layouts.app', ['title' => __('KB Categories')]);
+        ]);
     }
 }

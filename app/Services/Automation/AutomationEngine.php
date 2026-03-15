@@ -19,11 +19,11 @@ class AutomationEngine
      * @var array<string, class-string<RuleInterface>>
      */
     protected array $ruleHandlers = [
-        AutomationRule::TYPE_ASSIGNMENT => AssignmentRule::class ,
-        AutomationRule::TYPE_PRIORITY => PriorityRule::class ,
-        AutomationRule::TYPE_AUTO_REPLY => AutoReplyRule::class ,
-        AutomationRule::TYPE_ESCALATION => EscalationRule::class ,
-        AutomationRule::TYPE_SLA_BREACH => SlaBreachRule::class ,
+        AutomationRule::TYPE_ASSIGNMENT => AssignmentRule::class,
+        AutomationRule::TYPE_PRIORITY => PriorityRule::class,
+        AutomationRule::TYPE_AUTO_REPLY => AutoReplyRule::class,
+        AutomationRule::TYPE_ESCALATION => EscalationRule::class,
+        AutomationRule::TYPE_SLA_BREACH => SlaBreachRule::class,
     ];
 
     /**
@@ -48,7 +48,7 @@ class AutomationEngine
     public function processEscalations(int $companyId): void
     {
         $rules = $this->getActiveRulesForCompany($companyId)
-            ->filter(fn(AutomationRule $rule) => $rule->type === AutomationRule::TYPE_ESCALATION);
+            ->filter(fn (AutomationRule $rule) => $rule->type === AutomationRule::TYPE_ESCALATION);
 
         foreach ($rules as $rule) {
             $this->processEscalationRule($rule);
@@ -62,7 +62,7 @@ class AutomationEngine
     {
         $handlerClass = $this->ruleHandlers[$rule->type] ?? null;
 
-        if (!$handlerClass) {
+        if (! $handlerClass) {
             Log::warning("No handler found for rule type: {$rule->type}");
 
             return false;
@@ -71,7 +71,7 @@ class AutomationEngine
         /** @var RuleInterface $handler */
         $handler = app($handlerClass);
 
-        if (!$handler->evaluate($rule, $ticket)) {
+        if (! $handler->evaluate($rule, $ticket)) {
             return false;
         }
 
@@ -86,8 +86,7 @@ class AutomationEngine
             ]);
 
             return true;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Failed to execute automation rule', [
                 'rule_id' => $rule->id,
                 'ticket_id' => $ticket->id,

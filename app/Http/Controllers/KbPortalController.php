@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Company;
-use App\Models\KbCategory;
 use App\Models\KbArticle;
-use Illuminate\Support\Facades\Cookie;
+use App\Models\KbCategory;
+use Illuminate\Http\Request;
 
 class KbPortalController extends Controller
 {
@@ -18,7 +17,7 @@ class KbPortalController extends Controller
     public function home(Request $request, $companySlug)
     {
         $company = $this->getCompany($companySlug);
-        
+
         $categories = $company->kbCategories()->withCount(['articles' => function ($query) {
             $query->where('status', 'published');
         }])->get();
@@ -35,7 +34,7 @@ class KbPortalController extends Controller
     public function category(Request $request, $companySlug, KbCategory $category)
     {
         $company = $this->getCompany($companySlug);
-        
+
         abort_unless($category->company_id === $company->id, 404);
 
         $articles = $category->articles()
@@ -49,7 +48,7 @@ class KbPortalController extends Controller
     public function article(Request $request, $companySlug, KbArticle $article)
     {
         $company = $this->getCompany($companySlug);
-        
+
         abort_unless($article->company_id === $company->id, 404);
         abort_unless($article->status === 'published', 404);
 
@@ -74,7 +73,7 @@ class KbPortalController extends Controller
             ->where('status', 'published')
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('body', 'like', "%{$query}%");
+                    ->orWhere('body', 'like', "%{$query}%");
             })
             ->latest()
             ->paginate(15);
@@ -85,11 +84,11 @@ class KbPortalController extends Controller
     public function vote(Request $request, $companySlug, KbArticle $article)
     {
         $company = $this->getCompany($companySlug);
-        
+
         abort_unless($article->company_id === $company->id, 404);
 
         $voteType = $request->input('vote'); // 'yes' or 'no'
-        $cookieName = 'kb_vote_' . $article->id;
+        $cookieName = 'kb_vote_'.$article->id;
 
         if ($request->hasCookie($cookieName)) {
             return response()->json(['message' => 'Already voted'], 400);

@@ -122,6 +122,6 @@ class AdminDashboard extends Component
     #[Layout('layouts.app')]
     public function render()
     {
-        return view('livewire.app.admin-dashboard');
+        return view('livewire.tickets.admin-dashboard');
     }
 }

@@ -136,6 +136,6 @@ class AgentDashboard extends Component
 
     public function render()
     {
-        return view('livewire.app.agent-dashboard');
+        return view('livewire.tickets.agent-dashboard');
     }
 }

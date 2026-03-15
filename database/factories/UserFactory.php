@@ -35,6 +35,8 @@ class UserFactory extends Factory
             'two_factor_confirmed_at' => null,
             'is_available' => true,
             'assigned_tickets_count' => 0,
+            'status' => 'online',
+            'last_activity' => now(),
         ];
     }
 

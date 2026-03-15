@@ -1,28 +1,40 @@
 <?php
 
-namespace App\Livewire\Dashboard\Kb;
+namespace App\Livewire\Tickets\Kb;
 
-use Livewire\Component;
 use App\Models\KbArticle;
 use App\Models\KbCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
+#[Layout('layouts.app')]
+#[Title('Article Editor')]
 class ArticleEditor extends Component
 {
     public ?KbArticle $article = null;
 
     public $title = '';
+
     public $slug = '';
+
     public $body = '';
+
     public $status = 'draft';
+
     public $kb_category_id = '';
+
     public $tags = '';
+
     public $meta_description = '';
+
     public $schedule_publish_date = null;
+
     public $published_at = null;
 
-    public function mount(KbArticle $article = null)
+    public function mount(?KbArticle $article = null)
     {
         if ($article && $article->exists) {
             // Ensure scoping
@@ -36,11 +48,11 @@ class ArticleEditor extends Component
             $this->status = $article->status;
             $this->kb_category_id = $article->kb_category_id;
             $this->meta_description = $article->meta_description;
-            
+
             // Format dates for datetime-local input
             $this->schedule_publish_date = $article->schedule_publish_date ? \Carbon\Carbon::parse($article->schedule_publish_date)->format('Y-m-d\TH:i') : null;
             $this->published_at = $article->published_at;
-            
+
             // Decode tags array to string
             $this->tags = $article->tags ? implode(', ', json_decode($article->tags, true)) : '';
         }
@@ -82,7 +94,7 @@ class ArticleEditor extends Component
         $cleanBody = \Mews\Purifier\Facades\Purifier::clean($this->body); // Purifier
 
         // If publishing right now, un-schedule and set published_at
-        if ($this->status === 'published' && !$this->published_at) {
+        if ($this->status === 'published' && ! $this->published_at) {
             $this->published_at = now();
             $this->schedule_publish_date = null;
         }
@@ -101,7 +113,7 @@ class ArticleEditor extends Component
 
         if ($this->article && $this->article->exists) {
             $this->article->update($articleData);
-            
+
             // Save version
             \App\Models\KbArticleVersion::create([
                 'kb_article_id' => $this->article->id,
@@ -109,12 +121,12 @@ class ArticleEditor extends Component
                 'body' => $cleanBody,
                 'created_by' => Auth::id(),
             ]);
-            
+
             $this->dispatch('show-toast', ['message' => 'Article updated successfully.', 'type' => 'success']);
         } else {
             $articleData['company_id'] = Auth::user()->company_id;
             $this->article = KbArticle::create($articleData);
-            
+
             // Save initial version
             \App\Models\KbArticleVersion::create([
                 'kb_article_id' => $this->article->id,
@@ -122,7 +134,7 @@ class ArticleEditor extends Component
                 'body' => $cleanBody,
                 'created_by' => Auth::id(),
             ]);
-            
+
             $this->dispatch('show-toast', ['message' => 'Article created successfully.', 'type' => 'success']);
         }
 
@@ -132,15 +144,15 @@ class ArticleEditor extends Component
     public function revertToVersion($versionId)
     {
         $version = \App\Models\KbArticleVersion::findOrFail($versionId);
-        
+
         // Ensure this version belongs to the current article
-        if (!$this->article || $version->kb_article_id !== $this->article->id) {
+        if (! $this->article || $version->kb_article_id !== $this->article->id) {
             abort(403);
         }
 
         $this->title = $version->title;
         $this->body = $version->body;
-        
+
         // Save the reverted version as a new version explicitly or just update current state?
         // Usually, reverting creates a new state that the user can optionally save.
         // For simplicity now, we just update the livewire properties.
@@ -153,6 +165,6 @@ class ArticleEditor extends Component
 
         return view('livewire.dashboard.kb.article-editor', [
             'categories' => $categories,
-        ])->layout('layouts.app', ['title' => __('Article Editor')]);
+        ]);
     }
 }

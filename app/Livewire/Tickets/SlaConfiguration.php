@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Dashboard;
+namespace App\Livewire\Tickets;
 
 use App\Models\SlaPolicy;
 use App\Models\Ticket;
@@ -35,11 +35,11 @@ class SlaConfiguration extends Component
     protected function rules(): array
     {
         return [
-            'is_enabled'      => 'boolean',
-            'low_minutes'     => 'required|integer|min:1',
-            'medium_minutes'  => 'required|integer|min:1',
-            'high_minutes'    => 'required|integer|min:1',
-            'urgent_minutes'  => 'required|integer|min:1',
+            'is_enabled' => 'boolean',
+            'low_minutes' => 'required|integer|min:1',
+            'medium_minutes' => 'required|integer|min:1',
+            'high_minutes' => 'required|integer|min:1',
+            'urgent_minutes' => 'required|integer|min:1',
         ];
     }
 
@@ -50,10 +50,10 @@ class SlaConfiguration extends Component
         $policy = SlaPolicy::updateOrCreate(
             ['company_id' => Auth::user()->company_id],
             [
-                'is_enabled'     => $this->is_enabled,
-                'low_minutes'    => $this->low_minutes,
+                'is_enabled' => $this->is_enabled,
+                'low_minutes' => $this->low_minutes,
                 'medium_minutes' => $this->medium_minutes,
-                'high_minutes'   => $this->high_minutes,
+                'high_minutes' => $this->high_minutes,
                 'urgent_minutes' => $this->urgent_minutes,
             ]
         );
@@ -76,10 +76,10 @@ class SlaConfiguration extends Component
         foreach ($tickets as $ticket) {
             $minutes = match ($ticket->priority) {
                 'urgent' => $policy->urgent_minutes,
-                'high'   => $policy->high_minutes,
+                'high' => $policy->high_minutes,
                 'medium' => $policy->medium_minutes,
-                'low'    => $policy->low_minutes,
-                default  => $policy->low_minutes,
+                'low' => $policy->low_minutes,
+                default => $policy->low_minutes,
             };
 
             // Recalculate from ticket creation time
@@ -89,7 +89,7 @@ class SlaConfiguration extends Component
             $slaStatus = $newDueTime->isPast() ? 'breached' : 'on_time';
 
             $ticket->update([
-                'due_time'   => $newDueTime,
+                'due_time' => $newDueTime,
                 'sla_status' => $slaStatus,
             ]);
         }

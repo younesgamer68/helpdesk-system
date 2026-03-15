@@ -2,10 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration 
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -36,7 +36,7 @@ return new class extends Migration
 
             foreach ($tickets as $ticket) {
                 // Skip if the ticket's company no longer exists
-                if (!in_array($ticket->company_id, $existingCompanyIds)) {
+                if (! in_array($ticket->company_id, $existingCompanyIds)) {
                     continue;
                 }
 
@@ -46,7 +46,7 @@ return new class extends Migration
                     ->where('email', $ticket->customer_email)
                     ->first();
 
-                if (!$customer) {
+                if (! $customer) {
                     $customerId = DB::table('customers')->insertGetId([
                         'company_id' => $ticket->company_id,
                         'name' => $ticket->customer_name,
@@ -56,8 +56,7 @@ return new class extends Migration
                         'created_at' => $ticket->created_at,
                         'updated_at' => $ticket->created_at,
                     ]);
-                }
-                else {
+                } else {
                     $customerId = $customer->id;
                 }
 

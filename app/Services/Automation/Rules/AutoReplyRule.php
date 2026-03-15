@@ -12,14 +12,14 @@ class AutoReplyRule implements RuleInterface
     public function evaluate(AutomationRule $rule, Ticket $ticket): bool
     {
         // Only send auto-reply for verified tickets
-        if (!$ticket->verified) {
+        if (! $ticket->verified) {
             return false;
         }
 
         $conditions = $rule->conditions;
 
         // Check if auto-reply should be sent on ticket creation
-        if (!empty($conditions['on_create']) && $conditions['on_create'] === true) {
+        if (! empty($conditions['on_create']) && $conditions['on_create'] === true) {
             // Check if ticket was just created (within last minute)
             if ($ticket->created_at->diffInMinutes(now()) > 1) {
                 return false;
@@ -27,19 +27,19 @@ class AutoReplyRule implements RuleInterface
         }
 
         // Check category condition
-        if (!empty($conditions['category_id'])) {
+        if (! empty($conditions['category_id'])) {
             if ($ticket->category_id != $conditions['category_id']) {
                 return false;
             }
         }
 
         // Check priority condition
-        if (!empty($conditions['priority'])) {
+        if (! empty($conditions['priority'])) {
             $priorities = is_array($conditions['priority'])
                 ? $conditions['priority']
                 : [$conditions['priority']];
 
-            if (!in_array($ticket->priority, $priorities)) {
+            if (! in_array($ticket->priority, $priorities)) {
                 return false;
             }
         }
@@ -56,7 +56,7 @@ class AutoReplyRule implements RuleInterface
         }
 
         $message = $actions['message'] ?? 'Thank you for your ticket. Our team will respond shortly.';
-        $subject = $actions['subject'] ?? 'Re: ' . $ticket->subject;
+        $subject = $actions['subject'] ?? 'Re: '.$ticket->subject;
 
         Mail::to($ticket->customer_email)
             ->queue(new AutoReplyMail($ticket, $subject, $message));

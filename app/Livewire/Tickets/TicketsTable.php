@@ -276,7 +276,7 @@ class TicketsTable extends Component
                 $query->where(function ($q) use ($user) {
                     $q->where(function ($subQ) use ($user) {
                         $subQ->where('category_id', $user->specialty_id)
-                             ->whereNull('assigned_to');
+                            ->whereNull('assigned_to');
                     })->orWhere('assigned_to', $user->id);
                 });
             } else {

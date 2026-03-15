@@ -19,7 +19,7 @@ Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatb
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn() => view('auth.login'))->name('login');
+    Route::get('/login', fn () => view('auth.login'))->name('login');
     Route::get('/set-password', App\Livewire\Auth\SetPassword::class)
         ->name('set-password')
         ->middleware('user.pending');
@@ -29,12 +29,12 @@ Route::middleware('guest')->group(function () {
         ->name('invitations.accept')
         ->middleware('signed');
 
-    Route::post('/register/quick', [QuickRegisterController::class , 'store'])
+    Route::post('/register/quick', [QuickRegisterController::class, 'store'])
         ->name('register.quick');
 
     // Google OAuth
-    Route::get('/auth/google', [GoogleController::class , 'redirect'])->name('auth.google');
-    Route::get('/auth/google/callback', [GoogleController::class , 'callback'])->name('auth.google.callback');
+    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
 });
 
 Route::post('/logout', function () {
@@ -71,8 +71,7 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // ====== SUBDOMAIN (company) ======
-Route::domain('{company}.' . config('app.domain'))->group(function () {
-    
+Route::domain('{company}.'.config('app.domain'))->group(function () {
     // Public Knowledge Base Portal
     Route::prefix('kb')->name('kb.public.')->group(function () {
         Route::get('/', [\App\Http\Controllers\KbPortalController::class, 'home'])->name('home');
@@ -84,9 +83,8 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
     });
 
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
-
-            // Onboarding form for the company
-            Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
+        // Onboarding form for the company
+        Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
 
         // Dashboard routes (require onboarding)
         Route::middleware(['company.is_onboarded'])->group(function () {
@@ -105,9 +103,17 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
             Route::livewire('admin/dashboard', \App\Livewire\App\AdminDashboard::class)
                 ->name('admin.dashboard')
                 ->middleware(\App\Http\Middleware\AdminOnly::class);
+
             Route::view('tickets', 'app.tickets.index')->name('tickets');
             Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
             Route::livewire('notifications', \App\Livewire\Notifications\NotificationsPage::class)->name('notifications');
+
+            Route::get('/customers', fn () => view('app.customers'))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('customers');
+            Route::get('/customers/{customer}', fn (string $company, string $customer) => view('app.customer-details-page', ['customer' => $customer]))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('customers.details');
             Route::get('/operators', fn () => view('app.operators'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operators');
@@ -117,9 +123,28 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
             Route::get('/categories', fn () => view('app.categories'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('categories');
-            Route::get('/automation', fn () => view('app.automation'))
+
+            Route::prefix('kb')->name('kb.')->group(function () {
+                Route::get('/categories', \App\Livewire\Tickets\Kb\Categories::class)->name('categories');
+                Route::get('/articles', \App\Livewire\Tickets\Kb\ArticlesList::class)->name('articles');
+                Route::get('/articles/create', \App\Livewire\Tickets\Kb\ArticleEditor::class)->name('articles.create');
+                Route::get('/articles/{article}/edit', \App\Livewire\Tickets\Kb\ArticleEditor::class)->name('articles.edit');
+                Route::get('/media', \App\Livewire\Tickets\Kb\MediaLibrary::class)->name('media');
+            });
+
+            Route::get('/automation', fn () => view('app.automation', ['filterMode' => 'ticket']))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('automation');
+            Route::get('/automation/ticket-rules', fn () => view('app.automation', ['filterMode' => 'ticket']))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('automation.ticket-rules');
+            Route::get('/automation/assignment-rules', fn () => view('app.automation', ['filterMode' => 'assignment']))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('automation.assignment-rules');
+            Route::get('/automation/sla-policy', fn () => view('app.sla-policy'))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('automation.sla-policy');
+
             Route::livewire('reports', \App\Livewire\Reports\ReportsAnalytics::class)
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('reports');
@@ -127,4 +152,4 @@ Route::domain('{company}.' . config('app.domain'))->group(function () {
     });
 });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

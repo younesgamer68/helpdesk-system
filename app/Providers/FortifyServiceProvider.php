@@ -22,7 +22,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->instance(LogoutResponse::class , new class implements LogoutResponse {
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
             {
                 // Redirect to main domain (no subdomain)
@@ -41,7 +42,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureViews();
         $this->configureRateLimiting();
 
-        Gate::define('view-operators', fn($user) => $user->isAdmin());
+        Gate::define('view-operators', fn ($user) => $user->isAdmin());
     }
 
     /**
@@ -63,7 +64,7 @@ class FortifyServiceProvider extends ServiceProvider
 
                 throw new \Illuminate\Http\Exceptions\HttpResponseException(
                     redirect()->route('set-password', ['company' => $company ? $company->slug : ''])
-                    );
+                );
             }
 
             if ($user && Hash::check($request->password, $user->password)) {
@@ -82,13 +83,13 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn() => view('livewire.auth.login'));
-        Fortify::verifyEmailView(fn() => view('livewire.auth.verify-email'));
-        Fortify::twoFactorChallengeView(fn() => view('livewire.auth.two-factor-challenge'));
-        Fortify::confirmPasswordView(fn() => view('livewire.auth.confirm-password'));
-        Fortify::registerView(fn() => view('livewire.auth.register'));
-        Fortify::resetPasswordView(fn() => view('livewire.auth.reset-password'));
-        Fortify::requestPasswordResetLinkView(fn() => view('livewire.auth.forgot-password'));
+        Fortify::loginView(fn () => view('livewire.auth.login'));
+        Fortify::verifyEmailView(fn () => view('livewire.auth.verify-email'));
+        Fortify::twoFactorChallengeView(fn () => view('livewire.auth.two-factor-challenge'));
+        Fortify::confirmPasswordView(fn () => view('livewire.auth.confirm-password'));
+        Fortify::registerView(fn () => view('livewire.auth.register'));
+        Fortify::resetPasswordView(fn () => view('livewire.auth.reset-password'));
+        Fortify::requestPasswordResetLinkView(fn () => view('livewire.auth.forgot-password'));
     }
 
     /**
@@ -96,12 +97,12 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureRateLimiting(): void
     {
-        RateLimiter::for ('two-factor', function (Request $request) {
+        RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        RateLimiter::for ('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
+        RateLimiter::for('login', function (Request $request) {
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });

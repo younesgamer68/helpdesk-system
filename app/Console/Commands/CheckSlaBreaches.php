@@ -40,6 +40,7 @@ class CheckSlaBreaches extends Command
 
         if ($breachedTickets->isEmpty()) {
             $this->info('No new SLA breaches found.');
+
             return;
         }
 
@@ -50,7 +51,7 @@ class CheckSlaBreaches extends Command
             $ticket->update(['sla_status' => 'breached']);
 
             $this->info("Ticket ID {$ticket->id} marked as SLA breached.");
-            Log::info("Ticket ID {$ticket->id} SLA breached. Current time: " . now() . " Due time: " . $ticket->due_time);
+            Log::info("Ticket ID {$ticket->id} SLA breached. Current time: ".now().' Due time: '.$ticket->due_time);
 
             // 2. Fetch active SLA breach rules for the company
             $rules = $automationEngine->getRulesOfType($ticket->company_id, AutomationRule::TYPE_SLA_BREACH);

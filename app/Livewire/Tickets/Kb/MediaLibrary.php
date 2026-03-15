@@ -1,18 +1,23 @@
 <?php
 
-namespace App\Livewire\Dashboard\Kb;
+namespace App\Livewire\Tickets\Kb;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\KbMedia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
+#[Layout('layouts.app')]
+#[Title('KB Media Library')]
 class MediaLibrary extends Component
 {
     use WithFileUploads;
 
     public $photo;
+
     public $showModal = false;
 
     public function updatedPhoto()
@@ -22,7 +27,7 @@ class MediaLibrary extends Component
         ]);
 
         $path = $this->photo->store('kb-media', 'public');
-        
+
         $media = KbMedia::create([
             'company_id' => Auth::user()->company_id,
             'file_name' => $this->photo->getClientOriginalName(),
@@ -33,7 +38,7 @@ class MediaLibrary extends Component
 
         $this->photo = null;
         $this->dispatch('show-toast', ['message' => 'Image uploaded successfully.', 'type' => 'success']);
-        $this->dispatch('media-uploaded', ['url' => Storage::disk('public')->url($path)]);
+        $this->dispatch('media-uploaded', ['url' => asset('storage/'.$path)]);
     }
 
     public function deleteMedia($id)
@@ -53,8 +58,9 @@ class MediaLibrary extends Component
     public function render()
     {
         $medias = KbMedia::where('company_id', Auth::user()->company_id)->latest()->get();
+
         return view('livewire.dashboard.kb.media-library', [
-            'medias' => $medias
+            'medias' => $medias,
         ]);
     }
 }

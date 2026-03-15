@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Dashboard;
+namespace App\Livewire\Tickets;
 
 use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
@@ -79,7 +79,7 @@ class CustomersTable extends Component
     public function toggleStatus($customerId)
     {
         $customer = Customer::where('company_id', Auth::user()->company_id)->findOrFail($customerId);
-        $customer->update(['is_active' => !$customer->is_active]);
+        $customer->update(['is_active' => ! $customer->is_active]);
 
         $status = $customer->is_active ? 'activated' : 'deactivated';
         $this->dispatch('show-toast', message: "Customer {$customer->name} has been {$status}.", type: 'success');

@@ -52,7 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -93,7 +93,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function assignedTickets()
     {
-        return $this->hasMany(Ticket::class , 'assigned_to');
+        return $this->hasMany(Ticket::class, 'assigned_to');
     }
 
     public function tickets()
@@ -114,7 +114,10 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function scopeOnline($query)
     {
-        return $query->where('status', 'online');
+        return $query->where(function ($builder) {
+            $builder->where('status', 'online')
+                ->orWhereNull('status');
+        });
     }
 
     /**

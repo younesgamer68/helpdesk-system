@@ -5,6 +5,6 @@
             <p class="text-sm text-zinc-400 mt-1">Manage, search, and view all clients who have submitted tickets.</p>
         </div>
 
-        <livewire:dashboard.customers-table />
+        <livewire:tickets.customers-table />
     </div>
 </x-layouts::app>

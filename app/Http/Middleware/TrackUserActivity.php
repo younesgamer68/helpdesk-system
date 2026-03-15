@@ -11,9 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TrackUserActivity
 {
-    public function __construct(protected TicketAssignmentService $assignmentService)
-    {
-    }
+    public function __construct(protected TicketAssignmentService $assignmentService) {}
 
     /**
      * Update user activity timestamp on every request.
@@ -24,9 +22,9 @@ class TrackUserActivity
     {
         if (Auth::check()) {
             $user = Auth::user();
-            $cacheKey = 'user-activity-' . $user->id;
+            $cacheKey = 'user-activity-'.$user->id;
 
-            if (!Cache::has($cacheKey)) {
+            if (! Cache::has($cacheKey)) {
                 $wasOffline = $user->status !== 'online';
 
                 $user->update([

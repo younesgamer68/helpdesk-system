@@ -60,23 +60,23 @@ class WidgetController extends Controller
 
         // Generate unique ticket number
         do {
-            $ticketNumber = 'TKT-' . strtoupper(Str::random(6));
+            $ticketNumber = 'TKT-'.strtoupper(Str::random(6));
         } while (Ticket::where('ticket_number', $ticketNumber)->exists());
 
         // Find or create customer
         $customer = Customer::firstOrCreate(
-        [
-            'company_id' => $widget->company_id,
-            'email' => $validated['customer_email'],
-        ],
-        [
-            'name' => $validated['customer_name'],
-            'phone' => $validated['customer_phone'] ?? null,
-            'is_active' => true,
-        ]
+            [
+                'company_id' => $widget->company_id,
+                'email' => $validated['customer_email'],
+            ],
+            [
+                'name' => $validated['customer_name'],
+                'phone' => $validated['customer_phone'] ?? null,
+                'is_active' => true,
+            ]
         );
 
-        if (!$customer->is_active) {
+        if (! $customer->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Your account has been deactivated. You cannot submit new tickets.',

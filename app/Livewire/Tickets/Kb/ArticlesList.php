@@ -1,17 +1,22 @@
 <?php
 
-namespace App\Livewire\Dashboard\Kb;
+namespace App\Livewire\Tickets\Kb;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\KbArticle;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithPagination;
 
+#[Layout('layouts.app')]
+#[Title('KB Articles')]
 class ArticlesList extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $status = '';
 
     public function updatingSearch()
@@ -28,9 +33,9 @@ class ArticlesList extends Component
     {
         $article = KbArticle::where('company_id', Auth::user()->company_id)->findOrFail($id);
         $article->update([
-            'status' => $article->status === 'published' ? 'draft' : 'published'
+            'status' => $article->status === 'published' ? 'draft' : 'published',
         ]);
-        
+
         $this->dispatch('show-toast', ['message' => 'Article status updated.', 'type' => 'success']);
     }
 
@@ -53,16 +58,16 @@ class ArticlesList extends Component
         $query = KbArticle::where('company_id', Auth::user()->company_id)
             ->with('category');
 
-        if (!empty($this->search)) {
-            $query->where('title', 'like', '%' . $this->search . '%');
+        if (! empty($this->search)) {
+            $query->where('title', 'like', '%'.$this->search.'%');
         }
 
-        if (!empty($this->status)) {
+        if (! empty($this->status)) {
             $query->where('status', $this->status);
         }
 
         return view('livewire.dashboard.kb.articles-list', [
             'articles' => $query->latest()->paginate(15),
-        ])->layout('layouts.app', ['title' => __('KB Articles')]);
+        ]);
     }
 }

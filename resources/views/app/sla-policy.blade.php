@@ -5,7 +5,7 @@
         <flux:heading class="sr-only">{{ __('Automation Settings') }}</flux:heading>
 
         <x-automation.layout :heading="__('SLA Policy')" :subheading="__('Configure resolving timelines and tracking for tickets')">
-            <livewire:dashboard.sla-configuration />
+            <livewire:tickets.sla-configuration />
         </x-automation.layout>
     </section>
 </x-layouts::app>

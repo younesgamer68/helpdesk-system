@@ -26,12 +26,12 @@ class EscalationRule implements RuleInterface
         $conditions = $rule->conditions;
 
         // Check if ticket status matches escalation conditions
-        if (!empty($conditions['status'])) {
+        if (! empty($conditions['status'])) {
             $statuses = is_array($conditions['status'])
                 ? $conditions['status']
                 : [$conditions['status']];
 
-            if (!in_array($ticket->status, $statuses, true)) {
+            if (! in_array($ticket->status, $statuses, true)) {
                 return false;
             }
         }
@@ -45,7 +45,7 @@ class EscalationRule implements RuleInterface
         }
 
         // Check category condition
-        if (!empty($conditions['category_id'])) {
+        if (! empty($conditions['category_id'])) {
             if ($ticket->category_id != $conditions['category_id']) {
                 return false;
             }
@@ -64,22 +64,22 @@ class EscalationRule implements RuleInterface
         $actions = $rule->actions;
 
         // Escalate priority
-        if (!empty($actions['escalate_priority'])) {
+        if (! empty($actions['escalate_priority'])) {
             $this->escalatePriority($ticket);
         }
 
         // Set specific priority
-        if (!empty($actions['set_priority'])) {
+        if (! empty($actions['set_priority'])) {
             $this->setPriority($ticket, $actions['set_priority']);
         }
 
         // Notify admin
-        if (!empty($actions['notify_admin'])) {
+        if (! empty($actions['notify_admin'])) {
             $this->notifyAdmin($ticket, $rule);
         }
 
         // Reassign ticket
-        if (!empty($actions['reassign'])) {
+        if (! empty($actions['reassign'])) {
             $this->reassignTicket($ticket, $actions);
         }
     }
@@ -95,7 +95,7 @@ class EscalationRule implements RuleInterface
         $idleHours = $conditions['idle_hours'] ?? 24;
         $statuses = $conditions['status'] ?? ['pending', 'open'];
 
-        if (!is_array($statuses)) {
+        if (! is_array($statuses)) {
             $statuses = [$statuses];
         }
 
@@ -105,7 +105,7 @@ class EscalationRule implements RuleInterface
             ->where('verified', true)
             ->where('updated_at', '<', now()->subHours($idleHours));
 
-        if (!empty($conditions['category_id'])) {
+        if (! empty($conditions['category_id'])) {
             $query->where('category_id', $conditions['category_id']);
         }
 

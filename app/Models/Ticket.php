@@ -13,9 +13,25 @@ class Ticket extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'due_time' => 'datetime',
+            'resolved_at' => 'datetime',
+            'closed_at' => 'datetime',
+        ];
+    }
+
     public function assignedTo()
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function user()
+    {
+        return $this->assignedTo();
     }
 
     public function company()
@@ -36,16 +52,6 @@ class Ticket extends Model
     public function replies()
     {
         return $this->hasMany(TicketReply::class);
-    }
-
-    public function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'resolved_at' => 'datetime',
-            'closed_at' => 'datetime',
-        ];
     }
 
     public function logs()

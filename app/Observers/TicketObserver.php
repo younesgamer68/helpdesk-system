@@ -6,16 +6,11 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Services\Automation\AutomationEngine;
 use App\Services\TicketAssignmentService;
-use Carbon\Carbon;
 
 class TicketObserver
 {
-    public function __construct(protected
-        TicketAssignmentService $assignmentService, protected
-        AutomationEngine $automationEngine
-        )
-    {
-    }
+    public function __construct(protected TicketAssignmentService $assignmentService, protected AutomationEngine $automationEngine
+    ) {}
 
     /**
      * Handle the Ticket "creating" event.
@@ -23,7 +18,7 @@ class TicketObserver
      */
     public function creating(Ticket $ticket): void
     {
-        if (!$ticket->due_time) {
+        if (! $ticket->due_time) {
             $ticket->due_time = $this->calculateSlaDueTime($ticket);
         }
     }
@@ -55,17 +50,17 @@ class TicketObserver
     {
         $policy = $ticket->company ? $ticket->company->slaPolicy : null;
 
-        if ($policy && !$policy->is_enabled) {
+        if ($policy && ! $policy->is_enabled) {
             return null; // SLA monitoring disabled
         }
 
         $minutes = match ($ticket->priority) {
-                'urgent' => $policy ? $policy->urgent_minutes : 30,
-                'high' => $policy ? $policy->high_minutes : 120, // 2 hours
-                'medium' => $policy ? $policy->medium_minutes : 480, // 8 hours
-                'low' => $policy ? $policy->low_minutes : 1440, // 24 hours
-                default => 1440,
-            };
+            'urgent' => $policy ? $policy->urgent_minutes : 30,
+            'high' => $policy ? $policy->high_minutes : 120, // 2 hours
+            'medium' => $policy ? $policy->medium_minutes : 480, // 8 hours
+            'low' => $policy ? $policy->low_minutes : 1440, // 24 hours
+            default => 1440,
+        };
 
         return now()->addMinutes($minutes);
     }
@@ -82,7 +77,7 @@ class TicketObserver
 
             // Fallback: If still unassigned after automation, use default assignment
             $ticket->refresh();
-            if (!$ticket->assigned_to) {
+            if (! $ticket->assigned_to) {
                 $this->assignmentService->assignTicket($ticket);
             }
         }
@@ -100,7 +95,7 @@ class TicketObserver
 
             // Fallback: If still unassigned after automation, use default assignment
             $ticket->refresh();
-            if (!$ticket->assigned_to) {
+            if (! $ticket->assigned_to) {
                 $this->assignmentService->assignTicket($ticket);
             }
         }
@@ -132,7 +127,7 @@ class TicketObserver
      */
     public function deleted(Ticket $ticket): void
     {
-        if ($ticket->assigned_to && !in_array($ticket->status, ['resolved', 'closed'])) {
+        if ($ticket->assigned_to && ! in_array($ticket->status, ['resolved', 'closed'])) {
             $operator = User::find($ticket->assigned_to);
             if ($operator && $operator->assigned_tickets_count > 0) {
                 $operator->decrement('assigned_tickets_count');
@@ -145,7 +140,7 @@ class TicketObserver
      */
     public function restored(Ticket $ticket): void
     {
-        if ($ticket->assigned_to && !in_array($ticket->status, ['resolved', 'closed'])) {
+        if ($ticket->assigned_to && ! in_array($ticket->status, ['resolved', 'closed'])) {
             $operator = User::find($ticket->assigned_to);
             if ($operator) {
                 $operator->increment('assigned_tickets_count');
