@@ -68,6 +68,11 @@ class FortifyServiceProvider extends ServiceProvider
             }
 
             if ($user && Hash::check($request->password, $user->password)) {
+                $user->update([
+                    'status' => 'online',
+                    'last_activity' => now(),
+                ]);
+
                 return $user;
             }
         });

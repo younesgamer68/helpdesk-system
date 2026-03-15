@@ -272,10 +272,12 @@ class TicketsTable extends Component
         // Filter for non-admin users (operators)
         if ($user->role !== 'admin') {
             if ($user->specialty_id) {
-                // Show tickets from their specialty category OR assigned to them
+                // Show tickets from their specialty category that are UNASSIGNED, OR tickets assigned to them
                 $query->where(function ($q) use ($user) {
-                    $q->where('category_id', $user->specialty_id)
-                        ->orWhere('assigned_to', $user->id);
+                    $q->where(function ($subQ) use ($user) {
+                        $subQ->where('category_id', $user->specialty_id)
+                            ->whereNull('assigned_to');
+                    })->orWhere('assigned_to', $user->id);
                 });
             } else {
                 // No specialty - show only assigned tickets

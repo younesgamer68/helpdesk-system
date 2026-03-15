@@ -9,10 +9,61 @@ use App\Services\TicketAssignmentService;
 
 class TicketObserver
 {
-    public function __construct(
-        protected TicketAssignmentService $assignmentService,
-        protected AutomationEngine $automationEngine
+    public function __construct(protected TicketAssignmentService $assignmentService, protected AutomationEngine $automationEngine
     ) {}
+
+    /**
+     * Handle the Ticket "creating" event.
+     * Calculate and set the initial SLA due_time.
+     */
+    public function creating(Ticket $ticket): void
+    {
+        if (! $ticket->due_time) {
+            $ticket->due_time = $this->calculateSlaDueTime($ticket);
+        }
+    }
+
+    /**
+     * Handle the Ticket "updating" event.
+     * Recalculate SLA due_time if priority changes.
+     */
+    public function updating(Ticket $ticket): void
+    {
+        if ($ticket->isDirty('priority')) {
+            $newDueTime = $this->calculateSlaDueTime($ticket);
+
+            // Only update if the new priority gives more time, or we just want to strictly follow the new priority.
+            // Typically, changing priority resets the SLA timer from now.
+            $ticket->due_time = $newDueTime;
+
+            // If the ticket was breached, but now has more time, reset the status
+            if ($ticket->sla_status === 'breached' && $newDueTime && $newDueTime->isFuture()) {
+                $ticket->sla_status = 'on_time';
+            }
+        }
+    }
+
+    /**
+     * Calculate the SLA due_time based on ticket priority and company policy.
+     */
+    private function calculateSlaDueTime(Ticket $ticket): ?\Carbon\CarbonInterface
+    {
+        $policy = $ticket->company ? $ticket->company->slaPolicy : null;
+
+        if ($policy && ! $policy->is_enabled) {
+            return null; // SLA monitoring disabled
+        }
+
+        $minutes = match ($ticket->priority) {
+            'urgent' => $policy ? $policy->urgent_minutes : 30,
+            'high' => $policy ? $policy->high_minutes : 120, // 2 hours
+            'medium' => $policy ? $policy->medium_minutes : 480, // 8 hours
+            'low' => $policy ? $policy->low_minutes : 1440, // 24 hours
+            default => 1440,
+        };
+
+        return now()->addMinutes($minutes);
+    }
 
     /**
      * Handle the Ticket "created" event.

@@ -347,6 +347,17 @@
                             @endif
                         </div>
                     </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+                        wire:click="setSortBy('due_time')">
+                        <div class="flex items-center gap-1">
+                            SLA
+                            @if ($sortBy === 'due_time')
+                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @else
+                                <span class="opacity-0 group-hover:opacity-50">↕</span>
+                            @endif
+                        </div>
+                    </th>
                     <th
                         class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Category</th>
@@ -376,19 +387,20 @@
                             <div class="flex items-center gap-2">
                                 @if ($ticket->assignedTo)
                                     <div
-                                        class="w-6 h-6 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                                        class="w-6 h-6 rounded-full bg-linear-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
                                         {{ substr($ticket->assignedTo->name, 0, 1) }}
                                     </div>
                                     <span class="text-zinc-600 dark:text-zinc-300">
                                         @if ($ticket->assignedTo->id === Auth::id())
-                                            You <span class="text-xs text-zinc-500">({{ $ticket->assignedTo->name }})</span>
+                                            You <span
+                                                class="text-xs text-zinc-500">({{ $ticket->assignedTo->name }})</span>
                                         @else
                                             {{ $ticket->assignedTo->name }}
                                         @endif
                                     </span>
                                 @else
                                     <div
-                                        class="w-6 h-6 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-500 flex items-center justify-center text-white text-xs font-semibold">
+                                        class="w-6 h-6 rounded-full bg-linear-to-br from-zinc-400 to-zinc-500 flex items-center justify-center text-white text-xs font-semibold">
                                         U
                                     </div>
                                     <span class="text-zinc-600 dark:text-zinc-300">Unassigned</span>
@@ -425,6 +437,53 @@
                                 class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border {{ $statusBg }}">
                                 {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                             </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            @if ($ticket->due_time)
+                                <div x-data="{
+                                    dueTime: new Date('{{ is_string($ticket->due_time) ? \Carbon\Carbon::parse($ticket->due_time)->toISOString() : $ticket->due_time->toISOString() }}').getTime(),
+                                    now: new Date().getTime(),
+                                    status: '{{ $ticket->status }}',
+                                    slaStatus: '{{ $ticket->sla_status }}',
+                                    get isStopped() { return ['resolved', 'closed'].includes(this.status); },
+                                    get remaining() { return Math.max(0, this.dueTime - this.now); },
+                                    get isBreached() { return this.slaStatus === 'breached' || (!this.isStopped && this.remaining === 0); },
+                                    get isWarning() { return !this.isBreached && !this.isStopped && this.remaining > 0 && this.remaining < 3600000; }, // Less than 1 hour
+                                    get formatted() {
+                                        if (this.isStopped) return this.slaStatus === 'breached' ? 'Breached' : 'Completed';
+                                        if (this.isBreached) return 'Breached';
+                                        let totalSeconds = Math.floor(this.remaining / 1000);
+                                        let h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+                                        let m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+                                        let s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+                                        return `${h}:${m}:${s}`;
+                                    }
+                                }" x-init="if (!isStopped) setInterval(() => now = new Date().getTime(), 1000)"
+                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border"
+                                    :class="{
+                                        'bg-red-500/10 text-red-400 border-red-500/20': isBreached,
+                                        'bg-orange-500/10 text-orange-400 border-orange-500/20': !isBreached &&
+                                            isWarning,
+                                        'bg-green-500/10 text-green-400 border-green-500/20': !isBreached && !
+                                            isWarning && !isStopped,
+                                        'bg-slate-500/10 text-slate-400 border-slate-500/20': !isBreached && !
+                                            isWarning && isStopped
+                                    }">
+                                    <svg x-show="isBreached" class="w-3.5 h-3.5 mr-1" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <svg x-show="!isBreached" class="w-3.5 h-3.5 mr-1" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span x-text="formatted"></span>
+                                </div>
+                            @else
+                                <span class="text-zinc-500 text-xs text-center block">-</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300">
                             {{ $ticket->category->name ?? 'N/A' }}</td>
@@ -489,7 +548,7 @@
 
                 @empty
                     <tr>
-                        <td colspan="9" class="px-4 py-12 text-center">
+                        <td colspan="10" class="px-4 py-12 text-center">
                             <svg class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -540,7 +599,7 @@
                     <!-- Draft Indicator -->
                     @if ($this->hasFormData)
                         <div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-center gap-3">
-                            <svg class="w-5 h-5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor"
+                            <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -743,8 +802,8 @@
                     <!-- Info Note -->
                     <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div class="flex gap-3">
-                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -790,7 +849,7 @@
                         @click.stop>
                         <div class="flex items-start gap-4">
                             <div
-                                class="flex-shrink-0 w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
+                                class="shrink-0 w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
                                 <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

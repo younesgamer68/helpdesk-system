@@ -26,6 +26,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'specialty_id',
         'is_available',
         'assigned_tickets_count',
+        'last_assigned_at',
+        'status',
+        'last_activity',
     ];
 
     protected $hidden = [
@@ -40,6 +43,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
         'is_available' => 'boolean',
         'assigned_tickets_count' => 'integer',
+        'last_assigned_at' => 'datetime',
+        'last_activity' => 'datetime',
     ];
 
     public function initials(): string
@@ -102,6 +107,25 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeAvailable($query)
     {
         return $query->where('is_available', true);
+    }
+
+    /**
+     * Scope a query to only include online users.
+     */
+    public function scopeOnline($query)
+    {
+        return $query->where(function ($builder) {
+            $builder->where('status', 'online')
+                ->orWhereNull('status');
+        });
+    }
+
+    /**
+     * Check if the user is currently online.
+     */
+    public function isOnline(): bool
+    {
+        return $this->status === 'online';
     }
 
     /**

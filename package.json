@@ -10,15 +10,18 @@
         "@tailwindcss/typography": "^0.5.19",
         "@tailwindcss/vite": "^4.1.11",
         "@tiptap/core": "^3.20.1",
+        "@tiptap/extension-image": "^3.20.1",
         "@tiptap/extension-link": "^3.20.1",
         "@tiptap/extension-placeholder": "^3.20.1",
         "@tiptap/extension-underline": "^3.20.1",
+        "@tiptap/pm": "^3.20.1",
         "@tiptap/starter-kit": "^3.20.1",
         "axios": "^1.7.4",
         "concurrently": "^9.0.1",
         "html2canvas-oklch": "^1.5.0-alpha.0",
         "jspdf": "^4.2.0",
         "laravel-vite-plugin": "^2.0",
+        "sortablejs": "^1.15.7",
         "vite": "^7.0.4"
     },
     "optionalDependencies": {
@@ -27,6 +30,7 @@
         "lightningcss-linux-x64-gnu": "^1.29.1"
     },
     "devDependencies": {
+        "@types/sortablejs": "^1.15.9",
         "autoprefixer": "^10.4.24",
         "laravel-echo": "^2.3.1",
         "postcss": "^8.5.6",

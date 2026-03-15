@@ -46,7 +46,7 @@ class EscalationRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id !== $conditions['category_id']) {
+            if ($ticket->category_id != $conditions['category_id']) {
                 return false;
             }
         }

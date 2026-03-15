@@ -40,6 +40,9 @@ class TicketAssignmentService
 
     /**
      * Find the best available specialist for a ticket's category.
+     *
+     * Counts only open tickets in the same category for workload comparison.
+     * Uses last_assigned_at as round-robin tiebreaker when counts are equal.
      */
     protected function findSpecialist(Ticket $ticket): ?User
     {
@@ -47,13 +50,23 @@ class TicketAssignmentService
             ->where('company_id', $ticket->company_id)
             ->operators()
             ->available()
+            ->online()
+            ->where('assigned_tickets_count', '<', 10)
             ->withSpecialty($ticket->category_id)
-            ->orderBy('assigned_tickets_count', 'asc')
+            ->withCount(['assignedTickets as open_category_tickets_count' => function ($query) use ($ticket) {
+                $query->where('category_id', $ticket->category_id)
+                    ->whereNotIn('status', ['resolved', 'closed']);
+            }])
+            ->orderBy('open_category_tickets_count', 'asc')
+            ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
             ->first();
     }
 
     /**
      * Find and assign the best available generalist.
+     *
+     * Counts all open tickets (any category) for workload comparison.
+     * Uses last_assigned_at as round-robin tiebreaker.
      */
     protected function assignToGeneralist(Ticket $ticket): ?User
     {
@@ -61,8 +74,14 @@ class TicketAssignmentService
             ->where('company_id', $ticket->company_id)
             ->operators()
             ->available()
+            ->online()
+            ->where('assigned_tickets_count', '<', 10)
             ->whereNull('specialty_id')
-            ->orderBy('assigned_tickets_count', 'asc')
+            ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
+                $query->whereNotIn('status', ['resolved', 'closed']);
+            }])
+            ->orderBy('open_tickets_count', 'asc')
+            ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
             ->first();
 
         // If no generalist, try any available operator
@@ -71,7 +90,13 @@ class TicketAssignmentService
                 ->where('company_id', $ticket->company_id)
                 ->operators()
                 ->available()
-                ->orderBy('assigned_tickets_count', 'asc')
+                ->online()
+                ->where('assigned_tickets_count', '<', 10)
+                ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
+                    $query->whereNotIn('status', ['resolved', 'closed']);
+                }])
+                ->orderBy('open_tickets_count', 'asc')
+                ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
                 ->first();
         }
 
@@ -102,6 +127,7 @@ class TicketAssignmentService
             $ticket->assigned_to = $operator->id;
             $ticket->saveQuietly();
             $operator->increment('assigned_tickets_count');
+            $operator->update(['last_assigned_at' => now()]);
         });
 
         $operator->notify(new TicketAssigned($ticket));
@@ -174,5 +200,34 @@ class TicketAssignmentService
 
                 $operator->update(['assigned_tickets_count' => $count]);
             });
+    }
+
+    /**
+     * Assign all pending unassigned tickets for a company.
+     * Called when an operator comes online to pick up queued tickets.
+     */
+    public function assignPendingTickets(int $companyId): int
+    {
+        $unassignedTickets = Ticket::where('company_id', $companyId)
+            ->whereNull('assigned_to')
+            ->where('verified', true)
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $assignedCount = 0;
+
+        foreach ($unassignedTickets as $ticket) {
+            $operator = $this->assignTicket($ticket);
+
+            if ($operator) {
+                $assignedCount++;
+            } else {
+                // No more online operators available, stop trying
+                break;
+            }
+        }
+
+        return $assignedCount;
     }
 }

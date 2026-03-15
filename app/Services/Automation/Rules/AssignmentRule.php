@@ -8,8 +8,7 @@ use App\Services\TicketAssignmentService;
 
 class AssignmentRule implements RuleInterface
 {
-    public function __construct(
-        protected TicketAssignmentService $assignmentService
+    public function __construct(protected TicketAssignmentService $assignmentService
     ) {}
 
     public function evaluate(AutomationRule $rule, Ticket $ticket): bool
@@ -28,7 +27,7 @@ class AssignmentRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id !== $conditions['category_id']) {
+            if ($ticket->category_id != $conditions['category_id']) {
                 return false;
             }
         }
@@ -39,7 +38,7 @@ class AssignmentRule implements RuleInterface
                 ? $conditions['priority']
                 : [$conditions['priority']];
 
-            if (! in_array($ticket->priority, $priorities, true)) {
+            if (! in_array($ticket->priority, $priorities)) {
                 return false;
             }
         }

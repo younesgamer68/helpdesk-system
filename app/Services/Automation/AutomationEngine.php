@@ -9,6 +9,7 @@ use App\Services\Automation\Rules\AutoReplyRule;
 use App\Services\Automation\Rules\EscalationRule;
 use App\Services\Automation\Rules\PriorityRule;
 use App\Services\Automation\Rules\RuleInterface;
+use App\Services\Automation\Rules\SlaBreachRule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -22,6 +23,7 @@ class AutomationEngine
         AutomationRule::TYPE_PRIORITY => PriorityRule::class,
         AutomationRule::TYPE_AUTO_REPLY => AutoReplyRule::class,
         AutomationRule::TYPE_ESCALATION => EscalationRule::class,
+        AutomationRule::TYPE_SLA_BREACH => SlaBreachRule::class,
     ];
 
     /**

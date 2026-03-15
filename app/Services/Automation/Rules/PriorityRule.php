@@ -32,7 +32,7 @@ class PriorityRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id !== $conditions['category_id']) {
+            if ($ticket->category_id != $conditions['category_id']) {
                 return false;
             }
         }
@@ -43,7 +43,7 @@ class PriorityRule implements RuleInterface
                 ? $conditions['current_priority']
                 : [$conditions['current_priority']];
 
-            if (! in_array($ticket->priority, $priorities, true)) {
+            if (! in_array($ticket->priority, $priorities)) {
                 return false;
             }
         }
