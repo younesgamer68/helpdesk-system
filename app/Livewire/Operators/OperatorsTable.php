@@ -4,6 +4,8 @@ namespace App\Livewire\Operators;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -211,8 +213,15 @@ class OperatorsTable extends Component
             abort(400, 'User has already accepted their invitation.');
         }
 
-        $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
-        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+        $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
+        $user->update([
+            'invite_sent_at' => now(),
+            'invite_expires_at' => $expiresAt,
+            'invite_expired_notified_at' => null,
+        ]);
+
+        $signedUrl = URL::temporarySignedRoute('invitations.accept', $expiresAt, ['user' => $user->id]);
+        Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
 
         $this->dispatch('show-toast', message: 'Invitation resent successfully.', type: 'success');
     }
@@ -226,8 +235,15 @@ class OperatorsTable extends Component
         $count = 0;
         foreach ($users as $user) {
             if ($user->isPendingInvite()) {
-                $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+                $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
+                $user->update([
+                    'invite_sent_at' => now(),
+                    'invite_expires_at' => $expiresAt,
+                    'invite_expired_notified_at' => null,
+                ]);
+
+                $signedUrl = URL::temporarySignedRoute('invitations.accept', $expiresAt, ['user' => $user->id]);
+                Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
                 $count++;
             }
         }
@@ -330,16 +346,21 @@ class OperatorsTable extends Component
 
         $company = Auth::user()->company;
 
+        $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
+
         /** @var \App\Models\User $user */
         $user = $company->user()->create([
             'name' => $this->inviteName,
             'email' => $this->inviteEmail,
             'role' => $this->inviteRole,
             'password' => null, // Pending status
+            'invite_sent_at' => now(),
+            'invite_expires_at' => $expiresAt,
+            'invite_expired_notified_at' => null,
         ]);
 
-        $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
-        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+        $signedUrl = URL::temporarySignedRoute('invitations.accept', $expiresAt, ['user' => $user->id]);
+        Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
 
         $this->dispatch('show-toast', message: 'Agent invited successfully.', type: 'success');
 
@@ -391,15 +412,20 @@ class OperatorsTable extends Component
                 continue;
             }
 
+            $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
+
             $user = $company->user()->create([
                 'name' => explode('@', $email)[0],
                 'email' => $email,
                 'role' => $this->bulkInviteRole,
                 'password' => null,
+                'invite_sent_at' => now(),
+                'invite_expires_at' => $expiresAt,
+                'invite_expired_notified_at' => null,
             ]);
 
-            $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+            $signedUrl = URL::temporarySignedRoute('invitations.accept', $expiresAt, ['user' => $user->id]);
+            Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
             $sent++;
         }
 

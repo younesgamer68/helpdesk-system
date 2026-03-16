@@ -28,8 +28,7 @@ Route::middleware('guest')->group(function () {
 
     // Invitation link acceptance
     Route::get('/invitation/{user}', App\Http\Controllers\Auth\InvitationController::class)
-        ->name('invitations.accept')
-        ->middleware('signed');
+        ->name('invitations.accept');
 
     Route::post('/register/quick', [QuickRegisterController::class, 'store'])
         ->name('register.quick');
@@ -157,6 +156,10 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::livewire('reports', \App\Livewire\Reports\ReportsAnalytics::class)
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('reports');
+
+            Route::livewire('channels', \App\Livewire\Channels\Channels::class)
+                ->middleware(\App\Http\Middleware\AdminOnly::class)
+                ->name('channels');
         });
     });
 });

@@ -44,6 +44,14 @@ class AdminDashboard extends Component
     }
 
     #[Computed]
+    public function slaBreachCount(): int
+    {
+        return Ticket::where('sla_status', 'breached')
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->count();
+    }
+
+    #[Computed]
     public function openTicketsList(): Collection
     {
         return Ticket::with(['assignedTo', 'category', 'customer'])

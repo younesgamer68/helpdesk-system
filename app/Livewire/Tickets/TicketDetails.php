@@ -62,7 +62,14 @@ class TicketDetails extends Component
 
     public function mount(Ticket $ticket)
     {
-        $this->ticket = $ticket->load(['assignedTo:id,name,email', 'category:id,name,description', 'replies.user', 'customer:id,name,email,phone']);
+        $this->ticket = $ticket->load([
+            'assignedTo:id,name,email',
+            'category:id,name,description',
+            'replies.user',
+            'customer:id,name,email,phone',
+            'company:id,name,slug',
+            'company.slaPolicy:id,company_id,is_enabled',
+        ]);
         $this->state = $ticket->status;
     }
 
@@ -400,10 +407,11 @@ class TicketDetails extends Component
         $this->aiLoading = true;
         $this->showAiSuggestion = true;
 
-        $context = "Company name: " . Auth::user()->company->name . "\n";
+        $context = 'Company name: '.Auth::user()->company->name."\n";
         $context .= 'Ticket category: '.($this->ticket->category->name ?? 'None')."\n";
         $context .= 'Ticket priority: '.$this->ticket->priority."\n";
-        $context .= 'Customer name: '.($this->ticket->customer?->name ?? 'Unknown')."\n";        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
+        $context .= 'Customer name: '.($this->ticket->customer?->name ?? 'Unknown')."\n";
+        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
         $context .= "Full conversation history:\n";
 
         foreach ($this->ticket->replies as $reply) {

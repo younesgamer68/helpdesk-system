@@ -84,10 +84,16 @@ class SetPassword extends Component
         ]);
 
         // Sync specialties for operators
-        if ($user->role === 'operator' && ! empty($this->selectedSpecialties)) {
-            $user->specialty_id = (int) $this->selectedSpecialties[0];
+        if ($user->role === 'operator') {
+            $specialtyIds = collect($this->selectedSpecialties)
+                ->map(fn ($id) => (int) $id)
+                ->filter(fn ($id) => $id > 0)
+                ->values()
+                ->all();
+
+            $user->specialty_id = $specialtyIds[0] ?? null;
             $user->save();
-            $user->categories()->sync($this->selectedSpecialties);
+            $user->categories()->sync($specialtyIds);
         }
 
         Auth::login($user);

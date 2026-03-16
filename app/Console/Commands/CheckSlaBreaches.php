@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\AutomationRule;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Notifications\SlaBreached;
 use App\Services\Automation\AutomationEngine;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -29,27 +31,42 @@ class CheckSlaBreaches extends Command
      */
     public function handle(AutomationEngine $automationEngine)
     {
-        $this->info('Checking for SLA breaches...');
+        $this->info('Checking SLA status updates...');
 
-        // Find tickets that are past due_time, not resolved/closed, and not already marked as breached
-        $breachedTickets = Ticket::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+        $tickets = Ticket::withoutGlobalScope(\App\Scopes\CompanyScope::class)
             ->whereNotNull('due_time')
-            ->where('due_time', '<=', now())
             ->whereNotIn('status', ['resolved', 'closed'])
-            ->where('sla_status', '!=', 'breached')
+            ->with(['assignedTo:id,company_id'])
             ->get();
 
-        if ($breachedTickets->isEmpty()) {
-            $this->info('No new SLA breaches found.');
+        if ($tickets->isEmpty()) {
+            $this->info('No SLA-eligible tickets found.');
 
             return;
         }
 
-        $this->info("Found {$breachedTickets->count()} new SLA breaches.");
+        $breachedCount = 0;
+        $atRiskCount = 0;
+        $rulesByCompany = [];
+        $adminUsersByCompany = [];
 
-        foreach ($breachedTickets as $ticket) {
-            // 1. Update status
-            $ticket->update(['sla_status' => 'breached']);
+        foreach ($tickets as $ticket) {
+            $previousStatus = $ticket->sla_status ?? 'on_time';
+            $newStatus = $this->resolveSlaStatus($ticket);
+
+            if ($previousStatus !== $newStatus) {
+                $ticket->update(['sla_status' => $newStatus]);
+            }
+
+            if ($newStatus === 'at_risk') {
+                $atRiskCount++;
+            }
+
+            if ($newStatus !== 'breached' || $previousStatus === 'breached') {
+                continue;
+            }
+
+            $breachedCount++;
 
             $this->info("Ticket ID {$ticket->id} (company {$ticket->company_id}) marked as SLA breached.");
             Log::info("Ticket ID {$ticket->id} SLA breached.", [
@@ -57,14 +74,55 @@ class CheckSlaBreaches extends Command
                 'due_time' => $ticket->due_time,
             ]);
 
-            // 2. Fetch active SLA breach rules for the company
-            $rules = $automationEngine->getRulesOfType($ticket->company_id, AutomationRule::TYPE_SLA_BREACH);
+            $this->notifySlaBreachRecipients($ticket, $adminUsersByCompany);
 
-            foreach ($rules as $rule) {
+            if (! array_key_exists($ticket->company_id, $rulesByCompany)) {
+                $rulesByCompany[$ticket->company_id] = $automationEngine->getRulesOfType($ticket->company_id, AutomationRule::TYPE_SLA_BREACH);
+            }
+
+            foreach ($rulesByCompany[$ticket->company_id] as $rule) {
                 $automationEngine->executeRule($rule, $ticket);
             }
         }
 
-        $this->info('SLA breach check completed.');
+        $this->info("SLA status check completed. Breached: {$breachedCount}, At risk: {$atRiskCount}.");
+    }
+
+    protected function resolveSlaStatus(Ticket $ticket): string
+    {
+        $dueTime = $ticket->due_time;
+
+        if (! $dueTime) {
+            return 'on_time';
+        }
+
+        $remainingSeconds = now()->diffInSeconds($dueTime, false);
+
+        if ($remainingSeconds <= 0) {
+            return 'breached';
+        }
+
+        $totalSlaSeconds = max(1, $ticket->created_at->diffInSeconds($dueTime));
+        $atRiskThreshold = (int) floor($totalSlaSeconds * 0.25);
+
+        return $remainingSeconds <= $atRiskThreshold ? 'at_risk' : 'on_time';
+    }
+
+    protected function notifySlaBreachRecipients(Ticket $ticket, array &$adminUsersByCompany): void
+    {
+        if ($ticket->assignedTo) {
+            $ticket->assignedTo->notify(new SlaBreached($ticket));
+        }
+
+        if (! array_key_exists($ticket->company_id, $adminUsersByCompany)) {
+            $adminUsersByCompany[$ticket->company_id] = User::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+                ->where('company_id', $ticket->company_id)
+                ->where('role', 'admin')
+                ->get();
+        }
+
+        foreach ($adminUsersByCompany[$ticket->company_id] as $admin) {
+            $admin->notify(new SlaBreached($ticket));
+        }
     }
 }

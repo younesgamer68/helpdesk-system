@@ -264,7 +264,7 @@ class TicketsTable extends Component
     #[Computed]
     public function tickets()
     {
-        $user = Auth::user();
+        $user = Auth::user()->loadMissing('categories:id,name');
 
         $query = Ticket::where('company_id', $user->company_id)->where('verified', 1);
 

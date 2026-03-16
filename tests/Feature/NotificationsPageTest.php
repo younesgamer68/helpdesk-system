@@ -8,6 +8,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
@@ -48,7 +49,7 @@ it('renders the notifications page for authenticated users', function () {
 it('redirects guests to the login page', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => now()]);
 
-    $this->get("http://{$company->slug}.".config('app.domain').'/notifications')
+    get("http://{$company->slug}.".config('app.domain').'/notifications')
         ->assertRedirect(route('login'));
 });
 
@@ -108,11 +109,13 @@ it('shows system tab only for admin users', function () {
 
     Livewire::actingAs($admin)
         ->test(NotificationsPage::class)
-        ->assertSee('System');
+        ->assertSee('System')
+        ->assertSee('SLA');
 
     Livewire::actingAs($operator)
         ->test(NotificationsPage::class)
-        ->assertDontSee('System');
+        ->assertDontSee('System')
+        ->assertDontSee('SLA');
 });
 
 it('prevents operators from accessing system tab', function () {
@@ -122,6 +125,27 @@ it('prevents operators from accessing system tab', function () {
         ->test(NotificationsPage::class)
         ->call('setTab', 'system')
         ->assertSet('activeTab', 'all');
+});
+
+it('prevents operators from accessing sla tab', function () {
+    [$operator] = createOnboardedUser('operator');
+
+    Livewire::actingAs($operator)
+        ->test(NotificationsPage::class)
+        ->call('setTab', 'sla')
+        ->assertSet('activeTab', 'all');
+});
+
+it('filters sla notifications for admins', function () {
+    [$admin] = createOnboardedUser('admin');
+    createNotification($admin, 'sla_breached');
+    createNotification($admin, 'assigned');
+
+    Livewire::actingAs($admin)
+        ->test(NotificationsPage::class)
+        ->call('setTab', 'sla')
+        ->assertSee('Test sla_breached notification')
+        ->assertDontSee('Test assigned notification');
 });
 
 it('marks all notifications as read', function () {

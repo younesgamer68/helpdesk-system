@@ -35,7 +35,7 @@ class NotificationsPage extends Component
 
     public function setTab(string $tab): void
     {
-        if ($tab === 'system' && Auth::user()->role !== 'admin') {
+        if (in_array($tab, ['system', 'sla']) && Auth::user()->role !== 'admin') {
             return;
         }
 
@@ -98,6 +98,7 @@ class NotificationsPage extends Component
                 $q->whereJsonContains('data->type', 'ticket_submitted')
                     ->orWhereJsonContains('data->type', 'ticket_unassigned');
             }),
+            'sla' => $query->whereJsonContains('data->type', 'sla_breached'),
             default => null,
         };
 
@@ -120,6 +121,7 @@ class NotificationsPage extends Component
                 $q->whereJsonContains('data->type', 'ticket_submitted')
                     ->orWhereJsonContains('data->type', 'ticket_unassigned');
             }),
+            'sla' => $query->whereJsonContains('data->type', 'sla_breached'),
             default => null,
         };
 

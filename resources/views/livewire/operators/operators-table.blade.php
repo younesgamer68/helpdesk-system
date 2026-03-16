@@ -291,11 +291,27 @@
                                         Pending
                                     </span>
                                     @php
-                                        $hrsAgo = round($user->created_at->diffInHours(now()));
+                                        $hoursRemaining = $user->inviteHoursRemaining();
+                                        $isExpiredInvite = !is_null($hoursRemaining) && $hoursRemaining <= 0;
                                     @endphp
-                                    <span class="text-[10px] text-amber-500 font-medium">
-                                        Invited {{ $hrsAgo }} {{ Str::plural('hr', $hrsAgo) }} ago
-                                    </span>
+                                    @if (is_null($hoursRemaining))
+                                        <span class="text-[10px] text-amber-500 font-medium">Expiring soon</span>
+                                    @elseif ($isExpiredInvite)
+                                        <span class="text-[10px] text-red-500 font-medium">Expired</span>
+                                    @else
+                                        <span
+                                            class="text-[10px] font-medium {{ $user->isInviteExpiringSoon() ? 'text-red-500' : 'text-amber-500' }}">
+                                            Expiring in {{ $hoursRemaining }}
+                                            {{ Str::plural('hour', $hoursRemaining) }}
+                                        </span>
+
+                                        @if ($user->isInviteExpiringSoon())
+                                            <span
+                                                class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-500/10 text-red-400 text-[10px] font-medium rounded-full border border-red-500/20">
+                                                Expiring soon
+                                            </span>
+                                        @endif
+                                    @endif
                                 @else
                                     <span
                                         class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20">

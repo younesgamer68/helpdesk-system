@@ -213,15 +213,17 @@
                     </svg>
                 </a>
 
-                @php $active = request()->routeIs('form-widget.edit'); @endphp
-                <a href="{{ route('form-widget.edit', Auth::user()->company->slug) }}" wire:navigate
-                    data-tip="{{ __('Form Widget') }}"
+                @php $active = request()->routeIs('channels'); @endphp
+                <a href="{{ route('channels', Auth::user()->company->slug) }}" wire:navigate
+                    data-tip="{{ __('Channels') }}"
                     class="sb-tip w-10 h-10 flex items-center justify-center rounded-lg transition-colors no-underline
                           {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <path d="M3 9h18M9 21V9" />
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
                     </svg>
                 </a>
 

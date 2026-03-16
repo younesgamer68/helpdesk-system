@@ -6,8 +6,10 @@
             <button wire:click="markAllRead" @class([
                 'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
                 'bg-teal-500 hover:bg-teal-600 text-white' => $this->unreadCount > 0,
-                'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 cursor-not-allowed' => $this->unreadCount === 0,
-            ]) @if ($this->unreadCount === 0) disabled @endif>
+                'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 cursor-not-allowed' =>
+                    $this->unreadCount === 0,
+            ])
+                @if ($this->unreadCount === 0) disabled @endif>
                 Mark all read
             </button>
             <button wire:click="clearAll" @class([
@@ -29,6 +31,11 @@
                 'assigned' => 'Assigned',
                 'replies' => 'Replies',
             ];
+
+            if (Auth::user()->role === 'admin') {
+                $tabs['system'] = 'System';
+                $tabs['sla'] = 'SLA';
+            }
         @endphp
 
         @foreach ($tabs as $key => $label)
@@ -41,17 +48,6 @@
                 {{ $label }}
             </button>
         @endforeach
-
-        @if (Auth::user()->role === 'admin')
-            <button wire:click="setTab('system')" @class([
-                'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
-                'border-teal-500 text-teal-400' => $activeTab === 'system',
-                'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200' =>
-                    $activeTab !== 'system',
-            ])>
-                System
-            </button>
-        @endif
     </div>
 
     <!-- Notifications List -->
@@ -59,7 +55,8 @@
         <!-- Empty State -->
         <div class="flex flex-col items-center justify-center py-20">
             <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
@@ -81,7 +78,8 @@
                             <button wire:click="markRead('{{ $notification->id }}')"
                                 wire:key="notification-{{ $notification->id }}" @class([
                                     'w-full text-left flex items-center gap-4 px-4 py-3.5 transition-colors relative group',
-                                    ' bg-zinc-50 dark:bg-zinc-800/20 hover:bg-zinc-100 dark:hover:bg-zinc-800/50' => is_null($notification->read_at),
+                                    ' bg-zinc-50 dark:bg-zinc-800/20 hover:bg-zinc-100 dark:hover:bg-zinc-800/50' => is_null(
+                                        $notification->read_at),
                                     'border-l-2 border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800/30' => !is_null(
                                         $notification->read_at),
                                 ])>
@@ -153,6 +151,16 @@
                                                 </path>
                                             </svg>
                                         </div>
+                                    @elseif(($notification->data['type'] ?? '') === 'sla_breached')
+                                        <div
+                                            class="w-9 h-9 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                                </path>
+                                            </svg>
+                                        </div>
                                     @elseif(($notification->data['type'] ?? '') === 'internal_note')
                                         <div
                                             class="w-9 h-9 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-400">
@@ -180,7 +188,8 @@
                                 <div class="flex-1 min-w-0">
                                     <p @class([
                                         'text-sm leading-snug truncate',
-                                        'text-zinc-900 dark:text-zinc-100 font-semibold' => is_null($notification->read_at),
+                                        'text-zinc-900 dark:text-zinc-100 font-semibold' => is_null(
+                                            $notification->read_at),
                                         'text-zinc-600 dark:text-zinc-200' => !is_null($notification->read_at),
                                     ])>
                                         {{ $notification->data['message'] ?? 'New notification' }}

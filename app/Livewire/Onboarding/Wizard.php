@@ -213,6 +213,8 @@ class Wizard extends Component
         // Save Step 3 (Invites)
         foreach ($this->invites as $inviteData) {
             if (! empty($inviteData['email'])) {
+                $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
+
                 /** @var \App\Models\User $user */
                 $user = $company->user()->create([
                     'name' => $inviteData['name'],
@@ -220,9 +222,12 @@ class Wizard extends Component
                     'password' => null,
                     'role' => $inviteData['role'],
                     'email_verified_at' => null, // Require setting up password
+                    'invite_sent_at' => now(),
+                    'invite_expires_at' => $expiresAt,
+                    'invite_expired_notified_at' => null,
                 ]);
 
-                $signedUrl = \Illuminate\Support\Facades\URL::signedRoute('invitations.accept', ['user' => $user->id]);
+                $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute('invitations.accept', $expiresAt, ['user' => $user->id]);
                 \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
             }
         }

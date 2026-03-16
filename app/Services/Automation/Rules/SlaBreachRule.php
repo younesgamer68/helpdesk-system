@@ -5,7 +5,7 @@ namespace App\Services\Automation\Rules;
 use App\Models\AutomationRule;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Notifications\AgentTicketAssigned;
+use App\Notifications\SlaBreached;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
@@ -69,7 +69,7 @@ class SlaBreachRule implements RuleInterface
                 ->get();
 
             if ($admins->isNotEmpty()) {
-                Notification::send($admins, new AgentTicketAssigned($ticket));
+                Notification::send($admins, new SlaBreached($ticket));
                 Log::info('Admin notified of SLA breach for ticket: '.$ticket->id);
             }
         }

@@ -57,15 +57,20 @@
                     </label>
                     <div class="grid grid-cols-2 gap-3">
                         @foreach ($this->categories as $category)
+                            @php
+                                $isSelected =
+                                    collect($selectedSpecialties)->contains((int) $category->id) ||
+                                    collect($selectedSpecialties)->contains((string) $category->id);
+                            @endphp
                             <label wire:key="cat-{{ $category->id }}"
                                 class="relative flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition
-                                        {{ in_array($category->id, $selectedSpecialties) ? 'border-teal-400 bg-teal-400/10' : 'border-white/20 bg-white/5 hover:border-white/40' }}">
-                                <input type="checkbox" value="{{ $category->id }}" wire:model="selectedSpecialties"
+                                        {{ $isSelected ? 'border-teal-400 bg-teal-400/10' : 'border-white/20 bg-white/5 hover:border-white/40' }}">
+                                <input type="checkbox" value="{{ $category->id }}" wire:model.live="selectedSpecialties"
                                     class="sr-only">
                                 <span
                                     class="flex items-center justify-center w-5 h-5 rounded border transition
-                                        {{ in_array($category->id, $selectedSpecialties) ? 'bg-teal-500 border-teal-500' : 'border-white/40 bg-transparent' }}">
-                                    @if (in_array($category->id, $selectedSpecialties))
+                                        {{ $isSelected ? 'bg-teal-500 border-teal-500' : 'border-white/40 bg-transparent' }}">
+                                    @if ($isSelected)
                                         <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -103,5 +108,4 @@
         </svg>
     </div>
 
-</div>
 </div>

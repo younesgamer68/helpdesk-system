@@ -18,6 +18,17 @@ Route::domain('{company}.'.config('app.domain'))->prefix('widget')->name('widget
     Route::post('/track/{ticketNumber}/{token}/reply', [WidgetController::class, 'reply'])->name('reply');
 });
 
+Route::domain('{company}.'.config('app.domain'))
+    ->prefix('chatbot-widget')
+    ->name('chatbot.widget.')
+    ->group(function () {
+        Route::get('/{key}', [\App\Http\Controllers\ChatbotWidgetController::class, 'show'])
+            ->name('show');
+        Route::post('/{key}/message', [\App\Http\Controllers\ChatbotWidgetController::class, 'message'])
+            ->middleware('throttle:30,1')
+            ->name('message');
+    });
+
 // Settings routes - AUTHENTICATED (on company subdomains)
 Route::domain('{company}.'.config('app.domain'))
     ->middleware(['auth', 'company.access', 'verified'])

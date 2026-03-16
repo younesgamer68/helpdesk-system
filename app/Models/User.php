@@ -30,6 +30,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_assigned_at',
         'status',
         'last_activity',
+        'invite_sent_at',
+        'invite_expires_at',
+        'invite_expired_notified_at',
     ];
 
     protected $hidden = [
@@ -46,6 +49,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'assigned_tickets_count' => 'integer',
         'last_assigned_at' => 'datetime',
         'last_activity' => 'datetime',
+        'invite_sent_at' => 'datetime',
+        'invite_expires_at' => 'datetime',
+        'invite_expired_notified_at' => 'datetime',
     ];
 
     public function initials(): string
@@ -75,6 +81,28 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isActive(): bool
     {
         return ! $this->isPendingInvite();
+    }
+
+    public function inviteHoursRemaining(): ?int
+    {
+        if (! $this->isPendingInvite()) {
+            return null;
+        }
+
+        $expiresAt = $this->invite_expires_at;
+
+        if (! $expiresAt) {
+            return null;
+        }
+
+        return (int) ceil(now()->floatDiffInHours($expiresAt, false));
+    }
+
+    public function isInviteExpiringSoon(): bool
+    {
+        $hoursRemaining = $this->inviteHoursRemaining();
+
+        return $hoursRemaining !== null && $hoursRemaining > 0 && $hoursRemaining <= 24;
     }
 
     public function company()

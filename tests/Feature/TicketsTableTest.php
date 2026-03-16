@@ -3,6 +3,7 @@
 use App\Livewire\Dashboard\TicketsTable;
 use App\Models\Company;
 use App\Models\Ticket;
+use App\Models\TicketCategory;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -168,4 +169,18 @@ test('bulk assignment', function () {
     foreach ($tickets as $ticket) {
         expect($ticket->fresh()->assigned_to)->toBe($agent->id);
     }
+});
+
+test('operator sees all specialties from pivot in tickets table badge', function () {
+    $company = Company::factory()->create();
+    $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
+    $categoryA = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'General Questions']);
+    $categoryB = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Hardware Issues']);
+    $operator->categories()->attach([$categoryA->id, $categoryB->id]);
+
+    $this->actingAs($operator);
+
+    Livewire::test(TicketsTable::class)
+        ->assertSee('Your Specialties:')
+        ->assertSee('General Questions, Hardware Issues');
 });

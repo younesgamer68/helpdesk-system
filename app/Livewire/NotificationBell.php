@@ -39,6 +39,7 @@ class NotificationBell extends Component
                 'internal_note' => 'New Internal Note',
                 'ticket_submitted' => 'New Ticket',
                 'ticket_unassigned' => 'Unassigned Ticket',
+                'sla_breached' => 'SLA Breached',
                 default => 'New Notification',
             };
 

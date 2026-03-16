@@ -33,6 +33,7 @@ test('operators table handles bulk invites', function () {
     assertDatabaseHas('users', ['email' => 'test1@example.com', 'company_id' => $company->id]);
     assertDatabaseHas('users', ['email' => 'test2@example.com', 'company_id' => $company->id]);
     assertDatabaseHas('users', ['email' => 'test3@example.com', 'company_id' => $company->id]);
+    expect(User::withoutGlobalScopes()->where('email', 'test1@example.com')->first()?->invite_expires_at)->not->toBeNull();
     Mail::assertQueued(\App\Mail\UserInvitationMail::class, 3);
 });
 
@@ -196,4 +197,28 @@ test('pending invite operator profile route is not accessible', function () {
     actingAs($admin)
         ->get("http://{$company->slug}.".config('app.domain')."/operators/{$pendingInvite->id}")
         ->assertNotFound();
+});
+
+test('pending invites display expiration countdown in operators table', function () {
+    $company = Company::factory()->create();
+    /** @var User $admin */
+    $admin = User::factory()->admin()->create([
+        'company_id' => $company->id,
+        'email_verified_at' => now(),
+    ]);
+
+    User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'operator',
+        'password' => null,
+        'google_id' => null,
+        'invite_expires_at' => now()->addHours(5),
+    ]);
+
+    actingAs($admin);
+
+    Livewire::actingAs($admin)
+        ->test(OperatorsTable::class)
+        ->assertSee('Expiring in')
+        ->assertSee('hour');
 });

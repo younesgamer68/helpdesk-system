@@ -1,7 +1,4 @@
-@props([
-    'ticket',
-    'agents',
-])
+@props(['ticket', 'agents'])
 
 <div class="lg:sticky lg:top-8 h-fit space-y-6">
     <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 space-y-4">
@@ -31,21 +28,23 @@
             <div>
                 <p class="text-xs text-zinc-500 mb-2">Assigned agent</p>
                 <div class="flex items-center gap-2">
-                    @if($ticket->assignedTo)
-                        <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">
+                    @if ($ticket->assignedTo)
+                        <div
+                            class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">
                             {{ strtoupper(substr($ticket->assignedTo->name, 0, 1)) }}
                         </div>
                         <div>
                             <p class="text-sm text-zinc-900 dark:text-zinc-100">
                                 {{ $ticket->assignedTo->id === auth()->id() ? 'You' : $ticket->assignedTo->name }}
-                                @if($ticket->assignedTo->id === auth()->id())
+                                @if ($ticket->assignedTo->id === auth()->id())
                                     <span class="text-xs text-zinc-500 font-normal">({{ auth()->user()->name }})</span>
                                 @endif
                             </p>
                             <p class="text-xs text-zinc-500">{{ $ticket->assignedTo->email }}</p>
                         </div>
                     @else
-                        <div class="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-xs text-center leading-none">
+                        <div
+                            class="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-xs text-center leading-none">
                             ?
                         </div>
                         <p class="text-sm text-zinc-500 italic">Unassigned</p>
@@ -62,7 +61,7 @@
                         <p class="text-sm text-zinc-900 dark:text-zinc-100">
                             {{ $ticket->category->name ?? 'No category' }}
                         </p>
-                        @if($ticket->category && $ticket->category->description)
+                        @if ($ticket->category && $ticket->category->description)
                             <p class="text-xs text-zinc-500">{{ $ticket->category->description }}</p>
                         @endif
                     </div>
@@ -85,11 +84,59 @@
                     {{ $ticket->updated_at->diffForHumans() }}
                 </p>
             </div>
+
+            @php
+                $slaEnabled = (bool) optional(optional($ticket->company)->slaPolicy)->is_enabled;
+            @endphp
+            <div>
+                <p class="text-xs text-zinc-500 mb-2">SLA Status</p>
+
+                @if (!$slaEnabled)
+                    <span
+                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border bg-zinc-500/10 text-zinc-400 border-zinc-500/20">
+                        Disabled
+                    </span>
+                @elseif (!$ticket->due_time)
+                    <span
+                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border bg-zinc-500/10 text-zinc-400 border-zinc-500/20">
+                        Not scheduled
+                    </span>
+                @else
+                    <div x-data="{
+                        dueTime: new Date('{{ is_string($ticket->due_time) ? \Carbon\Carbon::parse($ticket->due_time)->toISOString() : $ticket->due_time->toISOString() }}').getTime(),
+                        now: new Date().getTime(),
+                        status: '{{ $ticket->status }}',
+                        slaStatus: '{{ $ticket->sla_status }}',
+                        get isStopped() { return ['resolved', 'closed'].includes(this.status); },
+                        get remaining() { return Math.max(0, this.dueTime - this.now); },
+                        get isBreached() { return this.slaStatus === 'breached' || (!this.isStopped && this.remaining === 0); },
+                        get isAtRisk() { return !this.isStopped && !this.isBreached && this.slaStatus === 'at_risk'; },
+                        get formatted() {
+                            if (this.isStopped) return 'Completed';
+                            if (this.isBreached) return 'Breached';
+                            let totalSeconds = Math.floor(this.remaining / 1000);
+                            let h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+                            let m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+                            let s = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+                            return `${h}:${m}:${s}`;
+                        }
+                    }" x-init="if (!isStopped) setInterval(() => now = new Date().getTime(), 1000)"
+                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border"
+                        :class="{
+                            'bg-slate-500/10 text-slate-400 border-slate-500/20': isStopped,
+                            'bg-red-500/10 text-red-400 border-red-500/20': !isStopped && isBreached,
+                            'bg-amber-500/10 text-amber-400 border-amber-500/20': !isStopped && !isBreached && isAtRisk,
+                            'bg-green-500/10 text-green-400 border-green-500/20': !isStopped && !isBreached && !isAtRisk
+                        }">
+                        <span x-text="formatted"></span>
+                    </div>
+                @endif
+            </div>
         </div>
 
         {{-- Actions --}}
         <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 space-y-2">
-            @if(auth()->user()->isAdmin())
+            @if (auth()->user()->isAdmin())
                 <x-ui.dropdown-btn>
                     <x-slot:title>
                         <flux:icon.user-plus class="w-4 h-4 shrink-0" />
@@ -98,15 +145,18 @@
                     <button type="button" wire:click="assign(null)" wire:confirm="Unassign this ticket?"
                         class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
                         <span class="flex items-center gap-2">
-                            <span class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
+                            <span
+                                class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
                             Unassigned
                         </span>
                     </button>
-                    @foreach($agents as $agent)
-                        <button type="button" wire:click="assign({{ $agent->id }})" wire:confirm="Assign to {{ $agent->name }}?" @click="open = false"
+                    @foreach ($agents as $agent)
+                        <button type="button" wire:click="assign({{ $agent->id }})"
+                            wire:confirm="Assign to {{ $agent->name }}?" @click="open = false"
                             class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
                             <span class="flex items-center gap-2">
-                                <span class="w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
+                                <span
+                                    class="w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
                                 <span class="flex flex-col">
                                     <span class="font-medium">{{ $agent->name }}</span>
                                     <span class="text-[10px] text-zinc-500">{{ $agent->email }}</span>
@@ -122,8 +172,9 @@
                     <flux:icon.exclamation-triangle class="w-4 h-4 shrink-0" />
                     Change Priority
                 </x-slot:title>
-                @foreach(['low', 'medium', 'high', 'urgent'] as $priority)
-                    <button type="button" wire:click="changePriority('{{ $priority }}')" wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
+                @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
+                    <button type="button" wire:click="changePriority('{{ $priority }}')"
+                        wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
                         class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                         {{ ucfirst($priority) }}
                     </button>
@@ -135,8 +186,9 @@
                     <flux:icon.adjustments-horizontal class="w-4 h-4 shrink-0" />
                     Change Status
                 </x-slot:title>
-                @foreach(['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
-                    <button type="button" wire:click="changeStatus('{{ $status }}')" wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?" @click="open = false"
+                @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
+                    <button type="button" wire:click="changeStatus('{{ $status }}')"
+                        wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?" @click="open = false"
                         class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                         {{ str_replace('_', ' ', ucfirst($status)) }}
                     </button>

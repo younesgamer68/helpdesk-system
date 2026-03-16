@@ -7,8 +7,12 @@ use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
+use App\Notifications\SlaBreached;
 use App\Services\Automation\AutomationEngine;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+
+use function Pest\Laravel\artisan;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -634,14 +638,27 @@ test('sla breach rule escalates ticket priority', function () {
     expect($ticket->priority)->toBe('high'); // medium → high
 });
 
-test('check sla breaches command marks overdue tickets as breached', function () {
+test('check sla breaches command marks overdue tickets as breached and sets near-due tickets at_risk', function () {
     $company = Company::factory()->create();
+
+    $admin = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'admin',
+    ]);
+
+    $assignedOperator = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'operator',
+    ]);
+
+    Notification::fake();
 
     // Ticket overdue — should be marked as breached
     $overdueTicket = Ticket::withoutEvents(fn () => Ticket::factory()->create([
         'company_id' => $company->id,
         'status' => 'open',
         'sla_status' => 'on_time',
+        'assigned_to' => $assignedOperator->id,
         'due_time' => now()->subHour(),
         'verified' => true,
     ]));
@@ -651,16 +668,32 @@ test('check sla breaches command marks overdue tickets as breached', function ()
         'company_id' => $company->id,
         'status' => 'open',
         'sla_status' => 'on_time',
+        'created_at' => now(),
         'due_time' => now()->addHours(2),
         'verified' => true,
     ]));
 
-    $this->artisan('helpdesk:check-sla-breaches')
+    // Ticket close to due time (remaining under 25% of total SLA window) — should become at_risk
+    $atRiskTicket = Ticket::withoutEvents(fn () => Ticket::factory()->create([
+        'company_id' => $company->id,
+        'status' => 'open',
+        'sla_status' => 'on_time',
+        'created_at' => now()->subHours(4),
+        'due_time' => now()->addMinutes(30),
+        'verified' => true,
+    ]));
+
+    artisan('helpdesk:check-sla-breaches')
         ->assertSuccessful();
 
     $overdueTicket->refresh();
     $okTicket->refresh();
+    $atRiskTicket->refresh();
 
     expect($overdueTicket->sla_status)->toBe('breached');
     expect($okTicket->sla_status)->toBe('on_time');
+    expect($atRiskTicket->sla_status)->toBe('at_risk');
+
+    Notification::assertSentTo($assignedOperator, SlaBreached::class);
+    Notification::assertSentTo($admin, SlaBreached::class);
 });

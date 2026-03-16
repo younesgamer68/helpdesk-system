@@ -5,6 +5,7 @@ use App\Livewire\Widget\TicketConversation;
 use App\Mail\AgentRepliedToTicket;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\SlaPolicy;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
@@ -196,4 +197,42 @@ it('notifies agent even when ticket was assigned after widget loaded', function 
         ->assertHasNoErrors();
 
     Notification::assertSentTo($agent, \App\Notifications\ClientReplied::class);
+});
+
+it('shows SLA section in sidebar even when SLA policy is disabled', function () {
+    $this->actingAs($this->user);
+
+    SlaPolicy::create([
+        'company_id' => $this->company->id,
+        'is_enabled' => false,
+        'low_minutes' => 480,
+        'medium_minutes' => 240,
+        'high_minutes' => 120,
+        'urgent_minutes' => 60,
+    ]);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->assertSee('SLA Status')
+        ->assertSee('Disabled');
+});
+
+it('shows SLA countdown state in sidebar when SLA is enabled and due time exists', function () {
+    $this->actingAs($this->user);
+
+    SlaPolicy::create([
+        'company_id' => $this->company->id,
+        'is_enabled' => true,
+        'low_minutes' => 480,
+        'medium_minutes' => 240,
+        'high_minutes' => 120,
+        'urgent_minutes' => 60,
+    ]);
+
+    $this->ticket->update([
+        'due_time' => now()->addHour(),
+        'sla_status' => 'on_time',
+    ]);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket->fresh()])
+        ->assertSee('SLA Status');
 });
