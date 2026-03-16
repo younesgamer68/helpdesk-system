@@ -105,13 +105,24 @@ class Categories extends Component
     public function render()
     {
         $categories = KbCategory::where('company_id', Auth::user()->company_id)
+            ->whereNull('parent_id')
             ->withCount('articles')
-            ->latest()
+            ->with([
+                'children' => function ($query) {
+                    $query->withCount('articles');
+                },
+            ])
+            ->orderBy('order')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $allCategories = KbCategory::where('company_id', Auth::user()->company_id)
+            ->orderBy('name')
             ->get();
 
         return view('livewire.tickets.kb.categories', [
             'categories' => $categories,
-            'allCategories' => $categories,
+            'allCategories' => $allCategories,
         ]);
     }
 }

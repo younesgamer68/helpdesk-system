@@ -30,6 +30,7 @@ return [
             'CSS.AllowedProperties' => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align',
             'AutoFormat.AutoParagraph' => true,
             'AutoFormat.RemoveEmpty' => true,
+            'URI.AllowedSchemes' => ['http' => true, 'https' => true, 'data' => true], // ← ADD THIS
         ],
         'test' => [
             'Attr.EnableID' => 'true',

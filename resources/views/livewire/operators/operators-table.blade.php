@@ -217,6 +217,10 @@
                     </th>
                     <th
                         class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                        ONLINE
+                    </th>
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Open Tickets
                     </th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">
@@ -227,9 +231,9 @@
             </thead>
             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                 @forelse ($this->operators as $user)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors cursor-pointer group/row"
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors {{ $user->isPendingInvite() ? 'cursor-default' : 'cursor-pointer' }} group/row"
                         wire:key="{{ $user->id }}"
-                        @click="if (!$event.target.closest('input') && !$event.target.closest('button') && !$event.target.closest('a')) { Livewire.navigate('{{ route('operator.profile', ['company' => Auth::user()->company->slug, 'operator' => $user->id]) }}') }">
+                        @click="if (!{{ $user->isPendingInvite() ? 'true' : 'false' }} && !$event.target.closest('input') && !$event.target.closest('button') && !$event.target.closest('a')) { Livewire.navigate('{{ route('operator.profile', ['company' => Auth::user()->company->slug, 'operator' => $user->id]) }}') }">
                         <td class="px-4 py-3 text-sm">
                             @if ($user->id !== Auth::id())
                                 <input type="checkbox" wire:model.live="selected" value="{{ $user->id }}"
@@ -335,6 +339,14 @@
                                     </span>
                                 @endif
                             </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+
+                            <span
+                                class="font-semibold {{ $user->status == 'offline' ? 'text-red-400' : 'text-green-300' }}">
+                                {{ $user->status }}
+                            </span>
+
                         </td>
                         <td class="px-4 py-3 text-sm">
                             @if ($user->open_tickets_count > 0)
@@ -538,31 +550,30 @@
                             Cancel
                         </button>
                         <button type="submit" wire:loading.attr="disabled" wire:target="createAgent"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
-                            <span wire:loading.remove wire:target="createAgent"
-                                class="inline-flex items-center gap-2 whitespace-nowrap">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Dispatch Invite
-                            </span>
-                            <span wire:loading wire:target="createAgent"
-                                class="flex flex-row items-center gap-2 whitespace-nowrap">
-                                <svg class="w-4 h-4 shrink-0 animate-spin" viewBox="0 0 24 24" fill="none"
-                                    aria-hidden="true">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                        stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                </svg>
-                                Sending Invite...
-                            </span>
+                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+
+                            {{-- Plus icon: hidden while loading --}}
+                            <svg wire:loading.remove wire:target="createAgent" class="w-4 h-4 shrink-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+
+                            {{-- Spinner: shown while loading --}}
+                            <svg wire:loading wire:target="createAgent" class="w-4 h-4 shrink-0 animate-spin"
+                                viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+
+                            Dispatch Invite
                         </button>
                     </div>
                 </form>
 
-                <!-- Discard Confirmation Dialog -->
+                <!-- Discard Confirmation Dianlog -->
                 <div x-show="showingDiscard" x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                     x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"

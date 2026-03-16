@@ -178,3 +178,22 @@ test('bulk revoke removes pending invite rows from database', function () {
     expect(User::withoutGlobalScopes()->withTrashed()->whereKey($pendingOne->id)->exists())->toBeFalse();
     expect(User::withoutGlobalScopes()->withTrashed()->whereKey($pendingTwo->id)->exists())->toBeFalse();
 });
+
+test('pending invite operator profile route is not accessible', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $admin = User::factory()->admin()->create([
+        'company_id' => $company->id,
+        'email_verified_at' => now(),
+    ]);
+
+    $pendingInvite = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'operator',
+        'password' => null,
+        'google_id' => null,
+    ]);
+
+    actingAs($admin)
+        ->get("http://{$company->slug}.".config('app.domain')."/operators/{$pendingInvite->id}")
+        ->assertNotFound();
+});

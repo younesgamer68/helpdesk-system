@@ -41,6 +41,9 @@ class ArticleEditor extends Component
             if ($article->company_id !== Auth::user()->company_id) {
                 abort(403);
             }
+
+            $article->loadMissing('versions.creator');
+
             $this->article = $article;
             $this->title = $article->title;
             $this->slug = $article->slug;
@@ -161,6 +164,10 @@ class ArticleEditor extends Component
 
     public function render()
     {
+        if ($this->article && $this->article->exists) {
+            $this->article->loadMissing('versions.creator');
+        }
+
         $categories = KbCategory::where('company_id', Auth::user()->company_id)->get();
 
         return view('livewire.tickets.kb.article-editor', [

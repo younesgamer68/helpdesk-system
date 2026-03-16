@@ -1,10 +1,4 @@
-@props([
-    'ticket',
-    'senderId',
-    'showAiSuggestion',
-    'aiTone',
-    'attachments'
-])
+@props(['ticket', 'senderId', 'showAiSuggestion', 'aiTone', 'attachments'])
 
 <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
     <form wire:submit="addReply">
@@ -12,8 +6,10 @@
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
                     <flux:dropdown>
-                        <flux:button variant="ghost" size="sm" class="px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition border border-zinc-200 dark:border-zinc-700">
-                            Reply as {{ $senderId ? App\Models\User::find($senderId)->name : 'You ('.auth()->user()->name.')' }}
+                        <flux:button variant="ghost" size="sm"
+                            class="px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition border border-zinc-200 dark:border-zinc-700">
+                            Reply as
+                            {{ $senderId ? App\Models\User::find($senderId)->name : 'You (' . auth()->user()->name . ')' }}
                             <flux:icon.chevron-down variant="micro" class="ml-2" />
                         </flux:button>
 
@@ -29,7 +25,8 @@
                 <button type="button" wire:click="startAiSuggestion"
                     class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 rounded-lg transition-colors border border-transparent hover:border-teal-500/30">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
                     Generate AI Suggestion
                 </button>
@@ -66,7 +63,7 @@
                     $wire.dismissAiSuggestion();
                 }
             }" x-init="$watch('suggestionText', value => { if (value) startTyping(); })">
-                @if($showAiSuggestion)
+                @if ($showAiSuggestion)
                     <div class="mb-4 p-4 border border-teal-500/30 bg-teal-500/5 rounded-lg flex flex-col gap-3 transition-opacity duration-300"
                         :class="{ 'opacity-50': $wire.aiLoading && suggestionText }">
 
@@ -102,15 +99,20 @@
                                 Use this
                             </button>
 
-                            <button wire:click="regenerateWithTone($wire.aiTone)" :disabled="isTyping || $wire.aiLoading" type="button"
+                            <button wire:click="regenerateWithTone($wire.aiTone)"
+                                :disabled="isTyping || $wire.aiLoading" type="button"
                                 class="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                <svg x-show="$wire.aiLoading" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                <svg x-show="$wire.aiLoading" class="w-3.5 h-3.5 animate-spin" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                    </path>
                                 </svg>
                                 Regenerate
                             </button>
 
-                            <button wire:click="dismissAiSuggestion" :disabled="isTyping || $wire.aiLoading" type="button"
+                            <button wire:click="dismissAiSuggestion" :disabled="isTyping || $wire.aiLoading"
+                                type="button"
                                 class="text-xs px-3 py-1.5 bg-transparent border border-zinc-200 dark:border-zinc-700 hover:border-zinc-500 text-zinc-500 dark:text-zinc-400 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
                                 Dismiss
                             </button>
@@ -120,38 +122,15 @@
             </div>
 
             <div class="relative">
-                <div x-data="tiptapEditor"
-                    class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-600">
-                    
-                    <div class="flex items-center gap-1 p-2 border-b border-zinc-200 dark:border-zinc-700/50 flex-wrap relative"
-                        x-data="{ showLinkInput: false, linkUrl: '' }">
-                        <button type="button" @mousedown.prevent="" @click="bold()"
-                            :class="isActive('bold') ? 'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900'"
-                            class="p-1.5 rounded transition" title="Bold">
-                            <flux:icon.bold variant="micro" />
-                        </button>
-                        <button type="button" @mousedown.prevent="" @click="italic()"
-                            :class="isActive('italic') ? 'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900'"
-                            class="p-1.5 rounded transition" title="Italic">
-                            <flux:icon.italic variant="micro" />
-                        </button>
-                        <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
-                        <button type="button" @mousedown.prevent="" @click="bulletList()"
-                            :class="isActive('bulletList') ? 'bg-zinc-300 dark:bg-zinc-600 text-zinc-900 dark:text-zinc-100' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900'"
-                            class="p-1.5 rounded transition" title="Bullet List">
-                            <flux:icon.list-bullet variant="micro" />
-                        </button>
-                    </div>
-
-                    <div wire:ignore>
-                        <div x-ref="editorEl"></div>
-                    </div>
-                </div>
+                <x-tiptap-editor model="message" />
 
                 <div class="absolute bottom-3 right-3 flex items-center gap-2">
-                    <label class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition cursor-pointer" title="Attach Files">
+
+                    <label class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg transition cursor-pointer"
+                        title="Attach Files">
                         <flux:icon.paper-clip class="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
-                        <input type="file" wire:model="attachments" multiple class="hidden" accept="image/*,.pdf,.doc,.docx">
+                        <input type="file" wire:model="attachments" multiple class="hidden"
+                            accept="image/*,.pdf,.doc,.docx">
                     </label>
                 </div>
             </div>
@@ -159,16 +138,18 @@
 
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div wire:loading wire:target="attachments" class="text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                <div wire:loading wire:target="attachments"
+                    class="text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
                     <flux:icon.arrow-path class="animate-spin h-4 w-4" />
                     Uploading attachments...
                 </div>
-                @if($attachments)
+                @if ($attachments)
                     <div class="flex flex-wrap gap-2">
-                        @foreach($attachments as $index => $attachment)
+                        @foreach ($attachments as $index => $attachment)
                             <div class="flex items-center gap-2 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded text-xs">
                                 <span>{{ $attachment->getClientOriginalName() }}</span>
-                                <button type="button" wire:click="removeAttachment({{ $index }})" class="text-red-500 hover:text-red-600">
+                                <button type="button" wire:click="removeAttachment({{ $index }})"
+                                    class="text-red-500 hover:text-red-600">
                                     <flux:icon.x-mark variant="micro" />
                                 </button>
                             </div>
@@ -177,8 +158,10 @@
                 @endif
             </div>
             <div class="flex gap-2 items-center">
-                <label class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 cursor-pointer mr-2">
-                    <input type="checkbox" wire:model="keepOpen" class="rounded bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-teal-600 focus:ring-teal-500">
+                <label
+                    class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 cursor-pointer mr-2">
+                    <input type="checkbox" wire:model="keepOpen"
+                        class="rounded bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-teal-600 focus:ring-teal-500">
                     Keep open
                 </label>
                 <flux:button type="submit" variant="primary" icon="paper-airplane" wire:loading.attr="disabled">
@@ -187,5 +170,7 @@
                 </flux:button>
             </div>
         </div>
+        @livewire('tickets.kb.media-library')
+
     </form>
 </div>

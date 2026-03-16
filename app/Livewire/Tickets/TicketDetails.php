@@ -364,7 +364,7 @@ class TicketDetails extends Component
         $context .= "Full conversation history:\n";
 
         foreach ($this->ticket->replies as $reply) {
-            $sender = $reply->is_admin_reply ? 'Agent' : 'Customer';
+            $sender = $reply->user_id ? 'Agent' : 'Customer';
             $context .= "{$sender}: ".strip_tags($reply->message)."\n";
         }
 

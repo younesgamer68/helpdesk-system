@@ -65,7 +65,15 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+.ProseMirror img {
+    cursor: pointer;
+    border-radius: 4px;
+    transition: outline 0.1s;
+}
 
+.ProseMirror img.ProseMirror-selectednode {
+    outline: 2px solid #14b8a6;
+}
 .prose pre {
     background-color: var(--color-zinc-900) !important;
     color: var(--color-zinc-100) !important;

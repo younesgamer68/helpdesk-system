@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class KbMedia extends Model
 {
+    protected $guarded = [];
+
     protected static function booted(): void
     {
         static::addGlobalScope(new CompanyScope);

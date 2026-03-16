@@ -27,6 +27,10 @@ class OperatorProfile extends Component
             abort(403);
         }
 
+        if ($operator->isPendingInvite()) {
+            abort(404);
+        }
+
         $this->operator = $operator;
         $this->role = $operator->role;
 

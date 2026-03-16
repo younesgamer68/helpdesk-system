@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
@@ -48,6 +49,11 @@ class Ticket extends Model
     public function category()
     {
         return $this->belongsTo(TicketCategory::class, foreignKey: 'category_id');
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function getRouteKeyName()

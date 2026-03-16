@@ -30,174 +30,12 @@
                         </div>
 
                         <!-- TipTap Editor -->
-                        <div class="prose dark:prose-invert max-w-none" wire:ignore>
-                            <div x-data="{
-                                editor: null,
-                                content: @entangle('body'),
-                                async initEditor(element) {
-                                    const { Editor } = await import('https://esm.sh/@tiptap/core');
-                                    const StarterKit = (await import('https://esm.sh/@tiptap/starter-kit')).default;
-                                    const Link = (await import('https://esm.sh/@tiptap/extension-link')).default;
-                                    const Underline = (await import('https://esm.sh/@tiptap/extension-underline')).default;
-                            
-                                    this.editor = new Editor({
-                                        element: element,
-                                        extensions: [
-                                            StarterKit,
-                                            Link.configure({
-                                                openOnClick: false,
-                                            }),
-                                            Underline,
-                                        ],
-                                        content: this.content,
-                                        onUpdate: ({ editor }) => {
-                                            this.content = editor.getHTML();
-                                        },
-                                        editorProps: {
-                                            attributes: {
-                                                class: 'prose dark:prose-invert max-w-none focus:outline-none min-full',
-                                                style: 'min-height: 400px;'
-                                            },
-                                        },
-                                    });
-                            
-                                    this.$watch('content', value => {
-                                        if (value !== this.editor.getHTML()) {
-                                            this.editor.commands.setContent(value, false);
-                                        }
-                                    });
-                            
-                                    window.addEventListener('media-selected', (event) => {
-                                        const url = event.detail.url;
-                                        if (this.editor && url) {
-                                            this.editor.chain().focus().setImage({ src: url }).run();
-                                        }
-                                    });
-                                },
-                                isActive(type) {
-                                    if (!this.editor) return false;
-                                    return this.editor.isActive(type);
-                                },
-                                setLink() {
-                                    const previousUrl = this.editor.getAttributes('link').href;
-                                    const url = window.prompt('URL', previousUrl);
-                                    if (url === null) return;
-                                    if (url === '') {
-                                        this.editor.chain().focus().extendMarkRange('link').unsetLink().run();
-                                        return;
-                                    }
-                                    this.editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-                                }
-                            }" x-init="initEditor($refs.editorBox)"
-                                class="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden flex flex-col">
-
-                                <!-- Toolbar -->
-                                <div
-                                    class="flex flex-wrap items-center gap-1 bg-zinc-50 dark:bg-zinc-800/50 p-2 border-b border-zinc-200 dark:border-zinc-800 shrink-0">
-                                    <button type="button" @click="editor.chain().focus().toggleBold().run()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                            'bold') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Bold">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"></path>
-                                        </svg>
-                                    </button>
-                                    <button type="button" @click="editor.chain().focus().toggleItalic().run()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                                'italic') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Italic">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                        </svg>
-                                    </button>
-                                    <button type="button" @click="editor.chain().focus().toggleUnderline().run()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                                'underline') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Underline">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 3v7a6 6 0 006 6 6 6 0 006-6V3m0 13v5H6v-5"></path>
-                                        </svg>
-                                    </button>
-
-                                    <div class="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
-
-                                    <button type="button" @click="editor.chain().focus().toggleBulletList().run()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                                'bulletList') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Bullet List">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 6h16M4 12h16M4 18h16M8 6h.01M8 12h.01M8 18h.01"></path>
-                                        </svg>
-                                    </button>
-                                    <button type="button" @click="editor.chain().focus().toggleOrderedList().run()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                                'orderedList') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Ordered List">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 6h16M4 12h16M4 18h16M8 6h.01M8 12h.01M8 18h.01"></path>
-                                        </svg>
-                                    </button>
-
-                                    <div class="w-px h-6 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
-
-                                    <button type="button" @click="editor.chain().focus().toggleCodeBlock().run()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                                'codeBlock') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Code">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                                        </svg>
-                                    </button>
-                                    <button type="button" @click="setLink()"
-                                        :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white': isActive(
-                                            'link') }"
-                                        class="p-1.5 rounded text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
-                                        title="Link">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <!-- Editor Content Box -->
-                                <div x-ref="editorBox"
-                                    class="p-4 outline-none text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-900 flex-1 overflow-y-auto min-h-[400px]">
-                                </div>
-
-                                <!-- Hidden Sync Input -->
-                                <input type="hidden" wire:model="body">
-                            </div>
+                        <div class="prose dark:prose-invert max-w-none">
+                            <x-tiptap-editor model="body" />
                         </div>
 
-                        <!-- Media Library Integration -->
-                        <div class="mt-4 flex justify-end">
-                            <flux:button type="button" x-on:click="$dispatch('open-media-library')" variant="ghost"
-                                class="text-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Insert Image from Library
-                            </flux:button>
-                        </div>
+                      
+
                     </div>
                 </div>
 
@@ -219,8 +57,7 @@
                                     </div>
                                 </label>
                                 <label class="flex-1 cursor-pointer">
-                                    <input type="radio" wire:model="status" value="published"
-                                        class="peer sr-only">
+                                    <input type="radio" wire:model="status" value="published" class="peer sr-only">
                                     <div
                                         class="text-center px-3 py-1.5 text-sm font-medium rounded-md peer-checked:bg-teal-500 peer-checked:text-white peer-checked:shadow-sm text-zinc-500 dark:text-zinc-400 transition">
                                         Published

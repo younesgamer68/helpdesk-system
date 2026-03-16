@@ -72,6 +72,13 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
 // ====== SUBDOMAIN (company) ======
 Route::domain('{company}.'.config('app.domain'))->group(function () {
+    Route::bind('article', function (string $value) {
+        return \App\Models\KbArticle::query()
+            ->where('id', $value)
+            ->orWhere('slug', $value)
+            ->firstOrFail();
+    });
+
     // Public Knowledge Base Portal
     Route::prefix('kb')->name('kb.public.')->group(function () {
         Route::get('/', [\App\Http\Controllers\KbPortalController::class, 'home'])->name('home');
