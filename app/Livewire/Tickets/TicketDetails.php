@@ -400,10 +400,10 @@ class TicketDetails extends Component
         $this->aiLoading = true;
         $this->showAiSuggestion = true;
 
-        $context = `Company name:` + Auth::user()->company->name + `\n`;
+        $context = "Company name: " . Auth::user()->company->name . "\n";
         $context .= 'Ticket category: '.($this->ticket->category->name ?? 'None')."\n";
         $context .= 'Ticket priority: '.$this->ticket->priority."\n";
-$       context .= 'Customer name: '.($this->ticket->customer?->name ?? 'Unknown')."\n";        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
+        $context .= 'Customer name: '.($this->ticket->customer?->name ?? 'Unknown')."\n";        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
         $context .= "Full conversation history:\n";
 
         foreach ($this->ticket->replies as $reply) {
