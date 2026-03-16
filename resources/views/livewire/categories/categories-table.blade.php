@@ -38,12 +38,11 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Description
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Color
-                    </th>
+
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-white transition-colors group"
                         wire:click="setSortBy('default_priority')">
                         <div class="flex items-center gap-1">
@@ -62,22 +61,15 @@
             </thead>
             <tbody class="divide-y divide-zinc-800/10">
                 @forelse ($this->categories as $category)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors" wire:key="category-{{ $category->id }}">
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors"
+                        wire:key="category-{{ $category->id }}">
                         <td class="px-4 py-3 text-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-3 h-3 rounded-full" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
-                                <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $category->name }}</span>
-                            </div>
+                            <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $category->name }}</span>
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                             {{ Str::limit($category->description, 50) ?? '-' }}
                         </td>
-                        <td class="px-4 py-3 text-sm">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded border border-zinc-200 dark:border-zinc-700" style="background-color: {{ $category->color ?? '#6B7280' }}"></div>
-                                <span class="text-zinc-500 dark:text-zinc-400 text-xs font-mono">{{ $category->color ?? '#6B7280' }}</span>
-                            </div>
-                        </td>
+
                         <td class="px-4 py-3 text-sm">
                             @php
                                 $priorityColors = [
@@ -87,7 +79,8 @@
                                     'urgent' => 'bg-red-500/10 text-red-400 border-red-500/20',
                                 ];
                             @endphp
-                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$category->default_priority] }}">
+                            <span
+                                class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$category->default_priority] }}">
                                 {{ ucfirst($category->default_priority) }}
                             </span>
                         </td>
@@ -114,9 +107,10 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-12 text-center">
+                        <td colspan="4" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                 </svg>
@@ -153,18 +147,9 @@
 
                 <flux:field>
                     <flux:label>Description</flux:label>
-                    <flux:textarea wire:model="description" placeholder="Brief description of this category (optional)" rows="2" />
+                    <flux:textarea wire:model="description" placeholder="Brief description of this category (optional)"
+                        rows="2" />
                     <flux:error name="description" />
-                </flux:field>
-
-                <flux:field>
-                    <flux:label>Color</flux:label>
-                    <div class="flex items-center gap-3">
-                        <input type="color" wire:model="color"
-                            class="w-12 h-10 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 cursor-pointer">
-                        <flux:input wire:model="color" placeholder="#0F766E" class="flex-1" />
-                    </div>
-                    <flux:error name="color" />
                 </flux:field>
 
                 <flux:field>
@@ -204,18 +189,9 @@
 
                 <flux:field>
                     <flux:label>Description</flux:label>
-                    <flux:textarea wire:model="description" placeholder="Brief description of this category (optional)" rows="2" />
+                    <flux:textarea wire:model="description"
+                        placeholder="Brief description of this category (optional)" rows="2" />
                     <flux:error name="description" />
-                </flux:field>
-
-                <flux:field>
-                    <flux:label>Color</flux:label>
-                    <div class="flex items-center gap-3">
-                        <input type="color" wire:model="color"
-                            class="w-12 h-10 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 cursor-pointer">
-                        <flux:input wire:model="color" placeholder="#0F766E" class="flex-1" />
-                    </div>
-                    <flux:error name="color" />
                 </flux:field>
 
                 <flux:field>

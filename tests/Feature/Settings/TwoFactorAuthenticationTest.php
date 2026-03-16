@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Laravel\Fortify\Features;
 use Livewire\Livewire;
@@ -16,21 +17,23 @@ beforeEach(function () {
 });
 
 test('two factor settings page can be rendered', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->get(route('two-factor.show'))
+        ->get(route('two-factor.show', ['company' => $company->slug]))
         ->assertOk()
         ->assertSee('Two Factor Authentication')
         ->assertSee('Disabled');
 });
 
 test('two factor settings page requires password confirmation when enabled', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $response = $this->actingAs($user)
-        ->get(route('two-factor.show'));
+        ->get(route('two-factor.show', ['company' => $company->slug]));
 
     $response->assertRedirect(route('password.confirm'));
 });
@@ -38,17 +41,19 @@ test('two factor settings page requires password confirmation when enabled', fun
 test('two factor settings page returns forbidden response when two factor is disabled', function () {
     config(['fortify.features' => []]);
 
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $response = $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->get(route('two-factor.show'));
+        ->get(route('two-factor.show', ['company' => $company->slug]));
 
     $response->assertForbidden();
 });
 
 test('two factor authentication disabled when confirmation abandoned between requests', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $user->forceFill([
         'two_factor_secret' => encrypt('test-secret'),

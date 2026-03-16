@@ -51,6 +51,6 @@ class KbArticle extends Model
 
     public function versions()
     {
-        return $this->hasMany(KbArticleVersion::class)->latest();
+        return $this->hasMany(KbArticleVersion::class)->latest('version_number');
     }
 }

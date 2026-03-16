@@ -78,4 +78,26 @@ class Ticket extends Model
     {
         return $query->whereIn('status', ['open', 'in_progress', 'pending']);
     }
+
+    // Accessor: allows $ticket->customer_name to still work during migration
+    // Returns from customer relationship, falls back to empty string
+    public function getCustomerNameAttribute(): string
+    {
+        return $this->customer?->name ?? '';
+    }
+
+    public function getCustomerEmailAttribute(): string
+    {
+        return $this->customer?->email ?? '';
+    }
+
+    public function getCustomerPhoneAttribute(): ?string
+    {
+        return $this->customer?->phone;
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(TicketAttachment::class);
+    }
 }

@@ -2,6 +2,8 @@
 
 use App\Livewire\Dashboard\AdminDashboard;
 use App\Models\Company;
+use App\Models\Customer;
+use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -59,4 +61,27 @@ it('does not show tickets from another company', function () {
         ->assertSuccessful()
         ->assertSee('TKT-LOCAL1')
         ->assertDontSee('TKT-OTHER1');
+});
+
+it('renders recent ticket customers without lazy loading violations', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $customer = Customer::factory()->create([
+        'company_id' => $company->id,
+        'name' => 'Acme Customer',
+    ]);
+
+    Ticket::factory()->create([
+        'company_id' => $company->id,
+        'customer_id' => $customer->id,
+        'ticket_number' => 'TKT-CUSTOMER',
+        'subject' => 'Customer relation ticket',
+        'status' => 'open',
+    ]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain').'/admin/dashboard')
+        ->assertSuccessful()
+        ->assertSee('TKT-CUSTOMER')
+        ->assertSee('Acme Customer');
 });

@@ -33,6 +33,12 @@ class AppServiceProvider extends ServiceProvider
         Ticket::observe(TicketObserver::class);
         $this->configureDefaults();
 
+        if (app()->isProduction() && config('app.debug')) {
+            throw new \RuntimeException(
+                'APP_DEBUG must be false in production. Set APP_DEBUG=false in your .env file.'
+            );
+        }
+
         Event::listen(\Illuminate\Auth\Events\Logout::class, function (\Illuminate\Auth\Events\Logout $event) {
             if ($event->user) {
                 $event->user->update(['status' => 'offline']);

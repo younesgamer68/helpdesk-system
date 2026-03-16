@@ -25,7 +25,9 @@ class MarkInactiveUsers extends Command
      */
     public function handle()
     {
-        $count = \App\Models\User::where('status', 'online')
+        // Users table has CompanyScope — must use withoutGlobalScopes in console
+        $count = \App\Models\User::withoutGlobalScopes()
+            ->where('status', 'online')
             ->where('last_activity', '<', now()->subMinutes(5))
             ->update(['status' => 'offline']);
 

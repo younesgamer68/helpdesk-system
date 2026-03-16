@@ -8,6 +8,7 @@ use App\Notifications\ClientReplied;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Mews\Purifier\Facades\Purifier;
 
 class TicketConversation extends Component
 {
@@ -56,8 +57,8 @@ class TicketConversation extends Component
         TicketReply::create([
             'ticket_id' => $this->ticket->id,
             'user_id' => null, // null means it's from the customer side
-            'customer_name' => $this->ticket->customer_name,
-            'message' => clean($this->message),
+            'customer_name' => $this->ticket->customer?->name ?? '',
+            'message' => Purifier::clean($this->message),
             'is_internal' => false,
             'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
         ]);

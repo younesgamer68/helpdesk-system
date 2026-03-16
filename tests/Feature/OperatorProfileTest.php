@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\Dashboard\OperatorProfile;
+use App\Livewire\Operators\OperatorProfile;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketCategory;

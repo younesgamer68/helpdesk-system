@@ -134,7 +134,9 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function scopeWithSpecialty($query, int $categoryId)
     {
-        return $query->where('specialty_id', $categoryId);
+        return $query->whereHas('categories', function ($q) use ($categoryId) {
+            $q->where('ticket_categories.id', $categoryId);
+        });
     }
 
     /**

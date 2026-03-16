@@ -324,8 +324,8 @@
                                 @endphp
 
                                 @forelse ($allSpecialties->take(3) as $spec)
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-medium border"
-                                        style="background-color: {{ $spec->color }}15; color: {{ $spec->color }}; border-color: {{ $spec->color }}30">
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-medium border bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-600">
                                         {{ $spec->name }}
                                     </span>
                                 @empty

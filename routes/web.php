@@ -14,8 +14,10 @@ Route::get('/', function () {
 })->name('home');
 
 // ====== CHATBOT ======
-Route::get('/chatbot/faqs', [ChatbotFaqController::class, 'random'])->name('chatbot.faqs');
-Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatbot.chat');
+Route::middleware(['throttle:30,1'])->group(function () {
+    Route::get('/chatbot/faqs', [ChatbotFaqController::class, 'random'])->name('chatbot.faqs');
+    Route::post('/chatbot/chat', [ChatbotFaqController::class, 'chat'])->name('chatbot.chat');
+});
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {

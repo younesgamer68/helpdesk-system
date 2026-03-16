@@ -17,7 +17,7 @@ class SetPassword extends Component
 
     public $password_confirmation;
 
-    public $specialty_id = '';
+    public array $selectedSpecialties = [];
 
     public function toJSON()
     {
@@ -65,9 +65,10 @@ class SetPassword extends Component
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
 
-        // Only validate specialty for operators
+        // Only validate specialties for operators
         if ($this->isOperator) {
-            $rules['specialty_id'] = ['nullable', 'exists:ticket_categories,id'];
+            $rules['selectedSpecialties'] = ['nullable', 'array'];
+            $rules['selectedSpecialties.*'] = ['exists:ticket_categories,id'];
         }
 
         $this->validate($rules);
@@ -77,17 +78,17 @@ class SetPassword extends Component
         /** @var \App\Models\User $user */
         $user = User::where('email', '=', $email)->firstOrFail(['*']);
 
-        $updateData = [
+        $user->update([
             'password' => Hash::make($this->password),
             'email_verified_at' => now(),
-        ];
+        ]);
 
-        // Set specialty for operators
-        if ($user->role === 'operator' && $this->specialty_id) {
-            $updateData['specialty_id'] = $this->specialty_id;
+        // Sync specialties for operators
+        if ($user->role === 'operator' && ! empty($this->selectedSpecialties)) {
+            $user->specialty_id = (int) $this->selectedSpecialties[0];
+            $user->save();
+            $user->categories()->sync($this->selectedSpecialties);
         }
-
-        $user->update($updateData);
 
         Auth::login($user);
         session()->forget('pending_user_email');

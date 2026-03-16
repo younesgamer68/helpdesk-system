@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\Dashboard\NotificationsPage;
+use App\Livewire\Notifications\NotificationsPage;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -32,7 +32,8 @@ class CheckSlaBreaches extends Command
         $this->info('Checking for SLA breaches...');
 
         // Find tickets that are past due_time, not resolved/closed, and not already marked as breached
-        $breachedTickets = Ticket::whereNotNull('due_time')
+        $breachedTickets = Ticket::withoutGlobalScope(\App\Scopes\CompanyScope::class)
+            ->whereNotNull('due_time')
             ->where('due_time', '<=', now())
             ->whereNotIn('status', ['resolved', 'closed'])
             ->where('sla_status', '!=', 'breached')
@@ -50,8 +51,11 @@ class CheckSlaBreaches extends Command
             // 1. Update status
             $ticket->update(['sla_status' => 'breached']);
 
-            $this->info("Ticket ID {$ticket->id} marked as SLA breached.");
-            Log::info("Ticket ID {$ticket->id} SLA breached. Current time: ".now().' Due time: '.$ticket->due_time);
+            $this->info("Ticket ID {$ticket->id} (company {$ticket->company_id}) marked as SLA breached.");
+            Log::info("Ticket ID {$ticket->id} SLA breached.", [
+                'company_id' => $ticket->company_id,
+                'due_time' => $ticket->due_time,
+            ]);
 
             // 2. Fetch active SLA breach rules for the company
             $rules = $automationEngine->getRulesOfType($ticket->company_id, AutomationRule::TYPE_SLA_BREACH);

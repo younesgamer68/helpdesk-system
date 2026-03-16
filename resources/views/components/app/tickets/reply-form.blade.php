@@ -9,7 +9,7 @@
                         <flux:button variant="ghost" size="sm"
                             class="px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition border border-zinc-200 dark:border-zinc-700">
                             Reply as
-                            {{ $senderId ? App\Models\User::find($senderId)->name : 'You (' . auth()->user()->name . ')' }}
+                            {{ $senderId ? App\Models\User::find($senderId)?->name ?? 'Unknown User' : 'You (' . auth()->user()->name . ')' }}
                             <flux:icon.chevron-down variant="micro" class="ml-2" />
                         </flux:button>
 

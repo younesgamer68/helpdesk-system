@@ -51,8 +51,8 @@ it('completes the onboarding flow and saves data correctly', function () {
         ->call('nextStep')
         ->assertSet('currentStep', 2)
         ->set('categories', [
-            ['name' => 'IT Support', 'color' => '#ff0000'],
-            ['name' => 'HR', 'color' => '#00ff00'],
+            ['name' => 'IT Support'],
+            ['name' => 'HR'],
         ])
         ->call('nextStep')
         ->assertSet('currentStep', 3)
@@ -74,13 +74,11 @@ it('completes the onboarding flow and saves data correctly', function () {
     $this->assertDatabaseHas('ticket_categories', [
         'company_id' => $company->id,
         'name' => 'IT Support',
-        'color' => '#ff0000',
     ]);
 
     $this->assertDatabaseHas('ticket_categories', [
         'company_id' => $company->id,
         'name' => 'HR',
-        'color' => '#00ff00',
     ]);
 
     $this->assertDatabaseHas('users', [

@@ -97,20 +97,23 @@
         </div>
 
         @if (strlen(strip_tags($reply->message)) > 0)
-        <div class="reply-preview">
-            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Latest reply</p>
-            <p style="margin: 0; color: #374151;">{{ Str::limit(strip_tags($reply->message), 200) }}</p>
-        </div>
+            <div class="reply-preview">
+                <p
+                    style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280; text-transform: uppercase; font-weight: 600;">
+                    Latest reply</p>
+                <p style="margin: 0; color: #374151;">{{ Str::limit(strip_tags($reply->message), 200) }}</p>
+            </div>
         @endif
 
         <div style="text-align: center;">
-            <a href="{{ route('widget.track', ['company' => $ticket->company, 'ticketNumber' => $ticket->ticket_number, 'token' => $ticket->verification_token]) }}"
+            <a href="{{ route('widget.track', ['company' => $ticket->company, 'ticketNumber' => $ticket->ticket_number, 'token' => $ticket->tracking_token]) }}"
                 class="button">
                 View Ticket & Reply
             </a>
         </div>
 
-        <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Use the link above to view the full conversation and send a reply. All updates will be sent to this email.</p>
+        <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Use the link above to view the full conversation
+            and send a reply. All updates will be sent to this email.</p>
     </div>
 
     <div class="footer">

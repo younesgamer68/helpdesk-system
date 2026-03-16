@@ -11,7 +11,17 @@ class TicketsController extends Controller
 
     public function show($company, Ticket $ticket)
     {
-        $agents = $ticket->company->user;
+        $ticket->loadMissing([
+            'assignedTo:id,name',
+            'category:id,name',
+            'customer:id,name,email,phone',
+        ]);
+        $agents = \App\Models\User::where('company_id', $ticket->company_id)
+            ->whereIn('role', ['admin', 'operator'])
+            ->whereNull('deleted_at')
+            ->select('id', 'name', 'email', 'role')
+            ->orderBy('name')
+            ->get();
 
         return view('app.tickets.show', compact('ticket', 'agents'));
     }

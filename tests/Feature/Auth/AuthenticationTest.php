@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Laravel\Fortify\Features;
 
@@ -10,7 +11,8 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -19,7 +21,7 @@ test('users can authenticate using the login screen', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
+        ->assertRedirect(route('dashboard', ['company' => $company->slug]));
 
     $this->assertAuthenticated();
 });
@@ -46,7 +48,8 @@ test('users with two factor enabled are redirected to two factor challenge', fun
         'confirmPassword' => true,
     ]);
 
-    $user = User::factory()->withTwoFactor()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->withTwoFactor()->create(['company_id' => $company->id]);
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -58,7 +61,8 @@ test('users with two factor enabled are redirected to two factor challenge', fun
 });
 
 test('users can logout', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $response = $this->actingAs($user)->post(route('logout'));
 

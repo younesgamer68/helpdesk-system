@@ -46,7 +46,7 @@ class AdminDashboard extends Component
     #[Computed]
     public function openTicketsList(): Collection
     {
-        return Ticket::with(['assignedTo', 'category'])
+        return Ticket::with(['assignedTo', 'category', 'customer'])
             ->whereIn('status', ['open', 'in_progress'])
             ->latest()
             ->take(50)
@@ -56,7 +56,7 @@ class AdminDashboard extends Component
     #[Computed]
     public function resolvedTodayList(): Collection
     {
-        return Ticket::with(['assignedTo', 'category'])
+        return Ticket::with(['assignedTo', 'category', 'customer'])
             ->where('status', 'resolved')
             ->whereDate('updated_at', today())
             ->latest()
@@ -66,7 +66,7 @@ class AdminDashboard extends Component
     #[Computed]
     public function unassignedTicketsList(): Collection
     {
-        return Ticket::with(['category'])
+        return Ticket::with(['category', 'customer'])
             ->whereNull('assigned_to')
             ->where('status', '!=', 'closed')
             ->latest()
@@ -88,7 +88,7 @@ class AdminDashboard extends Component
     #[Computed]
     public function recentTickets(): Collection
     {
-        return Ticket::with(['assignedTo', 'category'])
+        return Ticket::with(['assignedTo', 'category', 'customer'])
             ->latest()
             ->take(8)
             ->get();
@@ -97,12 +97,14 @@ class AdminDashboard extends Component
     #[Computed]
     public function agentsActivity(): Collection
     {
-        return User::whereIn('role', ['agent', 'operator'], 'and', false)
+        return User::where('company_id', Auth::user()->company_id)
+            ->whereIn('role', ['operator', 'admin'])
             ->withCount([
-                'tickets as active_count' => function ($query) {
+                'assignedTickets as active_count' => function ($query) {
                     $query->whereIn('status', ['open', 'in_progress', 'pending']);
                 },
             ])
+            ->orderByDesc('active_count')
             ->get();
     }
 

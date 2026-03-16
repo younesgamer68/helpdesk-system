@@ -4,6 +4,7 @@ use App\Livewire\Dashboard\TicketDetails;
 use App\Livewire\Widget\TicketConversation;
 use App\Mail\AgentRepliedToTicket;
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
@@ -18,11 +19,16 @@ beforeEach(function () {
     $this->user = User::factory()->create(['company_id' => $this->company->id, 'role' => 'admin']);
     $this->category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
 
+    $this->customer = Customer::create([
+        'company_id' => $this->company->id,
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+    ]);
+
     $this->ticket = Ticket::create([
         'company_id' => $this->company->id,
         'ticket_number' => 'TKT-TEST1234',
-        'customer_name' => 'John Doe',
-        'customer_email' => 'john@example.com',
+        'customer_id' => $this->customer->id,
         'subject' => 'Test Subject',
         'description' => 'Test Description',
         'category_id' => $this->category->id,
@@ -30,6 +36,7 @@ beforeEach(function () {
         'status' => 'open',
         'verified' => true,
         'verification_token' => 'test-token',
+        'tracking_token' => 'test-tracking-token',
     ]);
 });
 
@@ -153,8 +160,8 @@ it('sends email to customer with tracking link when agent replies', function () 
         ->call('addReply')
         ->assertHasNoErrors();
 
-    Mail::assertSent(AgentRepliedToTicket::class, function ($mail) {
-        return $mail->hasTo($this->ticket->customer_email)
+    Mail::assertQueued(AgentRepliedToTicket::class, function ($mail) {
+        return $mail->hasTo($this->ticket->customer->email)
             && $mail->ticket->id === $this->ticket->id
             && str_contains($mail->reply->message, 'We are looking into your request');
     });

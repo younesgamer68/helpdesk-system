@@ -186,6 +186,11 @@ class TicketsTable extends Component
 
     public function setSortBy($column)
     {
+        $sortable = ['id', 'subject', 'status', 'priority', 'created_at', 'assigned_to'];
+        if (! in_array($column, $sortable)) {
+            return;
+        }
+
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -267,7 +272,7 @@ class TicketsTable extends Component
             $query->onlyTrashed();
         }
 
-        $query->with(['assignedTo:id,name', 'category:id,name']);
+        $query->with(['assignedTo:id,name', 'category:id,name', 'customer:id,name,email,phone']);
 
         // Filter for non-admin users (operators)
         if ($user->role !== 'admin') {
@@ -288,9 +293,16 @@ class TicketsTable extends Component
         if ($this->search) {
             $query->where(function ($q) {
                 $q->where('ticket_number', 'like', '%'.$this->search.'%')
-                    ->orWhere('subject', 'like', '%'.$this->search.'%')
-                    ->orWhere('customer_name', 'like', '%'.$this->search.'%')
-                    ->orWhere('description', 'like', '%'.$this->search.'%');
+                    ->orWhereHas('customer', function ($q) {
+                        $q->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('email', 'like', '%'.$this->search.'%');
+                    });
+                if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                    $q->orWhereFullText(['subject', 'description'], $this->search);
+                } else {
+                    $q->orWhere('subject', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%');
+                }
             });
         }
 
@@ -404,13 +416,24 @@ class TicketsTable extends Component
         // Generate unique ticket number
         $ticketNumber = $this->generateTicketNumber();
 
+        // Find or create the customer
+        $customer = \App\Models\Customer::firstOrCreate(
+            [
+                'company_id' => Auth::user()->company_id,
+                'email' => $this->customer_email,
+            ],
+            [
+                'name' => $this->customer_name,
+                'phone' => $this->customer_phone ?: null,
+                'is_active' => true,
+            ]
+        );
+
         // Create the ticket
         $ticket = Ticket::create([
             'company_id' => Auth::user()->company_id,
             'ticket_number' => $ticketNumber,
-            'customer_name' => $this->customer_name,
-            'customer_email' => $this->customer_email,
-            'customer_phone' => $this->customer_phone,
+            'customer_id' => $customer->id,
             'subject' => $this->subject,
             'description' => $this->description,
             'priority' => $this->priority,
@@ -439,7 +462,12 @@ class TicketsTable extends Component
 
     public function deleteTicket($ticketId)
     {
-        $ticket = Ticket::findOrFail($ticketId);
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
+        $ticket = Ticket::where('company_id', Auth::user()->company_id)->findOrFail($ticketId);
         $ticketNumber = $ticket->ticket_number;
         $ticket->delete();
 
@@ -451,7 +479,12 @@ class TicketsTable extends Component
 
     public function restoreTicket($ticketId)
     {
-        $ticket = Ticket::withTrashed()->findOrFail($ticketId);
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
+        $ticket = Ticket::withTrashed()->where('company_id', Auth::user()->company_id)->findOrFail($ticketId);
         $ticketNumber = $ticket->ticket_number;
         $ticket->restore();
 
@@ -461,12 +494,17 @@ class TicketsTable extends Component
 
     public function deleteSelectedTickets()
     {
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
         if (empty($this->selectedTickets)) {
             return;
         }
 
         $count = count($this->selectedTickets);
-        Ticket::whereIn('id', $this->selectedTickets)->delete();
+        Ticket::whereIn('id', $this->selectedTickets)->where('company_id', Auth::user()->company_id)->delete();
 
         $this->dispatch('show-toast', message: "{$count} tickets deleted successfully!", type: 'success');
 
@@ -477,11 +515,16 @@ class TicketsTable extends Component
 
     public function bulkSetStatus(string $status): void
     {
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
         if (empty($this->selectedTickets)) {
             return;
         }
 
-        Ticket::whereIn('id', $this->selectedTickets)->update(['status' => $status]);
+        Ticket::whereIn('id', $this->selectedTickets)->where('company_id', Auth::user()->company_id)->update(['status' => $status]);
 
         $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets updated to '.str($status)->replace('_', ' ')->title(), type: 'success');
         $this->selectedTickets = [];
@@ -491,11 +534,16 @@ class TicketsTable extends Component
 
     public function bulkSetPriority(string $priority): void
     {
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
         if (empty($this->selectedTickets)) {
             return;
         }
 
-        Ticket::whereIn('id', $this->selectedTickets)->update(['priority' => $priority]);
+        Ticket::whereIn('id', $this->selectedTickets)->where('company_id', Auth::user()->company_id)->update(['priority' => $priority]);
 
         $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets set to '.ucfirst($priority).' priority', type: 'success');
         $this->selectedTickets = [];
@@ -505,11 +553,19 @@ class TicketsTable extends Component
 
     public function bulkAssignAgent(int $agentId): void
     {
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
+        \App\Models\User::where('id', $agentId)
+            ->where('company_id', Auth::user()->company_id)
+            ->firstOrFail();
         if (empty($this->selectedTickets)) {
             return;
         }
 
-        Ticket::whereIn('id', $this->selectedTickets)->update(['assigned_to' => $agentId]);
+        Ticket::whereIn('id', $this->selectedTickets)->where('company_id', Auth::user()->company_id)->update(['assigned_to' => $agentId]);
 
         $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets assigned successfully', type: 'success');
         $this->selectedTickets = [];

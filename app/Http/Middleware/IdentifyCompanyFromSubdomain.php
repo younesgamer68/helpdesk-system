@@ -37,14 +37,16 @@ class IdentifyCompanyFromSubdomain
 
     private function getSubdomain(string $host): ?string
     {
-        // For .test domains (Herd/Valet)
-        if (str_contains($host, '.test')) {
-            // Split by dots
-            $parts = explode('.', $host);
-
-            // If we have subdomain.helpdesk-system.test (3 parts)
-            if (count($parts) === 3) {
-                return $parts[0]; // Return the subdomain
+        $baseDomain = config('app.domain');
+        if (! $baseDomain) {
+            return null;
+        }
+        $host = explode(':', $host)[0]; // strip port
+        $suffix = '.'.$baseDomain;
+        if (str_ends_with($host, $suffix)) {
+            $subdomain = substr($host, 0, strlen($host) - strlen($suffix));
+            if ($subdomain && ! str_contains($subdomain, '.')) {
+                return $subdomain;
             }
         }
 

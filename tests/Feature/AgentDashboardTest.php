@@ -2,6 +2,7 @@
 
 use App\Livewire\Dashboard\AgentDashboard;
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
@@ -23,12 +24,12 @@ function dashboardUser(string $role = 'agent'): array
 function dashboardTicket(Company $company, ?int $assignedTo = null, string $status = 'open', string $priority = 'medium'): Ticket
 {
     $category = TicketCategory::factory()->create(['company_id' => $company->id]);
+    $customer = Customer::factory()->create(['company_id' => $company->id]);
 
     return Ticket::create([
         'company_id' => $company->id,
         'ticket_number' => 'TKT-'.fake()->unique()->bothify('######'),
-        'customer_name' => fake()->name(),
-        'customer_email' => fake()->safeEmail(),
+        'customer_id' => $customer->id,
         'subject' => fake()->sentence(4),
         'description' => fake()->paragraph(),
         'category_id' => $category->id,

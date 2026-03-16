@@ -29,4 +29,9 @@ class SlaPolicy extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function rules()
+    {
+        return $this->hasMany(SlaPolicyRule::class, 'policy_id');
+    }
 }

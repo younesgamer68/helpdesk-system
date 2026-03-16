@@ -17,4 +17,9 @@ class KbArticleVersion extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

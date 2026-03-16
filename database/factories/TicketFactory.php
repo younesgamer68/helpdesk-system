@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
 use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -30,9 +31,7 @@ class TicketFactory extends Factory
         return [
             'company_id' => 1, // Will be overridden when called
             'ticket_number' => 'TKT-'.str_pad($this->faker->unique()->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
-            'customer_name' => $this->faker->name(),
-            'customer_email' => $this->faker->safeEmail(),
-            'customer_phone' => $this->faker->boolean(70) ? $this->faker->phoneNumber() : null,
+            'customer_id' => fn (array $attributes) => Customer::factory()->create(['company_id' => $attributes['company_id'] ?? 1])->id,
             'subject' => $this->generateSubject(),
             'description' => $this->generateDescription(),
             'status' => $status,

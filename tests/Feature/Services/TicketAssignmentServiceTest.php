@@ -16,9 +16,9 @@ test('assigns ticket to specialist with matching specialty', function () {
 
     $specialist = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $specialist->categories()->attach($category->id);
 
     $ticket = Ticket::factory()->create([
         'company_id' => $this->company->id,
@@ -39,7 +39,6 @@ test('assigns ticket to generalist when no specialist available', function () {
 
     $generalist = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => null,
         'is_available' => true,
     ]);
 
@@ -61,9 +60,9 @@ test('assigns ticket to operator with lowest workload', function () {
 
     $busyOperator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $busyOperator->categories()->attach($category->id);
 
     // Give busy operator 3 open tickets in the same category
     Ticket::factory()->count(3)->create([
@@ -76,9 +75,9 @@ test('assigns ticket to operator with lowest workload', function () {
 
     $freeOperator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $freeOperator->categories()->attach($category->id);
 
     // Give free operator 1 open ticket in the same category
     Ticket::factory()->create([
@@ -107,15 +106,15 @@ test('assigns to specialist with fewest open tickets in same category', function
 
     $operatorA = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryA->id,
         'is_available' => true,
     ]);
+    $operatorA->categories()->attach($categoryA->id);
 
     $operatorB = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryA->id,
         'is_available' => true,
     ]);
+    $operatorB->categories()->attach($categoryA->id);
 
     // Operator A has 3 open tickets in category A
     Ticket::factory()->count(3)->create([
@@ -160,17 +159,17 @@ test('uses round-robin when operators have equal category workload', function ()
 
     $operatorA = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
         'last_assigned_at' => now()->subHour(),
     ]);
+    $operatorA->categories()->attach($category->id);
 
     $operatorB = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
         'last_assigned_at' => null, // Never assigned → should go first
     ]);
+    $operatorB->categories()->attach($category->id);
 
     // Both have 0 open tickets in this category
     $ticket = Ticket::factory()->create([
@@ -191,10 +190,10 @@ test('updates last_assigned_at on assignment', function () {
 
     $operator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
         'last_assigned_at' => null,
     ]);
+    $operator->categories()->attach($category->id);
 
     $ticket = Ticket::factory()->create([
         'company_id' => $this->company->id,
@@ -214,24 +213,24 @@ test('distributes 3 tickets fairly across operators with same specialty', functi
     // Create 3 operators with the same specialty, all available, never assigned
     $operatorA = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
         'last_assigned_at' => null,
     ]);
+    $operatorA->categories()->attach($category->id);
 
     $operatorB = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
         'last_assigned_at' => null,
     ]);
+    $operatorB->categories()->attach($category->id);
 
     $operatorC = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
         'last_assigned_at' => null,
     ]);
+    $operatorC->categories()->attach($category->id);
 
     // Ticket 1 → should go to first available (all tied, DB order = A)
     $ticket1 = Ticket::factory()->create([
@@ -286,15 +285,14 @@ test('distributes 3 tickets fairly across operators with same specialty', functi
 test('does not assign to unavailable operators', function () {
     $category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
 
-    User::factory()->operator()->create([
+    $unavailableSpecialist = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => false,
     ]);
+    $unavailableSpecialist->categories()->attach($category->id);
 
     $availableGeneralist = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => null,
         'is_available' => true,
     ]);
 
@@ -381,9 +379,9 @@ test('auto-assigns ticket when verified via observer', function () {
 
     $operator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $operator->categories()->attach($category->id);
 
     // Create unverified ticket (won't be auto-assigned)
     $ticket = Ticket::factory()->create([
@@ -406,9 +404,9 @@ test('auto-assigns verified ticket on creation via observer', function () {
 
     $operator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $operator->categories()->attach($category->id);
 
     // Create verified ticket - should be auto-assigned immediately
     $ticket = Ticket::factory()->create([
@@ -431,9 +429,9 @@ test('does not auto-assign when ticket already has assignment', function () {
 
     $autoOperator = User::factory()->operator()->create([
         'company_id' => $this->company->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $autoOperator->categories()->attach($category->id);
 
     // Create ticket with manual assignment
     $ticket = Ticket::factory()->create([
@@ -452,11 +450,11 @@ test('only assigns to operators in same company', function () {
     $category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
 
     // Operator in different company
-    User::factory()->operator()->create([
+    $otherCompanyOperator = User::factory()->operator()->create([
         'company_id' => $otherCompany->id,
-        'specialty_id' => $category->id,
         'is_available' => true,
     ]);
+    $otherCompanyOperator->categories()->attach($category->id);
 
     $ticket = Ticket::factory()->create([
         'company_id' => $this->company->id,
@@ -479,54 +477,54 @@ test('assigns ticket matching specific constraints (available, online, <10 ticke
     $sara = User::factory()->operator()->create([
         'name' => 'Sara',
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryBilling->id,
         'is_available' => true,
         'status' => 'online',
         'assigned_tickets_count' => 2,
     ]);
+    $sara->categories()->attach([$categoryBilling->id, $categoryGeneral->id]);
     Ticket::factory()->count(2)->create(['company_id' => $this->company->id, 'category_id' => $categoryBilling->id, 'assigned_to' => $sara->id, 'status' => 'open', 'verified' => false]);
 
     // Ahmed : Technical, Disponible ✅, Tickets ouverts 1
     $ahmed = User::factory()->operator()->create([
         'name' => 'Ahmed',
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryTechnical->id,
         'is_available' => true,
         'status' => 'online',
         'assigned_tickets_count' => 1,
     ]);
+    $ahmed->categories()->attach($categoryTechnical->id);
     Ticket::factory()->count(1)->create(['company_id' => $this->company->id, 'category_id' => $categoryTechnical->id, 'assigned_to' => $ahmed->id, 'status' => 'open', 'verified' => false]);
 
     // Karim : Technical, Billing, Disponible ✅, Tickets ouverts 3
     $karim = User::factory()->operator()->create([
         'name' => 'Karim',
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryBilling->id,
         'is_available' => true,
         'status' => 'online',
         'assigned_tickets_count' => 3,
     ]);
+    $karim->categories()->attach([$categoryTechnical->id, $categoryBilling->id]);
     Ticket::factory()->count(3)->create(['company_id' => $this->company->id, 'category_id' => $categoryBilling->id, 'assigned_to' => $karim->id, 'status' => 'open', 'verified' => false]);
 
     // Fatima : General, Disponible ❌, Tickets ouverts 0
     $fatima = User::factory()->operator()->create([
         'name' => 'Fatima',
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryGeneral->id,
         'is_available' => false,
         'status' => 'offline',
         'assigned_tickets_count' => 0,
     ]);
+    $fatima->categories()->attach($categoryGeneral->id);
 
     // Bob : Billing, Disponible ✅, Tickets ouverts 10 (Should not be assigned because >= 10 tickets)
     $bob = User::factory()->operator()->create([
         'name' => 'Bob',
         'company_id' => $this->company->id,
-        'specialty_id' => $categoryBilling->id,
         'is_available' => true,
         'status' => 'online',
         'assigned_tickets_count' => 10,
     ]);
+    $bob->categories()->attach($categoryBilling->id);
     Ticket::factory()->count(10)->create(['company_id' => $this->company->id, 'category_id' => $categoryBilling->id, 'assigned_to' => $bob->id, 'status' => 'open', 'verified' => false]);
 
     $ticket = Ticket::factory()->create([

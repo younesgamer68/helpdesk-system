@@ -58,7 +58,7 @@ class AutoReplyRule implements RuleInterface
         $message = $actions['message'] ?? 'Thank you for your ticket. Our team will respond shortly.';
         $subject = $actions['subject'] ?? 'Re: '.$ticket->subject;
 
-        Mail::to($ticket->customer_email)
+        Mail::to($ticket->customer?->email ?? $ticket->customer_email)
             ->queue(new AutoReplyMail($ticket, $subject, $message));
     }
 }

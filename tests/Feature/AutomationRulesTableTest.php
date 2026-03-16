@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\Dashboard\AutomationRulesTable;
+use App\Livewire\Automation\AutomationRulesTable;
 use App\Models\AutomationRule;
 use App\Models\Company;
 use App\Models\TicketCategory;

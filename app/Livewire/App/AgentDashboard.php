@@ -54,6 +54,7 @@ class AgentDashboard extends Component
         return Ticket::query()
             ->where('assigned_to', Auth::id())
             ->whereIn('status', ['open', 'in_progress'])
+            ->with('customer:id,name,email,phone')
             ->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
             ->oldest()
             ->take(50)
@@ -66,6 +67,7 @@ class AgentDashboard extends Component
         return Ticket::query()
             ->where('assigned_to', Auth::id())
             ->whereDate('resolved_at', today())
+            ->with('customer:id,name,email,phone')
             ->latest('resolved_at')
             ->get();
     }
@@ -76,6 +78,7 @@ class AgentDashboard extends Component
         return Ticket::query()
             ->where('assigned_to', Auth::id())
             ->where('status', 'pending')
+            ->with('customer:id,name,email,phone')
             ->oldest()
             ->take(50)
             ->get();
@@ -87,6 +90,7 @@ class AgentDashboard extends Component
         return Ticket::query()
             ->where('assigned_to', Auth::id())
             ->whereNotIn('status', ['resolved', 'closed'])
+            ->with('customer:id,name,email,phone')
             ->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
             ->oldest()
             ->take(8)
@@ -99,7 +103,7 @@ class AgentDashboard extends Component
         return Ticket::query()
             ->whereNull('assigned_to')
             ->where('status', '!=', 'closed')
-            ->with('category:id,name')
+            ->with(['category:id,name', 'customer:id,name,email,phone'])
             ->latest()
             ->take(5)
             ->get();

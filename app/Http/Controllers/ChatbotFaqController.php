@@ -28,8 +28,8 @@ class ChatbotFaqController extends Controller
         $reply = $this->generateReply($validated['message']);
 
         Conversation::query()->create([
-            'user_message' => $validated['message'],
-            'bot_response' => $reply,
+            'user_message' => strip_tags($validated['message']),
+            'bot_response' => strip_tags($reply),
         ]);
 
         return response()->json(['reply' => $reply]);

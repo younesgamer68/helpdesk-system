@@ -1,14 +1,11 @@
-@props([
-    'reply',
-    'isInternal' => false,
-])
+@props(['reply', 'isInternal' => false])
 
 @php
     $user = $reply->user;
     $isCustomer = !$reply->user_id;
     $senderName = $isCustomer ? $reply->customer_name : $user->name;
     $initials = strtoupper(substr($senderName, 0, 1));
-    
+
     $bgClass = 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700/50';
     $badgeClass = '';
     $badgeText = '';
@@ -32,7 +29,8 @@
 
 <div class="flex gap-4">
     <div class="flex-shrink-0">
-        <div class="w-10 h-10 rounded-full {{ $avatarBg }} flex items-center justify-center text-white font-semibold shadow-sm">
+        <div
+            class="w-10 h-10 rounded-full {{ $avatarBg }} flex items-center justify-center text-white font-semibold shadow-sm">
             {{ $initials }}
         </div>
     </div>
@@ -43,29 +41,33 @@
                     <div class="font-semibold text-zinc-900 dark:text-zinc-100">
                         {{ $senderName }}
                         @if (!$isCustomer && $user && $user->id === auth()->id())
-                             <span class="text-xs text-zinc-500 dark:text-zinc-400 font-normal">(you)</span>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400 font-normal">(you)</span>
                         @elseif (!$isCustomer && $user)
-                             <span class="text-xs text-zinc-500 dark:text-zinc-400 font-normal">({{ $user->username ?? $user->email }})</span>
+                            <span
+                                class="text-xs text-zinc-500 dark:text-zinc-400 font-normal">({{ $user->username ?? $user->email }})</span>
                         @endif
                     </div>
                     <div class="text-xs text-zinc-500 dark:text-zinc-400">
                         {{ $reply->created_at->format('M d, Y g:i A') }}
                     </div>
                 </div>
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border {{ $badgeClass }}">
+                <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border {{ $badgeClass }}">
                     {{ $badgeText }}
                 </span>
             </div>
             <div class="prose prose-sm prose-zinc dark:prose-invert max-w-none mt-1 text-zinc-600 dark:text-zinc-300">
-                {!! clean($reply->message) !!}
+                {!! \Mews\Purifier\Facades\Purifier::clean($reply->message) !!}
             </div>
 
-            @if($reply->attachments)
+            @if ($reply->attachments)
                 <div class="mt-4 flex flex-wrap gap-2">
-                    @foreach($reply->attachments as $attachment)
-                        <a href="{{ Storage::url($attachment['path']) }}" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs text-zinc-600 dark:text-zinc-300 hover:border-teal-500 transition shadow-sm">
+                    @foreach ($reply->attachments as $attachment)
+                        <a href="{{ Storage::url($attachment['path']) }}" target="_blank"
+                            class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs text-zinc-600 dark:text-zinc-300 hover:border-teal-500 transition shadow-sm">
                             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                             </svg>
                             {{ $attachment['name'] }}
                         </a>

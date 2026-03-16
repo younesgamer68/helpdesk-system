@@ -64,7 +64,7 @@ it('scopes company-owned models to the authenticated users company', function ()
     tenantAgent($companyA);
     tenantAgent($companyB);
 
-    Customer::query()->create([
+    $customerA = Customer::query()->create([
         'company_id' => $companyA->id,
         'name' => 'Alpha Customer',
         'email' => 'alpha@example.test',
@@ -72,7 +72,7 @@ it('scopes company-owned models to the authenticated users company', function ()
         'is_active' => true,
     ]);
 
-    Customer::query()->create([
+    $customerB = Customer::query()->create([
         'company_id' => $companyB->id,
         'name' => 'Beta Customer',
         'email' => 'beta@example.test',
@@ -83,8 +83,8 @@ it('scopes company-owned models to the authenticated users company', function ()
     tenantCategory($companyA, 'Alpha Category');
     tenantCategory($companyB, 'Beta Category');
 
-    tenantTicket($companyA, ['subject' => 'Alpha ticket']);
-    tenantTicket($companyB, ['subject' => 'Beta ticket']);
+    tenantTicket($companyA, ['subject' => 'Alpha ticket', 'customer_id' => $customerA->id]);
+    tenantTicket($companyB, ['subject' => 'Beta ticket', 'customer_id' => $customerB->id]);
 
     actingAs($adminA);
 
@@ -126,6 +126,7 @@ it('keeps the admin dashboard isolated to the authenticated company', function (
     TicketLog::create([
         'ticket_id' => $ticketA->id,
         'user_id' => $adminA->id,
+        'company_id' => $companyA->id,
         'action' => 'created',
         'description' => 'Alpha activity log',
     ]);
@@ -133,6 +134,7 @@ it('keeps the admin dashboard isolated to the authenticated company', function (
     TicketLog::create([
         'ticket_id' => $ticketB->id,
         'user_id' => $adminB->id,
+        'company_id' => $companyB->id,
         'action' => 'created',
         'description' => 'Beta activity log',
     ]);

@@ -91,9 +91,6 @@ class WidgetController extends Controller
             'company_id' => $widget->company_id,
             'customer_id' => $customer->id,
             'ticket_number' => $ticketNumber,
-            'customer_name' => $validated['customer_name'],
-            'customer_email' => $validated['customer_email'],
-            'customer_phone' => $validated['customer_phone'] ?? null,
             'subject' => $validated['subject'],
             'description' => $validated['description'],
             'category_id' => $validated['category_id'] ?? null,
@@ -144,12 +141,12 @@ class WidgetController extends Controller
         // Mark as verified
         $ticket->update([
             'verified' => true,
-            'verification_token' => null, // Clear the token
+            'verification_token' => null, // Clear the verification token
         ]);
 
-        // Generate tracking token (different from verification token)
+        // Generate tracking token in its own dedicated column
         $trackingToken = Str::random(64);
-        $ticket->update(['verification_token' => $trackingToken]); // Reuse the column for tracking
+        $ticket->update(['tracking_token' => $trackingToken]);
 
         // Send tracking email
         Mail::to($ticket->customer_email)->send(new TicketVerified($ticket, $trackingToken));
@@ -164,7 +161,7 @@ class WidgetController extends Controller
     {
         $ticket = Ticket::where('ticket_number', $ticketNumber)
             ->where('company_id', $company->id)
-            ->where('verification_token', $token)
+            ->where('tracking_token', $token)
             ->where('verified', true)
             ->with(['category', 'company'])
             ->firstOrFail();
@@ -186,7 +183,7 @@ class WidgetController extends Controller
     {
         $ticket = Ticket::where('ticket_number', $ticketNumber)
             ->where('company_id', $company->id)
-            ->where('verification_token', $token)
+            ->where('tracking_token', $token)
             ->where('verified', true)
             ->firstOrFail();
 

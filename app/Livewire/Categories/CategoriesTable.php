@@ -35,8 +35,6 @@ class CategoriesTable extends Component
 
     public $description = '';
 
-    public $color = '#0F766E';
-
     public $default_priority = 'medium';
 
     protected function rules(): array
@@ -50,7 +48,6 @@ class CategoriesTable extends Component
         return [
             'name' => ['required', 'string', 'max:255', $uniqueRule],
             'description' => 'nullable|string|max:1000',
-            'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'default_priority' => 'required|in:low,medium,high,urgent',
         ];
     }
@@ -112,7 +109,6 @@ class CategoriesTable extends Component
             'company_id' => Auth::user()->company_id,
             'name' => $this->name,
             'description' => $this->description,
-            'color' => $this->color,
             'default_priority' => $this->default_priority,
         ]);
 
@@ -129,7 +125,6 @@ class CategoriesTable extends Component
         $this->editingCategoryId = $category->id;
         $this->name = $category->name;
         $this->description = $category->description ?? '';
-        $this->color = $category->color ?? '#0F766E';
         $this->default_priority = $category->default_priority;
         $this->showEditModal = true;
         $this->resetValidation();
@@ -152,7 +147,6 @@ class CategoriesTable extends Component
         $category->update([
             'name' => $this->name,
             'description' => $this->description,
-            'color' => $this->color,
             'default_priority' => $this->default_priority,
         ]);
 
@@ -190,7 +184,6 @@ class CategoriesTable extends Component
     {
         $this->name = '';
         $this->description = '';
-        $this->color = '#0F766E';
         $this->default_priority = 'medium';
         $this->editingCategoryId = null;
     }

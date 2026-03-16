@@ -7,13 +7,14 @@
 
         {{-- Main Content Grid --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
+
             {{-- Left Column - Content Tabs --}}
             <div class="lg:col-span-2 space-y-6" x-data="{ activeTab: 'conversation' }">
-                
+
                 {{-- Tab Switcher --}}
                 <div class="flex items-center justify-between mb-4">
-                    <div class="flex space-x-1 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg w-full max-w-[320px]">
+                    <div
+                        class="flex space-x-1 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg w-full max-w-[320px]">
                         <button @click="activeTab = 'conversation'"
                             :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'conversation' }"
                             class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
@@ -38,28 +39,22 @@
 
                 {{-- Conversation Tab --}}
                 <div x-show="activeTab === 'conversation'" class="space-y-6">
-                    @if($showSummary)
+                    @if ($showSummary)
                         <x-app.tickets.ai-summary />
                     @endif
-                    
-                    <x-app.tickets.conversation 
-                        :replies="$replies" 
-                        :ticket="$ticket" 
-                        :senderId="$senderId" 
-                        :showAiSuggestion="$showAiSuggestion" 
-                        :aiTone="$aiTone" 
-                        :attachments="$attachments" 
-                    />
+
+                    <x-app.tickets.conversation :replies="$this->replies" :ticket="$ticket" :senderId="$senderId" :showAiSuggestion="$showAiSuggestion"
+                        :aiTone="$aiTone" :attachments="$attachments" />
                 </div>
 
                 {{-- Internal Notes Tab --}}
                 <div x-show="activeTab === 'internal-notes'" style="display: none;">
-                    <x-app.tickets.internal-notes :notes="$internal_notes" :ticket="$ticket" />
+                    <x-app.tickets.internal-notes :notes="$this->internalNotes" :ticket="$ticket" />
                 </div>
 
                 {{-- Activity Logs Tab --}}
                 <div x-show="activeTab === 'logs'" style="display: none;">
-                    <x-app.tickets.activity-log :logs="$logs" />
+                    <x-app.tickets.activity-log :logs="$this->ticketLogs" />
                 </div>
             </div>
 

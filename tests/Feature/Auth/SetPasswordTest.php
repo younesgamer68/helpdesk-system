@@ -19,14 +19,14 @@ it('redirects pending users to the set password screen during login', function (
         'password' => 'anything', // It shouldn't matter since password is null
     ]);
 
-    $response->assertRedirect(route('set-password'));
+    $response->assertRedirect(route('set-password', ['company' => $company->slug]));
 
     // Check that the email was stored in the session
     $this->assertEquals($user->email, session('pending_user_email'));
 });
 
 it('blocks access to set password screen if no pending email in session', function () {
-    Livewire::test(SetPassword::class)
+    $this->get(route('set-password'))
         ->assertRedirect(route('login'));
 });
 

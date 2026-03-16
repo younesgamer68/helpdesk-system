@@ -109,7 +109,6 @@ test('automation engine sends auto reply email', function () {
 
     $ticket = Ticket::factory()->create([
         'company_id' => $company->id,
-        'customer_email' => 'customer@example.com',
         'verified' => true,
         'created_at' => now(),
     ]);
@@ -474,7 +473,6 @@ test('auto reply rule does not send email for unverified ticket', function () {
 
     $ticket = Ticket::withoutEvents(fn () => Ticket::factory()->create([
         'company_id' => $company->id,
-        'customer_email' => 'customer@example.com',
         'verified' => false,
     ]));
 
@@ -495,7 +493,6 @@ test('auto reply rule does nothing when send_email is false', function () {
 
     $ticket = Ticket::factory()->create([
         'company_id' => $company->id,
-        'customer_email' => 'customer@example.com',
         'verified' => true,
         'created_at' => now(),
     ]);
@@ -518,7 +515,6 @@ test('auto reply rule filters by priority condition', function () {
     // Low priority ticket should NOT get auto reply
     $ticket = Ticket::factory()->create([
         'company_id' => $company->id,
-        'customer_email' => 'customer@example.com',
         'priority' => 'low',
         'verified' => true,
         'created_at' => now(),

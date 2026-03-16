@@ -38,25 +38,32 @@ class AiChatWidget extends Component
 
     public function loadConversationList(): void
     {
-        $ids = Session::get('chat_conversation_ids', []);
-
-        if (empty($ids)) {
+        if (! Auth::check()) {
             $this->conversations = [];
 
             return;
         }
 
         $this->conversations = DB::table('agent_conversations')
-            ->whereIn('id', $ids)
+            ->where('user_id', Auth::id())
+            ->where(function ($q) {
+                if (Auth::user()->company_id) {
+                    $q->where('company_id', Auth::user()->company_id);
+                }
+            })
             ->orderByDesc('updated_at')
+            ->limit(20)
             ->get()
             ->map(function ($conv) {
                 $firstMessageContent = DB::table('agent_conversation_messages')
                     ->where('conversation_id', $conv->id)
+                    ->where('role', 'user')
                     ->orderBy('created_at', 'asc')
                     ->value('content');
 
-                $preview = $firstMessageContent ? \Illuminate\Support\Str::limit((string) $firstMessageContent, 60) : 'Welcome to the Helpdesk System!';
+                $preview = $firstMessageContent
+                    ? \Illuminate\Support\Str::limit((string) $firstMessageContent, 60)
+                    : 'New conversation';
 
                 return [
                     'id' => $conv->id,
@@ -132,11 +139,6 @@ class AiChatWidget extends Component
         DB::table('agent_conversation_messages')->where('conversation_id', $id)->delete();
         DB::table('agent_conversations')->where('id', $id)->delete();
 
-        // Remove from session
-        $ids = Session::get('chat_conversation_ids', []);
-        $ids = array_filter($ids, fn ($convId) => $convId !== $id);
-        Session::put('chat_conversation_ids', array_values($ids));
-
         // If the deleted conversation is currently active, clear state
         if ($this->conversationId === $id) {
             $this->conversationId = null;
@@ -188,6 +190,7 @@ class AiChatWidget extends Component
                 DB::table('agent_conversations')->insert([
                     'id' => $this->conversationId,
                     'user_id' => $participant->id ?? null,
+                    'company_id' => Auth::user()?->company_id,
                     'title' => \Illuminate\Support\Str::limit($message, 50),
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -211,11 +214,6 @@ class AiChatWidget extends Component
                 ]);
 
                 Session::put('chat_conversation_id', $this->conversationId);
-                $ids = Session::get('chat_conversation_ids', []);
-                if (! in_array($this->conversationId, $ids)) {
-                    $ids[] = $this->conversationId;
-                    Session::put('chat_conversation_ids', $ids);
-                }
                 Session::save();
             }
 

@@ -20,7 +20,6 @@ class TicketCategoryFactory extends Factory
             'company_id' => 1,
             'name' => fake()->unique()->randomElement($categories),
             'description' => fake()->sentence(),
-            'color' => fake()->hexColor(),
             'default_priority' => fake()->randomElement(['low', 'medium', 'high', 'urgent']),
         ];
     }

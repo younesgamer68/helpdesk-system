@@ -28,9 +28,9 @@ class Wizard extends Component
 
     // Step 2: Categories
     public array $categories = [
-        ['name' => 'General Support', 'color' => '#3b82f6'],
-        ['name' => 'Billing', 'color' => '#10b981'],
-        ['name' => 'Technical', 'color' => '#ef4444'],
+        ['name' => 'General Support'],
+        ['name' => 'Billing'],
+        ['name' => 'Technical'],
     ];
 
     // Step 3: Invite Team
@@ -84,7 +84,6 @@ class Wizard extends Component
             $this->validate([
                 'categories' => 'required|array|min:1',
                 'categories.*.name' => 'required|string|max:255',
-                'categories.*.color' => 'required|string',
             ]);
         }
 
@@ -136,7 +135,6 @@ class Wizard extends Component
                 if (! empty($categoryData['name'])) {
                     $company->categories()->create([
                         'name' => $categoryData['name'],
-                        'color' => $categoryData['color'] ?? '#3b82f6',
                     ]);
                 }
             }
@@ -161,7 +159,7 @@ class Wizard extends Component
 
     public function addCategory(): void
     {
-        $this->categories[] = ['name' => '', 'color' => '#3b82f6'];
+        $this->categories[] = ['name' => ''];
     }
 
     public function removeCategory($index): void
@@ -208,7 +206,7 @@ class Wizard extends Component
         foreach ($this->categories as $categoryData) {
             $company->categories()->updateOrCreate(
                 ['name' => $categoryData['name']],
-                ['color' => $categoryData['color']]
+                []
             );
         }
 

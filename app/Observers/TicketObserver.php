@@ -48,7 +48,10 @@ class TicketObserver
      */
     private function calculateSlaDueTime(Ticket $ticket): ?\Carbon\CarbonInterface
     {
-        $policy = $ticket->company ? $ticket->company->slaPolicy : null;
+        $policy = null;
+        if ($ticket->company_id) {
+            $policy = \App\Models\SlaPolicy::where('company_id', $ticket->company_id)->first();
+        }
 
         if ($policy && ! $policy->is_enabled) {
             return null; // SLA monitoring disabled

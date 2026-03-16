@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\Dashboard\CategoriesTable;
+use App\Livewire\Categories\CategoriesTable;
 use App\Models\Company;
 use App\Models\TicketCategory;
 use App\Models\User;
@@ -52,7 +52,6 @@ test('admin can create a new category', function () {
     Livewire::test(CategoriesTable::class)
         ->set('name', 'Hardware')
         ->set('description', 'Hardware related issues')
-        ->set('color', '#FF5733')
         ->set('default_priority', 'high')
         ->call('createCategory')
         ->assertDispatched('show-toast');
@@ -61,7 +60,6 @@ test('admin can create a new category', function () {
         'company_id' => $company->id,
         'name' => 'Hardware',
         'description' => 'Hardware related issues',
-        'color' => '#FF5733',
         'default_priority' => 'high',
     ]);
 });
@@ -111,7 +109,6 @@ test('category name must be unique per company', function () {
 
     Livewire::test(CategoriesTable::class)
         ->set('name', 'Existing')
-        ->set('color', '#0F766E')
         ->set('default_priority', 'medium')
         ->call('createCategory')
         ->assertHasErrors(['name']);

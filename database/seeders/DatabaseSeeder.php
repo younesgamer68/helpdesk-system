@@ -67,7 +67,6 @@ class DatabaseSeeder extends Seeder
             'company_id' => $company->id,
             'name' => 'Hardware Issues',
             'description' => 'Problems with physical devices',
-            'color' => '#ef4444',
             'default_priority' => 'high',
         ]);
 
@@ -75,7 +74,6 @@ class DatabaseSeeder extends Seeder
             'company_id' => $company->id,
             'name' => 'Software Bugs',
             'description' => 'Software errors and bugs',
-            'color' => '#f59e0b',
             'default_priority' => 'medium',
         ]);
 
@@ -83,7 +81,6 @@ class DatabaseSeeder extends Seeder
             'company_id' => $company->id,
             'name' => 'General Questions',
             'description' => 'General inquiries and questions',
-            'color' => '#10b981',
             'default_priority' => 'low',
         ]);
 
@@ -91,7 +88,6 @@ class DatabaseSeeder extends Seeder
             'company_id' => $company->id,
             'name' => 'UI Issues',
             'description' => 'Looks and views issues',
-            'color' => '#10b901',
             'default_priority' => 'low',
         ]);
 

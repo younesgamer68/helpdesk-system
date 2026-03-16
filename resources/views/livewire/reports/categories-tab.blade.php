@@ -13,8 +13,7 @@
 
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full"
-                                style="background-color: {{ $item['category']->color ?? '#14b8a6' }}"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-teal-500"></div>
                             <span
                                 class="font-medium text-sm text-zinc-900 dark:text-zinc-100">{{ $item['category']->name }}</span>
                         </div>
@@ -72,8 +71,7 @@
 
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full"
-                                style="background-color: {{ $item['category']->color ?? '#14b8a6' }}"></div>
+                            <div class="w-2 h-2 rounded-full bg-teal-500"></div>
                             <span
                                 class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $item['category']->name }}</span>
                         </div>
@@ -88,8 +86,8 @@
 
                         <div class="overflow-y-auto flex-1 space-y-4">
                             <div>
-                                <h4 class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Top
-                                    Agents</h4>
+                                {{-- prettier-ignore --}}
+                                <h4 class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Top Agents</h4>
                                 @forelse($details['agents'] as $topAgent)
                                     <div class="flex items-center gap-2 py-1">
                                         <div

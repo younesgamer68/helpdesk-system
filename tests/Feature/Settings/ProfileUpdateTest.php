@@ -1,17 +1,22 @@
 <?php
 
 use App\Livewire\Settings\Profile;
+use App\Models\Company;
 use App\Models\User;
 use Livewire\Livewire;
 
 test('profile page is displayed', function () {
-    $this->actingAs($user = User::factory()->create());
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
-    $this->get('/settings/profile')->assertOk();
+    $this->actingAs($user);
+
+    $this->get("http://{$company->slug}.".config('app.domain').'/settings/profile')->assertOk();
 });
 
 test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $this->actingAs($user);
 
@@ -30,7 +35,8 @@ test('profile information can be updated', function () {
 });
 
 test('email verification status is unchanged when email address is unchanged', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $this->actingAs($user);
 
@@ -45,7 +51,8 @@ test('email verification status is unchanged when email address is unchanged', f
 });
 
 test('user can delete their account', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $this->actingAs($user);
 
@@ -57,12 +64,13 @@ test('user can delete their account', function () {
         ->assertHasNoErrors()
         ->assertRedirect('/');
 
-    expect($user->fresh())->toBeNull();
+    $this->assertSoftDeleted('users', ['id' => $user->id]);
     expect(auth()->check())->toBeFalse();
 });
 
 test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
 
     $this->actingAs($user);
 

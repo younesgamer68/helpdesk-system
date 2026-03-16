@@ -46,6 +46,16 @@ class Company extends Model
         return $this->hasMany(KbArticle::class, foreignKey: 'company_id');
     }
 
+    public function tenantConfig()
+    {
+        return $this->hasOne(TenantConfig::class);
+    }
+
+    public function slaPolicy()
+    {
+        return $this->hasOne(SlaPolicy::class);
+    }
+
     protected function casts(): array
     {
         return [

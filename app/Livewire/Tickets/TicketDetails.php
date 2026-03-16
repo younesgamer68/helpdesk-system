@@ -15,10 +15,12 @@ use App\Notifications\TicketReassigned;
 use App\Notifications\TicketStatusChanged;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Mews\Purifier\Facades\Purifier;
 
 #[Layout('layouts.app.sidebar')]
 class TicketDetails extends Component
@@ -60,7 +62,7 @@ class TicketDetails extends Component
 
     public function mount(Ticket $ticket)
     {
-        $this->ticket = $ticket->load(['assignedTo:id,name,email', 'category:id,name,description', 'replies.user']);
+        $this->ticket = $ticket->load(['assignedTo:id,name,email', 'category:id,name,description', 'replies.user', 'customer:id,name,email,phone']);
         $this->state = $ticket->status;
     }
 
@@ -82,9 +84,41 @@ class TicketDetails extends Component
         return $query->get(['id', 'name', 'email']);
     }
 
+    #[Computed]
+    public function replies(): \Illuminate\Database\Eloquent\Collection
+    {
+        return TicketReply::query()
+            ->where('ticket_id', $this->ticket->id)
+            ->where('is_internal', false)
+            ->with('user:id,name')
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+
+    #[Computed]
+    public function internalNotes(): \Illuminate\Database\Eloquent\Collection
+    {
+        return TicketReply::query()
+            ->where('ticket_id', $this->ticket->id)
+            ->where('is_internal', true)
+            ->with('user:id,name')
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+
+    #[Computed]
+    public function ticketLogs(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->ticket->logs()
+            ->with('user:id,name')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
     private function logAction($action, $description)
     {
         TicketLog::create([
+            'company_id' => $this->ticket->company_id,
             'ticket_id' => $this->ticket->id,
             'user_id' => Auth::id(),
             'action' => $action,
@@ -298,22 +332,32 @@ class TicketDetails extends Component
             }
         }
 
-        $userId = $this->senderId ?: Auth::id();
+        $userId = Auth::id();
+        if ($this->senderId) {
+            $validSender = \App\Models\User::where('id', $this->senderId)
+                ->where('company_id', Auth::user()->company_id)
+                ->exists();
+            if ($validSender) {
+                $userId = $this->senderId;
+            } else {
+                $this->senderId = null;
+            }
+        }
 
         $reply = TicketReply::create([
             'ticket_id' => $this->ticket->id,
             'user_id' => $userId,
-            'customer_name' => $this->ticket->customer_name,
-            'message' => clean($this->message),
+            'customer_name' => $this->ticket->customer?->name ?? $this->ticket->getCustomerNameAttribute(),
+            'message' => Purifier::clean($this->message),
             'is_internal' => false,
             'is_technician' => false,
             'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
         ]);
 
         // Notify customer with tracking link when agent replies to a verified ticket
-        if ($this->ticket->verified && $this->ticket->verification_token && $this->ticket->customer_email) {
+        if ($this->ticket->verified && $this->ticket->tracking_token && $this->ticket->customer?->email) {
             $this->ticket->load('company');
-            Mail::to($this->ticket->customer_email)->send(new AgentRepliedToTicket($this->ticket, $reply));
+            Mail::to($this->ticket->customer?->email)->send(new AgentRepliedToTicket($this->ticket, $reply));
         }
 
         // TRIGGER 2: Agent sends a reply
@@ -356,11 +400,10 @@ class TicketDetails extends Component
         $this->aiLoading = true;
         $this->showAiSuggestion = true;
 
-        $context = "Company name: Example Helpdesk\n";
+        $context = `Company name:` + Auth::user()->company->name + `\n`;
         $context .= 'Ticket category: '.($this->ticket->category->name ?? 'None')."\n";
         $context .= 'Ticket priority: '.$this->ticket->priority."\n";
-        $context .= 'Customer name: '.($this->ticket->customer->name ?? 'Unknown')."\n";
-        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
+$       context .= 'Customer name: '.($this->ticket->customer?->name ?? 'Unknown')."\n";        $context .= "Original ticket description:\n".$this->ticket->description."\n\n";
         $context .= "Full conversation history:\n";
 
         foreach ($this->ticket->replies as $reply) {
@@ -511,8 +554,8 @@ class TicketDetails extends Component
         TicketReply::create([
             'ticket_id' => $this->ticket->id,
             'user_id' => Auth::id(),
-            'customer_name' => $this->ticket->customer_name,
-            'message' => $this->internalNote,
+            'customer_name' => $this->ticket->customer?->name ?? '',
+            'message' => Purifier::clean($this->internalNote),
             'is_internal' => true,
             'is_technician' => false,
             'attachments' => null,
@@ -534,22 +577,6 @@ class TicketDetails extends Component
             'ticket' => $this->ticket,
             'state' => $this->state,
             'agents' => $this->agents(),
-            'replies' => TicketReply::query()
-                ->where('ticket_id', '=', $this->ticket->id)
-                ->where('is_internal', '=', false)
-                ->with('user:id,name')
-                ->orderBy('created_at', 'asc')
-                ->get(),
-            'internal_notes' => TicketReply::query()
-                ->where('ticket_id', '=', $this->ticket->id)
-                ->where('is_internal', '=', true)
-                ->with('user:id,name')
-                ->orderBy('created_at', 'asc')
-                ->get(),
-            'logs' => $this->ticket->logs()
-                ->with('user:id,name')
-                ->orderBy('created_at', 'desc')
-                ->get(),
         ]);
     }
 }

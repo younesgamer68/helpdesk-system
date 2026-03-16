@@ -1,7 +1,7 @@
 <?php
 
-use App\Livewire\Dashboard\NotificationsPage;
 use App\Livewire\NotificationBell;
+use App\Livewire\Notifications\NotificationsPage;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\User;

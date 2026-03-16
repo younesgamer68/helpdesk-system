@@ -76,7 +76,7 @@ class TicketAssignmentService
             ->available()
             ->online()
             ->where('assigned_tickets_count', '<', 10)
-            ->whereNull('specialty_id')
+            ->whereDoesntHave('categories')
             ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
                 $query->whereNotIn('status', ['resolved', 'closed']);
             }])

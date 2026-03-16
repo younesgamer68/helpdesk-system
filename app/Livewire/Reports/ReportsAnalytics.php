@@ -843,7 +843,7 @@ class ReportsAnalytics extends Component
         $query = Ticket::where('company_id', $this->companyId())
             ->whereDate('created_at', '>=', $this->startDate)
             ->whereDate('created_at', '<=', $this->endDate)
-            ->with(['assignedTo:id,name', 'category:id,name']);
+            ->with(['assignedTo:id,name', 'category:id,name', 'customer:id,name,email']);
 
         if ($this->filterStatus) {
             $query->where('status', $this->filterStatus);
@@ -861,7 +861,10 @@ class ReportsAnalytics extends Component
             $query->where(function ($q) {
                 $q->where('ticket_number', 'like', "%{$this->ticketSearch}%")
                     ->orWhere('subject', 'like', "%{$this->ticketSearch}%")
-                    ->orWhere('customer_name', 'like', "%{$this->ticketSearch}%");
+                    ->orWhereHas('customer', function ($q) {
+                        $q->where('name', 'like', "%{$this->ticketSearch}%")
+                            ->orWhere('email', 'like', "%{$this->ticketSearch}%");
+                    });
             });
         }
 
@@ -878,7 +881,7 @@ class ReportsAnalytics extends Component
         $query = Ticket::where('company_id', $this->companyId())
             ->whereDate('created_at', '>=', $this->startDate)
             ->whereDate('created_at', '<=', $this->endDate)
-            ->with(['assignedTo', 'category']);
+            ->with(['assignedTo', 'category', 'customer:id,name,email']);
 
         if ($this->filterStatus) {
             $query->where('status', $this->filterStatus);
@@ -928,8 +931,8 @@ class ReportsAnalytics extends Component
                     fputcsv($handle, [
                         $ticket->ticket_number ?? '',
                         $ticket->subject ?? '',
-                        $ticket->customer_name ?? '',
-                        $ticket->customer_email ?? '',
+                        $ticket->customer?->name ?? '',
+                        $ticket->customer?->email ?? '',
                         $ticket->category?->name ?? '',
                         $ticket->priority ?? '',
                         $ticket->status ?? '',
