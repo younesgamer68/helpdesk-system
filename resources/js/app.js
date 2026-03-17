@@ -5,8 +5,10 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import html2canvas from "html2canvas-oklch";
 import { jsPDF } from "jspdf";
+import Chart from "chart.js/auto";
 window.html2canvas = html2canvas;
 window.jspdf = { jsPDF };
+window.Chart = Chart;
 
 document.addEventListener("livewire:init", () => {
     Livewire.hook("morph.morphed", ({ el, component }) => {
