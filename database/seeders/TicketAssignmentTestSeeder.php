@@ -15,7 +15,7 @@ class TicketAssignmentTestSeeder extends Seeder
     {
         $company = Company::firstOrCreate(
             ['name' => 'Test Company'],
-            ['slug' => 'test-company']
+            ['slug' => 'test-company', 'email' => 'test@testcompany.com']
         );
 
         $billingCategory = TicketCategory::firstOrCreate([
