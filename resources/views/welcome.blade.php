@@ -42,8 +42,7 @@
     {{-- ═══════════════════════════════════════════════════════════════════
     HERO — Minimal centered w/ headline, email form, privacy note
     ═══════════════════════════════════════════════════════════════════ --}}
-    <section id="hero-section" class="relative z-0 overflow-hidden"
-        x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }" style="opacity: 0;">
+    <section id="hero-section" class="relative z-0 overflow-hidden" x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }" style="opacity: 0;">
         {{-- Background wave — dark mode only --}}
 
 
@@ -78,7 +77,8 @@
                             class="inline-flex items-center gap-2 rounded-full bg-green-600 px-8 py-4 text-[1.05rem] font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-green-500 hover:shadow-xl">
                             <span x-text="$store.ui.t('heroDashboard')"></span>
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </a>
                     </div>
@@ -99,9 +99,9 @@
                                                                     ">
                         <input type="email" x-model="heroEmail"
                             class="w-full flex-1 rounded-lg border px-5 py-4 text-base outline-none transition-colors duration-200 sm:w-auto sm:px-6 sm:py-[15px] sm:text-[17px]"
-                            :class="$store.ui.darkMode
-                                                                            ? 'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20'
-                                                                            : 'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
+                            :class="$store.ui.darkMode ?
+                                'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20' :
+                                'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
                             :placeholder="$store.ui.t('heroPlaceholder')" />
                         <button type="submit"
                             class="w-full flex-shrink-0 cursor-pointer rounded-full bg-[#5EDB56] px-8 py-4 text-base font-bold text-white transition hover:bg-green-500 sm:w-auto sm:px-[30px] sm:py-[15px] sm:text-[17px]"
@@ -179,19 +179,21 @@
 
     {{-- Script for smooth entrance + scroll animations --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // ── Clear navbar animation after it finishes (removes stacking context from transform) ──
-            document.querySelectorAll('.navbar-animate').forEach(function (el) {
-                el.addEventListener('animationend', function () {
+            document.querySelectorAll('.navbar-animate').forEach(function(el) {
+                el.addEventListener('animationend', function() {
                     el.style.animation = 'none';
                     el.style.opacity = '1';
-                }, { once: true });
+                }, {
+                    once: true
+                });
             });
 
             // ── Hero section fade-in ──
             var hero = document.getElementById('hero-section');
             if (hero) {
-                setTimeout(function () {
+                setTimeout(function() {
                     hero.style.transition = 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
                     hero.style.opacity = '1';
                 }, 250);
@@ -201,25 +203,27 @@
             var scene = document.querySelector('.scene');
             if (!scene) return;
 
-            var observer = new IntersectionObserver(function (entries) {
+            var observer = new IntersectionObserver(function(entries) {
                 if (entries[0].isIntersecting) {
                     observer.disconnect();
 
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(function () {
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() {
                             scene.classList.add('show-center');
 
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 scene.classList.add('show-near');
                             }, 800);
 
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 scene.classList.add('show-far');
                             }, 1000);
                         });
                     });
                 }
-            }, { threshold: 0.15 });
+            }, {
+                threshold: 0.15
+            });
 
             observer.observe(scene);
         });
@@ -249,7 +253,8 @@
 
         <div class="mx-auto flex w-full max-w-6xl flex-col items-center">
             <div class="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-                :class="$store.ui.darkMode ? 'border-white/15 bg-white/5 text-white/75' : 'border-gray-200 bg-gray-100 text-gray-600'">
+                :class="$store.ui.darkMode ? 'border-white/15 bg-white/5 text-white/75' :
+                    'border-gray-200 bg-gray-100 text-gray-600'">
                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                 <span class="text-[11px] font-semibold uppercase tracking-[0.24em]">Discover HelpDesk</span>
             </div>
@@ -280,7 +285,8 @@
 
             {{-- Title --}}
             <h2 class="mb-4 text-center font-[Playfair_Display,ui-serif,Georgia,serif] text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl"
-                :class="$store.ui.darkMode ? 'text-white' : 'text-gray-950'" x-text="$store.ui.t('discoverTitle')"></h2>
+                :class="$store.ui.darkMode ? 'text-white' : 'text-gray-950'" x-text="$store.ui.t('discoverTitle')">
+            </h2>
 
             <p class="mb-12 max-w-3xl text-center text-base leading-relaxed sm:text-lg"
                 :class="$store.ui.darkMode ? 'text-white/60' : 'text-gray-600'">
@@ -295,19 +301,20 @@
                     <template x-for="tab in tabs" :key="tab">
                         <button type="button"
                             class="group relative cursor-pointer rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300"
-                            :class="activeTab === tab
-                                ? ($store.ui.darkMode
-                                    ? 'bg-white text-gray-900 shadow-[0_10px_30px_-14px_rgba(255,255,255,0.95)]'
-                                    : 'bg-gray-900 text-white shadow-[0_10px_24px_-14px_rgba(0,0,0,0.5)]')
-                                : ($store.ui.darkMode
-                                    ? 'text-white/65 hover:bg-white/10 hover:text-white'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900')" @click="activeTab = tab">
+                            :class="activeTab === tab ?
+                                ($store.ui.darkMode ?
+                                    'bg-white text-gray-900 shadow-[0_10px_30px_-14px_rgba(255,255,255,0.95)]' :
+                                    'bg-gray-900 text-white shadow-[0_10px_24px_-14px_rgba(0,0,0,0.5)]') :
+                                ($store.ui.darkMode ?
+                                    'text-white/65 hover:bg-white/10 hover:text-white' :
+                                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900')"
+                            @click="activeTab = tab">
                             <span x-text="$store.ui.t('discoverTab_' + tab)"></span>
                             <span
                                 class="pointer-events-none absolute inset-x-3 bottom-1 h-px rounded-full transition-opacity duration-300"
-                                :class="activeTab === tab
-                                    ? ($store.ui.darkMode ? 'bg-gray-900/25 opacity-100' : 'bg-white/40 opacity-100')
-                                    : 'opacity-0'">
+                                :class="activeTab === tab ?
+                                    ($store.ui.darkMode ? 'bg-gray-900/25 opacity-100' : 'bg-white/40 opacity-100') :
+                                    'opacity-0'">
                             </span>
                         </button>
                     </template>
@@ -316,10 +323,11 @@
 
             {{-- Image container --}}
             <div class="w-full max-w-240" id="discoverVisualPanel">
-                <div class="rounded-3xl p-[1px] transition-all duration-500" :class="activeTab === 'ticketList' ? 'bg-linear-to-r from-[#ff95a4]/90 to-[#fd4f7d]/90' : ''
-                        || activeTab === 'ticketView' ? 'bg-linear-to-r from-[#4db3ff]/90 to-[#2f66ff]/90' : ''
-                        || activeTab === 'automations' ? 'bg-linear-to-r from-[#8a6dff]/90 to-[#5b3ff0]/90' : ''
-                        || activeTab === 'reports' ? 'bg-linear-to-r from-[#ffd36a]/90 to-[#ff9742]/90' : ''">
+                <div class="rounded-3xl p-[1px] transition-all duration-500"
+                    :class="activeTab === 'ticketList' ? 'bg-linear-to-r from-[#ff95a4]/90 to-[#fd4f7d]/90' : '' ||
+                        activeTab === 'ticketView' ? 'bg-linear-to-r from-[#4db3ff]/90 to-[#2f66ff]/90' : '' ||
+                        activeTab === 'automations' ? 'bg-linear-to-r from-[#8a6dff]/90 to-[#5b3ff0]/90' : '' ||
+                        activeTab === 'reports' ? 'bg-linear-to-r from-[#ffd36a]/90 to-[#ff9742]/90' : ''">
                     <div class="relative h-105 w-full overflow-hidden rounded-[22px] border transition-all duration-500"
                         :class="[$store.ui.darkMode ? 'border-white/10' : 'border-gray-200']">
                         <div class="absolute inset-0 bg-linear-to-br transition-all duration-500"
@@ -414,7 +422,8 @@
                                 <div class="sfs-tag-chip" style="background:#fef3c7;color:#92400e;">🟡 Pending</div>
                                 <div class="sfs-tag-chip" style="background:#ede9fe;color:#5b21b6;">🟣 Bug</div>
                                 <div class="sfs-tag-chip" style="background:#f1f5f9;color:#334155;">⚪ General</div>
-                                <div class="sfs-tag-chip" style="background:#fce7f3;color:#be185d;">🏷 Onboarding</div>
+                                <div class="sfs-tag-chip" style="background:#fce7f3;color:#be185d;">🏷 Onboarding
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -463,7 +472,8 @@
                     <div class="sfs-card-body">
                         <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
                             Multiple Inboxes</div>
-                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">Give
+                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
+                            Give
                             every department or product its own dedicated place for support.</div>
                     </div>
                 </div>
@@ -527,7 +537,8 @@
                         </div>
                     </div>
                     <div class="sfs-card-body">
-                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Snooze
+                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
+                            Snooze
                         </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
                             Surface a conversation at a later date or time with snooze.</div>
@@ -554,24 +565,29 @@
                                 <svg viewBox="0 0 48 48" width="26" height="26">
                                     <path d="M8 36V14l16 12 16-12v22H8z" fill="#fff" stroke="#eee" />
                                     <path d="M8 14l16 12 16-12H8z" fill="#EA4335" />
-                                    <rect x="6" y="12" width="36" height="26" rx="3" fill="none" stroke="#FBBC05"
-                                        stroke-width="1.5" />
+                                    <rect x="6" y="12" width="36" height="26" rx="3" fill="none"
+                                        stroke="#FBBC05" stroke-width="1.5" />
                                 </svg>
                             </div>
                             <div class="sfs-ch-ic" style="background:#0078d4;">
                                 <svg viewBox="0 0 48 48" width="26" height="26">
                                     <rect width="48" height="48" rx="8" fill="#0078d4" />
-                                    <rect x="5" y="13" width="22" height="22" rx="3" fill="#fff" opacity=".9" />
+                                    <rect x="5" y="13" width="22" height="22" rx="3" fill="#fff"
+                                        opacity=".9" />
                                     <circle cx="16" cy="24" r="5.5" fill="#0078d4" />
-                                    <rect x="29" y="17" width="14" height="3.5" rx="1.5" fill="#fff" />
-                                    <rect x="29" y="22.5" width="14" height="3.5" rx="1.5" fill="#fff" />
-                                    <rect x="29" y="28" width="10" height="3.5" rx="1.5" fill="#fff" />
+                                    <rect x="29" y="17" width="14" height="3.5" rx="1.5"
+                                        fill="#fff" />
+                                    <rect x="29" y="22.5" width="14" height="3.5" rx="1.5"
+                                        fill="#fff" />
+                                    <rect x="29" y="28" width="10" height="3.5" rx="1.5"
+                                        fill="#fff" />
                                 </svg>
                             </div>
                             <div class="sfs-ch-ic" style="background:linear-gradient(135deg,#0099ff,#a033ff);">
                                 <svg viewBox="0 0 48 48" width="26" height="26">
                                     <defs>
-                                        <linearGradient id="g1" x1="0" y1="1" x2="1" y2="0">
+                                        <linearGradient id="g1" x1="0" y1="1" x2="1"
+                                            y2="0">
                                             <stop offset="0%" stop-color="#0099ff" />
                                             <stop offset="100%" stop-color="#a033ff" />
                                         </linearGradient>
@@ -595,15 +611,17 @@
                                 style="background:linear-gradient(135deg,#f09433,#dc2743 50%,#bc1888);">
                                 <svg viewBox="0 0 48 48" width="26" height="26">
                                     <defs>
-                                        <linearGradient id="g2" x1="0" y1="1" x2="1" y2="0">
+                                        <linearGradient id="g2" x1="0" y1="1" x2="1"
+                                            y2="0">
                                             <stop offset="0%" stop-color="#f09433" />
                                             <stop offset="100%" stop-color="#bc1888" />
                                         </linearGradient>
                                     </defs>
                                     <rect width="48" height="48" rx="8" fill="url(#g2)" />
-                                    <rect x="12" y="12" width="24" height="24" rx="7" fill="none" stroke="#fff"
+                                    <rect x="12" y="12" width="24" height="24" rx="7" fill="none"
+                                        stroke="#fff" stroke-width="2.5" />
+                                    <circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff"
                                         stroke-width="2.5" />
-                                    <circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff" stroke-width="2.5" />
                                     <circle cx="32" cy="16" r="1.8" fill="#fff" />
                                 </svg>
                             </div>
@@ -612,7 +630,8 @@
                     <div class="sfs-card-body">
                         <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
                             Channels</div>
-                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">Close
+                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
+                            Close
                             those extra tabs and handle messages from social, Shopify, and more in one place.</div>
                     </div>
                 </div>
@@ -669,9 +688,11 @@
                         </div>
                     </div>
                     <div class="sfs-card-body">
-                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Reports
+                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
+                            Reports
                         </div>
-                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">Track
+                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
+                            Track
                             team performance, response times, and customer satisfaction at a glance.</div>
                     </div>
                 </div>
@@ -727,15 +748,16 @@
             <div class="flex items-center gap-4 md:gap-6">
                 <button id="ggPrevBtn"
                     class="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm transition md:inline-flex"
-                    :class="$store.ui.darkMode
-                        ? 'border-white/25 bg-white/5 text-white hover:bg-white hover:text-black'
-                        : 'border-gray-300 bg-gray-200 text-gray-900 hover:bg-gray-900 hover:text-white'"
+                    :class="$store.ui.darkMode ?
+                        'border-white/25 bg-white/5 text-white hover:bg-white hover:text-black' :
+                        'border-gray-300 bg-gray-200 text-gray-900 hover:bg-gray-900 hover:text-white'"
                     aria-label="Previous story">
                     ←
                 </button>
 
                 <div id="ggViewport" class="min-w-0 flex-1 overflow-hidden rounded-md">
-                    <div id="ggTrack" class="flex transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]">
+                    <div id="ggTrack"
+                        class="flex transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]">
                         <article class="min-w-full">
                             <div
                                 class="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-center lg:gap-12">
@@ -868,9 +890,9 @@
 
                 <button id="ggNextBtn"
                     class="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border text-sm transition md:inline-flex"
-                    :class="$store.ui.darkMode
-                        ? 'border-white/25 bg-white/5 text-white hover:bg-white hover:text-black'
-                        : 'border-gray-300 bg-gray-200 text-gray-900 hover:bg-gray-900 hover:text-white'"
+                    :class="$store.ui.darkMode ?
+                        'border-white/25 bg-white/5 text-white hover:bg-white hover:text-black' :
+                        'border-gray-300 bg-gray-200 text-gray-900 hover:bg-gray-900 hover:text-white'"
                     aria-label="Next story">
                     →
                 </button>
@@ -922,12 +944,14 @@
             :class="$store.ui.darkMode ? 'bg-cyan-300/10' : 'bg-cyan-200/45'"></div>
 
         <div class="relative z-1 mx-auto flex max-w-275 flex-col items-center justify-center gap-12 rounded-3xl border px-6 py-8 md:flex-row md:gap-20 md:px-10 md:py-10"
-            :class="$store.ui.darkMode ? 'border-white/10 bg-white/2' : 'border-gray-200 bg-white/90 shadow-[0_20px_60px_-30px_rgba(17,24,39,0.3)]'">
+            :class="$store.ui.darkMode ? 'border-white/10 bg-white/2' :
+                'border-gray-200 bg-white/90 shadow-[0_20px_60px_-30px_rgba(17,24,39,0.3)]'">
 
             {{-- Image --}}
             <div id="supportHeroesVisual"
                 class="group w-full shrink-0 overflow-hidden rounded-[22px] border p-2 transition-all duration-500 hover:-translate-y-1 md:w-107.5"
-                :class="$store.ui.darkMode ? 'border-white/12 bg-gray-900/70 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.75)]' : 'border-gray-200 bg-white shadow-[0_18px_42px_-26px_rgba(15,23,42,0.35)]'">
+                :class="$store.ui.darkMode ? 'border-white/12 bg-gray-900/70 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.75)]' :
+                    'border-gray-200 bg-white shadow-[0_18px_42px_-26px_rgba(15,23,42,0.35)]'">
                 <img src="{{ asset('images/Personnes/Team_photo.png') }}" alt="Support hero"
                     class="aspect-square w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-103" />
             </div>
@@ -936,7 +960,8 @@
             <div id="supportHeroesContent" class="max-w-115 text-center md:text-left">
                 <span
                     class="mb-4 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]"
-                    :class="$store.ui.darkMode ? 'border-white/15 bg-white/5 text-white/70' : 'border-emerald-200 bg-emerald-50 text-emerald-700'">
+                    :class="$store.ui.darkMode ? 'border-white/15 bg-white/5 text-white/70' :
+                        'border-emerald-200 bg-emerald-50 text-emerald-700'">
                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                     SUPPORT HEROES
                 </span>
@@ -950,7 +975,9 @@
                     x-text="$store.ui.t('heroesDescription')"></p>
                 <button type="button" id="supportHeroesChatBtn"
                     class="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-base font-bold text-white shadow-[0_16px_30px_-16px_rgba(34,197,94,0.75)] transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.01]"
-                    :class="$store.ui.darkMode ? 'bg-linear-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400' : 'bg-linear-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500'">
+                    :class="$store.ui.darkMode ?
+                        'bg-linear-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400' :
+                        'bg-linear-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500'">
                     <span x-text="$store.ui.t('heroesCta')"></span>
                     <span aria-hidden="true">→</span>
                 </button>
@@ -1004,7 +1031,8 @@
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {{-- Card 1 --}}
             <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' : 'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
+                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
+                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
                 <div
                     class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
                     <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
@@ -1023,7 +1051,8 @@
 
             {{-- Card 2 --}}
             <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' : 'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
+                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
+                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
                 <div
                     class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
                     <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
@@ -1041,7 +1070,8 @@
 
             {{-- Card 3 --}}
             <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' : 'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
+                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
+                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
                 <div
                     class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
                     <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
@@ -1060,7 +1090,8 @@
 
             {{-- Card 4 --}}
             <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' : 'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
+                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
+                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
                 <div
                     class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
                     <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
@@ -1078,7 +1109,8 @@
 
             {{-- Card 5 --}}
             <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' : 'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
+                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
+                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
                 <div
                     class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
                     <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
@@ -1097,7 +1129,8 @@
 
             {{-- Card 6 --}}
             <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' : 'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
+                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
+                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
                 <div
                     class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
                     <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
@@ -1123,22 +1156,26 @@
         <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-16 sm:grid-cols-4">
             <div class="text-center">
                 <div class="text-4xl font-bold text-brand sm:text-5xl">2K+</div>
-                <p class="mt-2 text-sm font-medium" :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
+                <p class="mt-2 text-sm font-medium"
+                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
                     Support teams</p>
             </div>
             <div class="text-center">
                 <div class="text-4xl font-bold text-brand sm:text-5xl">10M+</div>
-                <p class="mt-2 text-sm font-medium" :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
+                <p class="mt-2 text-sm font-medium"
+                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
                     Tickets resolved</p>
             </div>
             <div class="text-center">
                 <div class="text-4xl font-bold text-brand sm:text-5xl">98%</div>
-                <p class="mt-2 text-sm font-medium" :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
+                <p class="mt-2 text-sm font-medium"
+                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
                     Customer satisfaction</p>
             </div>
             <div class="text-center">
                 <div class="text-4xl font-bold text-brand sm:text-5xl">&lt;2min</div>
-                <p class="mt-2 text-sm font-medium" :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
+                <p class="mt-2 text-sm font-medium"
+                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
                     Avg. first response</p>
             </div>
         </div>
@@ -1299,7 +1336,8 @@
                             SJ</div>
                         <div>
                             <div class="text-sm font-semibold">Sarah Johnson</div>
-                            <div class="text-xs" :class="$store.ui.darkMode ? 'text-white/40' : 'text-gray-400'">Head of
+                            <div class="text-xs" :class="$store.ui.darkMode ? 'text-white/40' : 'text-gray-400'">Head
+                                of
                                 Support, TechCorp</div>
                         </div>
                     </div>
@@ -1382,7 +1420,8 @@
                         class="inline-flex items-center gap-2 rounded-xl bg-brand px-10 py-4 text-base font-semibold text-white shadow-lg shadow-brand/25 transition hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-xl hover:shadow-brand/30">
                         Go to Dashboard
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
                     </a>
                 @else
@@ -1390,12 +1429,14 @@
                         class="inline-flex items-center gap-2 rounded-xl bg-brand px-10 py-4 text-base font-semibold text-white shadow-lg shadow-brand/25 transition hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-xl hover:shadow-brand/30">
                         Start free trial
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
                     </a>
                     <a href="{{ route('login') }}"
                         class="inline-flex items-center gap-2 rounded-xl border px-10 py-4 text-base font-semibold transition hover:-translate-y-0.5"
-                        :class="$store.ui.darkMode ? 'border-white/20 text-white hover:border-white/40 hover:bg-white/5' : 'border-[#17494D]/30 text-[#17494D] hover:border-[#17494D]/50 hover:bg-[#17494D]/5'">
+                        :class="$store.ui.darkMode ? 'border-white/20 text-white hover:border-white/40 hover:bg-white/5' :
+                            'border-[#17494D]/30 text-[#17494D] hover:border-[#17494D]/50 hover:bg-[#17494D]/5'">
                         Talk to sales
                     </a>
                 @endauth
@@ -1489,7 +1530,7 @@
     <livewire:ai-chat-widget />
     <!-- Support Features Slider Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             /* ═══════════════════════════
                SLIDER CORE
             ═══════════════════════════ */
@@ -1501,13 +1542,20 @@
                 const sfsCards = sfsTrack.querySelectorAll('.sfs-card');
                 const sfsTotal = sfsCards.length;
                 const sfsStepCards = 3;
-                let sfsCurrent = 0, sfsAutoTimer;
+                let sfsCurrent = 0,
+                    sfsAutoTimer;
 
                 function sfsGap() {
                     return parseFloat(getComputedStyle(sfsTrack).gap) || 16;
                 }
-                function sfsMaxIndex() { return Math.max(0, sfsTotal - 2); }
-                function sfsStepPx() { return sfsCards[0].offsetWidth + sfsGap(); }
+
+                function sfsMaxIndex() {
+                    return Math.max(0, sfsTotal - 2);
+                }
+
+                function sfsStepPx() {
+                    return sfsCards[0].offsetWidth + sfsGap();
+                }
 
                 function sfsGoTo(idx) {
                     sfsCurrent = Math.max(0, Math.min(idx, sfsMaxIndex()));
@@ -1530,7 +1578,11 @@
                         sfsGoTo(sfsCurrent >= sfsMaxIndex() ? 0 : sfsCurrent + sfsStepCards);
                     }, 7000);
                 }
-                function sfsResetAuto() { clearInterval(sfsAutoTimer); sfsStartAuto(); }
+
+                function sfsResetAuto() {
+                    clearInterval(sfsAutoTimer);
+                    sfsStartAuto();
+                }
 
                 sfsPrevBtn.addEventListener('click', () => {
                     if (sfsCurrent === 0) return;
@@ -1542,7 +1594,9 @@
                     sfsGoTo(sfsCurrent + sfsStepCards);
                     sfsResetAuto();
                 });
-                window.addEventListener('resize', () => { sfsGoTo(Math.min(sfsCurrent, sfsMaxIndex())); });
+                window.addEventListener('resize', () => {
+                    sfsGoTo(Math.min(sfsCurrent, sfsMaxIndex()));
+                });
 
                 sfsGoTo(0);
                 sfsStartAuto();
@@ -1553,8 +1607,12 @@
                 const sfsWfRows = ['sfsWfR1', 'sfsWfR2', 'sfsWfR3'].map(id => document.getElementById(id));
 
                 function sfsAnimateWF() {
-                    sfsWfRows.forEach(r => { if (r) r.classList.remove('vis'); });
-                    sfsWfRows.forEach((r, i) => { if (r) setTimeout(() => r.classList.add('vis'), 350 + i * 520); });
+                    sfsWfRows.forEach(r => {
+                        if (r) r.classList.remove('vis');
+                    });
+                    sfsWfRows.forEach((r, i) => {
+                        if (r) setTimeout(() => r.classList.add('vis'), 350 + i * 520);
+                    });
                     setTimeout(sfsAnimateWF, 5200);
                 }
                 setTimeout(sfsAnimateWF, 600);
@@ -1568,7 +1626,11 @@
 
                 if (sfsTagSearchText && sfsTagCursorEl && sfsTagGrid) {
                     const typeWord = 'Refund';
-                    const newChip = { label: '🟠 Refund', bg: '#ffedd5', color: '#9a3412' };
+                    const newChip = {
+                        label: '🟠 Refund',
+                        bg: '#ffedd5',
+                        color: '#9a3412'
+                    };
 
                     // blink cursor
                     let sfsCursorVisible = true;
@@ -1577,7 +1639,9 @@
                         sfsTagCursorEl.style.opacity = sfsCursorVisible ? '1' : '0';
                     }, 530);
 
-                    function sfsWait(ms) { return new Promise(r => setTimeout(r, ms)); }
+                    function sfsWait(ms) {
+                        return new Promise(r => setTimeout(r, ms));
+                    }
 
                     async function runTagAnim() {
                         // type "Refund" char by char
@@ -1731,14 +1795,18 @@
 
                 ggViewport.addEventListener('touchstart', (event) => {
                     ggTouchStartX = event.touches[0].clientX;
-                }, { passive: true });
+                }, {
+                    passive: true
+                });
 
                 ggViewport.addEventListener('touchend', (event) => {
                     const deltaX = event.changedTouches[0].clientX - ggTouchStartX;
                     if (Math.abs(deltaX) > 40) {
                         ggGoTo(deltaX < 0 ? ggCurrent + 1 : ggCurrent - 1);
                     }
-                }, { passive: true });
+                }, {
+                    passive: true
+                });
 
                 ggGoTo(0);
 
@@ -1804,7 +1872,8 @@
                 if (!prefersReducedMotion) {
                     const onSupportHeroesScroll = () => {
                         const rect = supportHeroesSection.getBoundingClientRect();
-                        const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+                        const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window
+                            .innerHeight + rect.height)));
                         const visualShift = (0.5 - progress) * 20;
                         const contentShift = (0.5 - progress) * 12;
 
@@ -1817,7 +1886,9 @@
                         }
                     };
 
-                    window.addEventListener('scroll', onSupportHeroesScroll, { passive: true });
+                    window.addEventListener('scroll', onSupportHeroesScroll, {
+                        passive: true
+                    });
                     onSupportHeroesScroll();
                 }
             }
@@ -1825,7 +1896,10 @@
             if (supportHeroesChatBtn) {
                 supportHeroesChatBtn.addEventListener('click', () => {
                     const chatbotWidget = document.getElementById('chatbot-widget');
-                    chatbotWidget?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    chatbotWidget?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'end'
+                    });
                     window.dispatchEvent(new CustomEvent('open-chatbot-widget'));
                 });
             }
@@ -1865,12 +1939,15 @@
                 if (discoverVisualPanel) {
                     const onDiscoverScroll = () => {
                         const rect = discoverSection.getBoundingClientRect();
-                        const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+                        const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window
+                            .innerHeight + rect.height)));
                         const translateY = (0.5 - progress) * 14;
                         discoverVisualPanel.style.transform = `translateY(${translateY}px)`;
                     };
 
-                    window.addEventListener('scroll', onDiscoverScroll, { passive: true });
+                    window.addEventListener('scroll', onDiscoverScroll, {
+                        passive: true
+                    });
                     onDiscoverScroll();
                 }
             }
@@ -1889,7 +1966,8 @@
                     getStartedSection.classList.remove('opacity-0', 'translate-y-8', 'blur-sm');
                     getStartedSection.classList.add('opacity-100', 'translate-y-0', 'blur-0');
                     getStartedRevealItems.forEach((item) => {
-                        item.classList.remove('opacity-0', 'translate-y-15', 'translate-y-24', 'translate-y-36');
+                        item.classList.remove('opacity-0', 'translate-y-15', 'translate-y-24',
+                            'translate-y-36');
                     });
                 };
 
@@ -1903,7 +1981,9 @@
                                 observer.unobserve(entry.target);
                             }
                         });
-                    }, { threshold: 0.2 });
+                    }, {
+                        threshold: 0.2
+                    });
 
                     getStartedObserver.observe(getStartedSection);
                 }
@@ -1926,7 +2006,9 @@
                     getStartedHeadline.style.opacity = `${opacity}`;
                 };
 
-                window.addEventListener('scroll', onGetStartedScroll, { passive: true });
+                window.addEventListener('scroll', onGetStartedScroll, {
+                    passive: true
+                });
             }
         });
     </script>
