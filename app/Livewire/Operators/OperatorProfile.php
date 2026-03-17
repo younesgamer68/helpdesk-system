@@ -122,7 +122,7 @@ class OperatorProfile extends Component
 
         $this->dispatch('show-toast', message: 'Operator removed successfully.', type: 'success');
 
-        return redirect()->route('operators', ['company' => $this->operator->company->slug]);
+        return redirect()->route('operators', ['company' => Auth::user()->company->slug]);
     }
 
     public function render()

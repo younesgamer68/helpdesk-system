@@ -27,7 +27,7 @@ class SetupCompany extends Component
         // If user already has a company, redirect to tickets
         $user = Auth::user();
 
-        if ($user && $user->company_id) {
+        if ($user && $user->company_id && $user->company) {
             return redirect()->to(
                 'http://'.$user->company->slug.'.'.config('app.domain').'/tickets'
             );
