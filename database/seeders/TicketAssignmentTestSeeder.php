@@ -14,7 +14,8 @@ class TicketAssignmentTestSeeder extends Seeder
     public function run()
     {
         $company = Company::firstOrCreate(
-            ['name' => 'Test Company']
+            ['name' => 'Test Company'],
+            ['slug' => 'test-company']
         );
 
         $billingCategory = TicketCategory::firstOrCreate([
