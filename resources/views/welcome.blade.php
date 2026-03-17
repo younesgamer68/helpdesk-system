@@ -74,7 +74,7 @@
                 @auth
                     {{-- Logged-in → Dashboard --}}
                     <div class="mt-10 flex justify-center sm:mt-12">
-                        <a href="{{ route('tickets', Auth::user()->company->slug) }}"
+                        <a href="{{ Auth::user()->company ? route('tickets', Auth::user()->company->slug) : route('home') }}"
                             class="inline-flex items-center gap-2 rounded-full bg-green-600 px-8 py-4 text-[1.05rem] font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-green-500 hover:shadow-xl">
                             <span x-text="$store.ui.t('heroDashboard')"></span>
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
