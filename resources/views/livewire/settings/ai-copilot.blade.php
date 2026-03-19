@@ -36,12 +36,18 @@
                     <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">Choose which model powers AI suggestions,
                         and summaries.</p>
                 </div>
+                @php($modelOptions = $this->modelOptions())
                 <select wire:model="ai_model"
                     class="w-full max-w-sm rounded border border-zinc-200 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm">
-                    @foreach ($this->availableModels() as $value => $label)
-                        <option value="{{ $value }}">{{ $label }}</option>
+                    @foreach ($modelOptions as $value => $option)
+                        <option value="{{ $value }}" @disabled(! $option['enabled'])
+                            class="{{ $option['enabled'] ? '' : 'text-zinc-400 dark:text-zinc-500' }}">
+                            {{ $option['label'] }}{{ $option['enabled'] ? '' : ' (Unavailable - missing API key)' }}
+                        </option>
                     @endforeach
                 </select>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">Unavailable models are disabled until their provider
+                    API key is configured.</p>
                 @error('ai_model')
                     <p class="text-sm text-red-500">{{ $message }}</p>
                 @enderror

@@ -24,7 +24,13 @@ class AiCopilot extends Component
 
         $this->ai_suggestions_enabled = $settings->ai_suggestions_enabled;
         $this->ai_summary_enabled = $settings->ai_summary_enabled;
-        $this->ai_model = $settings->ai_model ?? 'gemini-2.5-flash';
+        $selectedModel = $settings->ai_model ?? 'gemini-2.5-flash';
+
+        if (! $this->isModelEnabled($selectedModel)) {
+            $selectedModel = $this->firstEnabledModel() ?? 'gemini-2.5-flash';
+        }
+
+        $this->ai_model = $selectedModel;
     }
 
     public function save(): void
@@ -50,13 +56,69 @@ class AiCopilot extends Component
 
     public function availableModels(): array
     {
+        return collect($this->modelOptions())
+            ->mapWithKeys(fn (array $option, string $model) => [$model => $option['label']])
+            ->all();
+    }
+
+    public function modelOptions(): array
+    {
         return [
-            'gemini-2.5-flash' => 'Gemini 2.5 Flash (Fast & cheap)',
-            'gemini-2.5-pro' => 'Gemini 2.5 Pro (Balanced)',
-            'gpt-4o-mini' => 'GPT-4o Mini (Fast & cheap)',
-            'gpt-4o' => 'GPT-4o (Powerful)',
-            'claude-sonnet-4-20250514' => 'Claude Sonnet 4 (Powerful)',
+            'gemini-2.5-flash' => [
+                'label' => 'Gemini 2.5 Flash (Fast & cheap)',
+                'provider' => 'gemini',
+                'enabled' => $this->providerConfigured('gemini'),
+            ],
+            'gemini-2.5-pro' => [
+                'label' => 'Gemini 2.5 Pro (Balanced)',
+                'provider' => 'gemini',
+                'enabled' => $this->providerConfigured('gemini'),
+            ],
+            'gpt-4o-mini' => [
+                'label' => 'GPT-4o Mini (Fast & cheap)',
+                'provider' => 'openai',
+                'enabled' => $this->providerConfigured('openai'),
+            ],
+            'gpt-4o' => [
+                'label' => 'GPT-4o (Powerful)',
+                'provider' => 'openai',
+                'enabled' => $this->providerConfigured('openai'),
+            ],
+            'claude-sonnet-4-20250514' => [
+                'label' => 'Claude Sonnet 4 (Powerful)',
+                'provider' => 'anthropic',
+                'enabled' => $this->providerConfigured('anthropic'),
+            ],
         ];
+    }
+
+    private function providerConfigured(string $provider): bool
+    {
+        $apiKey = (string) config("ai.providers.{$provider}.key", '');
+
+        return trim($apiKey) !== '';
+    }
+
+    private function isModelEnabled(string $model): bool
+    {
+        $option = $this->modelOptions()[$model] ?? null;
+
+        if (! $option) {
+            return false;
+        }
+
+        return (bool) $option['enabled'];
+    }
+
+    private function firstEnabledModel(): ?string
+    {
+        foreach ($this->modelOptions() as $model => $option) {
+            if ($option['enabled']) {
+                return $model;
+            }
+        }
+
+        return null;
     }
 
     private function getSettings(): CompanyAiSettings
