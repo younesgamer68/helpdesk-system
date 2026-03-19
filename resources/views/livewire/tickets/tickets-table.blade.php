@@ -125,7 +125,7 @@
     @if ($operatorSpecialties->isNotEmpty())
         <div class="mb-4">
             <span
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 text-purple-400 text-sm font-medium rounded-full border border-purple-500/20">
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm font-medium rounded-full border border-purple-500/20">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -141,7 +141,7 @@
         <div class="mb-4 flex flex-wrap gap-2">
             @if ($search)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-medium rounded-full border border-teal-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-medium rounded-full border border-teal-500/20">
                     Search: {{ $search }}
                 </span>
             @endif
@@ -159,31 +159,31 @@
             @endif
             @if ($statusFilter)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-medium rounded-full border border-blue-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full border border-blue-500/20">
                     Status: {{ ucfirst(str_replace('_', ' ', $statusFilter)) }}
                 </span>
             @endif
             @if ($priorityFilter)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-500/10 text-orange-400 text-xs font-medium rounded-full border border-orange-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-xs font-medium rounded-full border border-orange-500/20">
                     Priority: {{ ucfirst($priorityFilter) }}
                 </span>
             @endif
             @if ($categoryFilter && Auth::user()->isAdmin())
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-medium rounded-full border border-purple-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-medium rounded-full border border-purple-500/20">
                     Category: {{ $this->categories->find($categoryFilter)?->name ?? '' }}
                 </span>
             @endif
             @if ($assignedFilter && Auth::user()->isAdmin())
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-medium rounded-full border border-green-500/20">
                     Assigned: {{ $this->agents->find($assignedFilter)?->name ?? 'Unassigned' }}
                 </span>
             @endif
             @if ($showDeletedOnly)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-500/10 text-red-400 text-xs font-medium rounded-full border border-red-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-500/10 text-red-600 dark:text-red-400 text-xs font-medium rounded-full border border-red-500/20">
                     Showing Deleted Only
                 </span>
             @endif

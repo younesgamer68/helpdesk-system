@@ -3,6 +3,7 @@
 namespace App\Livewire\Tickets;
 
 use App\Models\SavedFilterView;
+use App\Models\TenantConfig;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -441,6 +442,7 @@ class TicketsTable extends Component
             'assigned_to' => $this->assigned_to ?: null,
             'category_id' => $this->category_id ?: null,
             'verified' => true, // Auto-verify admin-created tickets
+            'source' => 'agent',
         ]);
 
         $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} created successfully!", type: 'success');
@@ -558,10 +560,37 @@ class TicketsTable extends Component
 
             return;
         }
-        \App\Models\User::where('id', $agentId)
+
+        $agent = \App\Models\User::where('id', $agentId)
             ->where('company_id', Auth::user()->company_id)
             ->firstOrFail();
+
         if (empty($this->selectedTickets)) {
+            return;
+        }
+
+        $config = TenantConfig::query()->where('company_id', Auth::user()->company_id)->first();
+        $maxLoad = $config?->max_tickets_per_agent ?? 20;
+
+        // Count tickets already assigned to this agent (exclude tickets being reassigned from this agent)
+        $currentLoad = Ticket::where('assigned_to', $agentId)
+            ->where('company_id', Auth::user()->company_id)
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->count();
+
+        // Tickets in selection that are NOT already assigned to this agent
+        $newTicketsCount = Ticket::whereIn('id', $this->selectedTickets)
+            ->where('company_id', Auth::user()->company_id)
+            ->where(function ($query) use ($agentId) {
+                $query->whereNull('assigned_to')
+                    ->orWhere('assigned_to', '!=', $agentId);
+            })
+            ->count();
+
+        if (($currentLoad + $newTicketsCount) > $maxLoad) {
+            $available = max(0, $maxLoad - $currentLoad);
+            $this->dispatch('show-toast', message: "Agent {$agent->name} is at max load ({$currentLoad}/{$maxLoad} tickets). Only {$available} more can be assigned.", type: 'error');
+
             return;
         }
 

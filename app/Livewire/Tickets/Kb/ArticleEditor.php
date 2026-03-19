@@ -3,7 +3,7 @@
 namespace App\Livewire\Tickets\Kb;
 
 use App\Models\KbArticle;
-use App\Models\KbCategory;
+use App\Models\TicketCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -24,7 +24,7 @@ class ArticleEditor extends Component
 
     public $status = 'draft';
 
-    public $kb_category_id = '';
+    public $ticket_category_id = '';
 
     public $tags = '';
 
@@ -49,7 +49,7 @@ class ArticleEditor extends Component
             $this->slug = $article->slug;
             $this->body = $article->body;
             $this->status = $article->status;
-            $this->kb_category_id = $article->kb_category_id;
+            $this->ticket_category_id = $article->ticket_category_id;
             $this->meta_description = $article->meta_description;
 
             // Format dates for datetime-local input
@@ -68,7 +68,7 @@ class ArticleEditor extends Component
             'slug' => 'nullable|string|max:255',
             'body' => 'nullable|string',
             'status' => 'required|in:draft,published,archived',
-            'kb_category_id' => 'required|exists:kb_categories,id',
+            'ticket_category_id' => 'required|exists:ticket_categories,id',
             'tags' => 'nullable|string',
             'meta_description' => 'nullable|string|max:500',
             'schedule_publish_date' => 'nullable|date',
@@ -107,7 +107,7 @@ class ArticleEditor extends Component
             'slug' => $this->slug ?: Str::slug($this->title),
             'body' => $cleanBody,
             'status' => $this->status,
-            'kb_category_id' => $this->kb_category_id,
+            'ticket_category_id' => $this->ticket_category_id,
             'tags' => $tagsJson,
             'meta_description' => $this->meta_description,
             'schedule_publish_date' => $this->schedule_publish_date,
@@ -168,7 +168,7 @@ class ArticleEditor extends Component
             $this->article->loadMissing('versions.creator');
         }
 
-        $categories = KbCategory::where('company_id', Auth::user()->company_id)->get();
+        $categories = TicketCategory::where('company_id', Auth::user()->company_id)->orderBy('name')->get();
 
         return view('livewire.tickets.kb.article-editor', [
             'categories' => $categories,

@@ -8,12 +8,30 @@ use Illuminate\Http\Request;
 
 class KbController extends Controller
 {
-    private function getCompany($slug)
+    private function getCompany(string $slug): Company
     {
         return Company::where('slug', $slug)->firstOrFail();
     }
 
-    public function articles(Request $request, $companySlug)
+    public function index(Request $request, string $companySlug)
+    {
+        $company = $this->getCompany($companySlug);
+        $articlesEndpoint = route('api.kb.articles', ['company_slug' => $company->slug]);
+
+        return response()->json([
+            'company' => [
+                'name' => $company->name,
+                'slug' => $company->slug,
+            ],
+            'endpoints' => [
+                'articles' => $articlesEndpoint,
+                'article' => $articlesEndpoint.'/{slug}',
+                'search' => route('api.kb.search', ['company_slug' => $company->slug]).'?q={query}',
+            ],
+        ]);
+    }
+
+    public function articles(Request $request, string $companySlug)
     {
         $company = $this->getCompany($companySlug);
 
@@ -26,7 +44,7 @@ class KbController extends Controller
         return response()->json($articles);
     }
 
-    public function article(Request $request, $companySlug, $slug)
+    public function article(Request $request, string $companySlug, string $slug)
     {
         $company = $this->getCompany($companySlug);
 
@@ -42,7 +60,7 @@ class KbController extends Controller
         return response()->json($article);
     }
 
-    public function search(Request $request, $companySlug)
+    public function search(Request $request, string $companySlug)
     {
         $company = $this->getCompany($companySlug);
         $query = $request->input('q');

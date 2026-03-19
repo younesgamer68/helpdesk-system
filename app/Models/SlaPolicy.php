@@ -22,6 +22,12 @@ class SlaPolicy extends Model
             'medium_minutes' => 'integer',
             'high_minutes' => 'integer',
             'urgent_minutes' => 'integer',
+            'warning_hours' => 'integer',
+            'auto_close_hours' => 'integer',
+            'reopen_hours' => 'integer',
+            'linked_ticket_days' => 'integer',
+            'soft_delete_days' => 'integer',
+            'hard_delete_days' => 'integer',
         ];
     }
 

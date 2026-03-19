@@ -739,6 +739,34 @@ document.addEventListener("alpine:init", () => {
                         this.$wire.set(model, editor.getHTML());
                     }
                 });
+
+                window.addEventListener("kb-insert", (event) => {
+                    const payload = event.detail?.[0] || event.detail || {};
+                    const url = payload.url;
+                    const title = payload.title;
+
+                    if (!url || !editor) return;
+
+                    const safeUrl = String(url).replace(/"/g, "&quot;");
+                    const safeTitle = String(title || url)
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;");
+
+                    editor
+                        .chain()
+                        .focus()
+                        .insertContent(
+                            `<a href="${safeUrl}">${safeTitle}</a>&nbsp;`,
+                        )
+                        .run();
+
+                    if (this.$wire?.set) {
+                        this._pendingSync++;
+                        this.$wire.set(model, editor.getHTML());
+                    }
+                });
             },
 
             destroy() {

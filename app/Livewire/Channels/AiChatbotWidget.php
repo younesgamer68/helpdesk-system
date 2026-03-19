@@ -18,6 +18,10 @@ class AiChatbotWidget extends Component
 
     public int $chatbot_fallback_threshold = 2;
 
+    public string $escalation_url_type = 'standalone';
+
+    public string $custom_escalation_url = '';
+
     public string $faqQuestion = '';
 
     public string $faqAnswer = '';
@@ -44,6 +48,8 @@ class AiChatbotWidget extends Component
         $this->ai_chatbot_enabled = (bool) $this->settings->ai_chatbot_enabled;
         $this->chatbot_greeting = (string) ($this->settings->chatbot_greeting ?: 'Hi! How can I help you today?');
         $this->chatbot_fallback_threshold = (int) ($this->settings->chatbot_fallback_threshold ?: 2);
+        $this->escalation_url_type = (string) ($this->settings->escalation_url_type ?: 'standalone');
+        $this->custom_escalation_url = (string) ($this->settings->custom_escalation_url ?? '');
     }
 
     #[Computed]
@@ -84,13 +90,36 @@ class AiChatbotWidget extends Component
         return "{$protocol}://{$slug}.{$domain}/chatbot-widget/{$this->widgetSetting->widget_key}";
     }
 
+    #[Computed]
+    public function chatbotScriptSrc(): string
+    {
+        $protocol = config('app.env') === 'local' ? 'http' : 'https';
+        $slug = Auth::user()->company->slug;
+        $domain = config('app.domain');
+        $version = filemtime(resource_path('views/chatbot/widget-js.blade.php')) ?: time();
+
+        return "{$protocol}://{$slug}.{$domain}/chatbot-widget/{$this->widgetSetting->widget_key}/embed.js?v={$version}";
+    }
+
+    #[Computed]
+    public function chatbotScriptTag(): string
+    {
+        return '<script src="'.$this->chatbotScriptSrc.'" defer></script>';
+    }
+
     public function saveSettings(): void
     {
         $validated = $this->validate([
             'ai_chatbot_enabled' => ['required', 'boolean'],
             'chatbot_greeting' => ['required', 'string', 'max:500'],
             'chatbot_fallback_threshold' => ['required', 'integer', 'min:1', 'max:10'],
+            'escalation_url_type' => ['required', 'string', 'in:standalone,custom_url'],
+            'custom_escalation_url' => ['nullable', 'required_if:escalation_url_type,custom_url', 'url', 'max:2048'],
         ]);
+
+        if ($validated['escalation_url_type'] === 'standalone') {
+            $validated['custom_escalation_url'] = null;
+        }
 
         CompanyAiSettings::query()
             ->where('company_id', Auth::user()->company_id)

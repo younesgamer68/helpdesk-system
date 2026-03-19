@@ -16,11 +16,12 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <!-- Online Status Placeholder (To be wired up later) -->
-            <!-- <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Online</span>
-            </div> -->
+            <button type="button" wire:click="toggleAvailability"
+                class="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors {{ $operator->is_available ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400' }}">
+                <span
+                    class="w-2 h-2 rounded-full {{ $operator->is_available ? 'bg-green-500 animate-pulse' : 'bg-red-400' }}"></span>
+                <span class="text-xs font-medium">{{ $operator->is_available ? 'Available' : 'Unavailable' }}</span>
+            </button>
         </div>
     </div>
 
@@ -89,6 +90,26 @@
                         <div
                             class="w-full py-4 text-center border-2 border-dashed border-zinc-100 dark:border-zinc-700 rounded-xl">
                             <p class="text-xs text-zinc-500 italic">No specialties assigned</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Teams Card -->
+            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 shadow-sm">
+                <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Teams</h3>
+                <div class="flex flex-wrap gap-2">
+                    @forelse ($operator->teams as $team)
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-600">
+                            <span class="w-2 h-2 rounded-full shrink-0"
+                                style="background-color: {{ $team->color }}"></span>
+                            {{ $team->name }}
+                        </span>
+                    @empty
+                        <div
+                            class="w-full py-4 text-center border-2 border-dashed border-zinc-100 dark:border-zinc-700 rounded-xl">
+                            <p class="text-xs text-zinc-500 italic">Not assigned to any teams</p>
                         </div>
                     @endforelse
                 </div>

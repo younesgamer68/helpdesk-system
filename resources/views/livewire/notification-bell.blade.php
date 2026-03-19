@@ -3,7 +3,8 @@
     <flux:dropdown position="bottom" align="start">
         <flux:button variant="ghost" square
             class="group relative text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100">
-            <flux:icon.bell class="size-5 shrink-0 text-teal-500 group-hover:text-white" />
+            <flux:icon.bell
+                class="size-5 shrink-0 text-teal-500 group-hover:text-teal-700 dark:group-hover:text-white" />
 
             @if ($this->unreadCount > 0)
                 <span

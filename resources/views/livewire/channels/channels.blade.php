@@ -1,6 +1,6 @@
 <div class="space-y-6">
     <div>
-        <h1 class="text-3xl text-zinc-900 dark:text-zinc-100">Channels</h1>
+        <h1 class="text-3xl text-zinc-900 dark:text-zinc-100">Integrations</h1>
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Manage how customers reach you</p>
     </div>
 
@@ -9,6 +9,7 @@
             $tabs = [
                 'form_widget' => 'Form Widget',
                 'ai_chatbot_widget' => 'AI Chatbot Widget',
+                'kb_widget' => 'KB Widget',
             ];
         @endphp
 
@@ -27,8 +28,10 @@
     <div>
         @if ($activeTab === 'form_widget')
             @livewire('settings.form-widget')
-        @else
+        @elseif ($activeTab === 'ai_chatbot_widget')
             @livewire('channels.ai-chatbot-widget')
+        @else
+            @livewire('channels.kb-widget')
         @endif
     </div>
 </div>

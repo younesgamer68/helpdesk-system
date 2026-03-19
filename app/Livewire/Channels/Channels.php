@@ -8,7 +8,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.app')]
-#[Title('Channels')]
+#[Title('Integrations')]
 class Channels extends Component
 {
     public string $activeTab = 'form_widget';
@@ -20,7 +20,7 @@ class Channels extends Component
 
     public function setTab(string $tab): void
     {
-        if (! in_array($tab, ['form_widget', 'ai_chatbot_widget'], true)) {
+        if (! in_array($tab, ['form_widget', 'ai_chatbot_widget', 'kb_widget'], true)) {
             return;
         }
 

@@ -4,6 +4,12 @@ namespace App\Livewire\Tickets;
 
 use App\Ai\Agents\SupportReplyAgent;
 use App\Mail\AgentRepliedToTicket;
+use App\Mail\TicketClosed;
+use App\Mail\TicketResolved;
+use App\Models\AiSuggestionLog;
+use App\Models\CompanyAiSettings;
+use App\Models\KbArticle;
+use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketLog;
 use App\Models\TicketReply;
@@ -52,6 +58,8 @@ class TicketDetails extends Component
 
     public $agentSearch = '';
 
+    public string $kbSearch = '';
+
     #[Validate('required|string|max:5000')]
     public $message = '';
 
@@ -65,6 +73,7 @@ class TicketDetails extends Component
         $this->ticket = $ticket->load([
             'assignedTo:id,name,email',
             'category:id,name,description',
+            'team:id,name,color',
             'replies.user',
             'customer:id,name,email,phone',
             'company:id,name,slug',
@@ -89,6 +98,65 @@ class TicketDetails extends Component
         }
 
         return $query->get(['id', 'name', 'email']);
+    }
+
+    #[Computed]
+    public function teamsForAssign()
+    {
+        return Team::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->select('id', 'name', 'color')
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, array{id: int, title: string, slug: string}>
+     */
+    #[Computed]
+    public function kbResults(): \Illuminate\Support\Collection
+    {
+        if (strlen($this->kbSearch) < 2) {
+            return collect();
+        }
+
+        return KbArticle::query()
+            ->where('status', 'published')
+            ->where('title', 'like', '%'.$this->kbSearch.'%')
+            ->select('id', 'title', 'slug')
+            ->limit(6)
+            ->get()
+            ->map(fn (KbArticle $article) => [
+                'id' => $article->id,
+                'title' => $article->title,
+                'slug' => $article->slug,
+            ]);
+    }
+
+    public function insertKbArticle(string $slug, string $title): void
+    {
+        $url = route('kb.public.article', [
+            'company' => $this->ticket->company->slug,
+            'article' => $slug,
+        ]);
+
+        $this->dispatch('kb-insert', url: $url, title: $title);
+        $this->kbSearch = '';
+    }
+
+    #[Computed]
+    public function aiSettings(): CompanyAiSettings
+    {
+        return CompanyAiSettings::query()->firstOrCreate(
+            ['company_id' => Auth::user()->company_id],
+            [
+                'ai_suggestions_enabled' => false,
+                'ai_summary_enabled' => false,
+                'ai_chatbot_enabled' => false,
+                'ai_auto_triage_enabled' => false,
+                'ai_model' => 'gemini-2.5-flash',
+            ]
+        );
     }
 
     #[Computed]
@@ -133,6 +201,17 @@ class TicketDetails extends Component
         ]);
     }
 
+    private function logSuggestionAction(string $action, ?string $text = null): void
+    {
+        AiSuggestionLog::create([
+            'company_id' => $this->ticket->company_id,
+            'ticket_id' => $this->ticket->id,
+            'user_id' => Auth::id(),
+            'action' => $action,
+            'suggestion_text' => $text,
+        ]);
+    }
+
     public function resolve()
     {
         if ($this->ticket->status === 'resolved') {
@@ -155,7 +234,13 @@ class TicketDetails extends Component
             $this->ticket->assignedTo->notify(new TicketStatusChanged($this->ticket, str_replace('_', ' ', ucfirst($oldStatus)), 'Resolved'));
         }
 
-        $this->logAction('status_changed', 'Ticket resolved.');
+        $customerEmail = $this->ticket->customer_email;
+
+        if ($customerEmail) {
+            Mail::to($customerEmail)->send(new TicketResolved($this->ticket));
+        }
+
+        $this->logAction('resolved', 'Ticket resolved.');
 
         $this->dispatch('show-toast', message: 'Ticket marked as resolved!', type: 'success');
     }
@@ -173,6 +258,7 @@ class TicketDetails extends Component
         $this->ticket->update([
             'status' => 'open',
             'resolved_at' => null,
+            'warning_sent_at' => null,
         ]);
 
         $this->ticket->refresh();
@@ -226,6 +312,21 @@ class TicketDetails extends Component
         $this->logAction('assigned', $agentId === null ? 'Unassigned.' : "Assigned to {$agent->name}.");
 
         $this->dispatch('show-toast', message: $agentId === null ? 'Ticket unassigned!' : "Ticket assigned to {$agent->name}!", type: 'success');
+    }
+
+    public function assignToTeam(?int $teamId): void
+    {
+        if ($this->ticket->team_id === $teamId) {
+            return;
+        }
+
+        $this->ticket->update(['team_id' => $teamId]);
+        $this->ticket->refresh();
+        $this->ticket->load('team:id,name,color');
+
+        $teamName = $teamId ? $this->ticket->team?->name : null;
+        $this->logAction('team_assigned', $teamId ? "Assigned to team {$teamName}." : 'Removed from team.');
+        $this->dispatch('show-toast', message: $teamId ? "Assigned to team {$teamName}!" : 'Removed from team.', type: 'success');
     }
 
     public function changePriority($priority)
@@ -301,6 +402,7 @@ class TicketDetails extends Component
         $this->ticket->update([
             'status' => 'closed',
             'closed_at' => now(),
+            'close_reason' => 'manual',
         ]);
 
         $this->ticket->refresh();
@@ -310,7 +412,13 @@ class TicketDetails extends Component
             $this->ticket->assignedTo->notify(new TicketStatusChanged($this->ticket, str_replace('_', ' ', ucfirst($oldStatus)), 'Closed'));
         }
 
-        $this->logAction('status_changed', 'Ticket closed.');
+        $customerEmail = $this->ticket->customer_email;
+
+        if ($customerEmail) {
+            Mail::to($customerEmail)->send(new TicketClosed($this->ticket, 'manual'));
+        }
+
+        $this->logAction('manually_closed', 'Ticket closed manually.');
 
         $this->dispatch('show-toast', message: 'Ticket closed successfully!', type: 'success');
     }
@@ -392,6 +500,12 @@ class TicketDetails extends Component
             return;
         }
 
+        if (! $this->aiSettings->ai_suggestions_enabled) {
+            $this->dispatch('show-toast', message: 'AI suggestions are disabled in settings.', type: 'error');
+
+            return;
+        }
+
         $this->showAiSuggestion = true;
         $this->aiLoading = true;
         $this->aiSuggestion = '';
@@ -401,6 +515,12 @@ class TicketDetails extends Component
     public function generateAiSuggestion()
     {
         if ($this->ticket->status === 'closed') {
+            return;
+        }
+
+        $settings = $this->aiSettings;
+
+        if (! $settings->ai_suggestions_enabled) {
             return;
         }
 
@@ -435,13 +555,22 @@ class TicketDetails extends Component
 
         try {
             $agent = new SupportReplyAgent;
-            $result = $agent->prompt($context);
+            $result = $agent->prompt(
+                $context,
+                provider: $settings->resolveProvider(),
+                model: $settings->ai_model,
+            );
 
             $this->aiSuggestion = (string) $result;
         } catch (\Exception $e) {
-            $this->aiSuggestion = 'Failed to generate suggestion: '.$e->getMessage();
+            $errorMsg = str_contains(strtolower($e->getMessage()), 'rate limit')
+                ? 'AI provider rate limit reached. Please wait a moment and try again.'
+                : 'Failed to generate suggestion: '.$e->getMessage();
+            $this->aiSuggestion = $errorMsg;
+            $this->dispatch('show-toast', message: $errorMsg, type: 'error');
         }
 
+        $this->logSuggestionAction('generate', $this->aiSuggestion);
         $this->aiLoading = false;
     }
 
@@ -453,15 +582,23 @@ class TicketDetails extends Component
 
         $this->aiTone = $tone;
         $this->aiLoading = true;
-        // Do not clear $this->aiSuggestion here, so Alpine can fade it out.
-        // We defer to let Alpine pick up the aiLoading = true state,
-        // and then we generate the suggestion.
+        $this->logSuggestionAction('regenerate');
         $this->js('$wire.generateAiSuggestion()');
     }
 
     // AI Summary methods
     public function generateAiSummary()
     {
+        $settings = $this->aiSettings;
+
+        if (! $settings->ai_summary_enabled) {
+            $this->summaryLoading = false;
+            $this->showSummary = false;
+            $this->dispatch('show-toast', message: 'AI summary is disabled in settings.', type: 'error');
+
+            return;
+        }
+
         $this->summaryLoading = true;
 
         // Load replies with user relationship to avoid lazy loading
@@ -505,10 +642,19 @@ class TicketDetails extends Component
 
         try {
             $agent = new SupportReplyAgent;
-            $result = $agent->prompt($prompt);
+            $result = $agent->prompt(
+                $prompt,
+                provider: $settings->resolveProvider(),
+                model: $settings->ai_model,
+            );
             $this->aiSummary = (string) $result;
+            $this->dispatch('show-toast', message: 'AI summary generated.', type: 'success');
         } catch (\Exception $e) {
+            $summaryError = str_contains(strtolower($e->getMessage()), 'rate limit')
+                ? 'AI provider rate limit reached. Please wait a moment and try again.'
+                : 'Failed to generate AI summary.';
             $this->aiSummary = 'Issue: Unable to generate summary.\nProgress: -\nNext Step: -';
+            $this->dispatch('show-toast', message: $summaryError, type: 'error');
         }
 
         $this->summaryLoading = false;
@@ -530,14 +676,23 @@ class TicketDetails extends Component
         $this->js('$wire.generateAiSummary()');
     }
 
-    public function useAiSuggestion()
+    public function useAiSuggestion(?string $content = null)
     {
-        $this->dispatch('loadAiSuggestion', content: $this->aiSuggestion);
+        $suggestionContent = trim((string) ($content ?? $this->aiSuggestion));
+
+        if ($suggestionContent === '') {
+            return;
+        }
+
+        $this->logSuggestionAction('use', $suggestionContent);
+        $this->dispatch('loadAiSuggestion', content: $suggestionContent);
         $this->showAiSuggestion = false;
+        $this->dispatch('show-toast', message: 'AI suggestion applied to reply.', type: 'success');
     }
 
     public function dismissAiSuggestion()
     {
+        $this->logSuggestionAction('dismiss');
         $this->showAiSuggestion = false;
         $this->aiSuggestion = '';
     }
@@ -571,9 +726,17 @@ class TicketDetails extends Component
 
         $this->reset(['internalNote']);
 
-        // Notify assigned agent about internal note
-        if ($this->ticket->assigned_to && $this->ticket->assigned_to !== Auth::id() && $this->ticket->assignedTo) {
-            $this->ticket->assignedTo->notify(new InternalNoteAdded($this->ticket));
+        // Notify admins and assigned agent about internal note
+        $recipients = User::where('company_id', $this->ticket->company_id)
+            ->where('id', '!=', Auth::id())
+            ->where(function ($query) {
+                $query->where('role', 'admin')
+                    ->orWhere('id', $this->ticket->assigned_to);
+            })
+            ->get();
+
+        foreach ($recipients as $recipient) {
+            $recipient->notify(new InternalNoteAdded($this->ticket));
         }
 
         $this->dispatch('show-toast', message: 'Internal note added successfully!', type: 'success');
@@ -585,6 +748,7 @@ class TicketDetails extends Component
             'ticket' => $this->ticket,
             'state' => $this->state,
             'agents' => $this->agents(),
+            'teams' => $this->teamsForAssign(),
         ]);
     }
 }

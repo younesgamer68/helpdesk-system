@@ -126,7 +126,7 @@ it('allows admin to reply disguised as another agent', function () {
     ]);
 });
 
-it('sets ticket to pending on new customer reply', function () {
+it('reopens resolved ticket to open status on new customer reply', function () {
     $this->ticket->update(['status' => 'resolved']);
 
     Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
@@ -134,7 +134,7 @@ it('sets ticket to pending on new customer reply', function () {
         ->call('submitReply')
         ->assertHasNoErrors();
 
-    expect($this->ticket->fresh()->status)->toBe('pending');
+    expect($this->ticket->fresh()->status)->toBe('open');
 });
 
 it('notifies assigned agent when client replies', function () {

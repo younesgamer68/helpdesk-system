@@ -1,4 +1,13 @@
-@props(['ticket', 'senderId', 'showAiSuggestion', 'aiTone', 'attachments'])
+@props([
+    'ticket',
+    'senderId',
+    'showAiSuggestion',
+    'aiTone',
+    'attachments',
+    'kbSearch' => '',
+    'kbResults' => collect(),
+    'aiSuggestionsEnabled' => false,
+])
 
 <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
     <form wire:submit="addReply">
@@ -22,14 +31,16 @@
                     </flux:dropdown>
                 </div>
 
-                <button type="button" wire:click="startAiSuggestion"
-                    class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 rounded-lg transition-colors border border-transparent hover:border-teal-500/30">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Generate AI Suggestion
-                </button>
+                @if ($aiSuggestionsEnabled)
+                    <button type="button" wire:click="startAiSuggestion"
+                        class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 rounded-lg transition-colors border border-transparent hover:border-teal-500/30">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Generate AI Suggestion
+                    </button>
+                @endif
             </div>
 
             {{-- AI Suggestion Helper --}}
@@ -59,8 +70,7 @@
                 },
                 useSuggestion() {
                     const content = this.$refs.editableSuggestion.innerHTML;
-                    $dispatch('loadAiSuggestion', { content: content });
-                    $wire.dismissAiSuggestion();
+                    $wire.useAiSuggestion(content);
                 }
             }" x-init="$watch('suggestionText', value => { if (value) startTyping(); })">
                 @if ($showAiSuggestion)
@@ -122,7 +132,7 @@
             </div>
 
             <div class="relative">
-                <x-tiptap-editor model="message" />
+                <x-tiptap-editor model="message" :kbSearch="$kbSearch" :kbResults="$kbResults" />
 
                 <div class="absolute bottom-3 right-3 flex items-center gap-2">
 
@@ -159,7 +169,7 @@
             </div>
             <div class="flex gap-2 items-center">
                 <label
-                    class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:text-zinc-100 cursor-pointer mr-2">
+                    class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer mr-2">
                     <input type="checkbox" wire:model="keepOpen"
                         class="rounded bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-teal-600 focus:ring-teal-500">
                     Keep open

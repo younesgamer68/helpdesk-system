@@ -14,6 +14,9 @@
                 <flux:navlist.item :href="route('kb.categories', ['company' => Auth::user()->company->slug])"
                     :current="request()->routeIs('kb.categories')" wire:navigate>{{ __('Categories') }}
                 </flux:navlist.item>
+                <flux:navlist.item :href="route('kb.api', ['company' => Auth::user()->company->slug])"
+                    :current="request()->routeIs('kb.api')" wire:navigate>{{ __('API') }}
+                </flux:navlist.item>
             </flux:navlist>
         </div>
 

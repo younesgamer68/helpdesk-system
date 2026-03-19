@@ -8,16 +8,29 @@
 - [EnsureCompanyIsOnboarded.php](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php)
 - [EnsureUserIsPending.php](file://app/Http/Middleware/EnsureUserIsPending.php)
 - [IdentifyCompanyFromSubdomain.php](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php)
+- [TrackUserActivity.php](file://app/Http/Middleware/TrackUserActivity.php)
 - [web.php](file://routes/web.php)
 - [auth.php](file://config/auth.php)
 - [session.php](file://config/session.php)
 - [fortify.php](file://config/fortify.php)
 - [purifier.php](file://config/purifier.php)
 - [User.php](file://app/Models/User.php)
+- [TicketAssignmentService.php](file://app/Services/TicketAssignmentService.php)
+- [TenantConfig.php](file://app/Models/TenantConfig.php)
+- [MarkInactiveUsers.php](file://app/Console/Commands/MarkInactiveUsers.php)
+- [bootstrap/app.php](file://bootstrap/app.php)
 - [providers.php](file://bootstrap/providers.php)
 - [AppServiceProvider.php](file://app/Providers/AppServiceProvider.php)
 - [FortifyServiceProvider.php](file://app/Providers/FortifyServiceProvider.php)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Added comprehensive documentation for TrackUserActivity middleware and its role in user activity tracking
+- Enhanced authentication system documentation to include personal access tokens and tenant configuration support
+- Updated middleware architecture to reflect the new TrackUserActivity middleware placement in the middleware stack
+- Added documentation for tenant configuration management and its impact on user activity tracking
+- Expanded security considerations to include activity monitoring and automated user status management
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -32,18 +45,19 @@
 10. [Appendices](#appendices)
 
 ## Introduction
-This document explains the middleware stack and security implementation of the Helpdesk System. It focuses on role-based access control (RBAC) with AdminOnly and AgentOnly guards, company isolation enforcement, authentication and session management, CSRF protection, input validation, and XSS prevention via HTML purification. It also documents two-factor authentication (2FA) middleware and recovery mechanisms, and provides practical guidance for creating custom middleware, extending security policies, and adding additional security layers.
+This document explains the middleware stack and security implementation of the Helpdesk System. It focuses on role-based access control (RBAC) with AdminOnly and AgentOnly guards, company isolation enforcement, authentication and session management, CSRF protection, input validation, and XSS prevention via HTML purification. It also documents two-factor authentication (2FA) middleware and recovery mechanisms, user activity tracking through the TrackUserActivity middleware, and provides practical guidance for creating custom middleware, extending security policies, and adding additional security layers.
 
 ## Project Structure
-Security and middleware logic is primarily implemented in dedicated middleware classes under app/Http/Middleware and applied in routes/web.php. Authentication and session configuration live in config/*. Fortify integrates authentication features and rate limiting. HTML sanitization is configured via config/purifier.php. User roles and 2FA capabilities are modeled in the User model.
+Security and middleware logic is primarily implemented in dedicated middleware classes under app/Http/Middleware and applied in routes/web.php. Authentication and session configuration live in config/*. Fortify integrates authentication features and rate limiting. HTML sanitization is configured via config/purifier.php. User roles and 2FA capabilities are modeled in the User model. The TrackUserActivity middleware provides comprehensive user activity tracking and automated ticket assignment.
 
 ```mermaid
 graph TB
 subgraph "Routing"
 RWeb["routes/web.php"]
 end
-subgraph "Middleware"
+subgraph "Middleware Stack"
 MSub["IdentifyCompanyFromSubdomain"]
+MTrack["TrackUserActivity"]
 MComp["EnsureUserBelongsToCompany"]
 MOnb["EnsureCompanyIsOnboarded"]
 MPend["EnsureUserIsPending"]
@@ -58,14 +72,20 @@ CPur["config/purifier.php"]
 end
 subgraph "Models"
 U["User"]
+TAS["TicketAssignmentService"]
+TC["TenantConfig"]
 end
 RWeb --> MSub
+RWeb --> MTrack
 RWeb --> MComp
 RWeb --> MOnb
 RWeb --> MPend
 RWeb --> MAdmin
 RWeb --> MAgent
 MSub --> U
+MTrack --> U
+MTrack --> TAS
+TAS --> TC
 MComp --> U
 MAdmin --> U
 MAgent --> U
@@ -76,7 +96,9 @@ CFort --> CSess
 
 **Diagram sources**
 - [web.php:71-114](file://routes/web.php#L71-L114)
+- [bootstrap/app.php:25-28](file://bootstrap/app.php#L25-L28)
 - [IdentifyCompanyFromSubdomain.php:12-36](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php#L12-L36)
+- [TrackUserActivity.php:12-46](file://app/Http/Middleware/TrackUserActivity.php#L12-L46)
 - [EnsureUserBelongsToCompany.php:11-37](file://app/Http/Middleware/EnsureUserBelongsToCompany.php#L11-L37)
 - [EnsureCompanyIsOnboarded.php:16-26](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php#L16-L26)
 - [EnsureUserIsPending.php:16-24](file://app/Http/Middleware/EnsureUserIsPending.php#L16-L24)
@@ -87,10 +109,14 @@ CFort --> CSess
 - [fortify.php:18-120](file://config/fortify.php#L18-L120)
 - [purifier.php:20-108](file://config/purifier.php#L20-L108)
 - [User.php:13-15](file://app/Models/User.php#L13-L15)
+- [TicketAssignmentService.php:14-331](file://app/Services/TicketAssignmentService.php#L14-L331)
+- [TenantConfig.php:8-34](file://app/Models/TenantConfig.php#L8-L34)
 
 **Section sources**
 - [web.php:11-117](file://routes/web.php#L11-L117)
+- [bootstrap/app.php:15-32](file://bootstrap/app.php#L15-L32)
 - [IdentifyCompanyFromSubdomain.php:1-54](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php#L1-L54)
+- [TrackUserActivity.php:1-47](file://app/Http/Middleware/TrackUserActivity.php#L1-L47)
 - [EnsureUserBelongsToCompany.php:1-39](file://app/Http/Middleware/EnsureUserBelongsToCompany.php#L1-L39)
 - [EnsureCompanyIsOnboarded.php:1-28](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php#L1-L28)
 - [EnsureUserIsPending.php:1-25](file://app/Http/Middleware/EnsureUserIsPending.php#L1-L25)
@@ -101,6 +127,8 @@ CFort --> CSess
 - [fortify.php:1-158](file://config/fortify.php#L1-L158)
 - [purifier.php:1-108](file://config/purifier.php#L1-L108)
 - [User.php:1-137](file://app/Models/User.php#L1-L137)
+- [TicketAssignmentService.php:1-331](file://app/Services/TicketAssignmentService.php#L1-L331)
+- [TenantConfig.php:1-34](file://app/Models/TenantConfig.php#L1-L34)
 
 ## Core Components
 - Role-based access control:
@@ -111,6 +139,10 @@ CFort --> CSess
   - EnsureUserBelongsToCompany verifies the authenticated user belongs to the requested company.
   - EnsureCompanyIsOnboarded redirects unonboarded companies to the onboarding wizard.
   - EnsureUserIsPending enforces pending user flows (e.g., set-password).
+- User activity tracking:
+  - TrackUserActivity middleware updates user activity timestamps on every request with throttling to prevent database spam.
+  - Automatically assigns pending tickets when operators come online.
+  - Integrates with TenantConfig for maximum tickets per agent limits.
 - Authentication and session:
   - config/auth.php defines the session-based guard and user provider.
   - config/session.php controls cookie attributes, lifetime, and security flags.
@@ -122,6 +154,7 @@ CFort --> CSess
 - [AdminOnly.php:16-23](file://app/Http/Middleware/AdminOnly.php#L16-L23)
 - [AgentOnly.php:16-23](file://app/Http/Middleware/AgentOnly.php#L16-L23)
 - [IdentifyCompanyFromSubdomain.php:12-36](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php#L12-L36)
+- [TrackUserActivity.php:16-46](file://app/Http/Middleware/TrackUserActivity.php#L16-L46)
 - [EnsureUserBelongsToCompany.php:11-37](file://app/Http/Middleware/EnsureUserBelongsToCompany.php#L11-L37)
 - [EnsureCompanyIsOnboarded.php:16-26](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php#L16-L26)
 - [EnsureUserIsPending.php:16-24](file://app/Http/Middleware/EnsureUserIsPending.php#L16-L24)
@@ -131,13 +164,14 @@ CFort --> CSess
 - [purifier.php:20-108](file://config/purifier.php#L20-L108)
 
 ## Architecture Overview
-The middleware stack is applied per subdomain company context. Requests enter via routes/web.php, pass through subdomain identification, company access checks, onboarding gating, and finally role-based access control before reaching controllers or Livewire components.
+The middleware stack is applied per subdomain company context. Requests enter via routes/web.php, pass through subdomain identification, user activity tracking, company access checks, onboarding gating, and finally role-based access control before reaching controllers or Livewire components.
 
 ```mermaid
 sequenceDiagram
 participant Client as "Client"
 participant Router as "routes/web.php"
 participant Sub as "IdentifyCompanyFromSubdomain"
+participant Track as "TrackUserActivity"
 participant Comp as "EnsureUserBelongsToCompany"
 participant Onb as "EnsureCompanyIsOnboarded"
 participant RBAC as "AdminOnly/AgentOnly"
@@ -145,6 +179,8 @@ participant Ctrl as "Controller/Livewire"
 Client->>Router : "HTTP Request"
 Router->>Sub : "Apply subdomain middleware"
 Sub-->>Router : "Attach company to request"
+Router->>Track : "Update user activity tracking"
+Track-->>Router : "Throttled DB update & potential ticket assignment"
 Router->>Comp : "Verify user belongs to company"
 Comp-->>Router : "Allow or abort/redirect"
 Router->>Onb : "Check onboarding state"
@@ -157,7 +193,9 @@ Ctrl-->>Client : "Response"
 
 **Diagram sources**
 - [web.php:71-114](file://routes/web.php#L71-L114)
+- [bootstrap/app.php:25-28](file://bootstrap/app.php#L25-L28)
 - [IdentifyCompanyFromSubdomain.php:12-36](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php#L12-L36)
+- [TrackUserActivity.php:21-46](file://app/Http/Middleware/TrackUserActivity.php#L21-L46)
 - [EnsureUserBelongsToCompany.php:11-37](file://app/Http/Middleware/EnsureUserBelongsToCompany.php#L11-L37)
 - [EnsureCompanyIsOnboarded.php:16-26](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php#L16-L26)
 - [AdminOnly.php:16-23](file://app/Http/Middleware/AdminOnly.php#L16-L23)
@@ -231,6 +269,39 @@ Match --> |Yes| Next2["Call next()"]
 - [EnsureUserBelongsToCompany.php:11-37](file://app/Http/Middleware/EnsureUserBelongsToCompany.php#L11-L37)
 - [web.php:71-114](file://routes/web.php#L71-L114)
 
+### User Activity Tracking Middleware
+- TrackUserActivity:
+  - Updates user activity timestamps on every request with throttling to prevent database spam.
+  - Throttles updates to once per minute using cache keys.
+  - Automatically assigns pending tickets when operators transition from offline to online status.
+  - Integrates with TenantConfig to respect maximum tickets per agent limits.
+  - Uses TicketAssignmentService for intelligent ticket assignment logic.
+
+```mermaid
+flowchart TD
+Start(["Request enters TrackUserActivity"]) --> CheckAuth["Check if user is authenticated"]
+CheckAuth --> |No| Next["Call next()"]
+CheckAuth --> |Yes| CacheCheck["Check cache key for throttling"]
+CacheCheck --> |Cache exists| Next
+CacheCheck --> |No cache| Update["Update user status to online<br/>Update last_activity timestamp"]
+Update --> CachePut["Put cache key for 5 minutes"]
+CachePut --> CheckOffline["Check if user was offline"]
+CheckOffline --> |Was offline| Assign["Assign pending tickets via TicketAssignmentService"]
+CheckOffline --> |Was online| Next
+Assign --> Next
+```
+
+**Diagram sources**
+- [TrackUserActivity.php:21-46](file://app/Http/Middleware/TrackUserActivity.php#L21-L46)
+- [TicketAssignmentService.php:306-329](file://app/Services/TicketAssignmentService.php#L306-L329)
+- [TenantConfig.php:16-33](file://app/Models/TenantConfig.php#L16-L33)
+
+**Section sources**
+- [TrackUserActivity.php:16-46](file://app/Http/Middleware/TrackUserActivity.php#L16-L46)
+- [bootstrap/app.php:25-28](file://bootstrap/app.php#L25-L28)
+- [TicketAssignmentService.php:306-329](file://app/Services/TicketAssignmentService.php#L306-L329)
+- [TenantConfig.php:16-33](file://app/Models/TenantConfig.php#L16-L33)
+
 ### Authentication Middleware Chain and Session Management
 - Authentication guard:
   - Session-based guard "web" with Eloquent provider for User model.
@@ -269,7 +340,7 @@ Fortify-->>Client : "Redirect or 2FA challenge"
 
 ### CSRF Protection, Input Validation, and XSS Prevention
 - CSRF protection:
-  - Laravel’s default CSRF middleware is applied via the "web" middleware group in routes/web.php.
+  - Laravel's default CSRF middleware is applied via the "web" middleware group in routes/web.php.
   - Session cookie SameSite policy is configurable; recommended "lax" for cross-site requests.
 - Input validation:
   - Use Laravel Form Requests and validation rules for all user inputs.
@@ -345,9 +416,19 @@ Fortify-->>Client : "Grant access"
 - [EnsureCompanyIsOnboarded.php:16-26](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php#L16-L26)
 - [web.php:75-78](file://routes/web.php#L75-L78)
 
+### Automated User Status Management
+- Inactive User Detection:
+  - Console command automatically marks users as offline after 5 minutes of inactivity.
+  - Bypasses company scoping for global user updates.
+  - Updates user status in database and provides feedback on processed users.
+
+**Section sources**
+- [MarkInactiveUsers.php:21-36](file://app/Console/Commands/MarkInactiveUsers.php#L21-L36)
+
 ## Dependency Analysis
 - Routing depends on middleware registration via route groups.
 - Middleware depends on the User model for role/company checks.
+- TrackUserActivity middleware depends on TicketAssignmentService and TenantConfig for intelligent ticket assignment.
 - Session and authentication configuration influence middleware behavior (e.g., redirects, rate limits).
 - Fortify provides 2FA and rate limiting that complement middleware.
 
@@ -358,9 +439,13 @@ R --> M2["AgentOnly"]
 R --> M3["EnsureCompanyIsOnboarded"]
 R --> M4["EnsureUserBelongsToCompany"]
 R --> M5["IdentifyCompanyFromSubdomain"]
+R --> M6["TrackUserActivity"]
 M4 --> U["User"]
 M1 --> U
 M2 --> U
+M6 --> U
+M6 --> TAS["TicketAssignmentService"]
+TAS --> TC["TenantConfig"]
 CAuth["config/auth.php"] --> CSess["config/session.php"]
 CFort["config/fortify.php"] --> CAuth
 CFort --> CSess
@@ -368,16 +453,21 @@ CFort --> CSess
 
 **Diagram sources**
 - [web.php:71-114](file://routes/web.php#L71-L114)
+- [bootstrap/app.php:25-28](file://bootstrap/app.php#L25-L28)
 - [AdminOnly.php:16-23](file://app/Http/Middleware/AdminOnly.php#L16-L23)
 - [AgentOnly.php:16-23](file://app/Http/Middleware/AgentOnly.php#L16-L23)
 - [EnsureUserBelongsToCompany.php:11-37](file://app/Http/Middleware/EnsureUserBelongsToCompany.php#L11-L37)
 - [IdentifyCompanyFromSubdomain.php:12-36](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php#L12-L36)
+- [TrackUserActivity.php:14-46](file://app/Http/Middleware/TrackUserActivity.php#L14-L46)
+- [TicketAssignmentService.php:14-331](file://app/Services/TicketAssignmentService.php#L14-L331)
+- [TenantConfig.php:8-34](file://app/Models/TenantConfig.php#L8-L34)
 - [auth.php:38-43](file://config/auth.php#L38-L43)
 - [session.php:21-218](file://config/session.php#L21-L218)
 - [fortify.php:18-120](file://config/fortify.php#L18-L120)
 
 **Section sources**
 - [web.php:71-114](file://routes/web.php#L71-L114)
+- [bootstrap/app.php:25-28](file://bootstrap/app.php#L25-L28)
 - [User.php:13-15](file://app/Models/User.php#L13-L15)
 - [auth.php:38-43](file://config/auth.php#L38-L43)
 - [session.php:21-218](file://config/session.php#L21-L218)
@@ -388,6 +478,8 @@ CFort --> CSess
 - Use appropriate SameSite and Secure cookie flags to balance security and performance.
 - Leverage caching for company-scoped data to reduce repeated joins and queries.
 - Keep HTMLPurifier cache warm by enabling finalize and persistent cache path.
+- TrackUserActivity middleware uses cache throttling to prevent database spam during frequent requests.
+- TenantConfig caching should be considered for maximum tickets per agent lookups.
 
 [No sources needed since this section provides general guidance]
 
@@ -405,6 +497,16 @@ CFort --> CSess
   - Confirm EnsureUserIsPending middleware precedes set-password routes and pending session exists.
 - 2FA challenges failing:
   - Review Fortify two-factor limiter and ensure password confirmation is enforced when required.
+- User activity tracking issues:
+  - Verify TrackUserActivity middleware is registered in bootstrap/app.php.
+  - Check cache configuration for proper throttling behavior.
+  - Ensure TicketAssignmentService is properly injected and functioning.
+- Ticket assignment problems:
+  - Verify TenantConfig maximum tickets per agent settings are appropriate.
+  - Check that operators meet availability and specialty requirements.
+- Inactive user detection failures:
+  - Confirm MarkInactiveUsers console command is scheduled and running.
+  - Verify database permissions for global user updates bypassing company scopes.
 
 **Section sources**
 - [AdminOnly.php:16-23](file://app/Http/Middleware/AdminOnly.php#L16-L23)
@@ -413,10 +515,15 @@ CFort --> CSess
 - [EnsureCompanyIsOnboarded.php:16-26](file://app/Http/Middleware/EnsureCompanyIsOnboarded.php#L16-L26)
 - [EnsureUserIsPending.php:16-24](file://app/Http/Middleware/EnsureUserIsPending.php#L16-L24)
 - [IdentifyCompanyFromSubdomain.php:12-36](file://app/Http/Middleware/IdentifyCompanyFromSubdomain.php#L12-L36)
+- [TrackUserActivity.php:16-46](file://app/Http/Middleware/TrackUserActivity.php#L16-L46)
+- [bootstrap/app.php:25-28](file://bootstrap/app.php#L25-L28)
+- [TicketAssignmentService.php:16-21](file://app/Services/TicketAssignmentService.php#L16-L21)
+- [TenantConfig.php:30-33](file://app/Models/TenantConfig.php#L30-L33)
+- [MarkInactiveUsers.php:26-36](file://app/Console/Commands/MarkInactiveUsers.php#L26-L36)
 - [fortify.php:150-154](file://config/fortify.php#L150-L154)
 
 ## Conclusion
-The middleware stack enforces strict role-based access control and company isolation, backed by robust authentication and session management. CSRF protection, input validation, and HTML purification provide layered defense against common vulnerabilities. Fortify’s 2FA and rate limiting further strengthen security. Adhering to the documented patterns ensures consistent and secure behavior across the application.
+The middleware stack enforces strict role-based access control and company isolation, backed by robust authentication and session management. The new TrackUserActivity middleware provides comprehensive user activity tracking with intelligent ticket assignment capabilities. Tenant configuration support ensures scalable multi-tenant operations with configurable limits. CSRF protection, input validation, and HTML purification provide layered defense against common vulnerabilities. Fortify's 2FA and rate limiting further strengthen security. Adhering to the documented patterns ensures consistent and secure behavior across the application.
 
 [No sources needed since this section summarizes without analyzing specific files]
 
@@ -431,15 +538,18 @@ The middleware stack enforces strict role-based access control and company isola
 - Example pattern references:
   - [AdminOnly.php:16-23](file://app/Http/Middleware/AdminOnly.php#L16-L23)
   - [AgentOnly.php:16-23](file://app/Http/Middleware/AgentOnly.php#L16-L23)
+  - [TrackUserActivity.php:21-46](file://app/Http/Middleware/TrackUserActivity.php#L21-L46)
 
 **Section sources**
 - [AdminOnly.php:16-23](file://app/Http/Middleware/AdminOnly.php#L16-L23)
 - [AgentOnly.php:16-23](file://app/Http/Middleware/AgentOnly.php#L16-L23)
+- [TrackUserActivity.php:21-46](file://app/Http/Middleware/TrackUserActivity.php#L21-L46)
 
 ### Extending Security Policies
 - Use gates and policies for resource-level permissions alongside middleware.
 - Combine RBAC middleware with authorization gates for fine-grained controls.
 - Keep policy logic close to the domain model and reuse across controllers and Livewire components.
+- Integrate user activity tracking with custom security policies for behavioral analysis.
 
 [No sources needed since this section provides general guidance]
 
@@ -452,9 +562,29 @@ The middleware stack enforces strict role-based access control and company isola
   - Validate and sanitize all user inputs; prefer HTMLPurifier for rich text.
 - Audit and monitoring:
   - Log authentication events, 2FA attempts, and access denials.
+  - Monitor user activity patterns through TrackUserActivity data.
+- Automated user management:
+  - Implement scheduled tasks for inactive user detection and cleanup.
 
 **Section sources**
 - [session.php:172](file://config/session.php#L172)
 - [session.php:202](file://config/session.php#L202)
 - [session.php:185](file://config/session.php#L185)
 - [purifier.php:26-33](file://config/purifier.php#L26-L33)
+- [TrackUserActivity.php:16-46](file://app/Http/Middleware/TrackUserActivity.php#L16-L46)
+- [MarkInactiveUsers.php:21-36](file://app/Console/Commands/MarkInactiveUsers.php#L21-L36)
+
+### Tenant Configuration Management
+- TenantConfig model provides:
+  - Plan-based feature enablement and limits management.
+  - Maximum tickets per agent configuration for load balancing.
+  - Per-company database connection settings for multi-tenancy.
+- Integration points:
+  - TicketAssignmentService uses TenantConfig for maximum load calculations.
+  - TrackUserActivity respects company-specific configuration limits.
+  - User activity tracking adapts to company-specific constraints.
+
+**Section sources**
+- [TenantConfig.php:16-33](file://app/Models/TenantConfig.php#L16-L33)
+- [TicketAssignmentService.php:16-21](file://app/Services/TicketAssignmentService.php#L16-L21)
+- [TrackUserActivity.php:38-40](file://app/Http/Middleware/TrackUserActivity.php#L38-L40)

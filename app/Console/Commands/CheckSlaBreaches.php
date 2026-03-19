@@ -36,7 +36,7 @@ class CheckSlaBreaches extends Command
         $tickets = Ticket::withoutGlobalScope(\App\Scopes\CompanyScope::class)
             ->whereNotNull('due_time')
             ->whereNotIn('status', ['resolved', 'closed'])
-            ->with(['assignedTo:id,company_id'])
+            ->with(['assignedTo:id,company_id', 'company:id,timezone'])
             ->get();
 
         if ($tickets->isEmpty()) {
@@ -96,7 +96,10 @@ class CheckSlaBreaches extends Command
             return 'on_time';
         }
 
-        $remainingSeconds = now()->diffInSeconds($dueTime, false);
+        $timezone = $ticket->company?->timezone ?? 'UTC';
+        $currentTime = now($timezone);
+
+        $remainingSeconds = $currentTime->diffInSeconds($dueTime, false);
 
         if ($remainingSeconds <= 0) {
             return 'breached';

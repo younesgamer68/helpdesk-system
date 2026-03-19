@@ -31,9 +31,10 @@ it('renders the channels page for admins', function () {
     actingAs($admin)
         ->get("http://{$company->slug}.".config('app.domain').'/channels')
         ->assertOk()
-        ->assertSee('Channels')
+        ->assertSee('Integrations')
         ->assertSee('Form Widget')
-        ->assertSee('AI Chatbot Widget');
+        ->assertSee('AI Chatbot Widget')
+        ->assertSee('KB Widget');
 });
 
 it('redirects non-admin users away from channels page', function () {
@@ -111,5 +112,69 @@ it('renders chatbot widget when enabled with a valid key', function () {
 
     get("http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$key}")
         ->assertOk()
-        ->assertSee('Assistant');
+        ->assertSee($company->name);
+});
+
+it('returns chatbot embed js when enabled with a valid key', function () {
+    [$admin, $company] = createOnboardedCompanyAdmin();
+
+    WidgetSetting::query()->create([
+        'company_id' => $company->id,
+        'theme_mode' => 'dark',
+        'form_title' => 'Submit a Support Ticket',
+        'welcome_message' => '',
+        'success_message' => 'Thanks',
+        'require_phone' => false,
+        'show_category' => true,
+        'default_status' => 'pending',
+        'default_priority' => 'medium',
+        'is_active' => true,
+    ]);
+
+    CompanyAiSettings::query()->create([
+        'company_id' => $company->id,
+        'ai_chatbot_enabled' => true,
+        'chatbot_greeting' => 'Hi! How can I help you today?',
+        'chatbot_fallback_threshold' => 2,
+    ]);
+
+    actingAs($admin);
+
+    $key = WidgetSetting::query()->where('company_id', $company->id)->value('widget_key');
+
+    get("http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$key}/embed.js")
+        ->assertOk()
+        ->assertHeader('Content-Type', 'application/javascript')
+        ->assertSee('helpdesk-chatbot-widget-root');
+});
+
+it('returns 404 for chatbot embed js when chatbot is disabled', function () {
+    [$admin, $company] = createOnboardedCompanyAdmin();
+
+    WidgetSetting::query()->create([
+        'company_id' => $company->id,
+        'theme_mode' => 'dark',
+        'form_title' => 'Submit a Support Ticket',
+        'welcome_message' => '',
+        'success_message' => 'Thanks',
+        'require_phone' => false,
+        'show_category' => true,
+        'default_status' => 'pending',
+        'default_priority' => 'medium',
+        'is_active' => true,
+    ]);
+
+    CompanyAiSettings::query()->create([
+        'company_id' => $company->id,
+        'ai_chatbot_enabled' => false,
+        'chatbot_greeting' => 'Hi! How can I help you today?',
+        'chatbot_fallback_threshold' => 2,
+    ]);
+
+    actingAs($admin);
+
+    $key = WidgetSetting::query()->where('company_id', $company->id)->value('widget_key');
+
+    get("http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$key}/embed.js")
+        ->assertNotFound();
 });

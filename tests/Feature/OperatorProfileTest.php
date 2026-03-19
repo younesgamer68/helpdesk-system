@@ -77,3 +77,22 @@ test('removing operator reassigns tickets to unassigned', function () {
     expect($ticket->fresh()->assigned_to)->toBeNull();
     $this->assertSoftDeleted('users', ['id' => $operator->id]);
 });
+
+test('operator availability can be toggled', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin', 'email_verified_at' => now()]);
+    $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator', 'is_available' => true]);
+
+    $this->actingAs($admin);
+    $this->withHeader('Host', $company->slug.'.'.config('app.domain'));
+
+    Livewire::test(OperatorProfile::class, ['operator' => $operator])
+        ->call('toggleAvailability');
+
+    expect($operator->fresh()->is_available)->toBeFalse();
+
+    Livewire::test(OperatorProfile::class, ['operator' => $operator])
+        ->call('toggleAvailability');
+
+    expect($operator->fresh()->is_available)->toBeTrue();
+});

@@ -38,6 +38,23 @@ it('allows onboarded companies to access the dashboard', function () {
         ->assertOk();
 });
 
+it('persists timezone when moving past company profile step', function () {
+    $company = Company::factory()->create([
+        'onboarding_completed_at' => null,
+        'timezone' => 'UTC',
+    ]);
+    $user = User::factory()->create(['company_id' => $company->id]);
+
+    actingAs($user);
+
+    Livewire::test(Wizard::class)
+        ->set('timezone', 'America/New_York')
+        ->call('nextStep')
+        ->assertSet('currentStep', 2);
+
+    expect($company->fresh()->timezone)->toBe('America/New_York');
+});
+
 it('completes the onboarding flow and saves data correctly', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => null]);
     $user = User::factory()->create(['company_id' => $company->id]);
@@ -46,21 +63,23 @@ it('completes the onboarding flow and saves data correctly', function () {
 
     Livewire::test(Wizard::class)
         ->set('timezone', 'Europe/Paris')
+        ->call('nextStep')
+        ->assertSet('currentStep', 2)
         ->set('slaIsEnabled', true)
         ->set('slaLowMinutes', 1500)
         ->call('nextStep')
-        ->assertSet('currentStep', 2)
+        ->assertSet('currentStep', 3)
         ->set('categories', [
             ['name' => 'IT Support'],
             ['name' => 'HR'],
         ])
         ->call('nextStep')
-        ->assertSet('currentStep', 3)
+        ->assertSet('currentStep', 4)
         ->set('invites', [
             ['email' => 'jane@example.com', 'name' => 'Jane Smith', 'role' => 'admin'],
         ])
         ->call('nextStep')
-        ->assertSet('currentStep', 4)
+        ->assertSet('currentStep', 5)
         ->set('widgetThemeMode', 'light')
         ->set('widgetWelcomeMessage', 'Hello World!')
         ->call('completeOnboarding')
@@ -135,6 +154,8 @@ it('allows skipping individual steps', function () {
         ->assertSet('currentStep', 3)
         ->call('skipStep')
         ->assertSet('currentStep', 4)
+        ->call('skipStep')
+        ->assertSet('currentStep', 5)
         ->call('skipStep')
         ->assertRedirect(route('tickets', ['company' => $company->slug]));
 

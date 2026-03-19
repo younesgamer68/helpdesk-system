@@ -32,7 +32,7 @@ class PriorityRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id != $conditions['category_id']) {
+            if (! $this->matchesCategoryCondition($ticket, (int) $conditions['category_id'])) {
                 return false;
             }
         }
@@ -64,5 +64,14 @@ class PriorityRule implements RuleInterface
                 $ticket->saveQuietly();
             }
         }
+    }
+
+    protected function matchesCategoryCondition(Ticket $ticket, int $conditionCategoryId): bool
+    {
+        if ($ticket->category_id === $conditionCategoryId) {
+            return true;
+        }
+
+        return $ticket->category?->parent_id === $conditionCategoryId;
     }
 }

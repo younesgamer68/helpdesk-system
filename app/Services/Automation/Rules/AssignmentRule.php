@@ -3,6 +3,7 @@
 namespace App\Services\Automation\Rules;
 
 use App\Models\AutomationRule;
+use App\Models\Team;
 use App\Models\Ticket;
 use App\Services\TicketAssignmentService;
 
@@ -27,7 +28,7 @@ class AssignmentRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id != $conditions['category_id']) {
+            if (! $this->matchesCategoryCondition($ticket, (int) $conditions['category_id'])) {
                 return false;
             }
         }
@@ -50,6 +51,16 @@ class AssignmentRule implements RuleInterface
     {
         $actions = $rule->actions;
 
+        if (! empty($actions['assign_to_team_id'])) {
+            $team = Team::query()->find($actions['assign_to_team_id']);
+
+            if ($team) {
+                $this->assignmentService->assignToTeam($ticket, $team);
+
+                return;
+            }
+        }
+
         // Use default assignment service if configured
         if (! empty($actions['assign_to_specialist'])) {
             $this->assignmentService->assignTicket($ticket);
@@ -61,5 +72,14 @@ class AssignmentRule implements RuleInterface
         if (! empty($actions['assign_to_operator_id'])) {
             $ticket->update(['assigned_to' => $actions['assign_to_operator_id']]);
         }
+    }
+
+    protected function matchesCategoryCondition(Ticket $ticket, int $conditionCategoryId): bool
+    {
+        if ($ticket->category_id === $conditionCategoryId) {
+            return true;
+        }
+
+        return $ticket->category?->parent_id === $conditionCategoryId;
     }
 }

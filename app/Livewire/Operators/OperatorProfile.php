@@ -32,6 +32,7 @@ class OperatorProfile extends Component
         }
 
         $this->operator = $operator;
+        $this->operator->load('teams:id,name,color');
         $this->role = $operator->role;
 
         $categories = $operator->categories()->pluck('ticket_category_id')->map(fn ($id) => (string) $id)->toArray();
@@ -105,6 +106,12 @@ class OperatorProfile extends Component
         $this->showSpecialtiesModal = false;
         $this->dispatch('show-toast', message: 'Specialties updated successfully.', type: 'success');
         $this->operator->load(['categories', 'specialty']);
+    }
+
+    public function toggleAvailability(): void
+    {
+        $this->operator->is_available = ! $this->operator->is_available;
+        $this->operator->save();
     }
 
     public function removeOperator()

@@ -1,14 +1,38 @@
 <div class="flex items-start max-md:flex-col">
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist aria-label="{{ __('Settings') }}">
-            <flux:navlist.item :href="route('profile.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Profile') }}</flux:navlist.item>
-            <flux:navlist.item :href="route('user-password.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Password') }}
-            </flux:navlist.item>
-            @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
-                <flux:navlist.item :href="route('two-factor.show', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Two-Factor Auth') }}
-                </flux:navlist.item>
+            @if (Auth::user()->isAdmin())
+                <flux:navlist.item
+                    :href="route('company.profile', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                    wire:navigate icon="building-office-2">{{ __('Company Profile') }}</flux:navlist.item>
+
+                <flux:navlist.item
+                    :href="route('settings.ai-copilot', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                    wire:navigate icon="sparkles">{{ __('AI Copilot') }}</flux:navlist.item>
             @endif
-            <flux:navlist.item :href="route('appearance.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate>{{ __('Appearance') }}</flux:navlist.item>
+
+            <flux:navlist.item
+                :href="route('appearance.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate
+                icon="paint-brush">{{ __('Appearance') }}</flux:navlist.item>
+
+            <flux:navlist.item
+                :href="route('settings.security', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                wire:navigate icon="shield-check">{{ __('Security') }}</flux:navlist.item>
+
+            @if (Auth::user()->isAdmin())
+                <flux:navlist.item
+                    :href="route('settings.email', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                    wire:navigate icon="envelope">{{ __('Email') }}</flux:navlist.item>
+            @endif
+
+            <flux:navlist.item
+                :href="route('notifications.preferences', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                wire:navigate icon="bell">{{ __('Notifications') }}</flux:navlist.item>
+
+            <flux:navlist.item
+                :href="route('settings.danger', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate
+                icon="trash" class="text-red-600 hover:text-red-700 dark:text-red-400">{{ __('Danger Zone') }}
+            </flux:navlist.item>
         </flux:navlist>
     </div>
 
@@ -23,7 +47,5 @@
         ]) }}>
             {{ $slot }}
         </div>
-
-
     </div>
 </div>

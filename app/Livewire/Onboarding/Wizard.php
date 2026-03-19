@@ -72,6 +72,15 @@ class Wizard extends Component
         if ($this->currentStep === 1) {
             $this->validate([
                 'timezone' => 'required|string|timezone',
+            ]);
+
+            Auth::user()->company->update([
+                'timezone' => $this->timezone,
+            ]);
+        }
+
+        if ($this->currentStep === 2) {
+            $this->validate([
                 'slaIsEnabled' => 'boolean',
                 'slaLowMinutes' => 'required|integer|min:1',
                 'slaMediumMinutes' => 'required|integer|min:1',
@@ -80,14 +89,14 @@ class Wizard extends Component
             ]);
         }
 
-        if ($this->currentStep === 2) {
+        if ($this->currentStep === 3) {
             $this->validate([
                 'categories' => 'required|array|min:1',
                 'categories.*.name' => 'required|string|max:255',
             ]);
         }
 
-        if ($this->currentStep === 3) {
+        if ($this->currentStep === 4) {
             $this->validate([
                 'invites' => 'nullable|array',
                 'invites.*.email' => 'required|email',
@@ -110,7 +119,7 @@ class Wizard extends Component
 
     public function skipStep()
     {
-        if ($this->currentStep < 4) {
+        if ($this->currentStep < 5) {
             $this->currentStep++;
         } else {
             $this->skipEntireWizard();
@@ -194,7 +203,7 @@ class Wizard extends Component
 
         $company = Auth::user()->company;
 
-        // Save Step 1
+        // Save Steps 1 & 2 (Company Profile + SLA)
         $company->update([
             'timezone' => $this->timezone,
             'onboarding_completed_at' => now(),
@@ -202,7 +211,7 @@ class Wizard extends Component
 
         $this->saveSlaPolicy($company);
 
-        // Save Step 2
+        // Save Step 3 (Categories)
         foreach ($this->categories as $categoryData) {
             $company->categories()->updateOrCreate(
                 ['name' => $categoryData['name']],
@@ -210,7 +219,7 @@ class Wizard extends Component
             );
         }
 
-        // Save Step 3 (Invites)
+        // Save Step 4 (Invites)
         foreach ($this->invites as $inviteData) {
             if (! empty($inviteData['email'])) {
                 $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
@@ -232,17 +241,20 @@ class Wizard extends Component
             }
         }
 
-        // Save Step 4 (Widget Setting)
-        $company->widgetSettings()->create([
-            'widget_key' => \Illuminate\Support\Str::random(32),
-            'theme_mode' => $this->widgetThemeMode,
-            'form_title' => $this->widgetFormTitle,
-            'welcome_message' => $this->widgetWelcomeMessage,
-            'success_message' => $this->widgetSuccessMessage,
-            'require_phone' => $this->widgetRequirePhone,
-            'show_category' => $this->widgetShowCategory,
-            'is_active' => true,
-        ]);
+        // Save Step 5 (Widget Setting)
+        $company->widgetSettings()->updateOrCreate(
+            ['company_id' => $company->id],
+            [
+                'widget_key' => \Illuminate\Support\Str::random(32),
+                'theme_mode' => $this->widgetThemeMode,
+                'form_title' => $this->widgetFormTitle,
+                'welcome_message' => $this->widgetWelcomeMessage,
+                'success_message' => $this->widgetSuccessMessage,
+                'require_phone' => $this->widgetRequirePhone,
+                'show_category' => $this->widgetShowCategory,
+                'is_active' => true,
+            ]
+        );
 
         return redirect()->route('tickets', ['company' => $company->slug]);
     }

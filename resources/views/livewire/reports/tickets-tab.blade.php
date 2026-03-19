@@ -2,7 +2,7 @@
 
 <div class="space-y-6">
     {{-- Filters --}}
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4">
         <div class="flex items-center gap-3">
             <div class="flex-1 min-w-[200px]">
                 <input type="text" wire:model.live.debounce.300ms="ticketSearch"
@@ -43,11 +43,11 @@
     </div>
 
     {{-- Tickets Table --}}
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead
-                    class="text-zinc-500 dark:text-zinc-400 uppercase text-xs font-medium border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
+                    class="text-zinc-500 dark:text-zinc-400 uppercase text-xs font-medium border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
                     <tr>
                         @foreach (['ticket_number' => 'Ticket ID', 'subject' => 'Subject', '_customer' => 'Customer', 'category_id' => 'Category', 'priority' => 'Priority', 'status' => 'Status', 'assigned_to' => 'Agent', 'created_at' => 'Created'] as $col => $heading)
                             <th class="py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -60,7 +60,7 @@
                         <th class="py-3 px-4 text-right">Resolution</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800/90">
+                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700/90">
                     @forelse($this->paginatedTickets as $ticket)
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer"
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
@@ -85,9 +85,9 @@
                             </td>
                             <td class="py-3 px-4 text-zinc-500 dark:text-zinc-400">
                                 {{ $ticket->assignedTo?->name ?? '—' }}</td>
-                            <td class="py-3 px-4 text-zinc-500 text-xs">
+                            <td class="py-3 px-4 text-zinc-500 dark:text-zinc-400 text-xs">
                                 {{ Carbon::parse($ticket->created_at)->format('M j, Y') }}</td>
-                            <td class="py-3 px-4 text-right text-zinc-500 text-xs">
+                            <td class="py-3 px-4 text-right text-zinc-500 dark:text-zinc-400 text-xs">
                                 @if ($ticket->resolved_at)
                                     @php $mins = Carbon::parse($ticket->created_at)->diffInMinutes(Carbon::parse($ticket->resolved_at)); @endphp
                                     {{ floor($mins / 60) }}h {{ $mins % 60 }}m
@@ -107,7 +107,7 @@
             </table>
         </div>
         @if ($this->paginatedTickets->hasPages())
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
+            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
                 {{ $this->paginatedTickets->links() }}
             </div>
         @endif

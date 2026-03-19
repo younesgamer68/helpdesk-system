@@ -53,8 +53,8 @@ class QuickRegisterController extends Controller
             logger()->error('Welcome email failed for user '.$user->id.': '.$e->getMessage());
         }
 
-        // ── 5. Redirect to dashboard ──────────────────────────────────
-        return redirect()->route('dashboard')
+        // ── 5. Redirect to company setup ─────────────────────────────
+        return redirect()->route('setup-company')
             ->with('success', 'Welcome to HelpDesk! Check your email for a confirmation.');
     }
 }

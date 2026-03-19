@@ -25,8 +25,8 @@
 @endphp
 
 {{-- Metrics Strip --}}
-<div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 mb-8">
-    <div class="grid grid-cols-2 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200 dark:divide-zinc-800">
+<div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200 dark:divide-zinc-700">
         @foreach ($metrics as $i => [$label, $value, $prev, $direction])
             <div
                 class="px-4 py-3 lg:py-0 {{ $i === 0 ? 'lg:pl-0' : '' }} {{ $i === count($metrics) - 1 ? 'lg:pr-0' : '' }}">
@@ -56,7 +56,7 @@
 </div>
 
 {{-- Hero Volume Chart --}}
-<div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 mb-8">
+<div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 mb-8">
     <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Ticket Volume</h2>
     <div class="h-80" wire:ignore>
         <canvas id="chart-volume"></canvas>
@@ -67,7 +67,7 @@
 
 {{-- Three Supporting Charts --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Status Distribution</h2>
         <div class="relative h-52 mx-auto max-w-[220px]">
             <div class="absolute inset-0" wire:ignore>
@@ -90,14 +90,14 @@
         </div>
         <x-app.reports.reports-empty :show="array_sum($this->statusBreakdown['values']) === 0" />
     </div>
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Priority Distribution</h2>
         <div class="h-52" wire:ignore>
             <canvas id="chart-priority"></canvas>
         </div>
         <x-app.reports.reports-empty :show="array_sum($this->priorityBreakdown['values']) === 0" />
     </div>
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Volume by Category</h2>
         <div class="h-52" wire:ignore>
             <canvas id="chart-category-vol"></canvas>
@@ -108,27 +108,28 @@
 
 {{-- Agent Leaderboard + Category Health --}}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Agent Leaderboard</h2>
         @if ($this->agentLeaderboard->isNotEmpty())
             <div class="space-y-3">
                 @foreach ($this->agentLeaderboard->take(6) as $i => $row)
                     <button wire:click="goToAgentTab({{ $row['agent']->id }})"
-                        class="w-full flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-lg p-2 -m-2 transition-colors text-left">
+                        class="w-full flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 rounded-lg p-2 -m-2 transition-colors text-left">
                         <span
-                            class="text-xs font-bold {{ $i === 0 ? 'text-teal-400' : 'text-zinc-500' }} w-5">{{ $i + 1 }}</span>
+                            class="text-xs font-bold {{ $i === 0 ? 'text-teal-400' : 'text-zinc-500 dark:text-zinc-400' }} w-5">{{ $i + 1 }}</span>
                         <div
-                            class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                            class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                             {{ $row['agent']->initials() }}
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                                 {{ $row['agent']->name }}</p>
-                            <p class="text-xs text-zinc-500">{{ $row['resolved'] }} resolved / {{ $row['assigned'] }}
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $row['resolved'] }} resolved /
+                                {{ $row['assigned'] }}
                                 assigned</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                                 <div class="h-full bg-teal-500 rounded-full"
                                     style="width: {{ min($row['rate'], 100) }}%"></div>
                             </div>
@@ -142,7 +143,7 @@
             <x-app.reports.reports-empty :show="true" />
         @endif
     </div>
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6">
+    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
         <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Category Health</h2>
         @if ($this->categoryHealth->isNotEmpty())
             <div class="space-y-3">
@@ -152,11 +153,12 @@
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                                 {{ $row['category']->name }}</p>
-                            <p class="text-xs text-zinc-500">{{ $row['total'] }} tickets &middot; {{ $row['open'] }}
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">{{ $row['total'] }} tickets &middot;
+                                {{ $row['open'] }}
                                 open</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                                 <div class="h-full bg-teal-500 rounded-full"
                                     style="width: {{ min($row['rate'], 100) }}%"></div>
                             </div>

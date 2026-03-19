@@ -44,6 +44,40 @@
                         @enderror
                     </div>
 
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+                            Escalation button links to
+                        </label>
+                        <select wire:model.live="escalation_url_type"
+                            class="w-64 rounded border border-zinc-200 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+                            <option value="standalone">Standalone form page</option>
+                            <option value="custom_url">Custom URL (e.g. iframe embed page)</option>
+                        </select>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                            Choose where the "Submit a Ticket" button takes the customer when the chatbot can't help.
+                        </p>
+                        @error('escalation_url_type')
+                            <p class="text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    @if ($escalation_url_type === 'custom_url')
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-zinc-800 dark:text-zinc-100">
+                                Custom Escalation URL
+                            </label>
+                            <input type="url" wire:model.blur="custom_escalation_url"
+                                placeholder="https://example.com/support"
+                                class="w-full rounded border border-zinc-200 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                                The full URL where customers will be directed to submit a ticket.
+                            </p>
+                            @error('custom_escalation_url')
+                                <p class="text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+
                     <div class="flex justify-end">
                         <button wire:click="saveSettings" type="button"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
@@ -116,16 +150,10 @@
             </div>
             <div class="p-6">
                 @if ($ai_chatbot_enabled)
-                    @php
-                        $embedCode =
-                            '<iframe src="' .
-                            $this->chatbotUrl .
-                            '" width="400" height="600" frameborder="0" style="border:none;border-radius:12px;"></iframe>';
-                    @endphp
                     <div class="relative">
                         <pre
-                            class="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 text-xs overflow-x-auto"><code>{{ $embedCode }}</code></pre>
-                        <button wire:click="copyToClipboard(@js($embedCode), 'chatbot_embed')"
+                            class="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 text-xs overflow-x-auto"><code>{{ $this->chatbotScriptTag }}</code></pre>
+                        <button wire:click="copyToClipboard(@js($this->chatbotScriptTag), 'chatbot_embed')"
                             type="button"
                             class="absolute top-2 right-2 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-3 py-1 rounded text-sm transition-colors bg-white dark:bg-zinc-900">
                             {{ $copiedKey === 'chatbot_embed' ? 'Copied!' : 'Copy' }}

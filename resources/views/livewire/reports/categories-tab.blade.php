@@ -55,14 +55,17 @@
                         </span>
                     </div>
 
-                    <div class="mt-3 flex items-end gap-[2px] h-5">
-                        @php $sparkMax = !empty($item['sparkline']) ? max(1, max($item['sparkline'])) : 1; @endphp
-                        @foreach ($item['sparkline'] ?? [] as $sv)
-                            <div class="flex-1 bg-teal-500/40 rounded-sm"
-                                style="height: {{ max(($sv / $sparkMax) * 100, 4) }}%"></div>
-                        @endforeach
+                    <div class="mt-3">
+                        <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mb-1">Tickets per day <span
+                                class="text-zinc-400 dark:text-zinc-500">(last 7 days)</span></p>
+                        <div class="flex items-end gap-[2px] h-5">
+                            @php $sparkMax = !empty($item['sparkline']) ? max(1, max($item['sparkline'])) : 1; @endphp
+                            @foreach ($item['sparkline'] ?? [] as $sv)
+                                <div class="flex-1 bg-teal-500/60 dark:bg-teal-400/50 rounded-sm"
+                                    style="height: {{ max(($sv / $sparkMax) * 100, 8) }}%"></div>
+                            @endforeach
+                        </div>
                     </div>
-                    <p class="text-[10px] text-zinc-400 mt-1">Last 7 days</p>
                 </div>
 
                 {{-- BACK --}}

@@ -15,8 +15,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <input wire:model.live.debounce.500ms="search" type="text"
-                    placeholder="Search rules..."
+                <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search rules..."
                     class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
             </div>
 
@@ -24,14 +23,14 @@
             <select wire:model.live="filterType"
                 class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
                 <option value="">All Types</option>
-                @if($filterMode === 'all' || $filterMode === 'assignment')
-                <option value="assignment">Auto Assignment</option>
+                @if ($filterMode === 'all' || $filterMode === 'assignment')
+                    <option value="assignment">Auto Assignment</option>
                 @endif
-                @if($filterMode === 'all' || $filterMode === 'ticket')
-                <option value="priority">Priority Change</option>
-                <option value="auto_reply">Auto Reply</option>
-                <option value="escalation">Escalation</option>
-                <option value="sla_breach">SLA Breach</option>
+                @if ($filterMode === 'all' || $filterMode === 'ticket')
+                    <option value="priority">Priority Change</option>
+                    <option value="auto_reply">Auto Reply</option>
+                    <option value="escalation">Escalation</option>
+                    <option value="sla_breach">SLA Breach</option>
                 @endif
             </select>
 
@@ -72,10 +71,12 @@
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Type
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         Status
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
@@ -96,16 +97,18 @@
             </thead>
             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                 @forelse ($this->automationRules as $rule)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors" wire:key="rule-{{ $rule->id }}">
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors"
+                        wire:key="rule-{{ $rule->id }}">
                         <td class="px-4 py-3 text-sm">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-medium text-xs">
+                            <span
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-medium text-xs">
                                 {{ $rule->priority }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <div>
                                 <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $rule->name }}</span>
-                                @if($rule->description)
+                                @if ($rule->description)
                                     <p class="text-xs text-zinc-500 mt-0.5">{{ Str::limit($rule->description, 50) }}</p>
                                 @endif
                             </div>
@@ -127,21 +130,25 @@
                                     'sla_breach' => 'SLA Breach',
                                 ];
                             @endphp
-                            <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $typeColors[$rule->type] }}">
+                            <span
+                                class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $typeColors[$rule->type] }}">
                                 {{ $typeLabels[$rule->type] }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <button wire:click="toggleRuleStatus({{ $rule->id }})"
                                 class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $rule->is_active ? 'bg-teal-500' : 'bg-zinc-300 dark:bg-zinc-700' }}">
-                                <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $rule->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                                <span
+                                    class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $rule->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
                             </button>
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                             <div>
-                                <span class="font-medium text-white">{{ number_format($rule->executions_count) }}</span>
-                                @if($rule->last_executed_at)
-                                    <p class="text-xs text-zinc-500">Last: {{ $rule->last_executed_at->diffForHumans() }}</p>
+                                <span
+                                    class="font-medium text-zinc-900 dark:text-white">{{ number_format($rule->executions_count) }}</span>
+                                @if ($rule->last_executed_at)
+                                    <p class="text-xs text-zinc-500">Last:
+                                        {{ $rule->last_executed_at->diffForHumans() }}</p>
                                 @endif
                             </div>
                         </td>
@@ -170,7 +177,8 @@
                     <tr>
                         <td colspan="6" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -210,21 +218,22 @@
 
                     <flux:field class="col-span-2">
                         <flux:label>Description</flux:label>
-                        <flux:textarea wire:model="description" placeholder="Describe what this rule does (optional)" rows="2" />
+                        <flux:textarea wire:model="description" placeholder="Describe what this rule does (optional)"
+                            rows="2" />
                         <flux:error name="description" />
                     </flux:field>
 
                     <flux:field>
                         <flux:label>Rule Type</flux:label>
                         <flux:select wire:model.live="type">
-                            @if($filterMode === 'all' || $filterMode === 'assignment')
-                            <flux:select.option value="assignment">Auto Assignment</flux:select.option>
+                            @if ($filterMode === 'all' || $filterMode === 'assignment')
+                                <flux:select.option value="assignment">Auto Assignment</flux:select.option>
                             @endif
-                            @if($filterMode === 'all' || $filterMode === 'ticket')
-                            <flux:select.option value="priority">Priority Change</flux:select.option>
-                            <flux:select.option value="auto_reply">Auto Reply</flux:select.option>
-                            <flux:select.option value="escalation">Escalation</flux:select.option>
-                            <flux:select.option value="sla_breach">SLA Breach</flux:select.option>
+                            @if ($filterMode === 'all' || $filterMode === 'ticket')
+                                <flux:select.option value="priority">Priority Change</flux:select.option>
+                                <flux:select.option value="auto_reply">Auto Reply</flux:select.option>
+                                <flux:select.option value="escalation">Escalation</flux:select.option>
+                                <flux:select.option value="sla_breach">SLA Breach</flux:select.option>
                             @endif
                         </flux:select>
                         <flux:error name="type" />
@@ -232,7 +241,8 @@
 
                     <flux:field>
                         <flux:label>Execution Priority</flux:label>
-                        <flux:input type="number" wire:model="priority" min="0" max="1000" placeholder="0" />
+                        <flux:input type="number" wire:model="priority" min="0" max="1000"
+                            placeholder="0" />
                         <p class="text-xs text-zinc-500 mt-1">Lower numbers execute first</p>
                         <flux:error name="priority" />
                     </flux:field>
@@ -242,31 +252,46 @@
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
                     <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Conditions</h4>
 
-                    @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']))
+                    @if (in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']))
                         <flux:field>
                             <flux:label>Category (optional)</flux:label>
-                            <flux:select wire:model="category_id">
-                                <flux:select.option value="">Any Category</flux:select.option>
-                                @foreach($this->categories as $category)
-                                    <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+                            <select wire:model="category_id"
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                <option value="">Any Category</option>
+                                @foreach ($this->categories as $parentCategory)
+                                    <optgroup label="{{ $parentCategory->name }}">
+                                        <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                        </option>
+                                        @foreach ($parentCategory->children as $childCategory)
+                                            <option value="{{ $childCategory->id }}">{{ $childCategory->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
-                            </flux:select>
+                            </select>
+                            @if (in_array($type, ['assignment', 'priority']))
+                                <p class="mt-1 text-xs text-zinc-500">Selecting a parent category also matches tickets
+                                    filed under its subcategories.</p>
+                            @endif
                         </flux:field>
                     @endif
 
-                    @if($type === 'priority')
+                    @if ($type === 'priority')
                         <flux:field>
                             <flux:label>Keywords (in subject or description)</flux:label>
                             <div class="flex gap-2">
-                                <flux:input wire:model="newKeyword" placeholder="Add keyword" wire:keydown.enter.prevent="addKeyword" />
+                                <flux:input wire:model="newKeyword" placeholder="Add keyword"
+                                    wire:keydown.enter.prevent="addKeyword" />
                                 <flux:button type="button" wire:click="addKeyword" variant="ghost">Add</flux:button>
                             </div>
-                            @if(count($keywords) > 0)
+                            @if (count($keywords) > 0)
                                 <div class="flex flex-wrap gap-2 mt-2">
-                                    @foreach($keywords as $index => $keyword)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
+                                    @foreach ($keywords as $index => $keyword)
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
                                             {{ $keyword }}
-                                            <button type="button" wire:click="removeKeyword({{ $index }})" class="hover:text-red-400">×</button>
+                                            <button type="button" wire:click="removeKeyword({{ $index }})"
+                                                class="hover:text-red-400">×</button>
                                         </span>
                                     @endforeach
                                 </div>
@@ -274,7 +299,7 @@
                         </flux:field>
                     @endif
 
-                    @if($type === 'escalation')
+                    @if ($type === 'escalation')
                         <div class="grid grid-cols-2 gap-4">
                             <flux:field>
                                 <flux:label>Idle Hours</flux:label>
@@ -286,15 +311,18 @@
                                 <flux:label>Ticket Statuses</flux:label>
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="pending" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <input type="checkbox" wire:model="conditionStatuses" value="pending"
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Pending</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="open" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <input type="checkbox" wire:model="conditionStatuses" value="open"
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Open</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress"
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">In Progress</span>
                                     </label>
                                 </div>
@@ -302,7 +330,7 @@
                         </div>
                     @endif
 
-                    @if($type === 'auto_reply')
+                    @if ($type === 'auto_reply')
                         <flux:field variant="inline">
                             <flux:label>Trigger on ticket creation</flux:label>
                             <flux:switch wire:model="on_create" />
@@ -314,31 +342,45 @@
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
                     <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Actions</h4>
 
-                    @if($type === 'assignment')
+                    @if ($type === 'assignment')
                         <flux:field variant="inline">
                             <flux:label>Assign to specialist matching category</flux:label>
                             <flux:switch wire:model.live="assign_to_specialist" />
                         </flux:field>
 
-                        @if($assign_to_specialist)
+                        @if ($assign_to_specialist)
                             <flux:field variant="inline">
                                 <flux:label>Fallback to generalist if no specialist</flux:label>
                                 <flux:switch wire:model="fallback_to_generalist" />
                             </flux:field>
                         @else
-                            <flux:field>
-                                <flux:label>Assign to specific operator</flux:label>
-                                <flux:select wire:model="assign_to_operator_id">
-                                    <flux:select.option value="">Select Operator</flux:select.option>
-                                    @foreach($this->operators as $operator)
-                                        <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}</flux:select.option>
-                                    @endforeach
-                                </flux:select>
-                            </flux:field>
+                            <div x-data="{ operatorId: $wire.entangle('assign_to_operator_id'), teamId: $wire.entangle('assign_to_team_id') }" class="space-y-4">
+                                <flux:field>
+                                    <flux:label>Assign to specific operator</flux:label>
+                                    <select x-model="operatorId" @change="if (operatorId) teamId = null"
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        <option value="">Select Operator</option>
+                                        @foreach ($this->operators as $operator)
+                                            <option value="{{ $operator->id }}">{{ $operator->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </flux:field>
+
+                                <flux:field>
+                                    <flux:label>Or assign to team</flux:label>
+                                    <select x-model="teamId" @change="if (teamId) operatorId = null"
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        <option value="">Select Team</option>
+                                        @foreach ($this->teamsForSelect as $team)
+                                            <option value="{{ $team->id }}">{{ $team->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </flux:field>
+                            </div>
                         @endif
                     @endif
 
-                    @if($type === 'priority')
+                    @if ($type === 'priority')
                         <flux:field>
                             <flux:label>Set Priority To</flux:label>
                             <flux:select wire:model="set_priority">
@@ -350,16 +392,17 @@
                         </flux:field>
                     @endif
 
-                    @if($type === 'auto_reply')
+                    @if ($type === 'auto_reply')
                         <flux:field variant="inline">
                             <flux:label>Send email to customer</flux:label>
                             <flux:switch wire:model.live="send_email" />
                         </flux:field>
 
-                        @if($send_email)
+                        @if ($send_email)
                             <flux:field>
                                 <flux:label>Email Subject (optional)</flux:label>
-                                <flux:input wire:model="email_subject" placeholder="Leave empty for 'Re: [Ticket Subject]'" />
+                                <flux:input wire:model="email_subject"
+                                    placeholder="Leave empty for 'Re: [Ticket Subject]'" />
                             </flux:field>
 
                             <flux:field>
@@ -369,13 +412,13 @@
                         @endif
                     @endif
 
-                    @if(in_array($type, ['escalation', 'sla_breach']))
+                    @if (in_array($type, ['escalation', 'sla_breach']))
                         <flux:field variant="inline">
                             <flux:label>Escalate priority to next level</flux:label>
                             <flux:switch wire:model.live="escalate_priority" />
                         </flux:field>
 
-                        @if(!$escalate_priority)
+                        @if (!$escalate_priority)
                             <flux:field>
                                 <flux:label>Set Priority To</flux:label>
                                 <flux:select wire:model="set_priority">
@@ -391,8 +434,9 @@
                             <flux:label>Assign to specific operator</flux:label>
                             <flux:select wire:model="assign_to_operator_id">
                                 <flux:select.option value="">Leave Unchanged</flux:select.option>
-                                @foreach($this->operators as $operator)
-                                    <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}</flux:select.option>
+                                @foreach ($this->operators as $operator)
+                                    <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}
+                                    </flux:select.option>
                                 @endforeach
                             </flux:select>
                         </flux:field>
@@ -436,21 +480,22 @@
 
                     <flux:field class="col-span-2">
                         <flux:label>Description</flux:label>
-                        <flux:textarea wire:model="description" placeholder="Describe what this rule does (optional)" rows="2" />
+                        <flux:textarea wire:model="description" placeholder="Describe what this rule does (optional)"
+                            rows="2" />
                         <flux:error name="description" />
                     </flux:field>
 
                     <flux:field>
                         <flux:label>Rule Type</flux:label>
                         <flux:select wire:model.live="type">
-                            @if($filterMode === 'all' || $filterMode === 'assignment')
-                            <flux:select.option value="assignment">Auto Assignment</flux:select.option>
+                            @if ($filterMode === 'all' || $filterMode === 'assignment')
+                                <flux:select.option value="assignment">Auto Assignment</flux:select.option>
                             @endif
-                            @if($filterMode === 'all' || $filterMode === 'ticket')
-                            <flux:select.option value="priority">Priority Change</flux:select.option>
-                            <flux:select.option value="auto_reply">Auto Reply</flux:select.option>
-                            <flux:select.option value="escalation">Escalation</flux:select.option>
-                            <flux:select.option value="sla_breach">SLA Breach</flux:select.option>
+                            @if ($filterMode === 'all' || $filterMode === 'ticket')
+                                <flux:select.option value="priority">Priority Change</flux:select.option>
+                                <flux:select.option value="auto_reply">Auto Reply</flux:select.option>
+                                <flux:select.option value="escalation">Escalation</flux:select.option>
+                                <flux:select.option value="sla_breach">SLA Breach</flux:select.option>
                             @endif
                         </flux:select>
                         <flux:error name="type" />
@@ -458,7 +503,8 @@
 
                     <flux:field>
                         <flux:label>Execution Priority</flux:label>
-                        <flux:input type="number" wire:model="priority" min="0" max="1000" placeholder="0" />
+                        <flux:input type="number" wire:model="priority" min="0" max="1000"
+                            placeholder="0" />
                         <p class="text-xs text-zinc-500 mt-1">Lower numbers execute first</p>
                         <flux:error name="priority" />
                     </flux:field>
@@ -468,31 +514,46 @@
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
                     <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Conditions</h4>
 
-                    @if(in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']))
+                    @if (in_array($type, ['assignment', 'priority', 'auto_reply', 'escalation', 'sla_breach']))
                         <flux:field>
                             <flux:label>Category (optional)</flux:label>
-                            <flux:select wire:model="category_id">
-                                <flux:select.option value="">Any Category</flux:select.option>
-                                @foreach($this->categories as $category)
-                                    <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+                            <select wire:model="category_id"
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                <option value="">Any Category</option>
+                                @foreach ($this->categories as $parentCategory)
+                                    <optgroup label="{{ $parentCategory->name }}">
+                                        <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                        </option>
+                                        @foreach ($parentCategory->children as $childCategory)
+                                            <option value="{{ $childCategory->id }}">{{ $childCategory->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
-                            </flux:select>
+                            </select>
+                            @if (in_array($type, ['assignment', 'priority']))
+                                <p class="mt-1 text-xs text-zinc-500">Selecting a parent category also matches tickets
+                                    filed under its subcategories.</p>
+                            @endif
                         </flux:field>
                     @endif
 
-                    @if($type === 'priority')
+                    @if ($type === 'priority')
                         <flux:field>
                             <flux:label>Keywords (in subject or description)</flux:label>
                             <div class="flex gap-2">
-                                <flux:input wire:model="newKeyword" placeholder="Add keyword" wire:keydown.enter.prevent="addKeyword" />
+                                <flux:input wire:model="newKeyword" placeholder="Add keyword"
+                                    wire:keydown.enter.prevent="addKeyword" />
                                 <flux:button type="button" wire:click="addKeyword" variant="ghost">Add</flux:button>
                             </div>
-                            @if(count($keywords) > 0)
+                            @if (count($keywords) > 0)
                                 <div class="flex flex-wrap gap-2 mt-2">
-                                    @foreach($keywords as $index => $keyword)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
+                                    @foreach ($keywords as $index => $keyword)
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
                                             {{ $keyword }}
-                                            <button type="button" wire:click="removeKeyword({{ $index }})" class="hover:text-red-400">×</button>
+                                            <button type="button" wire:click="removeKeyword({{ $index }})"
+                                                class="hover:text-red-400">×</button>
                                         </span>
                                     @endforeach
                                 </div>
@@ -500,7 +561,7 @@
                         </flux:field>
                     @endif
 
-                    @if($type === 'escalation')
+                    @if ($type === 'escalation')
                         <div class="grid grid-cols-2 gap-4">
                             <flux:field>
                                 <flux:label>Idle Hours</flux:label>
@@ -512,15 +573,18 @@
                                 <flux:label>Ticket Statuses</flux:label>
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="pending" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <input type="checkbox" wire:model="conditionStatuses" value="pending"
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Pending</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="open" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <input type="checkbox" wire:model="conditionStatuses" value="open"
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Open</span>
                                     </label>
                                     <label class="flex items-center gap-2">
-                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress" class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                        <input type="checkbox" wire:model="conditionStatuses" value="in_progress"
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">In Progress</span>
                                     </label>
                                 </div>
@@ -528,7 +592,7 @@
                         </div>
                     @endif
 
-                    @if($type === 'auto_reply')
+                    @if ($type === 'auto_reply')
                         <flux:field variant="inline">
                             <flux:label>Trigger on ticket creation</flux:label>
                             <flux:switch wire:model="on_create" />
@@ -540,31 +604,45 @@
                 <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 space-y-4">
                     <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Actions</h4>
 
-                    @if($type === 'assignment')
+                    @if ($type === 'assignment')
                         <flux:field variant="inline">
                             <flux:label>Assign to specialist matching category</flux:label>
                             <flux:switch wire:model.live="assign_to_specialist" />
                         </flux:field>
 
-                        @if($assign_to_specialist)
+                        @if ($assign_to_specialist)
                             <flux:field variant="inline">
                                 <flux:label>Fallback to generalist if no specialist</flux:label>
                                 <flux:switch wire:model="fallback_to_generalist" />
                             </flux:field>
                         @else
-                            <flux:field>
-                                <flux:label>Assign to specific operator</flux:label>
-                                <flux:select wire:model="assign_to_operator_id">
-                                    <flux:select.option value="">Select Operator</flux:select.option>
-                                    @foreach($this->operators as $operator)
-                                        <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}</flux:select.option>
-                                    @endforeach
-                                </flux:select>
-                            </flux:field>
+                            <div x-data="{ operatorId: $wire.entangle('assign_to_operator_id'), teamId: $wire.entangle('assign_to_team_id') }" class="space-y-4">
+                                <flux:field>
+                                    <flux:label>Assign to specific operator</flux:label>
+                                    <select x-model="operatorId" @change="if (operatorId) teamId = null"
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        <option value="">Select Operator</option>
+                                        @foreach ($this->operators as $operator)
+                                            <option value="{{ $operator->id }}">{{ $operator->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </flux:field>
+
+                                <flux:field>
+                                    <flux:label>Or assign to team</flux:label>
+                                    <select x-model="teamId" @change="if (teamId) operatorId = null"
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        <option value="">Select Team</option>
+                                        @foreach ($this->teamsForSelect as $team)
+                                            <option value="{{ $team->id }}">{{ $team->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </flux:field>
+                            </div>
                         @endif
                     @endif
 
-                    @if($type === 'priority')
+                    @if ($type === 'priority')
                         <flux:field>
                             <flux:label>Set Priority To</flux:label>
                             <flux:select wire:model="set_priority">
@@ -576,16 +654,17 @@
                         </flux:field>
                     @endif
 
-                    @if($type === 'auto_reply')
+                    @if ($type === 'auto_reply')
                         <flux:field variant="inline">
                             <flux:label>Send email to customer</flux:label>
                             <flux:switch wire:model.live="send_email" />
                         </flux:field>
 
-                        @if($send_email)
+                        @if ($send_email)
                             <flux:field>
                                 <flux:label>Email Subject (optional)</flux:label>
-                                <flux:input wire:model="email_subject" placeholder="Leave empty for 'Re: [Ticket Subject]'" />
+                                <flux:input wire:model="email_subject"
+                                    placeholder="Leave empty for 'Re: [Ticket Subject]'" />
                             </flux:field>
 
                             <flux:field>
@@ -595,13 +674,13 @@
                         @endif
                     @endif
 
-                    @if(in_array($type, ['escalation', 'sla_breach']))
+                    @if (in_array($type, ['escalation', 'sla_breach']))
                         <flux:field variant="inline">
                             <flux:label>Escalate priority to next level</flux:label>
                             <flux:switch wire:model.live="escalate_priority" />
                         </flux:field>
 
-                        @if(!$escalate_priority)
+                        @if (!$escalate_priority)
                             <flux:field>
                                 <flux:label>Set Priority To</flux:label>
                                 <flux:select wire:model="set_priority">
@@ -617,8 +696,9 @@
                             <flux:label>Assign to specific operator</flux:label>
                             <flux:select wire:model="assign_to_operator_id">
                                 <flux:select.option value="">Leave Unchanged</flux:select.option>
-                                @foreach($this->operators as $operator)
-                                    <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}</flux:select.option>
+                                @foreach ($this->operators as $operator)
+                                    <flux:select.option value="{{ $operator->id }}">{{ $operator->name }}
+                                    </flux:select.option>
                                 @endforeach
                             </flux:select>
                         </flux:field>

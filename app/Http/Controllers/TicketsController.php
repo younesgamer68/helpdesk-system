@@ -15,6 +15,7 @@ class TicketsController extends Controller
             'assignedTo:id,name',
             'category:id,name',
             'customer:id,name,email,phone',
+            'company',
         ]);
         $agents = \App\Models\User::where('company_id', $ticket->company_id)
             ->whereIn('role', ['admin', 'operator'])

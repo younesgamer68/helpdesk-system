@@ -26,3 +26,15 @@ Schedule::command('helpdesk:check-sla-breaches')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Process ticket lifecycle (warnings + auto-close) every hour
+Schedule::command('app:process-ticket-lifecycle')
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// Clean up old closed and soft-deleted tickets daily at midnight
+Schedule::command('app:cleanup-old-tickets')
+    ->dailyAt('00:00')
+    ->withoutOverlapping()
+    ->runInBackground();

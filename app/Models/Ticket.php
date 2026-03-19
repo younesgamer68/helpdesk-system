@@ -6,6 +6,7 @@ use App\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
@@ -28,6 +29,7 @@ class Ticket extends Model
             'due_time' => 'datetime',
             'resolved_at' => 'datetime',
             'closed_at' => 'datetime',
+            'warning_sent_at' => 'datetime',
         ];
     }
 
@@ -99,5 +101,20 @@ class Ticket extends Model
     public function attachments()
     {
         return $this->hasMany(TicketAttachment::class);
+    }
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    public function parentTicket(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_ticket_id');
+    }
+
+    public function childTickets(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_ticket_id');
     }
 }
