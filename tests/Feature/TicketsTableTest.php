@@ -2,6 +2,7 @@
 
 use App\Livewire\Dashboard\TicketsTable;
 use App\Models\Company;
+use App\Models\TenantConfig;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
@@ -167,6 +168,80 @@ test('bulk assignment', function () {
         ->assertDispatched('show-toast');
 
     foreach ($tickets as $ticket) {
+        expect($ticket->fresh()->assigned_to)->toBe($agent->id);
+    }
+});
+
+test('bulk assignment blocked when agent exceeds max load', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $agent = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
+
+    TenantConfig::updateOrCreate(
+        ['company_id' => $company->id],
+        ['max_tickets_per_agent' => 5]
+    );
+
+    // Create 4 existing open tickets for this agent
+    Ticket::withoutEvents(fn () => Ticket::factory()->count(4)->create([
+        'company_id' => $company->id,
+        'assigned_to' => $agent->id,
+        'status' => 'open',
+        'verified' => true,
+    ]));
+
+    // Try to bulk assign 3 more (would exceed max of 5)
+    $newTickets = Ticket::withoutEvents(fn () => Ticket::factory()->count(3)->create([
+        'company_id' => $company->id,
+        'assigned_to' => null,
+        'verified' => true,
+    ]));
+
+    $this->actingAs($admin);
+
+    Livewire::test(TicketsTable::class)
+        ->set('selectedTickets', $newTickets->pluck('id')->map(fn ($id) => (string) $id)->toArray())
+        ->call('bulkAssignAgent', $agent->id)
+        ->assertDispatched('show-toast', type: 'error');
+
+    foreach ($newTickets as $ticket) {
+        expect($ticket->fresh()->assigned_to)->toBeNull();
+    }
+});
+
+test('bulk assignment allowed within max load', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $agent = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
+
+    TenantConfig::updateOrCreate(
+        ['company_id' => $company->id],
+        ['max_tickets_per_agent' => 5]
+    );
+
+    // Create 2 existing open tickets
+    Ticket::withoutEvents(fn () => Ticket::factory()->count(2)->create([
+        'company_id' => $company->id,
+        'assigned_to' => $agent->id,
+        'status' => 'open',
+        'verified' => true,
+    ]));
+
+    // Assign 3 more (total = 5, exactly at limit)
+    $newTickets = Ticket::withoutEvents(fn () => Ticket::factory()->count(3)->create([
+        'company_id' => $company->id,
+        'assigned_to' => null,
+        'verified' => true,
+    ]));
+
+    $this->actingAs($admin);
+
+    Livewire::test(TicketsTable::class)
+        ->set('selectedTickets', $newTickets->pluck('id')->map(fn ($id) => (string) $id)->toArray())
+        ->call('bulkAssignAgent', $agent->id)
+        ->assertDispatched('show-toast', type: 'success');
+
+    foreach ($newTickets as $ticket) {
         expect($ticket->fresh()->assigned_to)->toBe($agent->id);
     }
 });

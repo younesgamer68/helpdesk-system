@@ -8,7 +8,7 @@
                     <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
                         class="px-4 py-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition">Cancel</a>
                     <button wire:click="saveDraft"
-                        class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition">Save
+                        class="px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg transition">Save
                         Draft</button>
                     <button wire:click="publish"
                         class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition">Publish</button>
@@ -34,7 +34,7 @@
                             <x-tiptap-editor model="body" />
                         </div>
 
-                      
+
 
                     </div>
                 </div>
@@ -70,14 +70,14 @@
                         <div>
                             <label
                                 class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Category</label>
-                            <select wire:model="kb_category_id"
+                            <select wire:model="ticket_category_id"
                                 class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-teal-500">
                                 <option value="">Select a category</option>
                                 @foreach ($categories as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
-                            @error('kb_category_id')
+                            @error('ticket_category_id')
                                 <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                             @enderror
                         </div>

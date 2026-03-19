@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Ai\Agents\HelpdeskAgent;
+use App\Models\CompanyAiSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -178,6 +179,26 @@ class AiChatWidget extends Component
     #[\Livewire\Attributes\On('trigger-ai-response')]
     public function triggerAiResponse(string $message): void
     {
+        $settings = CompanyAiSettings::query()->firstOrCreate(
+            ['company_id' => Auth::user()->company_id],
+            [
+                'ai_chatbot_enabled' => false,
+                'ai_model' => 'gemini-2.5-flash',
+            ]
+        );
+
+        if (! $settings->ai_chatbot_enabled) {
+            $this->messages[] = [
+                'role' => 'ai',
+                'content' => 'The AI chatbot is currently disabled. Please contact your administrator.',
+            ];
+            $this->isTyping = false;
+            $this->dispatch('scroll-to-bottom');
+            $this->dispatch('show-toast', message: 'AI chatbot is disabled in settings.', type: 'error');
+
+            return;
+        }
+
         try {
             $agent = new HelpdeskAgent;
             $participant = Auth::user() ?? (object) ['id' => null];
@@ -218,7 +239,11 @@ class AiChatWidget extends Component
             }
 
             // Always use continue() now since we guarantee the conversation ID exists
-            $response = $agent->continue($this->conversationId, $participant)->prompt($message);
+            $response = $agent->continue($this->conversationId, $participant)->prompt(
+                $message,
+                provider: $settings->resolveProvider(),
+                model: $settings->ai_model,
+            );
 
             $this->messages[] = ['role' => 'ai', 'content' => trim($response->text)];
             $this->loadMessages();

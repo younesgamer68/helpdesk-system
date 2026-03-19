@@ -4,15 +4,13 @@ namespace App\Livewire\Categories;
 
 use App\Models\TicketCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class CategoriesTable extends Component
 {
-    use WithPagination;
-
     public $search = '';
 
     public $sortBy = 'name';
@@ -37,30 +35,81 @@ class CategoriesTable extends Component
 
     public $default_priority = 'medium';
 
+    public ?int $parent_id = null;
+
+    public bool $lockParentSelection = false;
+
+    public string $deleteConfirmationMessage = 'Are you sure you want to delete this category? This action cannot be undone. Tickets using this category will have their category set to none.';
+
     protected function rules(): array
     {
-        $uniqueRule = 'unique:ticket_categories,name,NULL,id,company_id,'.Auth::user()->company_id;
+        $uniqueRule = Rule::unique('ticket_categories', 'name')
+            ->where(function ($query) {
+                $query->where('company_id', Auth::user()->company_id);
+
+                if ($this->parent_id) {
+                    $query->where('parent_id', $this->parent_id);
+                } else {
+                    $query->whereNull('parent_id');
+                }
+            });
 
         if ($this->editingCategoryId) {
-            $uniqueRule = 'unique:ticket_categories,name,'.$this->editingCategoryId.',id,company_id,'.Auth::user()->company_id;
+            $uniqueRule->ignore($this->editingCategoryId);
         }
 
         return [
             'name' => ['required', 'string', 'max:255', $uniqueRule],
             'description' => 'nullable|string|max:1000',
             'default_priority' => 'required|in:low,medium,high,urgent',
+            'parent_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('ticket_categories', 'id')->where(fn ($query) => $query->where('company_id', Auth::user()->company_id)),
+                function (string $attribute, $value, $fail) {
+                    if (! $value) {
+                        return;
+                    }
+
+                    $parentCategory = TicketCategory::query()->find($value);
+
+                    if (! $parentCategory) {
+                        $fail('The selected parent category is invalid.');
+
+                        return;
+                    }
+
+                    if ($parentCategory->parent_id) {
+                        $fail('Subcategories cannot have children. Choose a top-level category as the parent.');
+
+                        return;
+                    }
+
+                    if ($this->editingCategoryId && (int) $value === (int) $this->editingCategoryId) {
+                        $fail('A category cannot be its own parent.');
+
+                        return;
+                    }
+
+                    if ($this->editingCategoryId) {
+                        $category = TicketCategory::query()->withCount('children')->find($this->editingCategoryId);
+
+                        if ($category && $category->children_count > 0) {
+                            $fail('A category with subcategories cannot become a child category.');
+                        }
+                    }
+                },
+            ],
         ];
     }
 
     protected $validationAttributes = [
         'name' => 'category name',
         'default_priority' => 'default priority',
+        'parent_id' => 'parent category',
     ];
 
-    public function updatingSearch(): void
-    {
-        $this->resetPage();
-    }
+    public function updatingSearch(): void {}
 
     public function setSortBy(string $column): void
     {
@@ -75,22 +124,43 @@ class CategoriesTable extends Component
     #[Computed]
     public function categories()
     {
-        $query = TicketCategory::where('company_id', Auth::user()->company_id);
-
         if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%'.$this->search.'%')
-                    ->orWhere('description', 'like', '%'.$this->search.'%');
-            });
+            return TicketCategory::query()
+                ->where('company_id', Auth::user()->company_id)
+                ->with('parent')
+                ->where(function ($query) {
+                    $query->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%');
+                })
+                ->orderBy($this->sortBy, $this->sortDirection)
+                ->get();
         }
 
-        return $query->orderBy($this->sortBy, $this->sortDirection)->paginate(10);
+        return TicketCategory::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->parents()
+            ->with(['children' => fn ($query) => $query->orderBy($this->sortBy, $this->sortDirection)])
+            ->orderBy($this->sortBy, $this->sortDirection)
+            ->get();
+    }
+
+    #[Computed]
+    public function parentCategoriesForSelect()
+    {
+        return TicketCategory::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->parents()
+            ->when($this->editingCategoryId, fn ($query) => $query->where('id', '!=', $this->editingCategoryId))
+            ->orderBy('name')
+            ->get();
     }
 
     #[On('open-create-category-modal')]
-    public function openCreateModal(): void
+    public function openCreateModal(?int $parentId = null): void
     {
         $this->resetForm();
+        $this->parent_id = $parentId;
+        $this->lockParentSelection = $parentId !== null;
         $this->showCreateModal = true;
         $this->resetValidation();
     }
@@ -110,6 +180,7 @@ class CategoriesTable extends Component
             'name' => $this->name,
             'description' => $this->description,
             'default_priority' => $this->default_priority,
+            'parent_id' => $this->parent_id,
         ]);
 
         $this->dispatch('show-toast', message: "Category '{$this->name}' created successfully!", type: 'success');
@@ -126,6 +197,8 @@ class CategoriesTable extends Component
         $this->name = $category->name;
         $this->description = $category->description ?? '';
         $this->default_priority = $category->default_priority;
+        $this->parent_id = $category->parent_id;
+        $this->lockParentSelection = false;
         $this->showEditModal = true;
         $this->resetValidation();
     }
@@ -148,6 +221,7 @@ class CategoriesTable extends Component
             'name' => $this->name,
             'description' => $this->description,
             'default_priority' => $this->default_priority,
+            'parent_id' => $this->parent_id,
         ]);
 
         $this->dispatch('show-toast', message: "Category '{$this->name}' updated successfully!", type: 'success');
@@ -157,7 +231,15 @@ class CategoriesTable extends Component
 
     public function confirmDelete(int $categoryId): void
     {
+        $category = TicketCategory::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->withCount('children')
+            ->findOrFail($categoryId);
+
         $this->deletingCategoryId = $categoryId;
+        $this->deleteConfirmationMessage = $category->children_count > 0
+            ? "This category has {$category->children_count} subcategories. Deleting it will also delete all subcategories and unassign them from any tickets."
+            : 'Are you sure you want to delete this category? This action cannot be undone. Tickets using this category will have their category set to none.';
         $this->showDeleteConfirmation = true;
     }
 
@@ -170,9 +252,15 @@ class CategoriesTable extends Component
     public function deleteCategory(): void
     {
         $category = TicketCategory::where('company_id', Auth::user()->company_id)
+            ->with('children')
             ->findOrFail($this->deletingCategoryId);
 
         $categoryName = $category->name;
+
+        foreach ($category->children as $childCategory) {
+            $childCategory->delete();
+        }
+
         $category->delete();
 
         $this->dispatch('show-toast', message: "Category '{$categoryName}' deleted successfully!", type: 'success');
@@ -185,6 +273,8 @@ class CategoriesTable extends Component
         $this->name = '';
         $this->description = '';
         $this->default_priority = 'medium';
+        $this->parent_id = null;
+        $this->lockParentSelection = false;
         $this->editingCategoryId = null;
     }
 

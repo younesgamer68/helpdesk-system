@@ -2,6 +2,7 @@
 
 namespace App\Livewire\App;
 
+use App\Models\TenantConfig;
 use App\Models\Ticket;
 use App\Models\TicketLog;
 use App\Models\User;
@@ -114,6 +115,14 @@ class AdminDashboard extends Component
             ])
             ->orderByDesc('active_count')
             ->get();
+    }
+
+    #[Computed]
+    public function maxTicketsPerAgent(): int
+    {
+        $config = TenantConfig::query()->where('company_id', Auth::user()->company_id)->first();
+
+        return $config?->max_tickets_per_agent ?? 20;
     }
 
     #[Computed]

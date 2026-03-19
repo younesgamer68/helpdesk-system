@@ -56,6 +56,36 @@ class Company extends Model
         return $this->hasOne(SlaPolicy::class);
     }
 
+    public function aiSettings()
+    {
+        return $this->hasOne(CompanyAiSettings::class);
+    }
+
+    public function autoTriageRules()
+    {
+        return $this->hasMany(AutoTriageRule::class);
+    }
+
+    public function goldenResponses()
+    {
+        return $this->hasMany(GoldenResponse::class);
+    }
+
+    public function aiSuggestionLogs()
+    {
+        return $this->hasMany(AiSuggestionLog::class);
+    }
+
+    public function chatbotConversations()
+    {
+        return $this->hasMany(ChatbotConversation::class);
+    }
+
+    public function mailSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(CompanyMailSettings::class);
+    }
+
     protected function casts(): array
     {
         return [

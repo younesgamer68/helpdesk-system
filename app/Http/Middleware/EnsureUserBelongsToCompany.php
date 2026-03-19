@@ -13,7 +13,9 @@ class EnsureUserBelongsToCompany
         $user = $request->user();
 
         if (! $user) {
-            return redirect()->route('login');
+            $protocol = app()->environment('local') ? 'http' : 'https';
+
+            return redirect()->away($protocol.'://'.config('app.domain').'/login');
         }
 
         // Get company from request (set by IdentifyCompanyFromSubdomain middleware)

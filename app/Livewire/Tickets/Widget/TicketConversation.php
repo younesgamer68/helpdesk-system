@@ -2,9 +2,13 @@
 
 namespace App\Livewire\Tickets\Widget;
 
+use App\Models\SlaPolicy;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Notifications\ClientReplied;
+use App\Scopes\CompanyScope;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -23,54 +27,93 @@ class TicketConversation extends Component
     #[Validate('max:2', message: 'You can only upload a maximum of 2 files.')]
     public $attachments = [];
 
-    public function mount(Ticket $ticket)
+    public bool $confirmLinkedTicket = false;
+
+    public function mount(Ticket $ticket): void
     {
         $this->ticket = $ticket;
     }
 
-    public function submitReply()
+    #[Computed]
+    public function slaPolicy(): ?SlaPolicy
     {
-        if (in_array($this->ticket->status, ['closed'])) {
-            $this->dispatch('show-toast', message: 'This ticket is closed.', type: 'error');
+        return SlaPolicy::withoutGlobalScope(CompanyScope::class)
+            ->where('company_id', $this->ticket->company_id)
+            ->first();
+    }
+
+    public function submitReply(): void
+    {
+        $status = $this->ticket->status;
+
+        if ($status === 'closed') {
+            $linkedTicketDays = $this->slaPolicy?->linked_ticket_days ?? 7;
+            $closedAt = $this->ticket->closed_at;
+
+            if (! $closedAt || now()->diffInDays($closedAt, false) < -$linkedTicketDays) {
+                $this->dispatch('show-toast', message: 'This ticket is permanently closed. Please submit a new support request.', type: 'error');
+
+                return;
+            }
+
+            if (! $this->confirmLinkedTicket) {
+                $this->confirmLinkedTicket = true;
+
+                return;
+            }
+
+            $this->validate();
+            $this->createLinkedTicket();
+
+            return;
+        }
+
+        if ($status === 'resolved') {
+            $reopenHours = $this->slaPolicy?->reopen_hours ?? 48;
+            $resolvedAt = $this->ticket->resolved_at;
+
+            if ($resolvedAt && now()->diffInHours($resolvedAt, false) < -$reopenHours) {
+                $this->dispatch('show-toast', message: 'The reopen window has passed. Please submit a new support request.', type: 'error');
+
+                return;
+            }
+
+            $this->validate();
+            $this->createReply();
+            $this->ticket->update([
+                'status' => 'open',
+                'resolved_at' => null,
+                'warning_sent_at' => null,
+            ]);
 
             return;
         }
 
         $this->validate();
+        $this->createReply();
+        $this->ticket->update(['status' => 'pending']);
+    }
 
-        $attachmentPaths = [];
+    public function cancelLinkedTicket(): void
+    {
+        $this->confirmLinkedTicket = false;
+    }
 
-        if ($this->attachments) {
-            foreach ($this->attachments as $attachment) {
-                // Store in a 'ticket-attachments' directory within the public disk
-                $path = $attachment->store('ticket-attachments', 'public');
-                $attachmentPaths[] = [
-                    'name' => $attachment->getClientOriginalName(),
-                    'path' => $path,
-                    'mime_type' => $attachment->getMimeType(),
-                    'size' => $attachment->getSize(),
-                ];
-            }
-        }
+    private function createReply(): void
+    {
+        $attachmentPaths = $this->storeAttachments();
 
-        // Create reply from customer
         TicketReply::create([
             'ticket_id' => $this->ticket->id,
-            'user_id' => null, // null means it's from the customer side
+            'user_id' => null,
             'customer_name' => $this->ticket->customer?->name ?? '',
             'message' => Purifier::clean($this->message),
             'is_internal' => false,
             'attachments' => empty($attachmentPaths) ? null : $attachmentPaths,
         ]);
 
-        if ($this->ticket->status !== 'closed') {
-            $this->ticket->update(['status' => 'pending']);
-        }
-
-        // Refresh ticket to pick up any assignment changes made after the widget was loaded
         $this->ticket->refresh();
 
-        // Notify assigned agent
         if ($this->ticket->assignedTo) {
             $this->ticket->assignedTo->notify(new ClientReplied($this->ticket));
         }
@@ -78,16 +121,81 @@ class TicketConversation extends Component
         $this->reset(['message', 'attachments']);
         $this->dispatch('resetEditor');
 
-        // Let the view know we replied
         session()->flash('success', 'Your reply has been submitted!');
     }
 
-    public function removeAttachment($index)
+    private function createLinkedTicket(): void
+    {
+        $attachmentPaths = $this->storeAttachments();
+
+        do {
+            $ticketNumber = 'TKT-'.strtoupper(Str::random(6));
+        } while (Ticket::where('ticket_number', $ticketNumber)->exists());
+
+        $linkedTicket = Ticket::create([
+            'company_id' => $this->ticket->company_id,
+            'customer_id' => $this->ticket->customer_id,
+            'assigned_to' => $this->ticket->assigned_to,
+            'category_id' => $this->ticket->category_id,
+            'subject' => 'Follow-up: '.$this->ticket->subject,
+            'description' => Purifier::clean($this->message),
+            'status' => 'open',
+            'priority' => $this->ticket->priority,
+            'parent_ticket_id' => $this->ticket->id,
+            'ticket_number' => $ticketNumber,
+            'tracking_token' => Str::random(32),
+            'verified' => true,
+            'source' => $this->ticket->source ?? 'widget',
+        ]);
+
+        if (! empty($attachmentPaths)) {
+            TicketReply::create([
+                'ticket_id' => $linkedTicket->id,
+                'user_id' => null,
+                'customer_name' => $this->ticket->customer?->name ?? '',
+                'message' => Purifier::clean($this->message),
+                'is_internal' => false,
+                'attachments' => $attachmentPaths,
+            ]);
+        }
+
+        if ($linkedTicket->assignedTo) {
+            $linkedTicket->assignedTo->notify(new ClientReplied($linkedTicket));
+        }
+
+        $this->confirmLinkedTicket = false;
+        $this->reset(['message', 'attachments']);
+        $this->dispatch('resetEditor');
+
+        session()->flash('success', 'A new follow-up ticket (#'.$linkedTicket->ticket_number.') has been created!');
+    }
+
+    /**
+     * @return array<int, array{name: string, path: string, mime_type: string, size: int}>
+     */
+    private function storeAttachments(): array
+    {
+        $paths = [];
+
+        foreach ($this->attachments as $attachment) {
+            $path = $attachment->store('ticket-attachments', 'public');
+            $paths[] = [
+                'name' => $attachment->getClientOriginalName(),
+                'path' => $path,
+                'mime_type' => $attachment->getMimeType(),
+                'size' => $attachment->getSize(),
+            ];
+        }
+
+        return $paths;
+    }
+
+    public function removeAttachment(int $index): void
     {
         array_splice($this->attachments, $index, 1);
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.tickets.widget.ticket-conversation', [
             'replies' => TicketReply::where('ticket_id', $this->ticket->id)

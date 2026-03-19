@@ -138,3 +138,58 @@ test('categories only show for current company', function () {
         ->assertSee('My Category')
         ->assertDontSee('Other Category');
 });
+
+test('admin can create a subcategory', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $parent = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Hardware']);
+
+    $this->actingAs($admin);
+
+    Livewire::test(CategoriesTable::class)
+        ->set('name', 'Laptops')
+        ->set('description', 'Laptop issues')
+        ->set('default_priority', 'medium')
+        ->set('parent_id', $parent->id)
+        ->call('createCategory')
+        ->assertDispatched('show-toast');
+
+    $this->assertDatabaseHas('ticket_categories', [
+        'company_id' => $company->id,
+        'name' => 'Laptops',
+        'parent_id' => $parent->id,
+    ]);
+});
+
+test('subcategory cannot have children (max 2 levels)', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $parent = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Hardware']);
+    $child = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Laptops', 'parent_id' => $parent->id]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(CategoriesTable::class)
+        ->set('name', 'MacBooks')
+        ->set('default_priority', 'medium')
+        ->set('parent_id', $child->id)
+        ->call('createCategory')
+        ->assertHasErrors(['parent_id']);
+});
+
+test('deleting parent category cascades to children', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $parent = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Hardware']);
+    $child = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Laptops', 'parent_id' => $parent->id]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(CategoriesTable::class)
+        ->call('confirmDelete', $parent->id)
+        ->call('deleteCategory')
+        ->assertDispatched('show-toast');
+
+    $this->assertDatabaseMissing('ticket_categories', ['id' => $parent->id]);
+    $this->assertDatabaseMissing('ticket_categories', ['id' => $child->id]);
+});

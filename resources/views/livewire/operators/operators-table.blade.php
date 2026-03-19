@@ -217,6 +217,10 @@
                     </th>
                     <th
                         class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                        Teams
+                    </th>
+                    <th
+                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                         ONLINE
                     </th>
                     <th
@@ -352,6 +356,26 @@
                                     <span
                                         class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
                                         +{{ $allSpecialties->count() - 3 }} more
+                                    </span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="flex flex-wrap gap-1 max-w-[200px]">
+                                @forelse ($user->teams->take(2) as $team)
+                                    <span
+                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-600">
+                                        <span class="w-1.5 h-1.5 rounded-full"
+                                            style="background-color: {{ $team->color }}"></span>
+                                        {{ $team->name }}
+                                    </span>
+                                @empty
+                                    <span class="text-zinc-500 italic">None</span>
+                                @endforelse
+                                @if ($user->teams->count() > 2)
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
+                                        +{{ $user->teams->count() - 2 }} more
                                     </span>
                                 @endif
                             </div>

@@ -46,7 +46,7 @@ class KbArticle extends Model
 
     public function category()
     {
-        return $this->belongsTo(KbCategory::class, 'kb_category_id');
+        return $this->belongsTo(TicketCategory::class, 'ticket_category_id');
     }
 
     public function versions()

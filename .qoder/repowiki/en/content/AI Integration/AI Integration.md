@@ -3,14 +3,34 @@
 <cite>
 **Referenced Files in This Document**
 - [SupportReplyAgent.php](file://app/Ai/Agents/SupportReplyAgent.php)
+- [HelpdeskAgent.php](file://app/Ai/Agents/HelpdeskAgent.php)
+- [ChatbotWidgetController.php](file://app/Http/Controllers/ChatbotWidgetController.php)
+- [AiChatWidget.php](file://app/Livewire/AiChatWidget.php)
+- [AiChatbotWidget.php](file://app/Livewire/Channels/AiChatbotWidget.php)
+- [AiCopilot.php](file://app/Livewire/Settings/AiCopilot.php)
 - [ai.php](file://config/ai.php)
 - [TicketDetails.php](file://app/Livewire/Dashboard/TicketDetails.php)
 - [ticket-details.blade.php](file://resources/views/livewire/dashboard/ticket-details.blade.php)
+- [ai-chat-widget.blade.php](file://resources/views/livewire/ai-chat-widget.blade.php)
+- [ai-chatbot-widget.blade.php](file://resources/views/livewire/channels/ai-chatbot-widget.blade.php)
 - [LaravelAISDKdocs.txt](file://LaravelAISDKdocs.txt)
 - [Ticket.php](file://app/Models/Ticket.php)
 - [TicketReply.php](file://app/Models/TicketReply.php)
 - [TicketsController.php](file://app/Http/Controllers/TicketsController.php)
+- [CompanyAiSettings.php](file://app/Models/CompanyAiSettings.php)
+- [ChatbotConversation.php](file://app/Models/ChatbotConversation.php)
+- [ChatbotFaq.php](file://app/Models/ChatbotFaq.php)
+- [AiSuggestionLog.php](file://app/Models/AiSuggestionLog.php)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Added comprehensive AI chatbot system with HelpdeskAgent implementation
+- Integrated ChatbotWidgetController for public-facing customer chatbot
+- Enhanced internal AI assistance with AiChatWidget for agent-only conversations
+- Expanded AI copilot settings with model selection and feature toggles
+- Added AI suggestion training and golden response management
+- Implemented conversation persistence and escalation handling
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -24,324 +44,308 @@
 9. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the AI integration system powered by Google Gemini within the Helpdesk System. It focuses on the SupportReplyAgent implementation that analyzes ticket context and suggests appropriate responses, the AI agent configuration, tone control mechanisms, and how AI suggestions integrate with the ticket reply system and the agent approval workflow. It also covers prompt engineering, context injection from ticket history, response quality assessment, fallback mechanisms during service unavailability, and cost optimization strategies.
+This document explains the comprehensive AI integration system powered by Google Gemini and other AI providers within the Helpdesk System. The system now features three distinct AI implementations: SupportReplyAgent for ticket-based reply suggestions, HelpdeskAgent for both public customer chatbot and internal agent assistance, and an expanded AI copilot system with advanced configuration options. The system supports customer-facing chatbot widgets, internal agent AI assistants, automated reply suggestions, and comprehensive AI training capabilities.
 
 ## Project Structure
-The AI integration spans several layers:
-- Agent definition under the AI Agents namespace
-- Configuration for AI providers and defaults
-- Livewire component orchestrating AI suggestions and reply submission
-- Blade templates rendering the AI suggestion UI and controls
-- Models representing tickets and replies for context injection
-- Controller exposing ticket views
+The AI integration spans multiple layers with distinct components for different use cases:
+- Agent implementations under the AI Agents namespace (SupportReplyAgent, HelpdeskAgent)
+- Public chatbot controllers and widgets for customer interactions
+- Internal AI assistant for agent-only conversations
+- Comprehensive AI settings and configuration management
+- Training and feedback systems for AI improvement
+- Conversation persistence and escalation handling
 
 ```mermaid
 graph TB
-subgraph "AI Layer"
-A["SupportReplyAgent<br/>(Agent)"]
-CFG["AI Config<br/>(config/ai.php)"]
+subgraph "Public Chatbot Layer"
+A["HelpdeskAgent<br/>(Agent)"]
+B["ChatbotWidgetController<br/>(Controller)"]
+C["ChatbotConversation<br/>(Model)"]
+D["ChatbotFaq<br/>(Model)"]
 end
-subgraph "UI Layer"
-LD["Livewire: TicketDetails<br/>(TicketDetails.php)"]
-BLADE["Blade Template<br/>(ticket-details.blade.php)"]
+subgraph "Internal AI Assistant Layer"
+E["AiChatWidget<br/>(Livewire)"]
+F["AiChatbotWidget<br/>(Livewire)"]
+G["CompanyAiSettings<br/>(Model)"]
 end
-subgraph "Domain Models"
-TICKET["Ticket Model<br/>(Ticket.php)"]
-REPLY["TicketReply Model<br/>(TicketReply.php)"]
+subgraph "Reply Assistance Layer"
+H["SupportReplyAgent<br/>(Agent)"]
+I["TicketDetails<br/>(Livewire)"]
+J["AiSuggestionLog<br/>(Model)"]
 end
-CTRL["TicketsController<br/>(TicketsController.php)"]
-CTRL --> LD
-LD --> BLADE
-LD --> A
-A --> CFG
-LD --> TICKET
-TICKET --> REPLY
+subgraph "Configuration Layer"
+K["ai.php<br/>(Config)"]
+L["AiCopilot<br/>(Livewire)"]
+end
+B --> A
+E --> A
+I --> H
+A --> K
+G --> K
 ```
 
 **Diagram sources**
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
+- [ChatbotWidgetController.php:16-337](file://app/Http/Controllers/ChatbotWidgetController.php#L16-L337)
+- [AiChatWidget.php:13-275](file://app/Livewire/AiChatWidget.php#L13-L275)
+- [AiChatbotWidget.php:13-211](file://app/Livewire/Channels/AiChatbotWidget.php#L13-L211)
 - [SupportReplyAgent.php:16-49](file://app/Ai/Agents/SupportReplyAgent.php#L16-L49)
 - [ai.php:82-85](file://config/ai.php#L82-L85)
-- [TicketDetails.php:324-381](file://app/Livewire/Dashboard/TicketDetails.php#L324-L381)
-- [ticket-details.blade.php:520-589](file://resources/views/livewire/dashboard/ticket-details.blade.php#L520-L589)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
-- [TicketsController.php:12-17](file://app/Http/Controllers/TicketsController.php#L12-L17)
 
 **Section sources**
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
+- [ChatbotWidgetController.php:16-337](file://app/Http/Controllers/ChatbotWidgetController.php#L16-L337)
+- [AiChatWidget.php:13-275](file://app/Livewire/AiChatWidget.php#L13-L275)
+- [AiChatbotWidget.php:13-211](file://app/Livewire/Channels/AiChatbotWidget.php#L13-L211)
 - [SupportReplyAgent.php:16-49](file://app/Ai/Agents/SupportReplyAgent.php#L16-L49)
 - [ai.php:82-85](file://config/ai.php#L82-L85)
-- [TicketDetails.php:324-381](file://app/Livewire/Dashboard/TicketDetails.php#L324-L381)
-- [ticket-details.blade.php:520-589](file://resources/views/livewire/dashboard/ticket-details.blade.php#L520-L589)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
-- [TicketsController.php:12-17](file://app/Http/Controllers/TicketsController.php#L12-L17)
 
 ## Core Components
-- SupportReplyAgent: Defines the agent behavior for generating reply suggestions using the Google Gemini provider, with cost-conscious model selection and conversational context hooks.
-- AI configuration: Declares the Gemini provider and default provider selections for various modalities.
-- TicketDetails Livewire component: Generates context from the ticket and conversation history, invokes the agent, manages suggestion UI, and integrates with the reply submission flow.
-- Blade template: Presents the AI suggestion panel, tone controls, and actions to use or dismiss suggestions.
-- Models: Provide the ticket metadata, category, and replies used to construct the context.
+- **HelpdeskAgent**: Advanced conversational AI agent with memory retention, supporting both public chatbot interactions and internal agent assistance with model selection and provider configuration.
+- **ChatbotWidgetController**: Handles public customer chatbot interactions, including FAQ integration, knowledge base context, escalation handling, and conversation persistence.
+- **AiChatWidget**: Internal AI assistant for agents with conversation history, quick replies, and seamless integration with the HelpdeskAgent.
+- **AiChatbotWidget**: Configuration interface for enabling/disabling chatbot, setting greeting messages, fallback thresholds, and escalation URLs.
+- **CompanyAiSettings**: Centralized AI configuration management with provider resolution and model selection.
+- **Enhanced SupportReplyAgent**: Improved reply suggestion system with better context injection and tone control.
 
 **Section sources**
-- [SupportReplyAgent.php:25-28](file://app/Ai/Agents/SupportReplyAgent.php#L25-L28)
-- [SupportReplyAgent.php:35-38](file://app/Ai/Agents/SupportReplyAgent.php#L35-L38)
-- [SupportReplyAgent.php:45-48](file://app/Ai/Agents/SupportReplyAgent.php#L45-L48)
-- [ai.php:16](file://config/ai.php#L16)
-- [ai.php:82-85](file://config/ai.php#L82-L85)
-- [TicketDetails.php:345-371](file://app/Livewire/Dashboard/TicketDetails.php#L345-L371)
-- [TicketDetails.php:372-381](file://app/Livewire/Dashboard/TicketDetails.php#L372-L381)
-- [ticket-details.blade.php:544-589](file://resources/views/livewire/dashboard/ticket-details.blade.php#L544-L589)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
+- [ChatbotWidgetController.php:16-337](file://app/Http/Controllers/ChatbotWidgetController.php#L16-L337)
+- [AiChatWidget.php:13-275](file://app/Livewire/AiChatWidget.php#L13-L275)
+- [AiChatbotWidget.php:13-211](file://app/Livewire/Channels/AiChatbotWidget.php#L13-L211)
+- [CompanyAiSettings.php:14-58](file://app/Models/CompanyAiSettings.php#L14-L58)
+- [SupportReplyAgent.php:16-49](file://app/Ai/Agents/SupportReplyAgent.php#L16-L49)
 
 ## Architecture Overview
-The AI suggestion pipeline follows a clear flow:
-- The UI triggers generation via Livewire
-- Context is built from the ticket and replies
-- The agent is invoked with the constructed prompt
-- The suggestion is rendered in the UI with tone controls
-- The agent’s reply is submitted through the existing reply mechanism
+The AI system now operates across three distinct interaction modes with sophisticated escalation handling and conversation management:
 
 ```mermaid
 sequenceDiagram
-participant U as "User"
-participant V as "Blade UI<br/>(ticket-details.blade.php)"
-participant LW as "Livewire : TicketDetails"
-participant AG as "SupportReplyAgent"
-participant CFG as "AI Config<br/>(config/ai.php)"
-participant M as "Models<br/>(Ticket, TicketReply)"
-U->>V : Click "Generate AI Suggestion"
-V->>LW : startAiSuggestion()
-LW->>LW : generateAiSuggestion()
-LW->>M : Load ticket + replies
-LW->>AG : prompt(context)
-AG->>CFG : Resolve provider (Gemini)
-AG-->>LW : Suggestion text
-LW-->>V : Render suggestion + tone controls
-U->>V : Choose tone / Use suggestion
-V->>LW : useAiSuggestion()
-LW->>M : Create reply (via existing flow)
+participant C as "Customer"
+participant W as "ChatbotWidgetController"
+participant A as "HelpdeskAgent"
+participant F as "FAQ/Knowledge Base"
+participant S as "Session Storage"
+C->>W : Send message
+W->>F : Load FAQ + KB context
+W->>A : prompt(context + message)
+A-->>W : AI response
+W->>S : Store conversation
+W-->>C : Response + escalation option
+Note over W,S : Conversation tracking with fallback threshold
 ```
 
 **Diagram sources**
-- [TicketDetails.php:324-381](file://app/Livewire/Dashboard/TicketDetails.php#L324-L381)
-- [SupportReplyAgent.php:16-18](file://app/Ai/Agents/SupportReplyAgent.php#L16-L18)
-- [ai.php:82-85](file://config/ai.php#L82-L85)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
-- [ticket-details.blade.php:544-589](file://resources/views/livewire/dashboard/ticket-details.blade.php#L544-L589)
+- [ChatbotWidgetController.php:77-223](file://app/Http/Controllers/ChatbotWidgetController.php#L77-L223)
+- [HelpdeskAgent.php:25-28](file://app/Ai/Agents/HelpdeskAgent.php#L25-L28)
 
 ## Detailed Component Analysis
 
-### SupportReplyAgent
-- Provider selection: Uses the Google Gemini provider via a dedicated attribute.
-- Model selection: Uses the cheapest available model attribute for cost optimization.
-- Instructions: Provides a concise instruction set guiding the agent to analyze context and produce a reply without preamble.
-- Messages: Returns an empty conversation list; context is injected externally via the prompt method.
-- Tools: No tools are exposed by this agent.
+### HelpdeskAgent Implementation
+The HelpdeskAgent serves as the core conversational AI component supporting both public chatbot and internal agent assistance:
+
+- **Provider and Model Configuration**: Uses Google Gemini with the `gemini-2.5-flash` model for optimal balance of speed and cost
+- **Conversational Memory**: Implements `RemembersConversations` trait for automatic conversation history management
+- **Instructions**: Provides comprehensive guidance for customer support scenarios including billing, integrations, and ticketing interface
+- **Plain Text Responses**: Enforces plain text formatting without markdown for consistent presentation
 
 ```mermaid
 classDiagram
-class SupportReplyAgent {
+class HelpdeskAgent {
 +instructions() Stringable|string
 +messages() iterable
 +tools() iterable
++RemembersConversations
 }
-class Config_ai_gemini {
-+driver "gemini"
-+key "GEMINI_API_KEY"
+class Conversational {
+<<interface>>
++continue(conversationId, participant)
 }
-SupportReplyAgent --> Config_ai_gemini : "uses provider"
+class HasTools {
+<<interface>>
++tools() iterable
+}
+HelpdeskAgent ..|> Conversational
+HelpdeskAgent ..|> HasTools
 ```
 
 **Diagram sources**
-- [SupportReplyAgent.php:16-49](file://app/Ai/Agents/SupportReplyAgent.php#L16-L49)
-- [ai.php:82-85](file://config/ai.php#L82-L85)
+- [HelpdeskAgent.php:18-41](file://app/Ai/Agents/HelpdeskAgent.php#L18-L41)
 
 **Section sources**
-- [SupportReplyAgent.php:16-18](file://app/Ai/Agents/SupportReplyAgent.php#L16-L18)
-- [SupportReplyAgent.php:25-28](file://app/Ai/Agents/SupportReplyAgent.php#L25-L28)
-- [SupportReplyAgent.php:35-38](file://app/Ai/Agents/SupportReplyAgent.php#L35-L38)
-- [SupportReplyAgent.php:45-48](file://app/Ai/Agents/SupportReplyAgent.php#L45-L48)
-- [ai.php:82-85](file://config/ai.php#L82-L85)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
-### AI Agent Configuration (Provider Selection, Model Parameters, Safety Controls)
-- Provider selection: The Gemini provider is defined with driver and API key.
-- Defaults: The application sets defaults for general and specialized tasks; while the agent itself selects Gemini via its attribute, the global defaults influence other parts of the system.
-- Model parameters: The agent leverages the cheapest model attribute for cost optimization.
-- Safety controls: The agent does not declare explicit safety attributes in this implementation; safety is managed by provider policies and the prompt instructions.
+### Public Chatbot System
+The ChatbotWidgetController provides a complete customer-facing chatbot solution with intelligent escalation handling:
+
+- **Context Management**: Integrates FAQ database and knowledge base articles for informed responses
+- **Escalation Logic**: Implements sophisticated escalation detection based on conversation patterns and fallback thresholds
+- **Session Persistence**: Maintains conversation state across requests with outcome tracking (active, resolved, escalated)
+- **Fallback Handling**: Automatically offers ticket form access when AI cannot answer customer queries
 
 ```mermaid
 flowchart TD
-Start(["Agent Attribute Resolution"]) --> ProviderAttr["Provider(Gemini)"]
-ProviderAttr --> ModelAttr["UseCheapestModel"]
-ModelAttr --> Defaults["Global Defaults<br/>(ai.php defaults)"]
-Defaults --> End(["Resolved Provider & Model"])
+Start["Customer Message"] --> Context["Load FAQ + KB Context"]
+Context --> Analyze["Analyze Intent & Context"]
+Analyze --> AI["Generate AI Response"]
+AI --> Escalation{"Escalation Required?"}
+Escalation --> |Yes| Escalate["Offer Ticket Form"]
+Escalation --> |No| Store["Store Conversation"]
+Store --> End["Return Response"]
+Escalate --> Store
 ```
 
 **Diagram sources**
-- [SupportReplyAgent.php:16-18](file://app/Ai/Agents/SupportReplyAgent.php#L16-L18)
-- [SupportReplyAgent.php:17](file://app/Ai/Agents/SupportReplyAgent.php#L17)
-- [ai.php:16](file://config/ai.php#L16)
+- [ChatbotWidgetController.php:123-144](file://app/Http/Controllers/ChatbotWidgetController.php#L123-L144)
+- [ChatbotWidgetController.php:165-188](file://app/Http/Controllers/ChatbotWidgetController.php#L165-L188)
 
 **Section sources**
-- [ai.php:82-85](file://config/ai.php#L82-L85)
-- [SupportReplyAgent.php:16-18](file://app/Ai/Agents/SupportReplyAgent.php#L16-L18)
-- [SupportReplyAgent.php:17](file://app/Ai/Agents/SupportReplyAgent.php#L17)
-- [ai.php:16](file://config/ai.php#L16)
+- [ChatbotWidgetController.php:77-223](file://app/Http/Controllers/ChatbotWidgetController.php#L77-L223)
 
-### Tone Control Mechanisms
-- Tone options: Professional, friendly, and formal tones are selectable in the UI.
-- Dynamic regeneration: Changing the tone triggers regeneration of the suggestion using the same context plus a tone directive.
-- UI feedback: Loading states and regeneration controls provide responsive feedback.
+### Internal AI Assistant for Agents
+The AiChatWidget provides an integrated AI assistant within the Helpdesk system for agent use:
 
-```mermaid
-flowchart TD
-UI["User selects tone"] --> Regen["regenerateWithTone(tone)"]
-Regen --> BuildCtx["Rebuild context with selected tone"]
-BuildCtx --> Invoke["Invoke agent.prompt(context)"]
-Invoke --> Render["Render suggestion with tone"]
-```
-
-**Diagram sources**
-- [TicketDetails.php:383-395](file://app/Livewire/Dashboard/TicketDetails.php#L383-L395)
-- [ticket-details.blade.php:544-559](file://resources/views/livewire/dashboard/ticket-details.blade.php#L544-L559)
-
-**Section sources**
-- [TicketDetails.php:357-369](file://app/Livewire/Dashboard/TicketDetails.php#L357-L369)
-- [TicketDetails.php:383-395](file://app/Livewire/Dashboard/TicketDetails.php#L383-L395)
-- [ticket-details.blade.php:544-559](file://resources/views/livewire/dashboard/ticket-details.blade.php#L544-L559)
-
-### AI Suggestions Integration with Ticket Reply System and Approval Workflow
-- Generation lifecycle: The Livewire component builds context, invokes the agent, and displays the suggestion with controls to use or dismiss.
-- Approval workflow: The “Use this” action dispatches the suggestion content to the editor, allowing manual review and edits before submission.
-- Submission: The reply submission uses the existing reply creation flow, preserving agent assignment, attachments, and notifications.
+- **Conversation Management**: Supports multiple concurrent conversations with history persistence
+- **Quick Replies**: Predefined response suggestions for common scenarios
+- **Provider Flexibility**: Dynamic provider selection based on company AI settings
+- **Error Handling**: Graceful degradation with informative error messages
 
 ```mermaid
 sequenceDiagram
-participant LW as "Livewire : TicketDetails"
-participant UI as "Blade UI"
-participant AG as "SupportReplyAgent"
-participant MOD as "Models"
-LW->>AG : prompt(context)
-AG-->>LW : suggestion
-UI->>LW : useAiSuggestion()
-LW->>UI : loadAiSuggestion(content)
-UI->>LW : submit reply (existing flow)
-LW->>MOD : create TicketReply
+participant Agent as "Agent"
+participant Widget as "AiChatWidget"
+participant Settings as "CompanyAiSettings"
+participant Agent as "HelpdeskAgent"
+Agent->>Widget : New message
+Widget->>Settings : Load AI settings
+Widget->>Agent : prompt(message)
+Agent-->>Widget : AI response
+Widget-->>Agent : Display response
 ```
 
 **Diagram sources**
-- [TicketDetails.php:372-373](file://app/Livewire/Dashboard/TicketDetails.php#L372-L373)
-- [TicketDetails.php:458-462](file://app/Livewire/Dashboard/TicketDetails.php#L458-L462)
-- [ticket-details.blade.php:563-567](file://resources/views/livewire/dashboard/ticket-details.blade.php#L563-L567)
-- [TicketReply.php:8-18](file://app/Models/TicketReply.php#L8-L18)
+- [AiChatWidget.php:179-268](file://app/Livewire/AiChatWidget.php#L179-L268)
 
 **Section sources**
-- [TicketDetails.php:372-373](file://app/Livewire/Dashboard/TicketDetails.php#L372-L373)
-- [TicketDetails.php:458-462](file://app/Livewire/Dashboard/TicketDetails.php#L458-L462)
-- [ticket-details.blade.php:563-567](file://resources/views/livewire/dashboard/ticket-details.blade.php#L563-L567)
-- [TicketReply.php:8-18](file://app/Models/TicketReply.php#L8-L18)
+- [AiChatWidget.php:13-275](file://app/Livewire/AiChatWidget.php#L13-L275)
 
-### Examples of AI Prompt Engineering and Context Injection
-- Context composition: The component constructs a structured context including company, category, priority, customer, original description, and full conversation history.
-- Tone injection: A tone directive is appended to the context to steer the agent’s style.
-- Summary prompt: A separate prompt is used for generating a concise ticket summary with explicit formatting requirements.
+### AI Configuration and Settings
+Comprehensive AI configuration management through CompanyAiSettings:
+
+- **Feature Toggles**: Enable/disable AI suggestions, summaries, chatbot, and auto-triage
+- **Model Selection**: Support for multiple providers (Gemini, OpenAI, Anthropic) with automatic provider resolution
+- **Chatbot Configuration**: Greeting messages, fallback thresholds, and escalation URL types
+- **Provider Resolution**: Automatic provider selection based on model naming conventions
 
 ```mermaid
 flowchart TD
-CtxStart["Build base context"] --> Cat["Add category/priority/customer"]
-Cat --> Desc["Add original description"]
-Desc --> Hist["Iterate replies (sender + stripped message)"]
-Hist --> Tone["Append tone directive"]
-Tone --> Prompt["Pass to agent.prompt()"]
+Settings["CompanyAiSettings"] --> Features["AI Feature Flags"]
+Settings --> Model["Model Selection"]
+Settings --> Chatbot["Chatbot Settings"]
+Features --> Toggle["Enable/Disable Features"]
+Model --> Provider["Provider Resolution"]
+Chatbot --> Escalation["Escalation Logic"]
 ```
 
 **Diagram sources**
-- [TicketDetails.php:345-369](file://app/Livewire/Dashboard/TicketDetails.php#L345-L369)
-- [TicketDetails.php:398-444](file://app/Livewire/Dashboard/TicketDetails.php#L398-L444)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
+- [CompanyAiSettings.php:14-58](file://app/Models/CompanyAiSettings.php#L14-L58)
+- [AiCopilot.php:30-49](file://app/Livewire/Settings/AiCopilot.php#L30-L49)
 
 **Section sources**
-- [TicketDetails.php:345-369](file://app/Livewire/Dashboard/TicketDetails.php#L345-L369)
-- [TicketDetails.php:398-444](file://app/Livewire/Dashboard/TicketDetails.php#L398-L444)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
+- [CompanyAiSettings.php:14-58](file://app/Models/CompanyAiSettings.php#L14-L58)
+- [AiCopilot.php:9-81](file://app/Livewire/Settings/AiCopilot.php#L9-L81)
 
-### Response Quality Assessment
-- Validation: The suggestion is treated as raw text; the UI allows editing prior to submission.
-- Formatting: The summary prompt enforces a strict format to aid readability and downstream processing.
-- Error handling: Exceptions during generation are caught and surfaced to the UI.
+### Enhanced Reply Suggestion System
+Improved SupportReplyAgent with advanced context injection and quality controls:
+
+- **Context Enhancement**: Rich ticket context including category, priority, customer details, and full conversation history
+- **Tone Control**: Multiple tone options (professional, friendly, formal) with dynamic regeneration
+- **Quality Assurance**: Plain text formatting, character limits, and validation
+- **Approval Workflow**: Seamless integration with existing ticket reply system
 
 **Section sources**
-- [TicketDetails.php:435-441](file://app/Livewire/Dashboard/TicketDetails.php#L435-L441)
-- [TicketDetails.php:376-378](file://app/Livewire/Dashboard/TicketDetails.php#L376-L378)
+- [SupportReplyAgent.php:16-49](file://app/Ai/Agents/SupportReplyAgent.php#L16-L49)
+- [TicketDetails.php:345-444](file://app/Livewire/Dashboard/TicketDetails.php#L345-L444)
+
+### AI Training and Feedback System
+Comprehensive system for AI improvement through training data:
+
+- **Suggestion Logging**: Tracks AI suggestions, user actions, and edited responses
+- **Golden Response Management**: Curated responses for training and quality assurance
+- **Training Interface**: Dedicated UI for managing training data and monitoring performance
+- **Feedback Loop**: Continuous improvement through user interactions and agent approvals
+
+**Section sources**
+- [AiSuggestionLog.php:11-39](file://app/Models/AiSuggestionLog.php#L11-L39)
+- [SuggestedRepliesTraining.php:16-107](file://app/Livewire/Ai/SuggestedRepliesTraining.php#L16-L107)
 
 ## Dependency Analysis
-- Agent depends on the AI SDK attributes and configuration to select the provider and model.
-- Livewire component depends on models to assemble context and on the agent to generate suggestions.
-- Blade template depends on Livewire state to render controls and suggestion content.
+The AI system exhibits layered dependencies with clear separation of concerns:
 
 ```mermaid
 graph LR
-CFG["config/ai.php"] --> AG["SupportReplyAgent"]
-TICKET["Ticket.php"] --> LW["TicketDetails.php"]
-REPLY["TicketReply.php"] --> LW
-LW --> AG
-LW --> BL["ticket-details.blade.php"]
+CFG["config/ai.php"] --> PROVIDERS["AI Providers"]
+PROVIDERS --> HELP["HelpdeskAgent"]
+PROVIDERS --> SUPPORT["SupportReplyAgent"]
+HELP --> CONTROLLER["ChatbotWidgetController"]
+HELP --> WIDGET["AiChatWidget"]
+CONTROLLER --> CONVERSATIONS["ChatbotConversation"]
+CONTROLLER --> FAQ["ChatbotFaq"]
+SETTINGS["CompanyAiSettings"] --> HELP
+SETTINGS --> CONTROLLER
 ```
 
 **Diagram sources**
-- [ai.php:82-85](file://config/ai.php#L82-L85)
-- [SupportReplyAgent.php:16-18](file://app/Ai/Agents/SupportReplyAgent.php#L16-L18)
-- [TicketDetails.php:345-371](file://app/Livewire/Dashboard/TicketDetails.php#L345-L371)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
-- [ticket-details.blade.php:520-589](file://resources/views/livewire/dashboard/ticket-details.blade.php#L520-L589)
+- [ai.php:52-127](file://config/ai.php#L52-L127)
+- [HelpdeskAgent.php:16-17](file://app/Ai/Agents/HelpdeskAgent.php#L16-L17)
+- [ChatbotWidgetController.php:5-14](file://app/Http/Controllers/ChatbotWidgetController.php#L5-L14)
+- [CompanyAiSettings.php:51-58](file://app/Models/CompanyAiSettings.php#L51-L58)
 
 **Section sources**
-- [ai.php:82-85](file://config/ai.php#L82-L85)
-- [SupportReplyAgent.php:16-18](file://app/Ai/Agents/SupportReplyAgent.php#L16-L18)
-- [TicketDetails.php:345-371](file://app/Livewire/Dashboard/TicketDetails.php#L345-L371)
-- [Ticket.php:36-39](file://app/Models/Ticket.php#L36-L39)
-- [TicketReply.php:29-37](file://app/Models/TicketReply.php#L29-L37)
-- [ticket-details.blade.php:520-589](file://resources/views/livewire/dashboard/ticket-details.blade.php#L520-L589)
+- [ai.php:52-127](file://config/ai.php#L52-L127)
+- [HelpdeskAgent.php:16-17](file://app/Ai/Agents/HelpdeskAgent.php#L16-L17)
+- [ChatbotWidgetController.php:5-14](file://app/Http/Controllers/ChatbotWidgetController.php#L5-L14)
+- [CompanyAiSettings.php:51-58](file://app/Models/CompanyAiSettings.php#L51-L58)
 
 ## Performance Considerations
-- Cost optimization: The agent uses the cheapest model attribute to reduce costs.
-- Caching: Embedding caching is configurable; while not directly used by the reply agent, it can be leveraged elsewhere in the system.
-- Network latency: UI provides loading indicators; consider debouncing repeated regenerations and avoiding unnecessary model switches.
+- **Cost Optimization**: Strategic use of `gemini-2.5-flash` model for balanced performance and cost
+- **Provider Selection**: Automatic provider resolution reduces configuration overhead
+- **Conversation Persistence**: Efficient session storage with outcome tracking minimizes redundant processing
+- **Rate Limiting**: Built-in error handling for rate limit exceeded scenarios
+- **Caching Strategy**: Configurable embedding caching for improved response times
 
 **Section sources**
-- [SupportReplyAgent.php:17](file://app/Ai/Agents/SupportReplyAgent.php#L17)
-- [ai.php:34-39](file://config/ai.php#L34-L39)
+- [HelpdeskAgent.php:17](file://app/Ai/Agents/HelpdeskAgent.php#L17)
+- [CompanyAiSettings.php:51-58](file://app/Models/CompanyAiSettings.php#L51-L58)
+- [AiChatWidget.php:251-264](file://app/Livewire/AiChatWidget.php#L251-L264)
 
 ## Troubleshooting Guide
-- AI service unavailability: The component catches exceptions and surfaces an error message in the suggestion field.
-- Closed ticket state: Generation is blocked when the ticket is closed to prevent invalid operations.
-- Provider misconfiguration: Ensure the Gemini provider key is set; the agent relies on the provider attribute and configuration.
+- **Chatbot Disabled**: Check CompanyAiSettings for `ai_chatbot_enabled` flag
+- **Provider Configuration**: Verify API keys in config/ai.php for selected provider
+- **Conversation Issues**: Review ChatbotConversation model for proper session handling
+- **Rate Limiting**: Monitor error messages and implement retry logic for 429 responses
+- **Escalation Problems**: Verify escalation URL configuration in CompanyAiSettings
 
 ```mermaid
 flowchart TD
-Start(["Generate Suggestion"]) --> CheckClosed{"Ticket closed?"}
-CheckClosed --> |Yes| Stop["Abort generation"]
-CheckClosed --> |No| Build["Build context"]
-Build --> Call["Call agent.prompt()"]
-Call --> Try{"Success?"}
-Try --> |Yes| Show["Show suggestion"]
-Try --> |No| Error["Set error message"]
-Show --> End(["Done"])
-Error --> End
-Stop --> End
+Problem["AI Issue"] --> Check1{"Chatbot Enabled?"}
+Check1 --> |No| Enable["Enable in settings"]
+Check1 --> |Yes| Check2{"Provider Configured?"}
+Check2 --> |No| Configure["Add API key"]
+Check2 --> |Yes| Check3{"Conversation Error?"}
+Check3 --> |Yes| Debug["Check session storage"]
+Check3 --> |No| RateLimit{"Rate Limited?"}
+RateLimit --> |Yes| Wait["Implement retry logic"]
+RateLimit --> |No| Success["Issue Resolved"]
 ```
 
 **Diagram sources**
-- [TicketDetails.php:336-381](file://app/Livewire/Dashboard/TicketDetails.php#L336-L381)
+- [AiChatWidget.php:189-200](file://app/Livewire/AiChatWidget.php#L189-L200)
+- [ChatbotWidgetController.php:94-96](file://app/Http/Controllers/ChatbotWidgetController.php#L94-L96)
 
 **Section sources**
-- [TicketDetails.php:336-381](file://app/Livewire/Dashboard/TicketDetails.php#L336-L381)
+- [AiChatWidget.php:189-200](file://app/Livewire/AiChatWidget.php#L189-L200)
+- [ChatbotWidgetController.php:94-96](file://app/Http/Controllers/ChatbotWidgetController.php#L94-L96)
 
 ## Conclusion
-The AI integration centers on a focused agent that leverages Google Gemini to suggest replies based on rich ticket context and tone preferences. The Livewire component orchestrates context assembly, suggestion generation, and UI controls, while the existing reply flow preserves agent approvals and notifications. Configuration supports cost-conscious model selection and provider setup, and the system includes basic fallback behavior for errors and closed tickets.
+The enhanced AI integration system provides comprehensive artificial intelligence capabilities across multiple touchpoints within the Helpdesk ecosystem. The addition of HelpdeskAgent, ChatbotWidgetController, and internal AI assistance creates a robust foundation for customer support automation while maintaining flexibility for agent assistance and training. The system's modular architecture supports easy configuration, provider switching, and continuous improvement through user feedback and training data management.

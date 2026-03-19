@@ -2,14 +2,19 @@
 
 namespace App\Observers;
 
+use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\Automation\AutomationEngine;
+use App\Services\AutoTriageService;
 use App\Services\TicketAssignmentService;
 
 class TicketObserver
 {
-    public function __construct(protected TicketAssignmentService $assignmentService, protected AutomationEngine $automationEngine
+    public function __construct(
+        protected TicketAssignmentService $assignmentService,
+        protected AutomationEngine $automationEngine,
+        protected AutoTriageService $autoTriageService,
     ) {}
 
     /**
@@ -45,11 +50,14 @@ class TicketObserver
 
     /**
      * Calculate the SLA due_time based on ticket priority and company policy.
+     * Uses the company's configured timezone for accurate local-time calculations.
      */
     private function calculateSlaDueTime(Ticket $ticket): ?\Carbon\CarbonInterface
     {
         $policy = null;
+        $company = null;
         if ($ticket->company_id) {
+            $company = Company::find($ticket->company_id);
             $policy = \App\Models\SlaPolicy::where('company_id', $ticket->company_id)->first();
         }
 
@@ -65,7 +73,9 @@ class TicketObserver
             default => 1440,
         };
 
-        return now()->addMinutes($minutes);
+        $timezone = $company?->timezone ?? 'UTC';
+
+        return now($timezone)->addMinutes($minutes)->utc();
     }
 
     /**
@@ -76,6 +86,9 @@ class TicketObserver
     {
         // Only process if ticket is verified
         if ($ticket->verified) {
+            // Auto-triage before automation rules
+            $this->autoTriageService->triage($ticket);
+
             $this->automationEngine->processNewTicket($ticket);
 
             // Fallback: If still unassigned after automation, use default assignment
@@ -94,6 +107,9 @@ class TicketObserver
     {
         // Process automation when ticket becomes verified
         if ($ticket->wasChanged('verified') && $ticket->verified) {
+            // Auto-triage before automation rules
+            $this->autoTriageService->triage($ticket);
+
             $this->automationEngine->processNewTicket($ticket);
 
             // Fallback: If still unassigned after automation, use default assignment

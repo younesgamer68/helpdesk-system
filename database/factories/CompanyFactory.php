@@ -18,7 +18,7 @@ class CompanyFactory extends Factory
     {
         return [
             'name' => $this->faker->company(),
-            'slug' => $this->faker->unique()->slug(),
+            'slug' => $this->faker->unique()->slug(3),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->phoneNumber(),
             'timezone' => $this->faker->timezone(),

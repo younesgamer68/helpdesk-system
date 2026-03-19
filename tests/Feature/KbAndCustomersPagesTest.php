@@ -4,7 +4,7 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\KbArticle;
 use App\Models\KbArticleVersion;
-use App\Models\KbCategory;
+use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -65,18 +65,15 @@ it('renders the kb article edit page for admins when accessed by id', function (
         'role' => 'admin',
     ]);
 
-    $category = KbCategory::create([
+    $category = TicketCategory::create([
         'company_id' => $company->id,
         'name' => 'Product Docs',
         'description' => 'Category for product docs',
-        'parent_id' => null,
-        'icon' => null,
-        'order' => 0,
     ]);
 
     $article = KbArticle::create([
         'company_id' => $company->id,
-        'kb_category_id' => $category->id,
+        'ticket_category_id' => $category->id,
         'title' => 'How to reset password',
         'slug' => 'how-to-reset-password',
         'body' => '<p>Step-by-step guide</p>',
@@ -104,18 +101,15 @@ it('does not lazy load article version creator during livewire updates', functio
         'role' => 'admin',
     ]);
 
-    $category = KbCategory::create([
+    $category = TicketCategory::create([
         'company_id' => $company->id,
         'name' => 'Product Docs',
         'description' => 'Category for product docs',
-        'parent_id' => null,
-        'icon' => null,
-        'order' => 0,
     ]);
 
     $article = KbArticle::create([
         'company_id' => $company->id,
-        'kb_category_id' => $category->id,
+        'ticket_category_id' => $category->id,
         'title' => 'How to reset password',
         'slug' => 'how-to-reset-password',
         'body' => '<p>Step-by-step guide</p>',
@@ -136,35 +130,82 @@ it('does not lazy load article version creator during livewire updates', functio
         ->assertSee($user->name);
 });
 
-it('renders the kb categories page for admins', function () {
+it('renders the kb categories page showing company categories', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => now()]);
     $user = User::factory()->create([
         'company_id' => $company->id,
         'role' => 'admin',
     ]);
 
-    $parent = KbCategory::create([
+    TicketCategory::create([
         'company_id' => $company->id,
-        'name' => 'Parent Category',
-        'description' => 'Parent category description',
-        'parent_id' => null,
-        'icon' => null,
-        'order' => 0,
+        'name' => 'General Support',
+        'description' => 'General support category',
     ]);
 
-    KbCategory::create([
+    TicketCategory::create([
         'company_id' => $company->id,
-        'name' => 'Child Category',
-        'description' => 'Child category description',
-        'parent_id' => $parent->id,
-        'icon' => null,
-        'order' => 0,
+        'name' => 'Technical',
+        'description' => 'Technical support category',
     ]);
 
     actingAs($user)
         ->get("http://{$company->slug}.".config('app.domain').'/kb/categories')
         ->assertSuccessful()
-        ->assertSee('Knowledge Base');
+        ->assertSee('Knowledge Base')
+        ->assertSee('General Support')
+        ->assertSee('Technical');
+});
+
+it('renders the public kb article page with related articles from ticket category', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'admin',
+    ]);
+
+    $category = TicketCategory::create([
+        'company_id' => $company->id,
+        'name' => 'Guides',
+        'description' => 'Public guides',
+    ]);
+
+    $article = KbArticle::create([
+        'company_id' => $company->id,
+        'ticket_category_id' => $category->id,
+        'title' => 'Primary Article',
+        'slug' => 'primary-article',
+        'body' => '<p>Main content</p>',
+        'status' => 'published',
+    ]);
+
+    KbArticle::create([
+        'company_id' => $company->id,
+        'ticket_category_id' => $category->id,
+        'title' => 'Related Article',
+        'slug' => 'related-article',
+        'body' => '<p>Related content</p>',
+        'status' => 'published',
+    ]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain')."/kb/article/{$article->slug}")
+        ->assertSuccessful()
+        ->assertSee('Primary Article')
+        ->assertSee('Related Article');
+});
+
+it('renders widget demo with saved custom link attributes', function () {
+    $company = Company::factory()->create([
+        'slug' => 'test-a',
+        'kb_widget_link_mode' => 'custom',
+        'kb_widget_article_base_url' => 'https://www.youtube.com',
+    ]);
+
+    $this->get("http://{$company->slug}.".config('app.domain').'/kb/widget-demo')
+        ->assertSuccessful()
+        ->assertSee('data-default-link-mode="custom"', false)
+        ->assertSee('data-article-base-url="https://www.youtube.com"', false);
 });
 
 it('renders the automation page for admins', function () {

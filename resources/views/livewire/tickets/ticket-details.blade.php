@@ -39,12 +39,12 @@
 
                 {{-- Conversation Tab --}}
                 <div x-show="activeTab === 'conversation'" class="space-y-6">
-                    @if ($showSummary)
+                    @if ($this->aiSettings->ai_summary_enabled && $showSummary)
                         <x-app.tickets.ai-summary />
                     @endif
 
                     <x-app.tickets.conversation :replies="$this->replies" :ticket="$ticket" :senderId="$senderId" :showAiSuggestion="$showAiSuggestion"
-                        :aiTone="$aiTone" :attachments="$attachments" />
+                        :aiTone="$aiTone" :attachments="$attachments" :kbSearch="$kbSearch" :kbResults="$this->kbResults" :aiSuggestionsEnabled="$this->aiSettings->ai_suggestions_enabled" />
                 </div>
 
                 {{-- Internal Notes Tab --}}
@@ -59,7 +59,7 @@
             </div>
 
             {{-- Right Column - Sidebar --}}
-            <x-app.tickets.sidebar :ticket="$ticket" :agents="$agents" />
+            <x-app.tickets.sidebar :ticket="$ticket" :agents="$agents" :teams="$teams" />
         </div>
     </div>
 </div>

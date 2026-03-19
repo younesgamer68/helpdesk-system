@@ -24,16 +24,18 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    /* Brand: teal-700 in light mode — deep enough for contrast on white */
+    --color-accent: #0f766e;
+    --color-accent-content: #0f766e;
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        /* Brand: teal-400 in dark mode — bright enough for contrast on zinc-900/950 */
+        --color-accent: #2dd4bf;
+        --color-accent-content: #2dd4bf;
+        --color-accent-foreground: #042f2e;
     }
 }
 

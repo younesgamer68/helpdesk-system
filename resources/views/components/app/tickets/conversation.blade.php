@@ -4,11 +4,13 @@
     'senderId',
     'showAiSuggestion',
     'aiTone',
-    'attachments'
+    'attachments',
+    'kbSearch' => '',
+    'kbResults' => collect(),
+    'aiSuggestionsEnabled' => false,
 ])
 
-<div
-    class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+<div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
     <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Conversation</h2>
@@ -29,11 +31,6 @@
         @endforelse
     </div>
 
-    <x-app.tickets.reply-form 
-        :ticket="$ticket" 
-        :senderId="$senderId" 
-        :showAiSuggestion="$showAiSuggestion" 
-        :aiTone="$aiTone" 
-        :attachments="$attachments" 
-    />
+    <x-app.tickets.reply-form :ticket="$ticket" :senderId="$senderId" :showAiSuggestion="$showAiSuggestion" :aiTone="$aiTone" :attachments="$attachments"
+        :kbSearch="$kbSearch" :kbResults="$kbResults" :aiSuggestionsEnabled="$aiSuggestionsEnabled" />
 </div>

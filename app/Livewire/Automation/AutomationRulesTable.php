@@ -3,6 +3,7 @@
 namespace App\Livewire\Automation;
 
 use App\Models\AutomationRule;
+use App\Models\Team;
 use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -70,6 +71,8 @@ class AutomationRulesTable extends Component
     public bool $fallback_to_generalist = true;
 
     public ?int $assign_to_operator_id = null;
+
+    public ?int $assign_to_team_id = null;
 
     public string $set_priority = 'high';
 
@@ -162,7 +165,22 @@ class AutomationRulesTable extends Component
     #[Computed]
     public function categories()
     {
-        return TicketCategory::where('company_id', Auth::user()->company_id)->get();
+        return TicketCategory::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->parents()
+            ->with(['children' => fn ($query) => $query->orderBy('name')])
+            ->orderBy('name')
+            ->get();
+    }
+
+    #[Computed]
+    public function teamsForSelect()
+    {
+        return Team::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->select('id', 'name', 'color')
+            ->orderBy('name')
+            ->get();
     }
 
     #[Computed]
@@ -339,6 +357,7 @@ class AutomationRulesTable extends Component
                 'assign_to_specialist' => $this->assign_to_specialist,
                 'fallback_to_generalist' => $this->fallback_to_generalist,
                 'assign_to_operator_id' => $this->assign_to_operator_id,
+                'assign_to_team_id' => $this->assign_to_team_id,
             ],
             'priority' => [
                 'set_priority' => $this->set_priority,
@@ -372,6 +391,7 @@ class AutomationRulesTable extends Component
         $this->assign_to_specialist = $actions['assign_to_specialist'] ?? true;
         $this->fallback_to_generalist = $actions['fallback_to_generalist'] ?? true;
         $this->assign_to_operator_id = $actions['assign_to_operator_id'] ?? null;
+        $this->assign_to_team_id = $actions['assign_to_team_id'] ?? null;
         $this->set_priority = $actions['set_priority'] ?? 'high';
         $this->send_email = $actions['send_email'] ?? true;
         $this->email_subject = $actions['subject'] ?? '';
@@ -398,6 +418,7 @@ class AutomationRulesTable extends Component
         $this->assign_to_specialist = true;
         $this->fallback_to_generalist = true;
         $this->assign_to_operator_id = null;
+        $this->assign_to_team_id = null;
         $this->set_priority = 'high';
         $this->send_email = true;
         $this->email_subject = '';
@@ -405,6 +426,30 @@ class AutomationRulesTable extends Component
         $this->escalate_priority = true;
         $this->notify_admin = true;
         $this->editingRuleId = null;
+    }
+
+    public function updatedAssignToOperatorId($value): void
+    {
+        if ($value) {
+            $this->assign_to_team_id = null;
+            $this->assign_to_specialist = false;
+        }
+    }
+
+    public function updatedAssignToTeamId($value): void
+    {
+        if ($value) {
+            $this->assign_to_operator_id = null;
+            $this->assign_to_specialist = false;
+        }
+    }
+
+    public function updatedAssignToSpecialist(bool $value): void
+    {
+        if ($value) {
+            $this->assign_to_operator_id = null;
+            $this->assign_to_team_id = null;
+        }
     }
 
     public function render()

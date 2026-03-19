@@ -176,7 +176,7 @@ class OperatorsTable extends Component
             }
         }
 
-        return $query->with(['categories', 'assignedTickets', 'specialty'])
+        return $query->with(['categories', 'assignedTickets', 'specialty', 'teams'])
             ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
                 $query->whereIn('status', ['open', 'in_progress', 'pending']);
             }])

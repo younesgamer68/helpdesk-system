@@ -27,12 +27,14 @@ class InternalNoteAdded extends Notification
      */
     public function via(object $notifiable): array
     {
+        if (method_exists($notifiable, 'wantsNotification') && ! $notifiable->wantsNotification('internal_note')) {
+            return [];
+        }
+
         return ['database', 'broadcast'];
     }
 
     /**
-     * Get the array representation of the notification.
-     *
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array

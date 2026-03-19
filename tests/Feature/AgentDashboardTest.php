@@ -151,3 +151,21 @@ it('shows empty state for no recent activity', function () {
         ->test(AgentDashboard::class)
         ->assertSee('No recent activity');
 });
+
+it('toggles availability status', function () {
+    [$user, $company] = dashboardUser();
+
+    expect($user->is_available)->toBeTrue();
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->call('toggleAvailability');
+
+    expect($user->fresh()->is_available)->toBeFalse();
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->call('toggleAvailability');
+
+    expect($user->fresh()->is_available)->toBeTrue();
+});

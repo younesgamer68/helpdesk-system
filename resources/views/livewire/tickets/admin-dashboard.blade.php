@@ -138,7 +138,7 @@
                                     <th class="px-6 py-3 font-medium">Status</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-zinc-800/10">
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                                 @foreach ($this->recentTickets as $ticket)
                                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors group cursor-pointer"
                                         onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
@@ -211,11 +211,12 @@
 
         <!-- Right: Agent Activity (1/3) -->
         <div class="flex flex-col space-y-4 h-full">
-            <h2 class="text-lg font-semibold text-white">Agent Activity</h2>
+            <h2 class="text-lg font-semibold text-zinc-900 dark:text-white">Agent Activity</h2>
             <!-- Matches max height of Recent Tickets intuitively, using absolute positioning inside a flex grid -->
             <div
                 class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl flex-1 relative min-h-[300px] lg:min-h-0">
-                <div class="absolute inset-0 overflow-y-auto divide-y divide-zinc-800/10 custom-scrollbar">
+                <div
+                    class="absolute inset-0 overflow-y-auto divide-y divide-zinc-200 dark:divide-zinc-800 custom-scrollbar">
                     @if ($this->agentsActivity->isEmpty())
                         <div class="px-5 py-8 text-center">
                             <p class="text-sm text-zinc-500">No agents found.</p>
@@ -231,7 +232,7 @@
                                         </div>
                                         <!-- Online dot -->
                                         <span
-                                            class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
+                                            class="absolute bottom-0 right-0 w-3 h-3 {{ $agent->status === 'online' ? 'bg-green-500' : ($agent->status === 'offline' || $agent->status === null ? 'bg-zinc-400 dark:bg-zinc-600' : 'bg-amber-400') }} border-2 border-white dark:border-zinc-900 rounded-full"></span>
                                     </div>
                                     <div class="min-w-0">
                                         <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
@@ -248,7 +249,8 @@
                                 <div class="ml-4 flex-shrink-0 w-32">
                                     @php
                                         $activeCount = $agent->active_count ?? 0;
-                                        $percentage = min(($activeCount / 10) * 100, 100);
+                                        $maxLoad = $this->maxTicketsPerAgent;
+                                        $percentage = $maxLoad > 0 ? min(($activeCount / $maxLoad) * 100, 100) : 100;
 
                                         $barColor = match (true) {
                                             $percentage <= 40 => 'bg-green-500',
@@ -277,7 +279,8 @@
                                     <div class="flex items-center justify-between">
                                         <span
                                             class="text-[10px] font-medium uppercase tracking-wider {{ $labelColor }}">{{ $statusLabel }}</span>
-                                        <span class="text-[10px] text-zinc-500">{{ $activeCount }} / 10</span>
+                                        <span class="text-[10px] text-zinc-500">{{ $activeCount }} /
+                                            {{ $maxLoad }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -299,7 +302,7 @@
                     <p class="text-sm text-zinc-500">No recent system activity.</p>
                 </div>
             @else
-                <div class="divide-y divide-zinc-800/10">
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->recentActivity as $log)
                         <div
                             class="px-5 py-3 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
@@ -381,7 +384,7 @@
             @if ($this->openTicketsList->isEmpty())
                 <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No open tickets at this time.</p>
             @else
-                <div class="divide-y divide-zinc-800/10">
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->openTicketsList as $ticket)
                         <div class="py-3 flex items-center justify-between group cursor-pointer"
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
@@ -408,7 +411,7 @@
             @if ($this->resolvedTodayList->isEmpty())
                 <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No tickets resolved today.</p>
             @else
-                <div class="divide-y divide-zinc-800/10">
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->resolvedTodayList as $ticket)
                         <div class="py-3 flex items-center justify-between group cursor-pointer"
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
@@ -434,7 +437,7 @@
             @if ($this->unassignedTicketsList->isEmpty())
                 <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No unassigned tickets pending.</p>
             @else
-                <div class="divide-y divide-zinc-800/10">
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->unassignedTicketsList as $ticket)
                         <div class="py-3 flex items-center justify-between group cursor-pointer"
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
@@ -461,7 +464,7 @@
             @if ($this->totalAgentsList->isEmpty())
                 <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No active agents.</p>
             @else
-                <div class="divide-y divide-zinc-800/10">
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->totalAgentsList as $agent)
                         <div class="py-4 flex items-center justify-between group cursor-pointer"
                             onclick="window.location='{{ route('operators', ['company' => Auth::user()->company->slug]) }}'">
@@ -472,11 +475,11 @@
                                         {{ collect(explode(' ', $agent->name))->map(fn($n) => substr($n, 0, 1))->take(2)->join('') }}
                                     </div>
                                     <span
-                                        class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[var(--color-zinc-900)] rounded-full"></span>
+                                        class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
                                 </div>
                                 <div>
                                     <p
-                                        class="text-sm font-medium text-white group-hover:text-teal-400 transition-colors">
+                                        class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-400 transition-colors">
                                         @if ($agent->id === Auth::id())
                                             You <span
                                                 class="text-xs text-zinc-500 font-normal">({{ $agent->name }})</span>

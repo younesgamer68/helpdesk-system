@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Reports;
 
+use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketReply;
@@ -827,6 +828,47 @@ class ReportsAnalytics extends Component
             ->whereIn('role', ['admin', 'operator'])
             ->orderBy('name')
             ->get();
+    }
+
+    #[Computed]
+    public function teamStats(): Collection
+    {
+        $cid = $this->companyId();
+
+        $teams = Team::where('company_id', $cid)
+            ->withCount('members')
+            ->orderBy('name')
+            ->get();
+
+        $ticketCounts = Ticket::where('company_id', $cid)
+            ->whereNotNull('team_id')
+            ->whereDate('created_at', '>=', $this->startDate)
+            ->whereDate('created_at', '<=', $this->endDate)
+            ->select('team_id')
+            ->selectRaw('count(*) as total')
+            ->selectRaw("sum(case when status = 'resolved' or status = 'closed' then 1 else 0 end) as resolved")
+            ->selectRaw("sum(case when status in ('open', 'in_progress', 'pending') then 1 else 0 end) as open_count")
+            ->groupBy('team_id')
+            ->get()
+            ->keyBy('team_id');
+
+        return $teams->map(function ($team) use ($ticketCounts) {
+            $row = $ticketCounts->get($team->id);
+            $total = $row ? (int) $row->total : 0;
+            $resolved = $row ? (int) $row->resolved : 0;
+            $open = $row ? (int) $row->open_count : 0;
+
+            return [
+                'id' => $team->id,
+                'name' => $team->name,
+                'color' => $team->color,
+                'members_count' => $team->members_count,
+                'total' => $total,
+                'resolved' => $resolved,
+                'open' => $open,
+                'resolution_rate' => $total > 0 ? round(($resolved / $total) * 100) : 0,
+            ];
+        });
     }
 
     #[Computed]

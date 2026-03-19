@@ -5,11 +5,21 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\QuickRegisterController;
 use App\Http\Controllers\TicketsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // ====== HOME ======
-Route::get('/', function () {
+Route::get('/', function (Request $request) {
+    $host = explode(':', $request->getHost())[0];
+    $baseDomain = config('app.domain');
+
+    if ($baseDomain && str_ends_with($host, '.'.$baseDomain)) {
+        $protocol = app()->environment('local') ? 'http' : 'https';
+
+        return redirect()->away($protocol.'://'.$baseDomain.'/');
+    }
+
     return view('welcome');
 })->name('home');
 
@@ -21,7 +31,18 @@ Route::middleware(['throttle:30,1'])->group(function () {
 
 // ====== AUTH ======
 Route::middleware('guest')->group(function () {
-    Route::get('/login', fn () => view('auth.login'))->name('login');
+    Route::get('/login', function (Request $request) {
+        $host = explode(':', $request->getHost())[0];
+        $baseDomain = config('app.domain');
+
+        if ($baseDomain && str_ends_with($host, '.'.$baseDomain)) {
+            $protocol = app()->environment('local') ? 'http' : 'https';
+
+            return redirect()->away($protocol.'://'.$baseDomain.'/login');
+        }
+
+        return view('auth.login');
+    })->name('login');
     Route::get('/set-password', App\Livewire\Auth\SetPassword::class)
         ->name('set-password')
         ->middleware('user.pending');
@@ -44,7 +65,9 @@ Route::post('/logout', function () {
     }
     Auth::logout();
 
-    return redirect()->route('home');
+    $protocol = app()->environment('local') ? 'http' : 'https';
+
+    return redirect()->away($protocol.'://'.config('app.domain').'/');
 })->middleware('auth')->name('logout');
 
 // Setup Company (after Google OAuth + email verified)
@@ -88,6 +111,7 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
         Route::get('/search', [\App\Http\Controllers\KbPortalController::class, 'search'])->name('search');
         Route::post('/article/{article:slug}/vote', [\App\Http\Controllers\KbPortalController::class, 'vote'])->name('vote');
         Route::get('/widget.js', [\App\Http\Controllers\KbWidgetController::class, 'snippet'])->name('widget');
+        Route::get('/widget-demo', [\App\Http\Controllers\KbPortalController::class, 'widgetDemo'])->name('widget-demo');
     });
 
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
@@ -125,6 +149,9 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::get('/operators', fn () => view('app.operators'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operators');
+            Route::get('/teams', fn () => view('app.teams'))
+                ->middleware('can:view-operators,App\Models\User')
+                ->name('teams');
             Route::get('/operators/{operator}', \App\Livewire\Operators\OperatorProfile::class)
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operator.profile');
@@ -138,6 +165,7 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
                 Route::get('/articles/create', \App\Livewire\Tickets\Kb\ArticleEditor::class)->name('articles.create');
                 Route::get('/articles/{article}/edit', \App\Livewire\Tickets\Kb\ArticleEditor::class)->name('articles.edit');
                 Route::get('/media', \App\Livewire\Tickets\Kb\MediaLibrary::class)->name('media');
+                Route::get('/api', \App\Livewire\Tickets\Kb\ApiReference::class)->name('api');
             });
 
             Route::get('/automation', fn () => view('app.automation', ['filterMode' => 'ticket']))
@@ -160,6 +188,13 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::livewire('channels', \App\Livewire\Channels\Channels::class)
                 ->middleware(\App\Http\Middleware\AdminOnly::class)
                 ->name('channels');
+
+            // AI Settings (admin only)
+            Route::middleware(\App\Http\Middleware\AdminOnly::class)->prefix('ai')->name('ai.')->group(function () {
+                Route::livewire('/training', \App\Livewire\Ai\SuggestedRepliesTraining::class)->name('training');
+                Route::livewire('/chat-history', \App\Livewire\Ai\ChatHistory::class)->name('chat-history');
+                Route::livewire('/stats', \App\Livewire\Ai\UsageStats::class)->name('stats');
+            });
         });
     });
 });

@@ -3,7 +3,7 @@
 <div class="border-b border-zinc-200 dark:border-zinc-800">
     <nav class="flex gap-1 justify-between -mb-px">
         <div>
-            @foreach (['overview' => 'Overview', 'agents' => 'Agent Performance', 'tickets' => 'Tickets', 'categories' => 'Categories'] as $tabKey => $tabLabel)
+            @foreach (['overview' => 'Overview', 'agents' => 'Agent Performance', 'tickets' => 'Tickets', 'categories' => 'Categories', 'teams' => 'Teams'] as $tabKey => $tabLabel)
                 <button wire:click="setTab('{{ $tabKey }}')"
                     class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors {{ $activeTab === $tabKey ? 'border-teal-500 text-teal-400' : 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:border-zinc-600' }}">
                     {{ $tabLabel }}

@@ -66,6 +66,8 @@ test('users can logout', function () {
 
     $response = $this->actingAs($user)->post(route('logout'));
 
-    $response->assertRedirect(route('home'));
+    $protocol = app()->environment('local') ? 'http' : 'https';
+
+    $response->assertRedirect($protocol.'://'.config('app.domain').'/');
     $this->assertGuest();
 });

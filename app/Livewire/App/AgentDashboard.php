@@ -136,6 +136,13 @@ class AgentDashboard extends Component
         $this->dispatch('show-toast', message: "Ticket #{$ticket->ticket_number} assigned to you!", type: 'success');
     }
 
+    public function toggleAvailability(): void
+    {
+        $user = Auth::user();
+        $user->is_available = ! $user->is_available;
+        $user->save();
+    }
+
     public function render()
     {
         return view('livewire.tickets.agent-dashboard');

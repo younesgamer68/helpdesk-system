@@ -82,3 +82,23 @@ test('correct password must be provided to delete account', function () {
 
     expect($user->fresh())->not->toBeNull();
 });
+
+test('user can upload avatar', function () {
+    \Illuminate\Support\Facades\Storage::fake('public');
+
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
+
+    $this->actingAs($user);
+
+    Livewire::test(Profile::class)
+        ->set('name', $user->name)
+        ->set('email', $user->email)
+        ->set('avatar', \Illuminate\Http\UploadedFile::fake()->image('avatar.jpg'))
+        ->call('updateProfileInformation')
+        ->assertHasNoErrors();
+
+    $user->refresh();
+    expect($user->avatar)->not->toBeNull();
+    \Illuminate\Support\Facades\Storage::disk('public')->assertExists($user->avatar);
+});

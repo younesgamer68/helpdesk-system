@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\KbArticle;
-use App\Models\KbCategory;
+use App\Models\TicketCategory;
 use Illuminate\Http\Request;
 
 class KbPortalController extends Controller
@@ -18,9 +18,17 @@ class KbPortalController extends Controller
     {
         $company = $this->getCompany($companySlug);
 
-        $categories = $company->kbCategories()->withCount(['articles' => function ($query) {
-            $query->where('status', 'published');
-        }])->get();
+        $categories = $company->categories()
+            ->whereNull('parent_id')
+            ->withCount(['kbArticles' => function ($query) {
+                $query->where('status', 'published');
+            }])
+            ->with(['children' => function ($query) {
+                $query->withCount(['kbArticles' => function ($q) {
+                    $q->where('status', 'published');
+                }])->orderBy('name');
+            }])
+            ->get();
 
         $popularArticles = $company->kbArticles()
             ->where('status', 'published')
@@ -31,13 +39,15 @@ class KbPortalController extends Controller
         return view('kb.home', compact('company', 'categories', 'popularArticles'));
     }
 
-    public function category(Request $request, $companySlug, KbCategory $category)
+    public function category(Request $request, $companySlug, TicketCategory $category)
     {
         $company = $this->getCompany($companySlug);
 
         abort_unless($category->company_id === $company->id, 404);
 
-        $articles = $category->articles()
+        $category->load(['parent', 'children']);
+
+        $articles = $category->kbArticles()
             ->where('status', 'published')
             ->latest()
             ->paginate(15);
@@ -55,7 +65,7 @@ class KbPortalController extends Controller
         // Increment Views (simple mechanism, could be improved with session/IP checks)
         $article->increment('views');
 
-        $relatedArticles = $article->category ? $article->category->articles()
+        $relatedArticles = $article->category ? $article->category->kbArticles()
             ->where('status', 'published')
             ->where('id', '!=', $article->id)
             ->take(5)
@@ -102,5 +112,20 @@ class KbPortalController extends Controller
 
         return response()->json(['message' => 'Vote recorded'])
             ->withCookie(cookie()->forever($cookieName, $voteType));
+    }
+
+    public function widgetDemo(Request $request, $companySlug): \Illuminate\View\View
+    {
+        $company = $this->getCompany($companySlug);
+
+        $protocol = config('app.env') === 'local' ? 'http' : 'https';
+        $widgetVersion = filemtime(resource_path('views/kb/widget-js.blade.php')) ?: time();
+        $widgetScriptUrl = $protocol.'://'.$company->slug.'.'.config('app.domain').'/kb/widget.js?v='.$widgetVersion;
+        $widgetDefaultLinkMode = $company->kb_widget_link_mode === 'custom' ? 'custom' : 'portal';
+        $widgetArticleBaseUrl = filled($company->kb_widget_article_base_url)
+            ? rtrim((string) $company->kb_widget_article_base_url, '/')
+            : null;
+
+        return view('kb.widget-demo', compact('company', 'widgetScriptUrl', 'widgetDefaultLinkMode', 'widgetArticleBaseUrl'));
     }
 }

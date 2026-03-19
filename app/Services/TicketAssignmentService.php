@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Team;
+use App\Models\TenantConfig;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\TicketAssigned;
@@ -11,6 +13,13 @@ use Illuminate\Support\Facades\DB;
 
 class TicketAssignmentService
 {
+    protected function getMaxTicketsPerAgent(int $companyId): int
+    {
+        $config = TenantConfig::query()->where('company_id', $companyId)->first();
+
+        return $config?->max_tickets_per_agent ?? 20;
+    }
+
     /**
      * Automatically assign a ticket to the best available technician.
      *
@@ -41,25 +50,46 @@ class TicketAssignmentService
     /**
      * Find the best available specialist for a ticket's category.
      *
-     * Counts only open tickets in the same category for workload comparison.
-     * Uses last_assigned_at as round-robin tiebreaker when counts are equal.
+     * Pass 1: match exact subcategory.
+     * Pass 2: if ticket is a subcategory and no specialist found, match parent category.
+     * Both passes use same online/available/maxLoad filters.
      */
     protected function findSpecialist(Ticket $ticket): ?User
     {
-        return User::query()
-            ->where('company_id', $ticket->company_id)
-            ->operators()
-            ->available()
-            ->online()
-            ->where('assigned_tickets_count', '<', 20)
-            ->withSpecialty($ticket->category_id)
-            ->withCount(['assignedTickets as open_category_tickets_count' => function ($query) use ($ticket) {
-                $query->where('category_id', $ticket->category_id)
-                    ->whereNotIn('status', ['resolved', 'closed']);
-            }])
-            ->orderBy('open_category_tickets_count', 'asc')
-            ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
-            ->first();
+        $maxLoad = $this->getMaxTicketsPerAgent($ticket->company_id);
+
+        $baseQuery = function (int $categoryId) use ($ticket, $maxLoad) {
+            return User::query()
+                ->where('company_id', $ticket->company_id)
+                ->operators()
+                ->available()
+                ->online()
+                ->where('assigned_tickets_count', '<', $maxLoad)
+                ->withSpecialty($categoryId)
+                ->withCount(['assignedTickets as open_category_tickets_count' => function ($query) use ($categoryId) {
+                    $query->where('category_id', $categoryId)
+                        ->whereNotIn('status', ['resolved', 'closed']);
+                }])
+                ->orderBy('open_category_tickets_count', 'asc')
+                ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
+                ->first();
+        };
+
+        // Pass 1: exact category match
+        $specialist = $baseQuery($ticket->category_id);
+
+        if ($specialist) {
+            return $specialist;
+        }
+
+        // Pass 2: fall back to parent category when ticket is a subcategory
+        $parentId = $ticket->category?->parent_id;
+
+        if ($parentId) {
+            return $baseQuery($parentId);
+        }
+
+        return null;
     }
 
     /**
@@ -70,12 +100,14 @@ class TicketAssignmentService
      */
     protected function assignToGeneralist(Ticket $ticket): ?User
     {
+        $maxLoad = $this->getMaxTicketsPerAgent($ticket->company_id);
+
         $generalist = User::query()
             ->where('company_id', $ticket->company_id)
             ->operators()
             ->available()
             ->online()
-            ->where('assigned_tickets_count', '<', 20)
+            ->where('assigned_tickets_count', '<', $maxLoad)
             ->whereDoesntHave('categories')
             ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
                 $query->whereNotIn('status', ['resolved', 'closed']);
@@ -91,7 +123,7 @@ class TicketAssignmentService
                 ->operators()
                 ->available()
                 ->online()
-                ->where('assigned_tickets_count', '<', 20)
+                ->where('assigned_tickets_count', '<', $maxLoad)
                 ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
                     $query->whereNotIn('status', ['resolved', 'closed']);
                 }])
@@ -119,12 +151,77 @@ class TicketAssignmentService
     }
 
     /**
+     * Assign a ticket to the best available member within a team.
+     *
+     * Prefers members whose speciality matches the ticket category or parent category.
+     * Falls back to any available team member, then to global assignment logic.
+     */
+    public function assignToTeam(Ticket $ticket, Team $team): ?User
+    {
+        $maxLoad = $this->getMaxTicketsPerAgent($ticket->company_id);
+
+        $categoryIds = $ticket->category?->ancestor_ids ?? [];
+
+        $availableMembers = $team->members()
+            ->operators()
+            ->available()
+            ->online()
+            ->where('assigned_tickets_count', '<', $maxLoad)
+            ->with('categories:id')
+            ->withCount(['assignedTickets as open_tickets_count' => function ($query) {
+                $query->whereNotIn('status', ['resolved', 'closed']);
+            }])
+            ->orderBy('open_tickets_count')
+            ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
+            ->get();
+
+        if ($availableMembers->isEmpty()) {
+            $ticket->forceFill(['team_id' => null])->saveQuietly();
+
+            return $this->assignTicket($ticket);
+        }
+
+        // Prefer members with matching specialty
+        if (! empty($categoryIds)) {
+            $specialists = $availableMembers->filter(function (User $member) use ($categoryIds) {
+                $memberCategoryIds = $member->categories->pluck('id')->all();
+
+                if ($member->specialty_id) {
+                    $memberCategoryIds[] = $member->specialty_id;
+                }
+
+                return count(array_intersect($memberCategoryIds, $categoryIds)) > 0;
+            });
+
+            if ($specialists->isNotEmpty()) {
+                $operator = $specialists->first();
+
+                $this->performAssignment($ticket, $operator, $team);
+
+                return $operator;
+            }
+        }
+
+        // Fall back to least-loaded available team member
+        $operator = $availableMembers->first();
+
+        $this->performAssignment($ticket, $operator, $team);
+
+        return $operator;
+    }
+
+    /**
      * Perform the actual assignment and update counters.
      */
-    protected function performAssignment(Ticket $ticket, User $operator): void
+    protected function performAssignment(Ticket $ticket, User $operator, ?Team $team = null): void
     {
-        DB::transaction(function () use ($ticket, $operator) {
+        DB::transaction(function () use ($ticket, $operator, $team) {
             $ticket->assigned_to = $operator->id;
+
+            if ($team) {
+                $ticket->team_id = $team->id;
+            }
+
             $ticket->saveQuietly();
             $operator->increment('assigned_tickets_count');
             $operator->update(['last_assigned_at' => now()]);

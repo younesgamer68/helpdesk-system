@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('plan', ['starter', 'pro', 'enterprise'])->default('starter');
             $table->json('features')->nullable(); // {"ai": true, "sla": true, "kb": true}
             $table->json('limits')->nullable();   // {"max_agents": 10, "max_tickets_per_month": 1000}
+            $table->unsignedSmallInteger('max_tickets_per_agent')->default(20);
             $table->string('db_connection')->nullable(); // null = shared DB, set = dedicated tenant DB
             $table->timestamps();
         });

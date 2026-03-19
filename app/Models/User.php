@@ -33,6 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'invite_sent_at',
         'invite_expires_at',
         'invite_expired_notified_at',
+        'notification_preferences',
     ];
 
     protected $hidden = [
@@ -52,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'invite_sent_at' => 'datetime',
         'invite_expires_at' => 'datetime',
         'invite_expired_notified_at' => 'datetime',
+        'notification_preferences' => 'array',
     ];
 
     public function initials(): string
@@ -66,6 +68,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function wantsNotification(string $type): bool
+    {
+        $preferences = $this->notification_preferences ?? [];
+
+        if (! array_key_exists($type, $preferences)) {
+            return true;
+        }
+
+        return (bool) $preferences[$type];
     }
 
     public function isOperator(): bool
@@ -120,6 +133,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(TicketCategory::class, 'category_user', 'user_id', 'ticket_category_id')->withTimestamps();
     }
 
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_user')->withPivot('role')->withTimestamps();
+    }
+
     public function assignedTickets()
     {
         return $this->hasMany(Ticket::class, 'assigned_to');
@@ -172,7 +190,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function scopeOperators($query)
     {
-        return $query->where('role', 'operator');
+        return $query->where($query->qualifyColumn('role'), 'operator');
     }
 
     protected static function booted(): void
