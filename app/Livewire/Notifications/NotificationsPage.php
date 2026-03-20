@@ -35,7 +35,11 @@ class NotificationsPage extends Component
 
     public function setTab(string $tab): void
     {
-        if (in_array($tab, ['system', 'sla']) && Auth::user()->role !== 'admin') {
+        if ($tab === 'system' && Auth::user()->role !== 'admin') {
+            return;
+        }
+
+        if ($tab === 'sla' && ! in_array(Auth::user()->role, ['admin', 'operator'])) {
             return;
         }
 

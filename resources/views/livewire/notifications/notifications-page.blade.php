@@ -45,6 +45,9 @@
 
             if (Auth::user()->role === 'admin') {
                 $tabs['system'] = 'System';
+            }
+
+            if (in_array(Auth::user()->role, ['admin', 'operator'])) {
                 $tabs['sla'] = 'SLA';
             }
 

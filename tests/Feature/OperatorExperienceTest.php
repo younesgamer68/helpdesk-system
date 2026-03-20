@@ -383,3 +383,13 @@ test('admin cannot switch to teams tab', function () {
         ->call('setTab', 'teams')
         ->assertSet('activeTab', 'all');
 });
+
+test('operator sees sla tab on notifications page', function () {
+    [$operator, $admin, $company] = operatorSetup();
+
+    Livewire::actingAs($operator)
+        ->test(NotificationsPage::class)
+        ->assertSee('SLA')
+        ->call('setTab', 'sla')
+        ->assertSet('activeTab', 'sla');
+});
