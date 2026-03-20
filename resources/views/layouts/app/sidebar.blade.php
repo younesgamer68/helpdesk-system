@@ -190,20 +190,6 @@
                     <span class="sidebar-label">{{ __('Categories') }}</span>
                 </a>
 
-                @php $active = request()->routeIs('kb.*'); @endphp
-                <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
-                    <div class="w-10 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        </svg>
-                    </div>
-                    <span class="sidebar-label">{{ __('Knowledge Base') }}</span>
-                </a>
-
                 @php $active = request()->routeIs('automation', 'automation.*'); @endphp
                 <a href="{{ route('automation', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
@@ -248,6 +234,37 @@
                 </a>
             @endcan
 
+            @php $active = request()->routeIs('kb.*'); @endphp
+            <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
+                class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
+                      {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                <div class="w-10 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                </div>
+                <span class="sidebar-label">{{ __('Knowledge Base') }}</span>
+            </a>
+
+            @if (Auth::user()->isOperator())
+                @php $active = request()->routeIs('settings.my-team'); @endphp
+                <a href="{{ route('settings.my-team', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
+                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('My Teams') }}</span>
+                </a>
+            @endif
+
         </nav>
 
         {{-- Bottom: notification bell + settings + profile --}}
@@ -276,7 +293,7 @@
             </a>
 
             {{-- Settings icon --}}
-            @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit'); @endphp
+            @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit', 'settings.my-team'); @endphp
             <a href="{{ Auth::user()->isAdmin() ? route('company.profile', Auth::user()->company->slug) : route('settings.security', Auth::user()->company->slug) }}"
                 wire:navigate
                 class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
@@ -292,19 +309,10 @@
                 <span class="sidebar-label">{{ __('Settings') }}</span>
             </a>
 
-            {{-- Profile --}}
-            @php $profileActive = request()->routeIs('profile.edit'); @endphp
-            <a href="{{ route('profile.edit', Auth::user()->company->slug) }}" wire:navigate
-                class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                      {{ $profileActive ? 'bg-teal-700 text-white' : 'text-teal-300 hover:bg-teal-800 hover:text-white' }}">
-                <div class="w-10 flex items-center justify-center shrink-0">
-                    <span
-                        class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-teal-700/50 text-xs font-semibold">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </span>
-                </div>
-                <span class="sidebar-label truncate">{{ auth()->user()->name }}</span>
-            </a>
+            {{-- Profile dropdown --}}
+            <div class="mx-3">
+                <x-app.desktop-user-menu />
+            </div>
 
         </div>
     </div>

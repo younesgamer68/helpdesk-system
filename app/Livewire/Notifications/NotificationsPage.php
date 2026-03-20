@@ -39,6 +39,10 @@ class NotificationsPage extends Component
             return;
         }
 
+        if ($tab === 'teams' && Auth::user()->role !== 'operator') {
+            return;
+        }
+
         $this->activeTab = $tab;
         $this->perPage = 20;
     }
@@ -99,6 +103,7 @@ class NotificationsPage extends Component
                     ->orWhereJsonContains('data->type', 'ticket_unassigned');
             }),
             'sla' => $query->whereJsonContains('data->type', 'sla_breached'),
+            'teams' => $query->whereJsonContains('data->type', 'team_assigned'),
             default => null,
         };
 
@@ -122,6 +127,7 @@ class NotificationsPage extends Component
                     ->orWhereJsonContains('data->type', 'ticket_unassigned');
             }),
             'sla' => $query->whereJsonContains('data->type', 'sla_breached'),
+            'teams' => $query->whereJsonContains('data->type', 'team_assigned'),
             default => null,
         };
 

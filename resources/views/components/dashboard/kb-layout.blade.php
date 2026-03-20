@@ -11,12 +11,14 @@
                 <flux:navlist.item :href="route('kb.articles', ['company' => Auth::user()->company->slug])"
                     :current="request()->routeIs('kb.articles', 'kb.articles.create', 'kb.articles.edit')"
                     wire:navigate>{{ __('Articles') }}</flux:navlist.item>
-                <flux:navlist.item :href="route('kb.categories', ['company' => Auth::user()->company->slug])"
-                    :current="request()->routeIs('kb.categories')" wire:navigate>{{ __('Categories') }}
-                </flux:navlist.item>
-                <flux:navlist.item :href="route('kb.api', ['company' => Auth::user()->company->slug])"
-                    :current="request()->routeIs('kb.api')" wire:navigate>{{ __('API') }}
-                </flux:navlist.item>
+                @if (Auth::user()->isAdmin())
+                    <flux:navlist.item :href="route('kb.categories', ['company' => Auth::user()->company->slug])"
+                        :current="request()->routeIs('kb.categories')" wire:navigate>{{ __('Categories') }}
+                    </flux:navlist.item>
+                    <flux:navlist.item :href="route('kb.api', ['company' => Auth::user()->company->slug])"
+                        :current="request()->routeIs('kb.api')" wire:navigate>{{ __('API') }}
+                    </flux:navlist.item>
+                @endif
             </flux:navlist>
         </div>
 

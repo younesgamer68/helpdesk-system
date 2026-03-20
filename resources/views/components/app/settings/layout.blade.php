@@ -1,6 +1,9 @@
 <div class="flex items-start max-md:flex-col">
     <div class="me-10 w-full pb-4 md:w-[220px]">
         <flux:navlist aria-label="{{ __('Settings') }}">
+            <flux:navlist.item :href="route('profile.edit', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                wire:navigate icon="user">{{ __('Profile') }}</flux:navlist.item>
+
             @if (Auth::user()->isAdmin())
                 <flux:navlist.item
                     :href="route('company.profile', ['company' => Auth::user()->company?->slug ?? 'default'])"
@@ -15,6 +18,8 @@
                 :href="route('appearance.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate
                 icon="paint-brush">{{ __('Appearance') }}</flux:navlist.item>
 
+
+
             <flux:navlist.item
                 :href="route('settings.security', ['company' => Auth::user()->company?->slug ?? 'default'])"
                 wire:navigate icon="shield-check">{{ __('Security') }}</flux:navlist.item>
@@ -23,16 +28,23 @@
                 <flux:navlist.item
                     :href="route('settings.email', ['company' => Auth::user()->company?->slug ?? 'default'])"
                     wire:navigate icon="envelope">{{ __('Email') }}</flux:navlist.item>
+
+                <flux:navlist.item
+                    :href="route('form-widget.edit', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                    wire:navigate icon="window">{{ __('Form Widget') }}</flux:navlist.item>
             @endif
 
             <flux:navlist.item
                 :href="route('notifications.preferences', ['company' => Auth::user()->company?->slug ?? 'default'])"
                 wire:navigate icon="bell">{{ __('Notifications') }}</flux:navlist.item>
 
-            <flux:navlist.item
-                :href="route('settings.danger', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate
-                icon="trash" class="text-red-600 hover:text-red-700 dark:text-red-400">{{ __('Danger Zone') }}
-            </flux:navlist.item>
+            @if (Auth::user()->isAdmin())
+                <flux:navlist.item
+                    :href="route('settings.danger', ['company' => Auth::user()->company?->slug ?? 'default'])"
+                    wire:navigate icon="trash" class="text-red-600 hover:text-red-700 dark:text-red-400">
+                    {{ __('Danger Zone') }}
+                </flux:navlist.item>
+            @endif
         </flux:navlist>
     </div>
 

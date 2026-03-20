@@ -66,7 +66,43 @@
                     {{ __('Saved.') }}
                 </x-ui.action-message>
             </div>
-        </form>Z
+        </form>
+
+        @if (Auth::user()->isOperator())
+            {{-- Availability Toggle --}}
+            <div class="my-6 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ __('Availability') }}
+                        </h3>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ __('Toggle whether you are available to receive new ticket assignments.') }}</p>
+                    </div>
+                    <flux:switch wire:click="toggleAvailability" :checked="Auth::user()->is_available" />
+                </div>
+            </div>
+
+            {{-- Specialities --}}
+            <div class="my-6 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 p-4">
+                <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{{ __('Specialities') }}</h3>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                    {{ __('Select the categories you specialize in. This determines which unassigned tickets you can see.') }}
+                </p>
+
+                <div class="space-y-2 mb-4">
+                    @foreach ($this->categories as $category)
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" wire:model="selectedCategories" value="{{ $category->id }}"
+                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-teal-500 rounded focus:ring-teal-500">
+                            <span class="text-sm text-zinc-700 dark:text-zinc-300">{{ $category->name }}</span>
+                        </label>
+                    @endforeach
+                </div>
+
+                <flux:button wire:click="updateSpecialties" variant="primary" size="sm">
+                    {{ __('Save Specialities') }}</flux:button>
+            </div>
+        @endif
 
         @if ($this->showDeleteUser)
             <livewire:settings.delete-user-form />

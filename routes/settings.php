@@ -7,6 +7,7 @@ use App\Livewire\Settings\CompanyProfile;
 use App\Livewire\Settings\DangerZone;
 use App\Livewire\Settings\EmailConfiguration;
 use App\Livewire\Settings\FormWidget;
+use App\Livewire\Settings\MyTeam;
 use App\Livewire\Settings\NotificationPreferences;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -53,6 +54,7 @@ Route::domain('{company}.'.config('app.domain'))
         Route::redirect('settings/two-factor', 'settings/security')->name('two-factor.show');
 
         Route::livewire('settings/appearance', Appearance::class)->name('appearance.edit');
+        Route::livewire('settings/my-team', MyTeam::class)->name('settings.my-team');
         Route::livewire('settings/notifications', NotificationPreferences::class)->name('notifications.preferences');
         Route::livewire('settings/security', Security::class)->name('settings.security');
         Route::livewire('settings/danger', DangerZone::class)->name('settings.danger');

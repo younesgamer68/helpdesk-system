@@ -19,6 +19,7 @@ class NotificationPreferences extends Component
             'status_changed' => true,
             'internal_note' => true,
             'ticket_submitted' => true,
+            'team_assigned' => true,
         ];
 
         $saved = Auth::user()->notification_preferences ?? [];

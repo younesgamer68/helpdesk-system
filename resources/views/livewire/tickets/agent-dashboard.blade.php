@@ -14,7 +14,7 @@
     </div>
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
         <button type="button" x-on:click="$flux.modal('open-tickets-modal').show()"
             class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
@@ -80,6 +80,25 @@
             </div>
             <p class="text-3xl font-bold text-zinc-900 dark:text-white">{{ $this->unreadNotificationsCount }}</p>
         </a>
+
+        <button type="button" x-on:click="$flux.modal('sla-breached-modal').show()"
+            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">SLA
+                    Breached</span>
+                <div class="p-1.5 bg-red-500/10 rounded-lg">
+                    <svg class="w-4 h-4 text-red-500 dark:text-red-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <p
+                class="text-3xl font-bold {{ $this->slaBreachedCount > 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white' }}">
+                {{ $this->slaBreachedCount }}</p>
+        </button>
     </div>
 
 
@@ -324,6 +343,36 @@
                                     {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
                             </div>
                             <flux:badge variant="warning" size="sm">Pending</flux:badge>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </flux:modal>
+
+    <!-- SLA Breached Tickets Modal -->
+    <flux:modal name="sla-breached-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
+        <flux:heading size="lg" class="mb-4">SLA Breached Tickets</flux:heading>
+        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
+            @if ($this->slaBreachedList->isEmpty())
+                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No SLA breaches — great work!</p>
+            @else
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800/90">
+                    @foreach ($this->slaBreachedList as $ticket)
+                        <div class="py-3 flex items-center justify-between group cursor-pointer"
+                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
+                            <div>
+                                <p
+                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
+                                    {{ $ticket->subject }}</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                    {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}
+                                    @if ($ticket->due_time)
+                                        &middot; Due {{ $ticket->due_time->diffForHumans() }}
+                                    @endif
+                                </p>
+                            </div>
+                            <flux:badge color="red" size="sm">Breached</flux:badge>
                         </div>
                     @endforeach
                 </div>

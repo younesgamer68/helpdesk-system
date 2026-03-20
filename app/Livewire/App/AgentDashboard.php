@@ -49,6 +49,16 @@ class AgentDashboard extends Component
     }
 
     #[Computed]
+    public function slaBreachedCount(): int
+    {
+        return Ticket::query()
+            ->where('assigned_to', Auth::id())
+            ->where('sla_status', 'breached')
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->count();
+    }
+
+    #[Computed]
     public function openTicketsList(): Collection
     {
         return Ticket::query()
@@ -80,6 +90,19 @@ class AgentDashboard extends Component
             ->where('status', 'pending')
             ->with('customer:id,name,email,phone')
             ->oldest()
+            ->take(50)
+            ->get();
+    }
+
+    #[Computed]
+    public function slaBreachedList(): Collection
+    {
+        return Ticket::query()
+            ->where('assigned_to', Auth::id())
+            ->where('sla_status', 'breached')
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->with('customer:id,name,email,phone')
+            ->oldest('due_time')
             ->take(50)
             ->get();
     }

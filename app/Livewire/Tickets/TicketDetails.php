@@ -275,6 +275,12 @@ class TicketDetails extends Component
 
     public function assign($agentId)
     {
+        if (Auth::user()->isOperator()) {
+            $this->dispatch('show-toast', message: 'Unauthorized. Only admins can assign tickets.', type: 'error');
+
+            return;
+        }
+
         $agent = $agentId !== null ? $this->agents()->where('id', '=', $agentId)->first() : null;
 
         if ($agentId !== null && $agent === null) {
@@ -392,6 +398,12 @@ class TicketDetails extends Component
 
     public function closeTicket()
     {
+        if (Auth::user()->isOperator()) {
+            $this->dispatch('show-toast', message: 'Unauthorized. Only admins can close tickets.', type: 'error');
+
+            return;
+        }
+
         if ($this->ticket->status === 'closed') {
             $this->dispatch('show-toast', message: 'Ticket is already closed!', type: 'error');
 
@@ -448,6 +460,9 @@ class TicketDetails extends Component
         }
 
         $userId = Auth::id();
+        if (Auth::user()->isOperator()) {
+            $this->senderId = null;
+        }
         if ($this->senderId) {
             $validSender = \App\Models\User::where('id', $this->senderId)
                 ->where('company_id', Auth::user()->company_id)

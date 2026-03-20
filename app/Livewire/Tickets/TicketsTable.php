@@ -72,6 +72,8 @@ class TicketsTable extends Component
 
     public $showSaveViewModal = false;
 
+    public string $ticketView = 'mine';
+
     protected function rules()
     {
         return [
@@ -200,6 +202,14 @@ class TicketsTable extends Component
         }
     }
 
+    public function setTicketView(string $view): void
+    {
+        if (in_array($view, ['mine', 'all'])) {
+            $this->ticketView = $view;
+            $this->resetPage();
+        }
+    }
+
     public function clearFilters()
     {
         $this->search = '';
@@ -277,16 +287,20 @@ class TicketsTable extends Component
 
         // Filter for non-admin users (operators)
         if ($user->role !== 'admin') {
-            if ($user->specialty_id) {
-                // Show tickets from their specialty category that are UNASSIGNED, OR tickets assigned to them
-                $query->where(function ($q) use ($user) {
-                    $q->where(function ($subQ) use ($user) {
-                        $subQ->where('category_id', $user->specialty_id)
-                            ->whereNull('assigned_to');
-                    })->orWhere('assigned_to', $user->id);
+            if ($this->ticketView === 'all') {
+                // Show tickets from operator's specialty categories that are unassigned, plus their own
+                $specialtyIds = $user->categories->pluck('id')->filter()->values();
+                $query->where(function ($q) use ($user, $specialtyIds) {
+                    $q->where('assigned_to', $user->id);
+                    if ($specialtyIds->isNotEmpty()) {
+                        $q->orWhere(function ($subQ) use ($specialtyIds) {
+                            $subQ->whereIn('category_id', $specialtyIds)
+                                ->whereNull('assigned_to');
+                        });
+                    }
                 });
             } else {
-                // No specialty - show only assigned tickets
+                // "mine" - show only tickets assigned to this operator
                 $query->where('assigned_to', $user->id);
             }
         }

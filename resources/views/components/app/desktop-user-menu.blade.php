@@ -1,6 +1,16 @@
 <flux:dropdown position="bottom" align="start">
-    <flux:button variant="ghost" square class="w-full justify-center p-0 min-w-0" data-test="sidebar-menu-button">
-        <flux:avatar :initials="auth()->user()->initials()" class="size-8" />
+    <flux:button variant="ghost"
+        class="w-full h-10 !p-0 min-w-0 rounded-lg text-teal-300 hover:bg-teal-800 hover:text-white"
+        data-test="sidebar-menu-button">
+        <div class="flex items-center w-full">
+            <div class="w-10 flex items-center justify-center shrink-0">
+                <span
+                    class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-teal-700/50 text-xs font-semibold text-teal-200">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </span>
+            </div>
+            <span class="sidebar-label truncate text-sm font-medium">{{ auth()->user()->name }}</span>
+        </div>
     </flux:button>
 
     <flux:menu>

@@ -1,6 +1,21 @@
 <div>
     <x-ui.flash-message />
 
+    {{-- Operator Ticket View Tabs --}}
+    @if (Auth::user()->isOperator())
+        <div
+            class="mb-4 flex gap-1 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-fit border border-zinc-200 dark:border-zinc-700">
+            <button wire:click="setTicketView('mine')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'mine' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                My Tickets
+            </button>
+            <button wire:click="setTicketView('all')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'all' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                All Tickets
+            </button>
+        </div>
+    @endif
+
     <!-- Filters Section -->
     <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800">
         <div class="flex items-center justify-between mb-4">
@@ -110,9 +125,11 @@
             @endif
 
             <!-- Show Deleted Only Toggle -->
-            <div class="flex items-center gap-2 h-full py-1">
-                <flux:switch wire:model.live="showDeletedOnly" label="Show Deleted Only" />
-            </div>
+            @if (Auth::user()->isAdmin())
+                <div class="flex items-center gap-2 h-full py-1">
+                    <flux:switch wire:model.live="showDeletedOnly" label="Show Deleted Only" />
+                </div>
+            @endif
         </div>
     </div>
 
@@ -205,7 +222,8 @@
                         class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
                         Set Status
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
                     <div x-show="open" @click.away="open = false"
@@ -269,15 +287,17 @@
 
                 <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
 
-                <button wire:click="deleteSelectedTickets"
-                    wire:confirm="Are you sure you want to delete {{ count($selectedTickets) }} tickets?"
-                    class="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700/50">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete Selected
-                </button>
+                @if (Auth::user()->isAdmin())
+                    <button wire:click="deleteSelectedTickets"
+                        wire:confirm="Are you sure you want to delete {{ count($selectedTickets) }} tickets?"
+                        class="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-700/50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete Selected
+                    </button>
+                @endif
             </div>
             <button wire:click="$set('selectedTickets', [])"
                 class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
@@ -291,10 +311,12 @@
         <table class="w-full">
             <thead>
                 <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                    <th class="px-4 py-3 text-left">
-                        <input type="checkbox" wire:model.live="selectAll"
-                            class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
-                    </th>
+                    @if (Auth::user()->isAdmin())
+                        <th class="px-4 py-3 text-left">
+                            <input type="checkbox" wire:model.live="selectAll"
+                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                        </th>
+                    @endif
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
                         wire:click="setSortBy('ticket_number')">
                         <div class="flex items-center gap-1">
@@ -378,10 +400,12 @@
  hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors {{ in_array($ticket->id, $selectedTickets) ? 'bg-teal-500/5' : '' }}"
                         wire:key="{{ $ticket->id }}"
                         onclick="Livewire.navigate('{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}')">
-                        <td class="px-4 py-3 text-left" wire:click.stop>
-                            <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
-                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
-                        </td>
+                        @if (Auth::user()->isAdmin())
+                            <td class="px-4 py-3 text-left" wire:click.stop>
+                                <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
+                                    class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                            </td>
+                        @endif
                         <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 font-mono">
                             {{ $ticket->ticket_number }}</td>
                         <td class="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 font-medium">
@@ -524,28 +548,33 @@
                                         </svg>
                                         View details
                                     </a>
-                                    @if ($ticket->trashed())
-                                        <button wire:click="restoreTicket({{ $ticket->id }})" @click="open = false"
-                                            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-teal-300 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                            </svg>
-                                            Restore
-                                        </button>
-                                    @else
-                                        <button wire:click="deleteTicket({{ $ticket->id }})"
-                                            wire:confirm="Are you sure you want to soft delete this ticket?"
-                                            @click="open = false"
-                                            class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-red-300 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            Delete
-                                        </button>
+                                    @if (Auth::user()->isAdmin())
+                                        @if ($ticket->trashed())
+                                            <button wire:click="restoreTicket({{ $ticket->id }})"
+                                                @click="open = false"
+                                                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-teal-300 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                Restore
+                                            </button>
+                                        @else
+                                            <button wire:click="deleteTicket({{ $ticket->id }})"
+                                                wire:confirm="Are you sure you want to soft delete this ticket?"
+                                                @click="open = false"
+                                                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-red-300 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

@@ -4,6 +4,7 @@ namespace App\Livewire\Operators;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Notifications\TeamAssigned;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
@@ -246,6 +247,8 @@ class TeamsTable extends Component
             ->findOrFail($this->addMemberId);
 
         $team->members()->attach($operator->id, ['role' => $this->addMemberRole]);
+
+        $operator->notify(new TeamAssigned($team, $this->addMemberRole));
 
         $this->addMemberId = null;
         $this->addMemberRole = 'member';

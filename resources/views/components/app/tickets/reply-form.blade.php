@@ -14,21 +14,22 @@
         <div class="mb-4">
             <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
-                    <flux:dropdown>
-                        <flux:button variant="ghost" size="sm"
-                            class="px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition border border-zinc-200 dark:border-zinc-700">
-                            Reply as
-                            {{ $senderId ? App\Models\User::find($senderId)?->name ?? 'Unknown User' : 'You (' . auth()->user()->name . ')' }}
-                            <flux:icon.chevron-down variant="micro" class="ml-2" />
-                        </flux:button>
+                    @if (Auth::user()->isAdmin())
+                        <flux:dropdown>
+                            <flux:button variant="ghost" size="sm"
+                                class="px-3 py-1.5 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-lg transition border border-zinc-200 dark:border-zinc-700">
+                                Reply as
+                                {{ $senderId ? App\Models\User::find($senderId)?->name ?? 'Unknown User' : 'You (' . auth()->user()->name . ')' }}
+                                <flux:icon.chevron-down variant="micro" class="ml-2" />
+                            </flux:button>
 
-                        <flux:menu>
-                            <flux:menu.item wire:click="$set('senderId', null)">
-                                You ({{ auth()->user()->name }})
-                            </flux:menu.item>
-                            {{-- We could add logic to reply as specific agents if needed --}}
-                        </flux:menu>
-                    </flux:dropdown>
+                            <flux:menu>
+                                <flux:menu.item wire:click="$set('senderId', null)">
+                                    You ({{ auth()->user()->name }})
+                                </flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
+                    @endif
                 </div>
 
                 @if ($aiSuggestionsEnabled)

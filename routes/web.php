@@ -160,12 +160,12 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
                 ->name('categories');
 
             Route::prefix('kb')->name('kb.')->group(function () {
-                Route::get('/categories', \App\Livewire\Tickets\Kb\Categories::class)->name('categories');
+                Route::get('/categories', \App\Livewire\Tickets\Kb\Categories::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('categories');
                 Route::get('/articles', \App\Livewire\Tickets\Kb\ArticlesList::class)->name('articles');
-                Route::get('/articles/create', \App\Livewire\Tickets\Kb\ArticleEditor::class)->name('articles.create');
-                Route::get('/articles/{article}/edit', \App\Livewire\Tickets\Kb\ArticleEditor::class)->name('articles.edit');
-                Route::get('/media', \App\Livewire\Tickets\Kb\MediaLibrary::class)->name('media');
-                Route::get('/api', \App\Livewire\Tickets\Kb\ApiReference::class)->name('api');
+                Route::get('/articles/create', \App\Livewire\Tickets\Kb\ArticleEditor::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('articles.create');
+                Route::get('/articles/{article}/edit', \App\Livewire\Tickets\Kb\ArticleEditor::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('articles.edit');
+                Route::get('/media', \App\Livewire\Tickets\Kb\MediaLibrary::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('media');
+                Route::get('/api', \App\Livewire\Tickets\Kb\ApiReference::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('api');
             });
 
             Route::get('/automation', fn () => view('app.automation', ['filterMode' => 'ticket']))

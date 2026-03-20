@@ -36,6 +36,10 @@ class ArticleEditor extends Component
 
     public function mount(?KbArticle $article = null)
     {
+        if (Auth::user()->isOperator()) {
+            return $this->redirect(route('kb.articles', Auth::user()->company->slug));
+        }
+
         if ($article && $article->exists) {
             // Ensure scoping
             if ($article->company_id !== Auth::user()->company_id) {

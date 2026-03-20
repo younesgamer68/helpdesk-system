@@ -31,6 +31,10 @@
 
                     <flux:switch wire:model="preferences.ticket_submitted" label="{{ __('New Ticket Submitted') }}"
                         description="{{ __('When a new ticket is submitted by a customer.') }}" />
+                    <flux:separator variant="subtle" />
+
+                    <flux:switch wire:model="preferences.team_assigned" label="{{ __('Team Assignment') }}"
+                        description="{{ __('When you are added to or removed from a team.') }}" />
                 </div>
             </flux:fieldset>
 

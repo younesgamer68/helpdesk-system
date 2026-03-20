@@ -294,11 +294,14 @@
             @endforeach
         </x-ui.dropdown-btn>
 
-        <button type="button" wire:click="closeTicket" wire:confirm="Are you sure you want to close this ticket?"
-            class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
-            <flux:icon.x-mark class="w-4 h-4 shrink-0" />
-            Close ticket
-        </button>
+        @if (Auth::user()->isAdmin())
+            <button type="button" wire:click="closeTicket"
+                wire:confirm="Are you sure you want to close this ticket?"
+                class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                <flux:icon.x-mark class="w-4 h-4 shrink-0" />
+                Close ticket
+            </button>
+        @endif
     </div>
 </div>
 </div>
