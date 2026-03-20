@@ -19,7 +19,7 @@ use Laravel\Fortify\Features;
 // Widget routes - PUBLIC (on company subdomains)
 Route::domain('{company}.'.config('app.domain'))->prefix('widget')->name('widget.')->group(function () {
     Route::get('/{key}', [WidgetController::class, 'show'])->name('show');
-    Route::post('/{key}/submit', [WidgetController::class, 'submit'])->name('submit');
+    Route::post('/{key}/submit', [WidgetController::class, 'submit'])->middleware('throttle:10,1')->name('submit');
     Route::get('/verify/{ticketNumber}/{token}', [WidgetController::class, 'verify'])->name('verify');
     Route::get('/track/{ticketNumber}/{token}', [WidgetController::class, 'track'])->name('track');
     Route::post('/track/{ticketNumber}/{token}/reply', [WidgetController::class, 'reply'])->name('reply');
@@ -75,7 +75,7 @@ Route::domain('{company}.'.config('app.domain'))
 // Widget routes - PUBLIC (on company subdomains)
 Route::domain('{company}.'.config('app.domain'))->prefix('widget')->name('widget.')->group(function () {
     Route::get('/{key}', [WidgetController::class, 'show'])->name('show');
-    Route::post('/{key}/submit', [WidgetController::class, 'submit'])->name('submit');
+    Route::post('/{key}/submit', [WidgetController::class, 'submit'])->middleware('throttle:10,1')->name('submit');
     Route::get('/verify/{ticketNumber}/{token}', [WidgetController::class, 'verify'])->name('verify');
     Route::get('/track/{ticketNumber}/{token}', [WidgetController::class, 'track'])->name('track');
     Route::post('/track/{ticketNumber}/{token}/reply', [WidgetController::class, 'reply'])->name('reply');

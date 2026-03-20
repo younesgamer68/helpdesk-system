@@ -24,7 +24,7 @@ class AdminDashboard extends Component
     public function resolvedTodayCount(): int
     {
         return Ticket::where('status', 'resolved')
-            ->whereDate('updated_at', today())
+            ->whereDate('resolved_at', today())
             ->count();
     }
 
@@ -67,8 +67,9 @@ class AdminDashboard extends Component
     {
         return Ticket::with(['assignedTo', 'category', 'customer'])
             ->where('status', 'resolved')
-            ->whereDate('updated_at', today())
+            ->whereDate('resolved_at', today())
             ->latest()
+            ->take(50)
             ->get();
     }
 
