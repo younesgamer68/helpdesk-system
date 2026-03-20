@@ -196,13 +196,13 @@
                                 <div
                                     class="w-full max-w-sm {{ $widgetThemeMode === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200' }} rounded-2xl shadow-xl overflow-hidden border">
                                     <div
-                                        class="px-6 py-5 {{ $widgetThemeMode === 'dark' ? 'bg-zinc-800 text-white' : 'bg-zinc-100 text-zinc-900 border-b border-zinc-200' }}">
-                                        <div class="font-semibold">{{ $widgetFormTitle ?: 'Submit a Support Ticket' }}
+                                        class="px-6 py-5 {{ $widgetThemeMode === 'dark' ? 'bg-teal-900 border-teal-800/50' : 'bg-teal-600 border-teal-700/50' }} border-b text-white">
+                                        <div class="font-semibold text-lg">{{ $widgetFormTitle ?: 'Submit a Support Ticket' }}
                                         </div>
+                                        <div class="text-sm text-teal-100 mt-1">
+                                            {{ $widgetWelcomeMessage ?: 'How can we help you today?' }}</div>
                                     </div>
                                     <div class="p-6">
-                                        <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-                                            {{ $widgetWelcomeMessage ?: 'How can we help you today?' }}</div>
                                         <div class="space-y-3">
                                             @if ($widgetShowCategory)
                                                 <div

@@ -11,9 +11,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+   use HasFactory, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name',
