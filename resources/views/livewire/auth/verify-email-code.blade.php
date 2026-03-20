@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-white flex flex-col">
     {{-- Back to login link --}}
     <div class="flex justify-end p-4">
-        <button type="button" wire:click="logout" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        <button type="button" wire:click="logout" class="text-green-600 hover:text-green-800 text-sm font-medium">
             Back to login
         </button>
     </div>
@@ -56,7 +56,7 @@
                 @endif
 
                 <button type="submit" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-md transition"
                     wire:loading.attr="disabled"
                     wire:loading.class="opacity-50">
                     <span wire:loading.remove wire:target="verify">Verify</span>
@@ -69,7 +69,7 @@
                 Didn't get an email? Check your <strong>spam folder</strong>
             </p>
             <button type="button" wire:click="resendCode" 
-                class="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline mb-8"
+                class="text-green-600 hover:text-green-800 text-sm font-medium hover:underline mb-8"
                 wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="resendCode">or get a new confirmation code.</span>
                 <span wire:loading wire:target="resendCode">Sending...</span>

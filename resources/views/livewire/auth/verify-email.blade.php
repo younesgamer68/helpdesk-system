@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-white flex flex-col">
     {{-- Back to login link --}}
     <div class="flex justify-end p-4">
-        <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        <a href="{{ route('login') }}" class="text-green-600 hover:text-green-800 text-sm font-medium">
             Back to login
         </a>
     </div>
@@ -53,7 +53,7 @@
             </p>
             <form method="POST" action="{{ route('verification.send') }}" class="mb-8">
                 @csrf
-                <button type="submit" class="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline">
+                <button type="submit" class="text-green-600 hover:text-green-800 text-sm font-medium hover:underline">
                     or get a new verification link.
                 </button>
             </form>

@@ -84,6 +84,6 @@ class SetupCompany extends Component
     public function render()
     {
         return view('livewire.auth.setup-company')
-            ->layout('layouts.auth');
+            ->layout('components.layouts.split-auth');
     }
 }

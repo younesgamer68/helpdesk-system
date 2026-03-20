@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('layouts.auth')]
+#[Layout('components.layouts.split-auth')]
+#[Title('Finish Account Setup')]
 class SetPassword extends Component
 {
     public $password;

@@ -15,7 +15,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             padding: 30px;
             border-radius: 8px 8px 0 0;
@@ -43,7 +43,7 @@
 
         .ticket-number {
             font-weight: bold;
-            color: #3b82f6;
+            color: #10b981;
         }
 
         .footer {
@@ -56,7 +56,7 @@
         }
 
         .footer a {
-            color: #60a5fa;
+            color: #34d399;
         }
     </style>
 </head>

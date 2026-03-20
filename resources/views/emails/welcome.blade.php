@@ -1,272 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Welcome to HelpDesk</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f0f4f2;
-            color: #1a1a1a;
-            padding: 40px 20px;
-        }
-        .wrapper {
-            max-width: 580px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .header {
-            background-color: #0A170F;
-            border-radius: 16px 16px 0 0;
-            padding: 32px 40px;
-            text-align: center;
-        }
-        .logo-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 28px;
-        }
-        .logo-box {
-            width: 40px; height: 40px;
-            background-color: #0F766E;
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 15px; color: white;
-        }
-        .logo-name {
-            color: white;
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .hero-icon {
-            font-size: 52px;
-            margin-bottom: 16px;
-        }
-        .header h1 {
-            color: white;
-            font-size: 26px;
-            font-weight: 700;
-            line-height: 1.3;
-        }
-        .header p {
-            color: rgba(255,255,255,0.65);
-            font-size: 15px;
-            margin-top: 8px;
-        }
-
-        /* Body */
-        .body {
-            background: white;
-            padding: 40px;
-        }
-        .greeting {
-            font-size: 17px;
-            color: #1a1a1a;
-            margin-bottom: 16px;
-        }
-        .greeting strong { color: #0F766E; }
-        .description {
-            font-size: 15px;
-            color: #555;
-            line-height: 1.7;
-            margin-bottom: 32px;
-        }
-
-        /* CTA Button */
-        .cta-wrap { text-align: center; margin-bottom: 36px; }
-        .cta-btn {
-            display: inline-block;
-            background-color: #0F766E;
-            color: white !important;
-            text-decoration: none;
-            padding: 14px 36px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        /* Features */
-        .features {
-            background: #f8fdfb;
-            border: 1px solid #d1f0e8;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 32px;
-        }
-        .features h3 {
-            font-size: 14px;
-            font-weight: 700;
-            color: #0F766E;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 16px;
-        }
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .feature-item:last-child { margin-bottom: 0; }
-        .feature-icon {
-            font-size: 18px;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-        .feature-text strong {
-            display: block;
-            font-size: 14px;
-            color: #1a1a1a;
-            margin-bottom: 2px;
-        }
-        .feature-text span {
-            font-size: 13px;
-            color: #777;
-        }
-
-        /* Set password notice */
-        .notice {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 32px;
-            font-size: 14px;
-            color: #92400e;
-            line-height: 1.6;
-        }
-        .notice strong { color: #78350f; }
-
-        /* Divider */
-        .divider {
-            height: 1px;
-            background: #e5e7eb;
-            margin: 28px 0;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: #0A170F;
-            border-radius: 0 0 16px 16px;
-            padding: 28px 40px;
-            text-align: center;
-        }
-        .footer p {
-            color: rgba(255,255,255,0.45);
-            font-size: 12px;
-            line-height: 1.7;
-        }
-        .footer a {
-            color: #22c997;
-            text-decoration: none;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
-<div class="wrapper">
-
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    
     <!-- Header -->
-    <div class="header">
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); background-color: #10b981; color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
         <div style="margin-bottom: 16px;">
             <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="40" height="40" rx="8" fill="#0F766E"/>
-                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="white" text-anchor="middle">HD</text>
+                <rect x="0" y="0" width="40" height="40" rx="8" fill="white"/>
+                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#10b981" text-anchor="middle">HD</text>
                 <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="white">HelpDesk</text>
             </svg>
         </div>
-        <div class="hero-icon">🎉</div>
-        <h1>You're in! Welcome aboard.</h1>
-        <p>Your free HelpDesk account is ready.</p>
+        <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
+        <h1 style="margin: 0; font-size: 24px;">Welcome Aboard!</h1>
+        <p style="margin: 5px 0 0 0; opacity: 0.9;">Your HelpDesk account is ready.</p>
     </div>
 
-    <!-- Body -->
-    <div class="body">
+    <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+        <p>Hi <strong>{{ $user->name }}</strong>,</p>
 
-        <p class="greeting">
-            Hi <strong>{{ $user->name }}</strong>,
-        </p>
+        <p>Thank you for signing up with HelpDesk! We're thrilled to have you. Your account has been created with <strong>{{ $user->email }}</strong> and allows you to manage support tickets efficiently.</p>
 
-        <p class="description">
-            Thank you for signing up with HelpDesk. Your account has been created with
-            <strong>{{ $user->email }}</strong> and you're now logged in to your dashboard.
-            We're thrilled to have you!
-        </p>
-
-        <!-- CTA -->
-        <div class="cta-wrap">
-            <a href="{{ route('dashboard') }}" class="cta-btn">
-                Go to my Dashboard →
+        <div style="text-align: center;">
+            <a href="{{ route('dashboard') }}" 
+               style="display: inline-block; padding: 14px 28px; background: #10b981; background-color: #10b981; color: white !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0;">
+                Go to Dashboard &rarr;
             </a>
         </div>
 
-        <!-- Features -->
-        <div class="features">
-            <h3>What you can do now</h3>
-
-            <div class="feature-item">
-                <span class="feature-icon">🎫</span>
-                <div class="feature-text">
-                    <strong>Manage support tickets</strong>
-                    <span>Receive, assign and resolve tickets from one place.</span>
+        <!-- Features Grid -->
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+            <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #10b981; text-transform: uppercase;">What you can do now</h3>
+            
+            <div style="display: flex; align-items: start; margin-bottom: 15px;">
+                <span style="font-size: 20px; margin-right: 10px;">🎫</span>
+                <div>
+                    <strong style="display: block; color: #111;">Manage Support Tickets</strong>
+                    <span style="font-size: 14px; color: #666;">Receive, assign, and resolve tickets in one central place.</span>
                 </div>
             </div>
 
-            <div class="feature-item">
-                <span class="feature-icon">👥</span>
-                <div class="feature-text">
-                    <strong>Invite your team</strong>
-                    <span>Add agents and collaborate on customer issues.</span>
+            <div style="display: flex; align-items: start; margin-bottom: 15px;">
+                <span style="font-size: 20px; margin-right: 10px;">👥</span>
+                <div>
+                    <strong style="display: block; color: #111;">Invite Your Team</strong>
+                    <span style="font-size: 14px; color: #666;">Add agents and collaborate on solving customer issues.</span>
                 </div>
             </div>
 
-            <div class="feature-item">
-                <span class="feature-icon">📊</span>
-                <div class="feature-text">
-                    <strong>Track performance</strong>
-                    <span>Reports and analytics to improve response times.</span>
-                </div>
-            </div>
-
-            <div class="feature-item">
-                <span class="feature-icon">🔗</span>
-                <div class="feature-text">
-                    <strong>Connect your tools</strong>
-                    <span>Integrate with Slack, email, and more.</span>
+            <div style="display: flex; align-items: start;">
+                <span style="font-size: 20px; margin-right: 10px;">📊</span>
+                <div>
+                    <strong style="display: block; color: #111;">Track Performance</strong>
+                    <span style="font-size: 14px; color: #666;">View reports and analytics to improve response times.</span>
                 </div>
             </div>
         </div>
 
-        <!-- Set password notice -->
-        <div class="notice">
-            <strong>⚠️ Set your password</strong><br>
-            Your account was created quickly without a password. To secure your account,
-            please <a href="{{ route('password.request') }}" style="color:#0F766E;font-weight:600;">set a password here</a>
-            or use Google Sign-in next time.
+        <!-- Password Notice -->
+        <div style="background: #fef3c7; border: 1px solid #fbbf24; padding: 15px; border-radius: 8px; margin: 20px 0;">
+             <p style="margin: 0; color: #92400e;"><strong>⚠️ Action Required: Set Your Password</strong></p>
+             <p style="margin: 5px 0 0 0; font-size: 14px; color: #92400e;">
+                 If you haven't set a password yet, please <a href="{{ route('password.request') }}" style="color: #b45309; font-weight: bold; text-decoration: underline;">set one now</a> to secure your account.
+             </p>
         </div>
 
-        <div class="divider"></div>
-
-        <p style="font-size:13px;color:#999;text-align:center;">
-            If you didn't create this account, you can safely ignore this email.<br>
-            Need help? Contact us at <a href="mailto:support@helpdesk.com" style="color:#0F766E;">support@helpdesk.com</a>
+        <p style="font-size: 14px; color: #6b7280; margin-top: 30px; text-align: center;">
+            Need help? Contact us at <a href="mailto:support@helpdesk.com" style="color: #10b981;">support@helpdesk.com</a>
         </p>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
+    <div style="text-align: center; color: #6b7280; font-size: 14px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
         <p>
-            © {{ date('Y') }} HelpDesk. All rights reserved.<br>
-            <a href="{{ route('home') }}">helpdesk.com</a> ·
-            <a href="{{ route('login') }}">Log in</a>
+            <a href="{{ route('home') }}" style="color: #10b981; text-decoration: none;">Visit Website</a> &middot; 
+            <a href="{{ route('login') }}" style="color: #10b981; text-decoration: none;">Log In</a>
         </p>
     </div>
-
-</div>
 </body>
 </html>

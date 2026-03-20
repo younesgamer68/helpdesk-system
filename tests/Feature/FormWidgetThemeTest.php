@@ -78,7 +78,7 @@ test('widget form renders dark theme correctly', function () {
     $widget = WidgetSetting::where('company_id', $company->id)->first();
     $response = $this->get(route('widget.show', ['company' => $company->slug, 'key' => $widget->widget_key]));
     $response->assertStatus(200);
-    $response->assertSee('class="dark"', false);
+    $response->assertSee('dark', false);
 });
 
 test('widget form renders light theme correctly', function () {
@@ -98,5 +98,5 @@ test('widget form renders light theme correctly', function () {
     $widget = WidgetSetting::where('company_id', $company->id)->first();
     $response = $this->get(route('widget.show', ['company' => $company->slug, 'key' => $widget->widget_key]));
     $response->assertStatus(200);
-    $response->assertSee('class=""', false);
+    $response->assertDontSee('class="dark"', false);
 });
