@@ -109,8 +109,6 @@ class CategoriesTable extends Component
         'parent_id' => 'parent category',
     ];
 
-    public function updatingSearch(): void {}
-
     public function setSortBy(string $column): void
     {
         if ($this->sortBy === $column) {

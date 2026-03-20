@@ -43,7 +43,7 @@ Route::middleware('guest')->group(function () {
 
         return view('auth.login');
     })->name('login');
-    Route::get('/set-password', App\Livewire\Auth\SetPassword::class)
+    Route::livewire('/set-password', App\Livewire\Auth\SetPassword::class)
         ->name('set-password')
         ->middleware('user.pending');
 
@@ -71,12 +71,12 @@ Route::post('/logout', function () {
 })->middleware('auth')->name('logout');
 
 // Setup Company (after Google OAuth + email verified)
-Route::get('/setup-company', App\Livewire\Auth\SetupCompany::class)
+Route::livewire('/setup-company', App\Livewire\Auth\SetupCompany::class)
     ->middleware(['auth', 'verified'])
     ->name('setup-company');
 
 // ====== EMAIL VERIFICATION WITH CODE ======
-Route::get('/email/verify', App\Livewire\Auth\VerifyEmailCode::class)
+Route::livewire('/email/verify', App\Livewire\Auth\VerifyEmailCode::class)
     ->middleware('auth')
     ->name('verification.notice');
 
@@ -116,7 +116,7 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
 
     Route::middleware(['auth', 'company.access', 'verified'])->group(function () {
         // Onboarding form for the company
-        Route::get('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
+        Route::livewire('/onboarding', \App\Livewire\Onboarding\Wizard::class)->name('onboarding.wizard');
 
         // Dashboard routes (require onboarding)
         Route::middleware(['company.is_onboarded'])->group(function () {
@@ -152,7 +152,7 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::get('/teams', fn () => view('app.teams'))
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('teams');
-            Route::get('/operators/{operator}', \App\Livewire\Operators\OperatorProfile::class)
+            Route::livewire('/operators/{operator}', \App\Livewire\Operators\OperatorProfile::class)
                 ->middleware('can:view-operators,App\Models\User')
                 ->name('operator.profile');
             Route::get('/categories', fn () => view('app.categories'))
@@ -160,12 +160,12 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
                 ->name('categories');
 
             Route::prefix('kb')->name('kb.')->group(function () {
-                Route::get('/categories', \App\Livewire\Tickets\Kb\Categories::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('categories');
-                Route::get('/articles', \App\Livewire\Tickets\Kb\ArticlesList::class)->name('articles');
-                Route::get('/articles/create', \App\Livewire\Tickets\Kb\ArticleEditor::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('articles.create');
-                Route::get('/articles/{article}/edit', \App\Livewire\Tickets\Kb\ArticleEditor::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('articles.edit');
-                Route::get('/media', \App\Livewire\Tickets\Kb\MediaLibrary::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('media');
-                Route::get('/api', \App\Livewire\Tickets\Kb\ApiReference::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('api');
+                Route::livewire('/categories', \App\Livewire\Tickets\Kb\Categories::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('categories');
+                Route::livewire('/articles', \App\Livewire\Tickets\Kb\ArticlesList::class)->name('articles');
+                Route::livewire('/articles/create', \App\Livewire\Tickets\Kb\ArticleEditor::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('articles.create');
+                Route::livewire('/articles/{article}/edit', \App\Livewire\Tickets\Kb\ArticleEditor::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('articles.edit');
+                Route::livewire('/media', \App\Livewire\Tickets\Kb\MediaLibrary::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('media');
+                Route::livewire('/api', \App\Livewire\Tickets\Kb\ApiReference::class)->middleware(\App\Http\Middleware\AdminOnly::class)->name('api');
             });
 
             Route::get('/automation', fn () => view('app.automation', ['filterMode' => 'ticket']))
