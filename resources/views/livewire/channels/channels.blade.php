@@ -16,7 +16,7 @@
         @foreach ($tabs as $key => $label)
             <button wire:click="setTab('{{ $key }}')" @class([
                 'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
-                'border-teal-500 text-teal-400' => $activeTab === $key,
+                'border-emerald-500 text-emerald-400' => $activeTab === $key,
                 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200' =>
                     $activeTab !== $key,
             ])>

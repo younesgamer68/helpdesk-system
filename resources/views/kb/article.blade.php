@@ -12,7 +12,7 @@
                 <ol class="flex items-center space-x-1.5">
                     <li>
                         <a href="{{ route('kb.public.home', $company->slug) }}"
-                            class="hover:text-teal-600 dark:hover:text-teal-400 transition">
+                            class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
@@ -30,7 +30,7 @@
                                         clip-rule="evenodd" />
                                 </svg>
                                 <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $article->category->parent->id]) }}"
-                                    class="ml-1.5 hover:text-teal-600 dark:hover:text-teal-400 transition">{{ $article->category->parent->name }}</a>
+                                    class="ml-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition">{{ $article->category->parent->name }}</a>
                             </li>
                         @endif
                         <li class="flex items-center">
@@ -40,7 +40,7 @@
                                     clip-rule="evenodd" />
                             </svg>
                             <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $article->category->id]) }}"
-                                class="ml-1.5 hover:text-teal-600 dark:hover:text-teal-400 transition">{{ $article->category->name }}</a>
+                                class="ml-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition">{{ $article->category->name }}</a>
                         </li>
                     @endif
                 </ol>
@@ -48,7 +48,7 @@
 
             @if ($article->category)
                 <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 mb-4">
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 mb-4">
                     {{ $article->category->name }}
                 </span>
             @endif
@@ -104,12 +104,12 @@
         prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:pb-2 prose-h2:border-b prose-h2:border-zinc-200 dark:prose-h2:border-zinc-800
         prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
         prose-p:leading-relaxed prose-p:text-zinc-700 dark:prose-p:text-zinc-300
-        prose-a:text-teal-600 dark:prose-a:text-teal-400 prose-a:no-underline hover:prose-a:underline
+        prose-a:text-emerald-600 dark:prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline
         prose-img:rounded-xl prose-img:shadow-md prose-img:border prose-img:border-zinc-200 dark:prose-img:border-zinc-700
-        prose-blockquote:border-teal-500 prose-blockquote:bg-zinc-50 dark:prose-blockquote:bg-zinc-800/50 prose-blockquote:rounded-r-lg prose-blockquote:py-1 prose-blockquote:not-italic
+        prose-blockquote:border-emerald-500 prose-blockquote:bg-zinc-50 dark:prose-blockquote:bg-zinc-800/50 prose-blockquote:rounded-r-lg prose-blockquote:py-1 prose-blockquote:not-italic
         prose-code:before:content-[''] prose-code:after:content-[''] prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-medium
         prose-pre:bg-zinc-900 dark:prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-200 dark:prose-pre:border-zinc-700 prose-pre:rounded-xl
-        prose-li:marker:text-teal-500
+        prose-li:marker:text-emerald-500
         prose-hr:border-zinc-200 dark:prose-hr:border-zinc-800
         bg-white dark:bg-zinc-900 p-8 sm:p-10 lg:p-12 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800">
             {!! $article->body !!}
@@ -131,8 +131,8 @@
                 <!-- Buttons container -->
                 <div x-show="!voted && !error" x-transition.opacity class="flex items-center gap-3">
                     <button @click="vote('yes')"
-                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:text-teal-600 dark:hover:text-teal-400 transition-all group">
-                        <svg class="w-5 h-5 text-zinc-400 group-hover:text-teal-500 transition" fill="none"
+                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all group">
+                        <svg class="w-5 h-5 text-zinc-400 group-hover:text-emerald-500 transition" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5">
@@ -154,7 +154,7 @@
 
                 <!-- Success Message -->
                 <div x-show="voted" x-transition.opacity
-                    class="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-medium bg-teal-50 dark:bg-teal-900/30 px-6 py-3 rounded-xl"
+                    class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-900/30 px-6 py-3 rounded-xl"
                     style="display: none;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -183,9 +183,9 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @foreach ($relatedArticles as $related)
                         <a href="{{ route('kb.public.article', ['company' => $company->slug, 'article' => $related->slug]) }}"
-                            class="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-teal-400 dark:hover:border-teal-600 shadow-sm hover:shadow transition-all group">
+                            class="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm hover:shadow transition-all group">
                             <h4
-                                class="font-medium text-zinc-900 dark:text-zinc-100 mb-1.5 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition line-clamp-2">
+                                class="font-medium text-zinc-900 dark:text-zinc-100 mb-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition line-clamp-2">
                                 {{ $related->title }}</h4>
                             <p class="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">
                                 {{ $related->meta_description ?? strip_tags(Str::limit($related->body, 100)) }}</p>

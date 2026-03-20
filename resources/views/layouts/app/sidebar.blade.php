@@ -33,9 +33,9 @@
 
     {{-- Mobile header --}}
     <div
-        class="mobile-header lg:hidden fixed top-0 inset-x-0 h-12 bg-teal-900 border-b border-teal-800 flex items-center px-4 z-40 gap-3">
+        class="mobile-header lg:hidden fixed top-0 inset-x-0 h-12 bg-emerald-900 border-b border-emerald-800 flex items-center px-4 z-40 gap-3">
         <button onclick="openMobileSidebar()"
-            class="p-1.5 rounded-lg bg-transparent border-none text-teal-300 hover:bg-teal-800 transition-colors cursor-pointer">
+            class="p-1.5 rounded-lg bg-transparent border-none text-emerald-300 hover:bg-emerald-800 transition-colors cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" viewBox="0 0 24 24">
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -44,7 +44,7 @@
             </svg>
         </button>
         <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-            class="flex items-center gap-2 no-underline text-white text-sm font-semibold">
+            class="flex items-center gap-2 no-underline text-emerald-400 text-sm font-bold italic transition-colors hover:text-white">
             <img src="{{ asset('images/logodm.png') }}" alt="" class="w-6 h-6">
             Helpdesk
         </a>
@@ -81,16 +81,16 @@
     {{-- ── Sidebar: expands on hover ──────────────────────────────────── --}}
     <div id="app-sidebar"
         class="group/sb fixed inset-y-0 left-0 z-50 flex flex-col
-                w-56 lg:w-16 lg:hover:w-56 bg-teal-900 border-r border-teal-800
+                w-56 lg:w-16 lg:hover:w-56 bg-emerald-900 border-r border-emerald-800
                 -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out
                 overflow-hidden lg:hover:shadow-xl">
 
         {{-- Logo --}}
-        <div class="h-16 flex items-center border-b border-teal-800 shrink-0 px-3">
+        <div class="h-16 flex items-center border-b border-emerald-800 shrink-0 px-3">
             <div class="w-10 flex items-center justify-center shrink-0">
                 <img src="{{ asset('images/logodm.png') }}" alt="Helpdesk" class="w-7 h-7">
             </div>
-            <span class="sidebar-label ml-3 text-white font-semibold">Helpdesk</span>
+            <span class="sidebar-label ml-3 text-emerald-400 font-bold italic transition-colors hover:text-white">Helpdesk</span>
         </div>
 
         {{-- Nav --}}
@@ -99,8 +99,8 @@
             @if (in_array(Auth::user()->role, ['admin', 'operator']))
                 @php $active = request()->routeIs('dashboard', 'admin.dashboard', 'agent.dashboard'); @endphp
                 <a href="{{ route('dashboard', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -116,8 +116,8 @@
 
             @php $active = request()->routeIs('tickets'); @endphp
             <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-                class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                      {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -131,8 +131,8 @@
             @can('view-operators')
                 @php $active = request()->routeIs('customers*'); @endphp
                 <a href="{{ route('customers', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -148,8 +148,8 @@
 
                 @php $active = request()->routeIs('operators'); @endphp
                 <a href="{{ route('operators', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -163,8 +163,8 @@
 
                 @php $active = request()->routeIs('teams'); @endphp
                 <a href="{{ route('teams', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -179,8 +179,8 @@
 
                 @php $active = request()->routeIs('categories'); @endphp
                 <a href="{{ route('categories', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -192,8 +192,8 @@
 
                 @php $active = request()->routeIs('automation', 'automation.*'); @endphp
                 <a href="{{ route('automation', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -206,8 +206,8 @@
 
                 @php $active = request()->routeIs('channels'); @endphp
                 <a href="{{ route('channels', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -220,8 +220,8 @@
 
                 @php $active = request()->routeIs('reports'); @endphp
                 <a href="{{ route('reports', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -236,8 +236,8 @@
 
             @php $active = request()->routeIs('kb.*'); @endphp
             <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
-                class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                      {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -251,8 +251,8 @@
             @if (Auth::user()->isOperator())
                 @php $active = request()->routeIs('settings.my-team'); @endphp
                 <a href="{{ route('settings.my-team', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                          {{ $active ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -268,13 +268,13 @@
         </nav>
 
         {{-- Bottom: notification bell + settings + profile --}}
-        <div class="flex flex-col gap-1 py-3 border-t border-teal-800 shrink-0">
+        <div class="flex flex-col gap-1 py-3 border-t border-emerald-800 shrink-0">
 
             {{-- Notifications --}}
             @php $notificationsActive = request()->routeIs('notifications'); @endphp
             <a href="{{ route('notifications', Auth::user()->company->slug) }}" wire:navigate
-                class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                      {{ $notificationsActive ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $notificationsActive ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0 relative">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -296,8 +296,8 @@
             @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit', 'settings.my-team'); @endphp
             <a href="{{ Auth::user()->isAdmin() ? route('company.profile', Auth::user()->company->slug) : route('settings.security', Auth::user()->company->slug) }}"
                 wire:navigate
-                class="mx-3 h-10 flex items-center rounded-lg transition-colors no-underline
-                      {{ $settingsActive ? 'bg-teal-700 text-white' : 'text-teal-400 hover:bg-teal-800 hover:text-white' }}">
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $settingsActive ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">

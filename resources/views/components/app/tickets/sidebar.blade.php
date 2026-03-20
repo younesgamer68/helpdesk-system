@@ -227,7 +227,7 @@
                         class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
                         <span class="flex items-center gap-2">
                             <span
-                                class="w-5 h-5 rounded-full bg-teal-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
+                                class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
                             <span class="flex flex-col">
                                 <span class="font-medium">{{ $agent->name }}</span>
                                 <span class="text-[10px] text-zinc-500">{{ $agent->email }}</span>

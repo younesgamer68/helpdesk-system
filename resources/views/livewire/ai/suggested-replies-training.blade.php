@@ -5,11 +5,11 @@
             {{-- Tabs --}}
             <div class="flex gap-4 border-b border-zinc-200 dark:border-zinc-800">
                 <button wire:click="$set('tab', 'golden')" type="button"
-                    class="pb-2 text-sm font-medium border-b-2 transition-colors {{ $tab === 'golden' ? 'border-[#0B4F4A] text-[#0B4F4A] dark:text-teal-300' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors {{ $tab === 'golden' ? 'border-[#0B4F4A] text-[#0B4F4A] dark:text-emerald-300' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                     Golden Responses
                 </button>
                 <button wire:click="$set('tab', 'feed')" type="button"
-                    class="pb-2 text-sm font-medium border-b-2 transition-colors {{ $tab === 'feed' ? 'border-[#0B4F4A] text-[#0B4F4A] dark:text-teal-300' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors {{ $tab === 'feed' ? 'border-[#0B4F4A] text-[#0B4F4A] dark:text-emerald-300' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                     Suggestion Feed
                 </button>
             </div>
@@ -99,7 +99,7 @@
                                                         'use' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
                                                         'dismiss' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
                                                         'regenerate' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-                                                        default => 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-teal-300',
+                                                        default => 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-emerald-300',
                                                     } }}">
                                                     {{ ucfirst($log->action) }}
                                                 </span>

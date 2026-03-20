@@ -4,7 +4,7 @@
         <h1 class="text-3xl text-zinc-900 dark:text-zinc-100">Notifications</h1>
         <div class="flex items-center gap-3">
             <a href="{{ route('notifications.preferences', ['company' => Auth::user()->company->slug]) }}" wire:navigate
-                class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-teal-500 hover:border-teal-500/40 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors"
+                class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-emerald-500 hover:border-emerald-500/40 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors"
                 title="Notification settings" aria-label="Notification settings">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -15,7 +15,7 @@
             </a>
             <button wire:click="markAllRead" @class([
                 'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                'bg-teal-500 hover:bg-teal-600 text-white' => $this->unreadCount > 0,
+                'bg-emerald-500 hover:bg-emerald-600 text-white' => $this->unreadCount > 0,
                 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 cursor-not-allowed' =>
                     $this->unreadCount === 0,
             ])
@@ -59,7 +59,7 @@
         @foreach ($tabs as $key => $label)
             <button wire:click="setTab('{{ $key }}')" @class([
                 'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
-                'border-teal-500 text-teal-400' => $activeTab === $key,
+                'border-emerald-500 text-emerald-400' => $activeTab === $key,
                 'border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200' =>
                     $activeTab !== $key,
             ])>
@@ -104,7 +104,7 @@
                                 <!-- Unread Dot -->
                                 <div class="flex-shrink-0 w-2 flex justify-center">
                                     @if (is_null($notification->read_at))
-                                        <span class="w-2 h-2 bg-teal-500 rounded-full"></span>
+                                        <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
                                     @endif
                                 </div>
 
@@ -151,7 +151,7 @@
                                         </div>
                                     @elseif(($notification->data['type'] ?? '') === 'ticket_submitted')
                                         <div
-                                            class="w-9 h-9 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-400">
+                                            class="w-9 h-9 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -191,7 +191,7 @@
                                         </div>
                                     @elseif(($notification->data['type'] ?? '') === 'team_assigned')
                                         <div
-                                            class="w-9 h-9 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-400">
+                                            class="w-9 h-9 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

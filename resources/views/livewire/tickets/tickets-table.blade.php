@@ -6,11 +6,11 @@
         <div
             class="mb-4 flex gap-1 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-fit border border-zinc-200 dark:border-zinc-700">
             <button wire:click="setTicketView('mine')"
-                class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'mine' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 hover:scale-[1.05] {{ $ticketView === 'mine' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 My Tickets
             </button>
             <button wire:click="setTicketView('all')"
-                class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'all' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 hover:scale-[1.05] {{ $ticketView === 'all' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 All Tickets
             </button>
         </div>
@@ -23,7 +23,7 @@
             <div class="flex items-center gap-2">
                 @if ($this->hasActiveFilters)
                     <button wire:click="$set('showSaveViewModal', true)"
-                        class="px-3 py-1.5 text-sm text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-100 transition-colors font-medium">
+                        class="px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors font-medium">
                         Save current view
                     </button>
                     <button wire:click="clearFilters"
@@ -39,7 +39,7 @@
             <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mr-2">Saved
                 Views:</span>
             <button wire:click="applyPreset('unassigned_high')"
-                class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/50 hover:bg-teal-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500">
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
                 <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -50,7 +50,7 @@
             @foreach ($this->savedViews as $view)
                 <div class="flex items-center gap-1 group">
                     <button wire:click="applyPreset('{{ $view->id }}')"
-                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/50 hover:bg-teal-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500">
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
                         {{ $view->name }}
                     </button>
                     <button wire:click="deleteSavedView({{ $view->id }})"
@@ -74,25 +74,25 @@
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
 
             <!-- Date From -->
             <div>
                 <input wire:model.live="dateFrom" type="date"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
 
             <!-- Date To -->
             <div>
                 <input wire:model.live="dateTo" type="date"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
 
             <!-- Status Filter -->
             <div>
                 <select wire:model.live="statusFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                     <option value="">All Statuses</option>
                     @foreach ($statuses as $status)
                         <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
@@ -103,7 +103,7 @@
             <!-- Priority Filter -->
             <div>
                 <select wire:model.live="priorityFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                     <option value="">All Priorities</option>
                     @foreach ($priorities as $priority)
                         <option value="{{ $priority }}">{{ ucfirst($priority) }}</option>
@@ -115,7 +115,7 @@
             @if (Auth::user()->isAdmin())
                 <div>
                     <select wire:model.live="categoryFilter"
-                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                         <option value="">All Categories</option>
                         @foreach ($this->categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -158,7 +158,7 @@
         <div class="mb-4 flex flex-wrap gap-2">
             @if ($search)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-medium rounded-full border border-teal-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium rounded-full border border-emerald-500/20">
                     Search: {{ $search }}
                 </span>
             @endif
@@ -219,7 +219,7 @@
                 <!-- Bulk Status -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
-                        class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                        class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-emerald-500 transition-colors">
                         Set Status
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -242,7 +242,7 @@
                 <!-- Bulk Priority -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
-                        class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                        class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-emerald-500 transition-colors">
                         Set Priority
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -266,7 +266,7 @@
                     <!-- Bulk Assign -->
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open"
-                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-emerald-500 transition-colors">
                             Assign To
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -314,7 +314,7 @@
                     @if (Auth::user()->isAdmin())
                         <th class="px-4 py-3 text-left">
                             <input type="checkbox" wire:model.live="selectAll"
-                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 rounded focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
                         </th>
                     @endif
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
@@ -322,7 +322,7 @@
                         <div class="flex items-center gap-1">
                             Ticket ID
                             @if ($sortBy === 'ticket_number')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -333,7 +333,7 @@
                         <div class="flex items-center gap-1">
                             Subject
                             @if ($sortBy === 'subject')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -344,7 +344,7 @@
                         <div class="flex items-center gap-1">
                             Customer
                             @if ($sortBy === 'customer_name')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -358,7 +358,7 @@
                         <div class="flex items-center gap-1">
                             Priority
                             @if ($sortBy === 'priority')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -369,7 +369,7 @@
                         <div class="flex items-center gap-1">
                             Status
                             @if ($sortBy === 'status')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -380,7 +380,7 @@
                         <div class="flex items-center gap-1">
                             SLA
                             @if ($sortBy === 'due_time')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -396,14 +396,14 @@
             </thead>
             <tbody class="divide-y divide-zinc-800/10">
                 @forelse ($this->tickets as $ticket)
-                    <tr class="cursor-pointer
- hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors {{ in_array($ticket->id, $selectedTickets) ? 'bg-teal-500/5' : '' }}"
+                    <tr class="animate-enter cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors {{ in_array($ticket->id, $selectedTickets) ? 'bg-emerald-500/5' : '' }}"
+                        style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;"
                         wire:key="{{ $ticket->id }}"
                         onclick="Livewire.navigate('{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}')">
                         @if (Auth::user()->isAdmin())
                             <td class="px-4 py-3 text-left" wire:click.stop>
                                 <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
-                                    class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                                    class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 rounded focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
                             </td>
                         @endif
                         <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 font-mono">
@@ -417,7 +417,7 @@
                             <div class="flex items-center gap-2">
                                 @if ($ticket->assignedTo)
                                     <div
-                                        class="w-6 h-6 rounded-full bg-linear-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                                        class="w-6 h-6 rounded-full bg-linear-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
                                         {{ substr($ticket->assignedTo->name, 0, 1) }}
                                     </div>
                                     <span class="text-zinc-600 dark:text-zinc-300">
@@ -552,7 +552,7 @@
                                         @if ($ticket->trashed())
                                             <button wire:click="restoreTicket({{ $ticket->id }})"
                                                 @click="open = false"
-                                                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-teal-300 transition-colors">
+                                                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-emerald-300 transition-colors">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -655,7 +655,7 @@
                     <div>
                         <h4
                             class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -670,7 +670,7 @@
                                     Customer Name <span class="text-red-400">*</span>
                                 </label>
                                 <input wire:model.blur="customer_name" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                     placeholder="John Doe">
                                 @error('customer_name')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -683,7 +683,7 @@
                                     Customer Email <span class="text-red-400">*</span>
                                 </label>
                                 <input wire:model.blur="customer_email" type="email"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                     placeholder="john@example.com">
                                 @error('customer_email')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -696,7 +696,7 @@
                                     Customer Phone
                                 </label>
                                 <input wire:model.blur="customer_phone" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                     placeholder="+1 (555) 123-4567">
                                 @error('customer_phone')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -709,7 +709,7 @@
                     <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
                         <h4
                             class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -724,7 +724,7 @@
                                     Subject <span class="text-red-400">*</span>
                                 </label>
                                 <input wire:model.blur="subject" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                     placeholder="Brief description of the issue">
                                 @error('subject')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -737,7 +737,7 @@
                                     Description <span class="text-red-400">*</span>
                                 </label>
                                 <textarea wire:model.blur="description" rows="5"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-none"
                                     placeholder="Detailed description of the issue..."></textarea>
                                 @error('description')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -751,7 +751,7 @@
                                         Priority <span class="text-red-400">*</span>
                                     </label>
                                     <select wire:model.live="priority"
-                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                         <option value="low">Low</option>
                                         <option value="medium">Medium</option>
                                         <option value="high">High</option>
@@ -768,7 +768,7 @@
                                         Status <span class="text-red-400">*</span>
                                     </label>
                                     <select wire:model.live="status"
-                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                         <option value="pending">Pending</option>
                                         <option value="open">Open</option>
                                         <option value="in_progress">In Progress</option>
@@ -787,7 +787,7 @@
                     <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
                         <h4
                             class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -803,7 +803,7 @@
                                         Assign To
                                     </label>
                                     <select wire:model.live="assigned_to"
-                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                         <option value="">Unassigned</option>
                                         @foreach ($this->agents as $agent)
                                             <option value="{{ $agent->id }}">{{ $agent->name }}</option>
@@ -821,7 +821,7 @@
                                     Category
                                 </label>
                                 <select wire:model.live="category_id"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                     <option value="">No Category</option>
                                     @foreach ($this->categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -858,7 +858,7 @@
                             Cancel
                         </button>
                         <button type="submit"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

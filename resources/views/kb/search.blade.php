@@ -10,7 +10,7 @@
         <nav class="flex text-sm text-zinc-500 dark:text-zinc-400 mb-8" aria-label="Breadcrumb">
             <ol class="flex items-center space-x-2">
                 <li>
-                    <a href="{{ route('kb.public.home', $company->slug) }}" class="hover:text-teal-600 dark:hover:text-teal-400 transition">Home</a>
+                    <a href="{{ route('kb.public.home', $company->slug) }}" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Home</a>
                 </li>
                 <li>
                     <svg class="h-4 w-4 text-zinc-400 mx-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
@@ -28,7 +28,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
-            <input type="text" name="q" value="{{ $query }}" placeholder="Search for articles..." class="block w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-teal-500 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none transition shadow-sm">
+            <input type="text" name="q" value="{{ $query }}" placeholder="Search for articles..." class="block w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-300 dark:border-zinc-700 focus:ring-2 focus:ring-emerald-500 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 outline-none transition shadow-sm">
         </form>
 
     </div>
@@ -48,15 +48,15 @@
                 <div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition group relative">
                     <a href="{{ route('kb.public.article', ['company' => $company->slug, 'article' => $article->slug]) }}" class="absolute inset-0 z-10"><span class="sr-only">View Article</span></a>
                     
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center text-xs font-medium tracking-wider text-teal-600 dark:text-teal-400 mb-3 uppercase">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center text-xs font-medium tracking-wider text-emerald-600 dark:text-emerald-400 mb-3 uppercase">
                         @if($article->category)
-                            <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $article->category->id]) }}" class="relative z-20 hover:text-teal-700 dark:hover:text-teal-300 transition">{{ $article->category->name }}</a>
+                            <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $article->category->id]) }}" class="relative z-20 hover:text-emerald-700 dark:hover:text-emerald-300 transition">{{ $article->category->name }}</a>
                         @else
                             <span>Uncategorized</span>
                         @endif
                     </div>
                     
-                    <h3 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition mb-3 line-clamp-2">
+                    <h3 class="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition mb-3 line-clamp-2">
                         {{ $article->title }}
                     </h3>
                     

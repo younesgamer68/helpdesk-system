@@ -4,7 +4,7 @@
         <flux:button variant="ghost" square
             class="group relative text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100">
             <flux:icon.bell
-                class="size-5 shrink-0 text-teal-500 group-hover:text-teal-700 dark:group-hover:text-white" />
+                class="size-5 shrink-0 text-emerald-500 group-hover:text-emerald-700 dark:group-hover:text-white" />
 
             @if ($this->unreadCount > 0)
                 <span
@@ -21,7 +21,7 @@
                 <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Notifications</h3>
                 @if ($this->unreadCount > 0)
                     <button wire:click.stop="markAllRead" type="button"
-                        class="text-xs text-teal-400 hover:text-teal-300 font-medium transition-colors">
+                        class="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
                         Mark all read
                     </button>
                 @endif
@@ -34,7 +34,7 @@
 
                         @if (is_null($notification->read_at))
                             <span
-                                class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-teal-500 rounded-full"></span>
+                                class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                         @endif
 
                         <div class="flex-shrink-0 mt-0.5 ml-2">
@@ -158,11 +158,11 @@
                 class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 shadow-2xl rounded-xl p-4 flex items-start space-x-3 pointer-events-auto overflow-hidden !absolute left-[95vw] transition-colors">
 
                 <!-- Subtle side accent line -->
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"></div>
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
 
                 <!-- Bell Icon -->
                 <div
-                    class="flex-shrink-0 mt-0.5 ml-1 text-teal-500 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-400/10 p-1.5 rounded-full">
+                    class="flex-shrink-0 mt-0.5 ml-1 text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-400/10 p-1.5 rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">

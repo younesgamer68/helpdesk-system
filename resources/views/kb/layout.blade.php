@@ -21,7 +21,7 @@
                     <img src="{{ Storage::url($company->logo) }}" alt="{{ $company->name }}" class="h-7">
                 @endif
                 <span
-                    class="font-semibold text-base tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">{{ $company->name }}</span>
+                    class="font-semibold text-base tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">{{ $company->name }}</span>
                 <span class="hidden sm:inline text-xs text-zinc-400 dark:text-zinc-500 font-normal">Help Center</span>
             </a>
             <div class="flex items-center gap-4">

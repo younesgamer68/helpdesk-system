@@ -30,7 +30,7 @@
                         autocomplete="email"
                         placeholder="Enter your business email"
                         value="{{ old('email') }}"
-                        class="w-full bg-transparent border border-white/30 text-white placeholder-white/40 py-3 px-4 rounded-lg focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition"
+                        class="w-full bg-transparent border border-white/30 text-white placeholder-white/40 py-3 px-4 rounded-lg focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition"
                     >
                     @error('email')
                         <p class="text-red-400 text-sm mt-2">{{ $message }}</p>

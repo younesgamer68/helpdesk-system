@@ -51,7 +51,7 @@
                     <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ __('Your role:') }}</span>
                     <span
                         class="ml-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold
-                            {{ $myRole === 'lead' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300' }}">
+                            {{ $myRole === 'lead' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' }}">
                         {{ ucfirst($myRole) }}
                     </span>
                 </div>
@@ -60,7 +60,7 @@
                 <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                     @foreach ($team->members as $member)
                         <div
-                            class="flex items-center gap-3 px-5 py-3 {{ $member->id === auth()->id() ? 'bg-teal-50/50 dark:bg-teal-900/10' : '' }}">
+                            class="flex items-center gap-3 px-5 py-3 {{ $member->id === auth()->id() ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : '' }}">
                             <span
                                 class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">
                                 {{ strtoupper(substr($member->name, 0, 1)) }}

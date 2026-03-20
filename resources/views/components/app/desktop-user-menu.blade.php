@@ -1,11 +1,11 @@
 <flux:dropdown position="bottom" align="start">
     <flux:button variant="ghost"
-        class="w-full h-10 !p-0 min-w-0 rounded-lg text-teal-300 hover:bg-teal-800 hover:text-white"
+        class="w-full h-10 !p-0 min-w-0 rounded-lg text-emerald-300 hover:bg-emerald-800 hover:text-white"
         data-test="sidebar-menu-button">
         <div class="flex items-center w-full">
             <div class="w-10 flex items-center justify-center shrink-0">
                 <span
-                    class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-teal-700/50 text-xs font-semibold text-teal-200">
+                    class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-700/50 text-xs font-semibold text-emerald-200">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </span>
             </div>

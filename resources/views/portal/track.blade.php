@@ -38,7 +38,7 @@
         <!-- Background decoration -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-emerald-100 mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-            <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-teal-100 mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-emerald-100 mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
         </div>
 
         <div class="relative max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">

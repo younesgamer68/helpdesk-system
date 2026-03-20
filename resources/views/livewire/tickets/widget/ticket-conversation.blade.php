@@ -33,7 +33,7 @@
                     @if ($reply->user_id || $reply->is_technician)
                         {{-- Staff Reply (Either an actual user or a disguised technician) --}}
                         <div
-                            class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-semibold">
+                            class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-semibold">
                             {{ $reply->is_technician ? 'T' : substr($reply->user->name, 0, 1) }}
                         </div>
                     @else
@@ -62,7 +62,7 @@
                             </div>
                             @if ($reply->user_id || $reply->is_technician)
                                 <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-100 text-teal-800">
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
                                     Support Team
                                 </span>
                             @else

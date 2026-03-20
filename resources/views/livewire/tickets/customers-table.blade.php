@@ -21,13 +21,13 @@
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text"
                     placeholder="Search name, email, or phone..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
 
             <!-- Status Filter -->
             <div>
                 <select wire:model.live="statusFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="deactivated">Deactivated</option>
@@ -41,7 +41,7 @@
         <div class="mb-4 flex flex-wrap gap-2">
             @if ($search)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs font-medium rounded-full border border-teal-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium rounded-full border border-emerald-500/20">
                     Search: {{ $search }}
                 </span>
             @endif
@@ -65,7 +65,7 @@
                         <div class="flex items-center gap-1">
                             Name
                             @if ($sortBy === 'name')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -76,7 +76,7 @@
                         <div class="flex items-center gap-1">
                             Email
                             @if ($sortBy === 'email')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -87,7 +87,7 @@
                         <div class="flex items-center gap-1">
                             Tickets
                             @if ($sortBy === 'tickets_count')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -98,7 +98,7 @@
                         <div class="flex items-center gap-1">
                             Joined
                             @if ($sortBy === 'created_at')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -109,7 +109,7 @@
                         <div class="flex items-center gap-1">
                             Status
                             @if ($sortBy === 'is_active')
-                                <span class="text-teal-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50">↕</span>
                             @endif
@@ -160,7 +160,7 @@
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('customers.details', ['company' => Auth::user()->company->slug, 'customer' => $customer->id]) }}"
                                     wire:navigate
-                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-teal-400/10 rounded-lg transition-colors"
+                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-400/10 rounded-lg transition-colors"
                                     title="View Details">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

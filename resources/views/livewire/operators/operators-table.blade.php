@@ -8,7 +8,7 @@
             <div class="flex items-center gap-2">
                 @if ($this->hasActiveFilters)
                     <button wire:click="$set('showSaveViewModal', true)"
-                        class="px-3 py-1.5 text-sm text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-100 transition-colors font-medium">
+                        class="px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors font-medium">
                         Save current view
                     </button>
                     <button wire:click="clearFilters" wire:confirm="Are you sure you want to clear all active filters?"
@@ -28,7 +28,7 @@
                 <div class="flex items-center gap-1 group">
                     <button wire:click="applyPreset('{{ $view->id }}')"
                         wire:confirm="Apply the '{{ $view->name }}' filter view?"
-                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-teal-500/50 hover:bg-teal-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500">
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
                         {{ $view->name }}
                     </button>
                     <button wire:click="deleteSavedView({{ $view->id }})"
@@ -52,13 +52,13 @@
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search by name or email..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
 
             <!-- Role Filter -->
             <div>
                 <select wire:model.live="roleFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                     <option value="">All Roles</option>
                     <option value="admin">Admin</option>
                     <option value="operator">Operator</option>
@@ -68,7 +68,7 @@
             <!-- Status Filter -->
             <div>
                 <select wire:model.live="statusFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                     <option value="">All Statuses</option>
                     <option value="active">Active Members</option>
                     <option value="pending">Pending Invites</option>
@@ -100,7 +100,7 @@
                     <button wire:click="bulkResendInvites"
                         wire:confirm="Are you sure you want to resend invitations to these {{ count($selected) }} members?"
                         wire:loading.attr="disabled" wire:target="bulkResendInvites"
-                        class="text-sm font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
+                        class="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors">
                         <span wire:loading.remove wire:target="bulkResendInvites">Resend Invites</span>
                         <span wire:loading wire:target="bulkResendInvites"
                             class="inline-flex items-center gap-1.5 whitespace-nowrap">
@@ -132,7 +132,7 @@
                     <button wire:click="bulkResendInvites"
                         wire:confirm="Are you sure you want to resend invitations to all selected pending members?"
                         wire:loading.attr="disabled" wire:target="bulkResendInvites"
-                        class="text-sm font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
+                        class="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors">
                         <span wire:loading.remove wire:target="bulkResendInvites">Resend (Pending)</span>
                         <span wire:loading wire:target="bulkResendInvites"
                             class="inline-flex items-center gap-1.5 whitespace-nowrap">
@@ -164,7 +164,7 @@
         <div class="mb-4 flex flex-wrap gap-2">
             @if ($search)
                 <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-medium rounded-full border border-teal-500/20">
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-full border border-emerald-500/20">
                     Search: {{ $search }}
                 </span>
             @endif
@@ -190,14 +190,14 @@
                 <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
                     <th class="px-4 py-3 text-left">
                         <input type="checkbox" wire:model.live="selectAll" wire:loading.attr="disabled"
-                            class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-teal-500 focus:ring-teal-500 bg-white dark:bg-zinc-800">
+                            class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-white dark:bg-zinc-800">
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
                             Member
                             @if ($sortBy === 'name')
-                                <span class="text-teal-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
@@ -242,13 +242,13 @@
                             @if ($user->id !== Auth::id())
                                 <input type="checkbox" wire:model.live="selected" value="{{ $user->id }}"
                                     wire:key="checkbox-{{ $user->id }}" wire:loading.attr="disabled"
-                                    class="rounded border-zinc-300 dark:border-zinc-700 text-teal-500 focus:ring-teal-500 bg-white dark:bg-zinc-800">
+                                    class="rounded border-zinc-300 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-white dark:bg-zinc-800">
                             @endif
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+                                    class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-semibold text-sm">
                                     {{ $user->initials() }}
                                 </div>
                                 <div>
@@ -533,7 +533,7 @@
                                     Agent Name <span class="text-red-400">*</span>
                                 </label>
                                 <input wire:model.blur="inviteName" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                     placeholder="John Doe">
                                 @error('inviteName')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -545,7 +545,7 @@
                                     Email Address <span class="text-red-400">*</span>
                                 </label>
                                 <input wire:model.blur="inviteEmail" type="email"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                                     placeholder="john@example.com">
                                 @error('inviteEmail')
                                     <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -557,7 +557,7 @@
                                     Account Role <span class="text-red-400">*</span>
                                 </label>
                                 <select wire:model.live="inviteRole"
-                                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                                     <option value="operator">Operator</option>
                                     <option value="admin">Admin</option>
                                 </select>
@@ -590,7 +590,7 @@
                             Cancel
                         </button>
                         <button type="submit" wire:loading.attr="disabled" wire:target="createAgent"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
 
                             {{-- Plus icon: hidden while loading --}}
                             <svg wire:loading.remove wire:target="createAgent" class="w-4 h-4 shrink-0"
@@ -685,7 +685,7 @@
                         </label>
                         <p class="text-xs text-zinc-500 mb-2">Enter emails separated by commas or new lines.</p>
                         <textarea wire:model="bulkInviteEmails" rows="5"
-                            class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                            class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                             placeholder="john@example.com, jane@example.com"></textarea>
                         @error('bulkInviteEmails')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -697,7 +697,7 @@
                             Account Role for all <span class="text-red-400">*</span>
                         </label>
                         <select wire:model.live="bulkInviteRole"
-                            class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                            class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                             <option value="operator">Operator</option>
                             <option value="admin">Admin</option>
                         </select>
@@ -728,7 +728,7 @@
                             Cancel
                         </button>
                         <button type="submit" wire:loading.attr="disabled" wire:target="processBulkInvite"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
+                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
                             <span wire:loading.remove wire:target="processBulkInvite"
                                 class="inline-flex items-center gap-2 whitespace-nowrap">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -772,7 +772,7 @@
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">View
                             Name</label>
                         <input wire:model="customViewName" type="text" placeholder="e.g., Pending Admins"
-                            class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                            class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                         @error('customViewName')
                             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
                         @enderror
@@ -784,7 +784,7 @@
                             Cancel
                         </button>
                         <button type="submit"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors">
+                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors">
                             Save View
                         </button>
                     </div>

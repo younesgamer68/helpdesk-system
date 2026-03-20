@@ -31,7 +31,7 @@
             <!-- Profile Card -->
             <div
                 class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden shadow-sm">
-                <div class="h-24 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+                <div class="h-24 bg-gradient-to-r from-emerald-500 to-emerald-500"></div>
                 <div class="px-6 pb-6">
                     <div class="relative -mt-12 mb-4">
                         @if ($operator->avatar)
@@ -55,7 +55,7 @@
 
                     <div class="flex flex-wrap gap-2">
                         <span
-                            class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $operator->role === 'admin' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30' : 'bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30' }}">
+                            class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $operator->role === 'admin' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30' }}">
                             {{ $operator->role }}
                         </span>
                         <span
@@ -71,7 +71,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold text-zinc-900 dark:text-zinc-100">Specialities</h3>
                     <button @click="$wire.set('showSpecialtiesModal', true)"
-                        class="text-xs font-medium text-teal-500 hover:text-teal-600 transition-colors">Edit</button>
+                        class="text-xs font-medium text-emerald-500 hover:text-emerald-600 transition-colors">Edit</button>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
@@ -124,7 +124,7 @@
                         <select
                             x-on:change="if (confirm('Are you sure you want to change this member\'s role to ' + $el.value.charAt(0).toUpperCase() + $el.value.slice(1) + '?')) { $wire.set('role', $el.value); $wire.updateRole() } else { $el.value = '{{ $operator->role }}' }"
                             {{ $operator->id === Auth::id() ? 'disabled' : '' }}
-                            class="flex-1 px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm transition-colors focus:ring-1 focus:ring-teal-500 outline-none disabled:opacity-50">
+                            class="flex-1 px-3 py-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm transition-colors focus:ring-1 focus:ring-emerald-500 outline-none disabled:opacity-50">
                             <option value="operator" {{ $operator->role === 'operator' ? 'selected' : '' }}>Operator
                             </option>
                             <option value="admin" {{ $operator->role === 'admin' ? 'selected' : '' }}>Admin</option>
@@ -205,7 +205,7 @@
                                 </div>
                             </div>
                             <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}"
-                                class="opacity-0 group-hover:opacity-100 p-2 text-zinc-400 hover:text-teal-500 transition-all">
+                                class="opacity-0 group-hover:opacity-100 p-2 text-zinc-400 hover:text-emerald-500 transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 5l7 7-7 7" />
@@ -256,7 +256,7 @@
                                                         {{ $log->description }}
                                                         @if ($log->ticket)
                                                             <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $log->ticket->ticket_number]) }}"
-                                                                class="font-medium text-zinc-900 dark:text-zinc-100 hover:text-teal-500 underline decoration-zinc-200 hover:decoration-teal-500">#{{ $log->ticket->ticket_number }}</a>
+                                                                class="font-medium text-zinc-900 dark:text-zinc-100 hover:text-emerald-500 underline decoration-zinc-200 hover:decoration-emerald-500">#{{ $log->ticket->ticket_number }}</a>
                                                         @endif
                                                     </p>
                                                 </div>
@@ -303,9 +303,9 @@
                     <div class="grid grid-cols-2 gap-3">
                         @foreach ($this->categories as $category)
                             <label
-                                class="relative flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors {{ in_array($category->id, $selectedCategories) ? 'bg-teal-50 border-teal-200 dark:bg-teal-500/10 dark:border-teal-500/30' : 'bg-zinc-50 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                class="relative flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-colors {{ in_array($category->id, $selectedCategories) ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/30' : 'bg-zinc-50 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                 <input type="checkbox" wire:model="selectedCategories" value="{{ $category->id }}"
-                                    class="w-4 h-4 text-teal-500 border-zinc-300 rounded focus:ring-teal-500">
+                                    class="w-4 h-4 text-emerald-500 border-zinc-300 rounded focus:ring-emerald-500">
                                 <span
                                     class="text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ $category->name }}</span>
                             </label>
@@ -317,7 +317,7 @@
                     <button @click="$wire.set('showSpecialtiesModal', false)"
                         class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">Cancel</button>
                     <button wire:click="updateSpecialties"
-                        class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors">Save
+                        class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors">Save
                         Changes</button>
                 </div>
             </div>

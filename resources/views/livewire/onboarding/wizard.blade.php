@@ -214,10 +214,10 @@
                                 <div
                                     class="w-full max-w-sm {{ $widgetThemeMode === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200' }} rounded-2xl shadow-xl overflow-hidden border">
                                     <div
-                                        class="px-6 py-5 {{ $widgetThemeMode === 'dark' ? 'bg-teal-900 border-teal-800/50' : 'bg-teal-600 border-teal-700/50' }} border-b text-white">
+                                        class="px-6 py-5 {{ $widgetThemeMode === 'dark' ? 'bg-emerald-900 border-emerald-800/50' : 'bg-emerald-600 border-emerald-700/50' }} border-b text-white">
                                         <div class="font-semibold text-lg">{{ $widgetFormTitle ?: 'Submit a Support Ticket' }}
                                         </div>
-                                        <div class="text-sm text-teal-100 mt-1">
+                                        <div class="text-sm text-emerald-100 mt-1">
                                             {{ $widgetWelcomeMessage ?: 'How can we help you today?' }}</div>
                                     </div>
                                     <div class="p-6">
@@ -238,7 +238,7 @@
                                             @endif
                                             <div class="h-24 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-full"></div>
                                             <div
-                                                class="h-10 rounded-lg w-full {{ $widgetThemeMode === 'dark' ? 'bg-teal-500 hover:bg-teal-400' : 'bg-teal-600 hover:bg-teal-700' }} text-white flex items-center justify-center font-medium text-sm mt-4">
+                                                class="h-10 rounded-lg w-full {{ $widgetThemeMode === 'dark' ? 'bg-emerald-500 hover:bg-emerald-400' : 'bg-emerald-600 hover:bg-emerald-700' }} text-white flex items-center justify-center font-medium text-sm mt-4">
                                                 Submit Ticket
                                             </div>
                                         </div>

@@ -194,7 +194,7 @@
                 </div>
 
                 <a href="{{ $this->chatbotUrl }}" target="_blank" rel="noopener"
-                    class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $ai_chatbot_enabled ? 'bg-teal-600 text-white hover:bg-teal-700' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed pointer-events-none' }}">
+                    class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ $ai_chatbot_enabled ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed pointer-events-none' }}">
                     Test Chatbot
                 </a>
             </div>

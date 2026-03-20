@@ -16,12 +16,12 @@
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search rules..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
 
             <!-- Type Filter -->
             <select wire:model.live="filterType"
-                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                 <option value="">All Types</option>
                 @if ($filterMode === 'all' || $filterMode === 'assignment')
                     <option value="assignment">Auto Assignment</option>
@@ -36,7 +36,7 @@
 
             <!-- Status Filter -->
             <select wire:model.live="filterStatus"
-                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
                 <option value="">All Status</option>
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
@@ -54,7 +54,7 @@
                         <div class="flex items-center gap-1">
                             Priority
                             @if ($sortBy === 'priority')
-                                <span class="text-teal-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
@@ -65,7 +65,7 @@
                         <div class="flex items-center gap-1">
                             Name
                             @if ($sortBy === 'name')
-                                <span class="text-teal-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
@@ -84,7 +84,7 @@
                         <div class="flex items-center gap-1">
                             Executions
                             @if ($sortBy === 'executions_count')
-                                <span class="text-teal-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
@@ -137,7 +137,7 @@
                         </td>
                         <td class="px-4 py-3 text-sm">
                             <button wire:click="toggleRuleStatus({{ $rule->id }})"
-                                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $rule->is_active ? 'bg-teal-500' : 'bg-zinc-300 dark:bg-zinc-700' }}">
+                                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $rule->is_active ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700' }}">
                                 <span
                                     class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $rule->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
                             </button>
@@ -155,7 +155,7 @@
                         <td class="px-4 py-3 text-sm text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button wire:click="editRule({{ $rule->id }})"
-                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -186,7 +186,7 @@
                                 </svg>
                                 <p class="text-zinc-500 dark:text-zinc-400">No automation rules found</p>
                                 <button wire:click="openCreateModal"
-                                    class="mt-2 px-4 py-2 bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors">
+                                    class="mt-2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors">
                                     Create your first rule
                                 </button>
                             </div>
@@ -256,7 +256,7 @@
                         <flux:field>
                             <flux:label>Category (optional)</flux:label>
                             <select wire:model="category_id"
-                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                 <option value="">Any Category</option>
                                 @foreach ($this->categories as $parentCategory)
                                     <optgroup label="{{ $parentCategory->name }}">
@@ -312,17 +312,17 @@
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2">
                                         <input type="checkbox" wire:model="conditionStatuses" value="pending"
-                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Pending</span>
                                     </label>
                                     <label class="flex items-center gap-2">
                                         <input type="checkbox" wire:model="conditionStatuses" value="open"
-                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Open</span>
                                     </label>
                                     <label class="flex items-center gap-2">
                                         <input type="checkbox" wire:model="conditionStatuses" value="in_progress"
-                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">In Progress</span>
                                     </label>
                                 </div>
@@ -358,7 +358,7 @@
                                 <flux:field>
                                     <flux:label>Assign to specific operator</flux:label>
                                     <select x-model="operatorId" @change="if (operatorId) teamId = null"
-                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                         <option value="">Select Operator</option>
                                         @foreach ($this->operators as $operator)
                                             <option value="{{ $operator->id }}">{{ $operator->name }}</option>
@@ -369,7 +369,7 @@
                                 <flux:field>
                                     <flux:label>Or assign to team</flux:label>
                                     <select x-model="teamId" @change="if (teamId) operatorId = null"
-                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                         <option value="">Select Team</option>
                                         @foreach ($this->teamsForSelect as $team)
                                             <option value="{{ $team->id }}">{{ $team->name }}</option>
@@ -518,7 +518,7 @@
                         <flux:field>
                             <flux:label>Category (optional)</flux:label>
                             <select wire:model="category_id"
-                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                 <option value="">Any Category</option>
                                 @foreach ($this->categories as $parentCategory)
                                     <optgroup label="{{ $parentCategory->name }}">
@@ -574,17 +574,17 @@
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-2">
                                         <input type="checkbox" wire:model="conditionStatuses" value="pending"
-                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Pending</span>
                                     </label>
                                     <label class="flex items-center gap-2">
                                         <input type="checkbox" wire:model="conditionStatuses" value="open"
-                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">Open</span>
                                     </label>
                                     <label class="flex items-center gap-2">
                                         <input type="checkbox" wire:model="conditionStatuses" value="in_progress"
-                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500">
+                                            class="rounded bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500">
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300">In Progress</span>
                                     </label>
                                 </div>
@@ -620,7 +620,7 @@
                                 <flux:field>
                                     <flux:label>Assign to specific operator</flux:label>
                                     <select x-model="operatorId" @change="if (operatorId) teamId = null"
-                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                         <option value="">Select Operator</option>
                                         @foreach ($this->operators as $operator)
                                             <option value="{{ $operator->id }}">{{ $operator->name }}</option>
@@ -631,7 +631,7 @@
                                 <flux:field>
                                     <flux:label>Or assign to team</flux:label>
                                     <select x-model="teamId" @change="if (teamId) operatorId = null"
-                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                        class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                         <option value="">Select Team</option>
                                         @foreach ($this->teamsForSelect as $team)
                                             <option value="{{ $team->id }}">{{ $team->name }}</option>

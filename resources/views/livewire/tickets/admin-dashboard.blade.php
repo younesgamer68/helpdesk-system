@@ -1,4 +1,4 @@
-<div>
+<div class="animate-enter">
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Admin Dashboard</h1>
@@ -9,7 +9,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <!-- Open Tickets -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
             x-on:click="$flux.modal('open-tickets-modal').show()">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Open
@@ -27,7 +27,7 @@
 
         <!-- Resolved Today -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
             x-on:click="$flux.modal('resolved-tickets-modal').show()">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolved
@@ -44,7 +44,7 @@
 
         <!-- Unassigned Tickets -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
             x-on:click="$flux.modal('unassigned-tickets-modal').show()">
             <div class="flex items-center justify-between mb-3">
                 <span
@@ -60,7 +60,7 @@
 
         <!-- Total Agents -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
             x-on:click="$flux.modal('total-agents-modal').show()">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Total
@@ -104,7 +104,7 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Recent Tickets</h2>
                 <a href="{{ route('tickets', Auth::user()->company->slug) }}"
-                    class="text-sm text-teal-400 hover:text-teal-300 transition-colors">
+                    class="text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
                     View all &rarr;
                 </a>
             </div>
@@ -140,12 +140,12 @@
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                                 @foreach ($this->recentTickets as $ticket)
-                                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors group cursor-pointer"
+                                    <tr class="animate-enter hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors group cursor-pointer" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;"
                                         onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                                         <td class="px-6 py-3.5 text-zinc-500 dark:text-zinc-400 font-mono">
                                             {{ $ticket->ticket_number }}</td>
                                         <td
-                                            class="px-6 py-3.5 font-medium text-zinc-900 dark:text-zinc-100 min-w-[200px] truncate max-w-xs transition-colors group-hover:text-teal-400">
+                                            class="px-6 py-3.5 font-medium text-zinc-900 dark:text-zinc-100 min-w-[200px] truncate max-w-xs transition-colors group-hover:text-emerald-400">
                                             {{ $ticket->subject }}</td>
                                         <td class="px-6 py-3.5 text-zinc-600 dark:text-zinc-300">
                                             {{ $ticket->customer_name }}</td>
@@ -223,7 +223,7 @@
                         </div>
                     @else
                         @foreach ($this->agentsActivity as $agent)
-                            <div class="px-5 py-4 flex items-center justify-between">
+                            <div class="animate-enter px-5 py-4 flex items-center justify-between" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="relative flex-shrink-0">
                                         <div
@@ -304,8 +304,8 @@
             @else
                 <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->recentActivity as $log)
-                        <div
-                            class="px-5 py-3 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
+                        <div class="animate-enter px-5 py-3 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors"
+                        style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
                             <div class="flex-shrink-0">
                                 @if ($log->action === 'assigned')
                                     <div
@@ -359,7 +359,7 @@
                                 @if ($log->ticket)
                                     <p class="text-xs text-zinc-500 mt-0.5 max-w-2xl truncate">
                                         <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $log->ticket->ticket_number]) }}"
-                                            class="hover:text-teal-400 transition-colors">
+                                            class="hover:text-emerald-400 transition-colors">
                                             {{ $log->ticket->ticket_number }} &mdash; {{ $log->ticket->subject }}
                                         </a>
                                     </p>
@@ -390,7 +390,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
                                     {{ $ticket->customer_name }}</p>
@@ -417,7 +417,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
                                     {{ $ticket->customer_name }}</p>
@@ -443,7 +443,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
                                     {{ $ticket->customer_name }}</p>
@@ -479,7 +479,7 @@
                                 </div>
                                 <div>
                                     <p
-                                        class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-400 transition-colors">
+                                        class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-400 transition-colors">
                                         @if ($agent->id === Auth::id())
                                             You <span
                                                 class="text-xs text-zinc-500 font-normal">({{ $agent->name }})</span>

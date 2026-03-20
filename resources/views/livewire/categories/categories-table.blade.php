@@ -17,7 +17,7 @@
                 </svg>
                 <input wire:model.live.debounce.500ms="search" type="text"
                     placeholder="Search by name or description..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors">
+                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
             </div>
         </div>
     </div>
@@ -32,7 +32,7 @@
                         <div class="flex items-center gap-1">
                             Name
                             @if ($sortBy === 'name')
-                                <span class="text-teal-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
@@ -48,7 +48,7 @@
                         <div class="flex items-center gap-1">
                             Default Priority
                             @if ($sortBy === 'default_priority')
-                                <span class="text-teal-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
@@ -95,7 +95,7 @@
                             <td class="px-4 py-3 text-sm text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="editCategory({{ $category->id }})"
-                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -154,11 +154,11 @@
                             <td class="px-4 py-3 text-sm text-right" @click.stop>
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="openCreateModal({{ $category->id }})"
-                                        class="rounded-lg px-2.5 py-1.5 text-xs font-medium text-teal-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                        class="rounded-lg px-2.5 py-1.5 text-xs font-medium text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                                         + Add subcategory
                                     </button>
                                     <button wire:click="editCategory({{ $category->id }})"
-                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -207,7 +207,7 @@
                                 <td class="px-4 py-3 text-sm text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <button wire:click="editCategory({{ $childCategory->id }})"
-                                            class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-teal-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                            class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                             title="Edit">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -240,7 +240,7 @@
                                 </svg>
                                 <p class="text-zinc-500 dark:text-zinc-400">No categories found</p>
                                 <button x-data @click="$dispatch('open-create-category-modal')"
-                                    class="mt-2 px-4 py-2 bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors">
+                                    class="mt-2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors">
                                     Add your first category
                                 </button>
                             </div>
