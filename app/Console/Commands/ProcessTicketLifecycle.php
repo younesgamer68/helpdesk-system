@@ -90,6 +90,7 @@ class ProcessTicketLifecycle extends Command
 
                 $ticket->logs()->create([
                     'company_id' => $ticket->company_id,
+                    'user_id' => null,
                     'action' => 'auto_closed',
                     'description' => 'Ticket automatically closed after no activity following resolution.',
                 ]);

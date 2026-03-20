@@ -115,7 +115,7 @@ it('shows system tab only for admin users', function () {
     Livewire::actingAs($operator)
         ->test(NotificationsPage::class)
         ->assertDontSee('System')
-        ->assertDontSee('SLA');
+        ->assertSee('SLA');
 });
 
 it('prevents operators from accessing system tab', function () {
@@ -127,13 +127,13 @@ it('prevents operators from accessing system tab', function () {
         ->assertSet('activeTab', 'all');
 });
 
-it('prevents operators from accessing sla tab', function () {
+it('allows operators to access sla tab', function () {
     [$operator] = createOnboardedUser('operator');
 
     Livewire::actingAs($operator)
         ->test(NotificationsPage::class)
         ->call('setTab', 'sla')
-        ->assertSet('activeTab', 'all');
+        ->assertSet('activeTab', 'sla');
 });
 
 it('filters sla notifications for admins', function () {

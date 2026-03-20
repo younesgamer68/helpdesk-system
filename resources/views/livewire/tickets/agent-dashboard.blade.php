@@ -214,8 +214,7 @@
                                     <button wire:click="assignToMe({{ $ticket->id }})" wire:loading.attr="disabled"
                                         wire:target="assignToMe({{ $ticket->id }})"
                                         class="flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-medium text-teal-400 border border-teal-500/30 rounded-lg hover:bg-teal-500/10 transition-colors disabled:opacity-50">
-                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign
-                                            to me</span>
+                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign to me</span>
                                         <span wire:loading
                                             wire:target="assignToMe({{ $ticket->id }})">Assigning…</span>
                                     </button>

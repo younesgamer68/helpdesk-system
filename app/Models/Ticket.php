@@ -14,7 +14,33 @@ class Ticket extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'company_id',
+        'ticket_number',
+        'customer_id',
+        'subject',
+        'description',
+        'status',
+        'priority',
+        'assigned_to',
+        'category_id',
+        'verified',
+        'verification_token',
+        'tracking_token',
+        'source',
+        'resolved_at',
+        'closed_at',
+        'deleted_at',
+        'due_time',
+        'sla_status',
+        'warning_sent_at',
+        'close_reason',
+        'parent_ticket_id',
+        'team_id',
+        'draft_reply',
+        'draft_summary',
+        'draft_user_id',
+    ];
 
     protected static function booted(): void
     {

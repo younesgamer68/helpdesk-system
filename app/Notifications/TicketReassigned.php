@@ -31,7 +31,7 @@ class TicketReassigned extends Notification
             return [];
         }
 
-        return ['database', 'broadcast'];
+        return ['database'];
     }
 
     /**

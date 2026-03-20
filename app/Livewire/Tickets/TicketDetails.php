@@ -492,8 +492,8 @@ class TicketDetails extends Component
 
         // TRIGGER 2: Agent sends a reply
         if ($this->ticket->status !== 'closed' && ! $this->keepOpen) {
-            $this->ticket->update(['status' => 'in_progress']);
-            $this->state = 'in_progress';
+            $this->ticket->update(['status' => 'pending']);
+            $this->state = 'pending';
         }
 
         $this->reset(['message', 'attachments']);
@@ -504,7 +504,7 @@ class TicketDetails extends Component
             $this->ticket->assignedTo->notify(new \App\Notifications\ClientReplied($this->ticket));
         }
 
-        $this->logAction('reply_added', 'Added a reply.');
+        $this->logAction('reply_added', 'Added a reply. Status set to pending.');
 
         $this->dispatch('show-toast', message: 'Reply added successfully!', type: 'success');
     }

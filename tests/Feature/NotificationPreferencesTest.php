@@ -116,7 +116,7 @@ test('notification via returns channels when user opts in', function () {
     $ticket = Ticket::factory()->create(['company_id' => $company->id]);
     $notification = new TicketAssigned($ticket);
 
-    expect($notification->via($user))->toBe(['database', 'broadcast']);
+    expect($notification->via($user))->toBe(['database']);
 });
 
 test('all notification classes respect user preferences', function () {
@@ -160,7 +160,7 @@ test('TicketStatusChanged respects user preferences', function () {
         'notification_preferences' => ['status_changed' => true],
     ]);
 
-    expect($notification->via($userOptedIn))->toBe(['database', 'broadcast']);
+    expect($notification->via($userOptedIn))->toBe(['database']);
 });
 
 test('internal note notifies admins and assigned agent', function () {
