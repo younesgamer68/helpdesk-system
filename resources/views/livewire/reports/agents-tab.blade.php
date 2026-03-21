@@ -4,12 +4,12 @@
     {{-- Agent Pills --}}
     <div class="flex flex-wrap gap-2">
         <button wire:click="selectAgent(null)"
-            class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedAgentId === null ? 'bg-teal-500/20 text-teal-400 border border-teal-500/40' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100' }}">
+            class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors {{ $selectedAgentId === null ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100' }}">
             All Agents
         </button>
         @foreach ($this->agents as $agent)
             <button wire:click="selectAgent({{ $agent->id }})"
-                class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 {{ $selectedAgentId === $agent->id ? 'bg-teal-500/20 text-teal-400 border border-teal-500/40' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100' }}">
+                class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-2 {{ $selectedAgentId === $agent->id ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100' }}">
                 <span
                     class="w-5 h-5 rounded-full bg-zinc-300 dark:bg-zinc-700 flex items-center justify-center text-[10px] text-zinc-700 dark:text-zinc-300">{{ $agent->initials() }}</span>
                 {{ $agent->name }}
@@ -24,7 +24,7 @@
         <div
             class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6 flex items-center gap-4">
             <div
-                class="w-14 h-14 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-lg font-bold text-teal-400 border-2 border-teal-500/30">
+                class="w-14 h-14 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-lg font-bold text-emerald-400 border-2 border-emerald-500/30">
                 {{ $sa['agent']->initials() }}
             </div>
             <div>
@@ -97,7 +97,7 @@
                                     </td>
                                     <td class="py-2 px-3 text-right">
                                         <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}"
-                                            class="text-teal-400 hover:text-teal-300 text-xs" wire:navigate>View →</a>
+                                            class="text-emerald-400 hover:text-emerald-300 text-xs" wire:navigate>View →</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -184,7 +184,7 @@
                                     <div class="flex items-center gap-2 justify-end">
                                         <div
                                             class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-teal-500 rounded-full"
+                                            <div class="h-full bg-emerald-500 rounded-full"
                                                 style="width: {{ min($row['resolution_rate'], 100) }}%"></div>
                                         </div>
                                         <span

@@ -342,7 +342,7 @@ class TicketsTable extends Component
             $query->whereDate('created_at', '<=', $this->dateTo);
         }
 
-        return $query->orderBy($this->sortBy, $this->sortDirection)->paginate(9);
+        return $query->orderBy($this->sortBy, $this->sortDirection)->paginate(8);
     }
 
     #[Computed]

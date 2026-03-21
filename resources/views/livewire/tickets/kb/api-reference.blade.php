@@ -53,7 +53,7 @@
                             <label
                                 class="flex items-start gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
                                 <input type="radio" wire:model.live="widgetDefaultLinkMode" value="portal"
-                                    class="mt-0.5 text-teal-600 focus:ring-teal-500" />
+                                    class="mt-0.5 text-emerald-600 focus:ring-emerald-500" />
                                 <span>
                                     <span class="block text-sm font-medium text-zinc-800 dark:text-zinc-200">Hosted
                                         Portal</span>
@@ -64,7 +64,7 @@
                             <label
                                 class="flex items-start gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
                                 <input type="radio" wire:model.live="widgetDefaultLinkMode" value="custom"
-                                    class="mt-0.5 text-teal-600 focus:ring-teal-500" />
+                                    class="mt-0.5 text-emerald-600 focus:ring-emerald-500" />
                                 <span>
                                     <span class="block text-sm font-medium text-zinc-800 dark:text-zinc-200">Custom
                                         Website URL</span>
@@ -82,7 +82,7 @@
                         </label>
                         <input id="widget-article-base-url" type="url" wire:model.blur="widgetArticleBaseUrl"
                             placeholder="https://yourcompany.com/kb/article"
-                            class="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-500/40" />
+                            class="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/40" />
                         <p class="text-xs text-zinc-500 dark:text-zinc-400">
                             Required format: <span class="font-mono">https://yourcompany.com/kb/article</span>. The
                             widget appends the article slug automatically.
@@ -94,7 +94,7 @@
 
                     <label class="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                         <input type="checkbox" wire:model.live="widgetOpenInNewTab"
-                            class="rounded border-zinc-300 dark:border-zinc-600 text-teal-600 focus:ring-teal-500" />
+                            class="rounded border-zinc-300 dark:border-zinc-600 text-emerald-600 focus:ring-emerald-500" />
                         Open widget results in a new tab
                     </label>
 
@@ -110,7 +110,7 @@
 
                     <div class="flex justify-end">
                         <button wire:click="saveWidgetDefaults" type="button"
-                            class="inline-flex items-center rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 transition-colors">
+                            class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors">
                             Save Widget Defaults
                         </button>
                     </div>

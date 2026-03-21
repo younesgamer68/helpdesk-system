@@ -34,7 +34,7 @@
 
                 @if ($aiSuggestionsEnabled)
                     <button type="button" wire:click="startAiSuggestion"
-                        class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 rounded-lg transition-colors border border-transparent hover:border-teal-500/30">
+                        class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-colors border border-transparent hover:border-emerald-500/30">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -75,19 +75,19 @@
                 }
             }" x-init="$watch('suggestionText', value => { if (value) startTyping(); })">
                 @if ($showAiSuggestion)
-                    <div class="mb-4 p-4 border border-teal-500/30 bg-teal-500/5 rounded-lg flex flex-col gap-3 transition-opacity duration-300"
+                    <div class="mb-4 p-4 border border-emerald-500/30 bg-emerald-500/5 rounded-lg flex flex-col gap-3 transition-opacity duration-300"
                         :class="{ 'opacity-50': $wire.aiLoading && suggestionText }">
 
                         <div class="flex items-center gap-2 text-xs text-zinc-500 font-medium">
-                            <span class="text-teal-400">✨ AI Suggestion</span>
+                            <span class="text-emerald-400">✨ AI Suggestion</span>
                             <span>·</span>
                             <span>Tone: <span class="capitalize">{{ $aiTone }}</span></span>
                         </div>
 
                         <div x-show="suggestionText || isTyping" x-transition>
                             <div x-ref="editableSuggestion" :contenteditable="!isTyping"
-                                class="text-zinc-600 dark:text-zinc-300 text-sm whitespace-pre-wrap outline-none p-2 -mx-2 rounded border border-transparent focus:border-teal-500/50 focus:bg-zinc-50 dark:focus:bg-zinc-800/50 transition-colors"
-                                x-html="displayedSuggestion + (isTyping ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-teal-400\'></span>' : '')">
+                                class="text-zinc-600 dark:text-zinc-300 text-sm whitespace-pre-wrap outline-none p-2 -mx-2 rounded border border-transparent focus:border-emerald-500/50 focus:bg-zinc-50 dark:focus:bg-zinc-800/50 transition-colors"
+                                x-html="displayedSuggestion + (isTyping ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-emerald-400\'></span>' : '')">
                             </div>
                             <div x-show="!isTyping && suggestionText" class="text-xs text-zinc-500 mt-1 italic">
                                 ✏️ Click to edit
@@ -97,16 +97,16 @@
                         <div class="flex items-center gap-2 mt-1">
                             <span class="text-xs font-medium text-zinc-500 px-1 uppercase tracking-wider">Tone:</span>
                             <button wire:click="regenerateWithTone('professional')" type="button"
-                                class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'professional' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Professional</button>
+                                class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'professional' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Professional</button>
                             <button wire:click="regenerateWithTone('friendly')" type="button"
-                                class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'friendly' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Friendly</button>
+                                class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'friendly' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Friendly</button>
                             <button wire:click="regenerateWithTone('formal')" type="button"
-                                class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'formal' ? 'bg-teal-500/20 text-teal-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Formal</button>
+                                class="text-xs px-2.5 py-1 transition-colors rounded-full font-medium {{ $aiTone === 'formal' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-300' }}">Formal</button>
                         </div>
 
                         <div class="flex gap-3 mt-1">
                             <button @click="useSuggestion()" :disabled="isTyping || $wire.aiLoading" type="button"
-                                class="text-xs px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="text-xs px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
                                 Use this
                             </button>
 
@@ -172,7 +172,7 @@
                 <label
                     class="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer mr-2">
                     <input type="checkbox" wire:model="keepOpen"
-                        class="rounded bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-teal-600 focus:ring-teal-500">
+                        class="rounded bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500">
                     Keep open
                 </label>
                 <flux:button type="submit" variant="primary" icon="paper-airplane" wire:loading.attr="disabled">

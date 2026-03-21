@@ -12,7 +12,7 @@
                 <ol class="flex items-center space-x-2">
                     <li>
                         <a href="{{ route('kb.public.home', $company->slug) }}"
-                            class="hover:text-teal-600 dark:hover:text-teal-400 transition">Home</a>
+                            class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">Home</a>
                     </li>
                     <li>
                         <svg class="h-4 w-4 text-zinc-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
@@ -24,7 +24,7 @@
                     @if ($category->parent)
                         <li>
                             <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $category->parent->id]) }}"
-                                class="hover:text-teal-600 dark:hover:text-teal-400 transition">{{ $category->parent->name }}</a>
+                                class="hover:text-emerald-600 dark:hover:text-emerald-400 transition">{{ $category->parent->name }}</a>
                         </li>
                         <li>
                             <svg class="h-4 w-4 text-zinc-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
@@ -40,7 +40,7 @@
 
             <div class="flex flex-col sm:flex-row gap-6 items-start mt-4">
                 <div
-                    class="w-16 h-16 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 border border-teal-100 dark:border-teal-800 shadow-sm">
+                    class="w-16 h-16 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800 shadow-sm">
                     @if ($category->icon)
                         <span class="text-3xl">{{ $category->icon }}</span>
                     @else
@@ -75,11 +75,11 @@
                         @foreach ($category->children as $child)
                             <li>
                                 <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $child->id]) }}"
-                                    class="block px-4 py-3 rounded-xl border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-teal-600 dark:hover:text-teal-400 font-medium transition shadow-sm hover:shadow group">
+                                    class="block px-4 py-3 rounded-xl border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 hover:bg-white dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition shadow-sm hover:shadow group">
                                     <div class="flex items-center justify-between">
                                         <span class="truncate">{{ $child->name }}</span>
                                         <span
-                                            class="inline-flex items-center justify-center w-6 h-6 text-xs text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full group-hover:bg-teal-50 group-hover:text-teal-600 transition">{{ $child->articles()->count() }}</span>
+                                            class="inline-flex items-center justify-center w-6 h-6 text-xs text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full group-hover:bg-emerald-50 group-hover:text-emerald-600 transition">{{ $child->articles()->count() }}</span>
                                     </div>
                                 </a>
                             </li>
@@ -91,7 +91,7 @@
             <div
                 class="bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-900 dark:to-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl p-6 shadow-sm">
                 <div
-                    class="w-10 h-10 bg-teal-100 dark:bg-teal-900/50 text-teal-600 rounded-lg flex items-center justify-center mb-4">
+                    class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 rounded-lg flex items-center justify-center mb-4">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z">
@@ -125,7 +125,7 @@
                                     class="block hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition p-6 sm:p-8 group relative">
                                     <div class="flex items-start gap-5">
                                         <div
-                                            class="mt-1 text-zinc-300 dark:text-zinc-700 group-hover:text-teal-500 dark:group-hover:text-teal-400 transition shrink-0">
+                                            class="mt-1 text-zinc-300 dark:text-zinc-700 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition shrink-0">
                                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
@@ -134,7 +134,7 @@
                                         </div>
                                         <div class="flex-1 min-w-0 pr-8">
                                             <h3
-                                                class="text-xl font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition mb-2">
+                                                class="text-xl font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition mb-2">
                                                 {{ $article->title }}</h3>
                                             <p class="text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                                                 {{ $article->meta_description ?? strip_tags(Str::limit($article->body, 200)) }}
@@ -166,7 +166,7 @@
                                         </div>
 
                                         <div
-                                            class="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition text-teal-500">
+                                            class="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition text-emerald-500">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

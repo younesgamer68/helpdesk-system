@@ -116,7 +116,7 @@
                     <button wire:click="goToAgentTab({{ $row['agent']->id }})"
                         class="w-full flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 rounded-lg p-2 -m-2 transition-colors text-left">
                         <span
-                            class="text-xs font-bold {{ $i === 0 ? 'text-teal-400' : 'text-zinc-500 dark:text-zinc-400' }} w-5">{{ $i + 1 }}</span>
+                            class="text-xs font-bold {{ $i === 0 ? 'text-emerald-400' : 'text-zinc-500 dark:text-zinc-400' }} w-5">{{ $i + 1 }}</span>
                         <div
                             class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                             {{ $row['agent']->initials() }}
@@ -130,7 +130,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                                <div class="h-full bg-teal-500 rounded-full"
+                                <div class="h-full bg-emerald-500 rounded-full"
                                     style="width: {{ min($row['rate'], 100) }}%"></div>
                             </div>
                             <span
@@ -149,7 +149,7 @@
             <div class="space-y-3">
                 @foreach ($this->categoryHealth->take(6) as $row)
                     <div class="flex items-center gap-3">
-                        <div class="w-2 h-2 rounded-full shrink-0 bg-teal-500"></div>
+                        <div class="w-2 h-2 rounded-full shrink-0 bg-emerald-500"></div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                                 {{ $row['category']->name }}</p>
@@ -159,7 +159,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                                <div class="h-full bg-teal-500 rounded-full"
+                                <div class="h-full bg-emerald-500 rounded-full"
                                     style="width: {{ min($row['rate'], 100) }}%"></div>
                             </div>
                             <span

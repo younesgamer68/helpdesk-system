@@ -21,9 +21,9 @@
         $badgeText = 'Customer';
         $avatarBg = 'bg-blue-500';
     } else {
-        $badgeClass = 'bg-teal-500/10 text-teal-400 border-teal-500/20';
+        $badgeClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
         $badgeText = 'Support Team';
-        $avatarBg = 'bg-teal-600';
+        $avatarBg = 'bg-emerald-600';
     }
 @endphp
 
@@ -64,7 +64,7 @@
                 <div class="mt-4 flex flex-wrap gap-2">
                     @foreach ($reply->attachments as $attachment)
                         <a href="{{ Storage::url($attachment['path']) }}" target="_blank"
-                            class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs text-zinc-600 dark:text-zinc-300 hover:border-teal-500 transition shadow-sm">
+                            class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs text-zinc-600 dark:text-zinc-300 hover:border-emerald-500 transition shadow-sm">
                             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />

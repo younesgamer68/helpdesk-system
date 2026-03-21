@@ -8,7 +8,7 @@
                     <input type="file" id="media-upload" class="hidden" wire:model="photos" accept="image/*"
                         multiple>
                     <label for="media-upload"
-                        class="cursor-pointer px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition"
+                        class="cursor-pointer px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition"
                         :class="{ 'opacity-50 cursor-not-allowed': uploading }">
                         <svg x-show="!uploading" class="w-5 h-5" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto p-1">
                 @forelse($medias as $media)
                     <div
-                        class="relative group rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 aspect-square {{ in_array($media->id, $selectedMediaIds, true) ? 'ring-2 ring-teal-500' : '' }}">
+                        class="relative group rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 aspect-square {{ in_array($media->id, $selectedMediaIds, true) ? 'ring-2 ring-emerald-500' : '' }}">
                         <img src="{{ Storage::disk('public')->url($media->file_path) }}" alt="{{ $media->file_name }}"
                             class="w-full h-full object-cover">
 
@@ -43,7 +43,7 @@
                         <div
                             class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
                             <button type="button" wire:click="selectMedia({{ $media->id }})"
-                                class="px-3 py-1.5 bg-teal-500 hover:bg-teal-600 text-white text-xs font-medium rounded transition">
+                                class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded transition">
                                 Insert
                             </button>
                             <button type="button" wire:click="deleteMedia({{ $media->id }})"

@@ -13,7 +13,7 @@
 
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
-                            <div class="w-2.5 h-2.5 rounded-full bg-teal-500"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
                             <span
                                 class="font-medium text-sm text-zinc-900 dark:text-zinc-100">{{ $item['category']->name }}</span>
                         </div>
@@ -35,7 +35,7 @@
                         </div>
                         <div>
                             <p class="text-zinc-500 text-xs">Resolved</p>
-                            <p class="text-teal-400 font-semibold">{{ $item['resolved'] }}</p>
+                            <p class="text-emerald-400 font-semibold">{{ $item['resolved'] }}</p>
                         </div>
                         <div>
                             <p class="text-zinc-500 text-xs">Open</p>
@@ -61,7 +61,7 @@
                         <div class="flex items-end gap-[2px] h-5">
                             @php $sparkMax = !empty($item['sparkline']) ? max(1, max($item['sparkline'])) : 1; @endphp
                             @foreach ($item['sparkline'] ?? [] as $sv)
-                                <div class="flex-1 bg-teal-500/60 dark:bg-teal-400/50 rounded-sm"
+                                <div class="flex-1 bg-emerald-500/60 dark:bg-emerald-400/50 rounded-sm"
                                     style="height: {{ max(($sv / $sparkMax) * 100, 8) }}%"></div>
                             @endforeach
                         </div>
@@ -74,7 +74,7 @@
 
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-teal-500"></div>
+                            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                             <span
                                 class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $item['category']->name }}</span>
                         </div>

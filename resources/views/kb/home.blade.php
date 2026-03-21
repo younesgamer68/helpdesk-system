@@ -2,11 +2,11 @@
 
 @section('hero')
     <div
-        class="bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-700 dark:from-teal-900 dark:via-teal-950 dark:to-emerald-950">
+        class="bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-700 dark:from-emerald-900 dark:via-emerald-950 dark:to-emerald-950">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-3 text-center">How can we
                 help?</h1>
-            <p class="text-teal-100/80 sm:text-lg text-center max-w-xl mx-auto mb-8">Search our knowledge base for instant
+            <p class="text-emerald-100/80 sm:text-lg text-center max-w-xl mx-auto mb-8">Search our knowledge base for instant
                 answers</p>
 
             <form action="{{ route('kb.public.search', $company->slug) }}" method="GET" class="relative max-w-2xl mx-auto">
@@ -17,10 +17,10 @@
                     </svg>
                 </div>
                 <input type="text" name="q" placeholder="Search for articles..."
-                    class="block w-full pl-12 pr-24 py-4 rounded-xl border-0 focus:ring-4 focus:ring-teal-500/30 text-zinc-900 bg-white shadow-lg text-base outline-none">
+                    class="block w-full pl-12 pr-24 py-4 rounded-xl border-0 focus:ring-4 focus:ring-emerald-500/30 text-zinc-900 bg-white shadow-lg text-base outline-none">
                 <div class="absolute inset-y-0 right-2 flex items-center">
                     <button type="submit"
-                        class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-medium transition shadow-sm text-sm">Search</button>
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-medium transition shadow-sm text-sm">Search</button>
                 </div>
             </form>
         </div>
@@ -36,10 +36,10 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @forelse($categories as $category)
                     <a href="{{ route('kb.public.category', ['company' => $company->slug, 'category' => $category->id]) }}"
-                        class="group bg-white dark:bg-zinc-900 rounded-xl p-5 border border-zinc-200 dark:border-zinc-800 hover:border-teal-400 dark:hover:border-teal-600 shadow-sm hover:shadow transition-all">
+                        class="group bg-white dark:bg-zinc-900 rounded-xl p-5 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm hover:shadow transition-all">
                         <div class="flex items-start gap-3.5">
                             <div
-                                class="w-10 h-10 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+                                class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                 @if ($category->icon)
                                     <span class="text-xl">{{ $category->icon }}</span>
                                 @else
@@ -52,13 +52,13 @@
                             </div>
                             <div class="min-w-0">
                                 <h3
-                                    class="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
+                                    class="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                                     {{ $category->name }}</h3>
                                 @if ($category->description)
                                     <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 line-clamp-2">
                                         {{ $category->description }}</p>
                                 @endif
-                                <p class="text-xs font-medium text-teal-600 dark:text-teal-500 mt-2">
+                                <p class="text-xs font-medium text-emerald-600 dark:text-emerald-500 mt-2">
                                     {{ $category->kb_articles_count }}
                                     {{ Str::plural('article', $category->kb_articles_count) }}
                                 </p>
@@ -101,12 +101,12 @@
                             class="flex items-center justify-between p-4 sm:px-6 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition group">
                             <div class="min-w-0 flex-1 pr-4">
                                 <h4
-                                    class="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition truncate">
+                                    class="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition truncate">
                                     {{ $article->title }}</h4>
                                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
                                     {{ strip_tags(Str::limit($article->body, 100)) }}</p>
                             </div>
-                            <svg class="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-teal-500 transition shrink-0"
+                            <svg class="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-emerald-500 transition shrink-0"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
