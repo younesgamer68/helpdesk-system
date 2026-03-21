@@ -8,6 +8,7 @@ use App\Notifications\TeamAssigned;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class TeamsTable extends Component
@@ -124,6 +125,7 @@ class TeamsTable extends Component
             ->find($this->managingTeamId);
     }
 
+    #[On('openCreateModal')]
     public function openCreateModal(): void
     {
         $this->resetForm();
