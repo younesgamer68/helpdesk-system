@@ -9,7 +9,6 @@
             line-height: 1.25rem;
             font-weight: 500;
             white-space: nowrap;
-            color: currentColor;
             opacity: 1;
             transition: opacity 150ms ease 75ms;
         }
