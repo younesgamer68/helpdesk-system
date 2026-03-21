@@ -41,7 +41,7 @@
                                             {{ $rule->name }}</td>
                                         <td class="px-4 py-3">
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $rule->type === 'ai' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-teal-300' }}">
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $rule->type === 'ai' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-emerald-300' }}">
                                                 {{ $rule->type === 'ai' ? 'AI' : 'Keyword' }}
                                             </span>
                                         </td>

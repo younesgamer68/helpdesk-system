@@ -93,7 +93,7 @@
                     @foreach ($this->categories as $category)
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" wire:model="selectedCategories" value="{{ $category->id }}"
-                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-teal-500 rounded focus:ring-teal-500">
+                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-emerald-500 rounded focus:ring-emerald-500">
                             <span class="text-sm text-zinc-700 dark:text-zinc-300">{{ $category->name }}</span>
                         </label>
                     @endforeach

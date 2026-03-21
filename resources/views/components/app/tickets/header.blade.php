@@ -22,7 +22,7 @@
         <div class="flex items-center gap-3">
             @if ($state !== 'resolved')
                 <button wire:click="resolve" wire:confirm="Are you sure you want to mark this ticket as resolved?"
-                    class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition flex items-center gap-2">
+                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>

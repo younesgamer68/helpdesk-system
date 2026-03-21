@@ -26,7 +26,7 @@
                 {{-- Simulated popup panel --}}
                 <div
                     class="absolute bottom-16 right-6 w-72 bg-white dark:bg-zinc-800 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-                    <div class="bg-teal-600 px-4 py-3">
+                    <div class="bg-emerald-600 px-4 py-3">
                         <p class="text-white text-sm font-medium">Search Knowledge Base</p>
                     </div>
                     <div class="p-3 space-y-2">
@@ -58,7 +58,7 @@
 
                 {{-- Floating bubble --}}
                 <div
-                    class="absolute bottom-4 right-6 w-12 h-12 bg-teal-600 rounded-full shadow-lg flex items-center justify-center">
+                    class="absolute bottom-4 right-6 w-12 h-12 bg-emerald-600 rounded-full shadow-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8" />
@@ -90,7 +90,7 @@
 
             <div class="flex items-center gap-3 pt-2">
                 <a href="{{ $this->widgetUrl }}" target="_blank" rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors no-underline">
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors no-underline">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                         <polyline points="15 3 21 3 21 9" />
@@ -106,8 +106,8 @@
     <div class="space-y-6">
         <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
             <div class="flex items-center gap-2 mb-3">
-                <div class="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" stroke-width="2"
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8" />
                         <path d="m21 21-4.35-4.35" />
@@ -118,22 +118,22 @@
             <div class="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
                 <div class="flex items-start gap-2">
                     <span
-                        class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                        class="mt-0.5 w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold shrink-0">1</span>
                     <p>Paste the script tag into your website's HTML.</p>
                 </div>
                 <div class="flex items-start gap-2">
                     <span
-                        class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                        class="mt-0.5 w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold shrink-0">2</span>
                     <p>A floating search icon appears in the bottom-right corner.</p>
                 </div>
                 <div class="flex items-start gap-2">
                     <span
-                        class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                        class="mt-0.5 w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold shrink-0">3</span>
                     <p>Visitors click it to search your published KB articles instantly.</p>
                 </div>
                 <div class="flex items-start gap-2">
                     <span
-                        class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                        class="mt-0.5 w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold shrink-0">4</span>
                     <p>Results link to your public knowledge base portal for full reading.</p>
                 </div>
             </div>

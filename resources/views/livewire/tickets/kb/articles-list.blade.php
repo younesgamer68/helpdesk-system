@@ -6,7 +6,7 @@
             @if (Auth::user()->isAdmin())
                 <div class="mb-5 flex justify-end">
                     <a href="{{ route('kb.articles.create', Auth::user()->company->slug) }}" wire:navigate
-                        class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition">
+                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg flex items-center gap-2 transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -25,11 +25,11 @@
                         </svg>
                     </div>
                     <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search title..."
-                        class="pl-10 w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        class="pl-10 w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
 
                 <select wire:model.live="status"
-                    class="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    class="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="">All Statuses</option>
                     <option value="published">Published</option>
                     <option value="draft">Draft</option>
@@ -61,7 +61,7 @@
                             @php
                                 $statusColors = [
                                     'draft' => 'bg-gray-100 text-gray-800 dark:bg-zinc-800 dark:text-zinc-300',
-                                    'published' => 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400',
+                                    'published' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
                                     'archived' => 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
                                 ];
                             @endphp
@@ -92,7 +92,7 @@
                                                     : 0;
                                         @endphp
                                         <span
-                                            class="mt-1 flex items-center gap-1 {{ $helpfulPercent >= 80 ? 'text-teal-600 dark:text-teal-400' : ($totalVotes > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-400') }}">
+                                            class="mt-1 flex items-center gap-1 {{ $helpfulPercent >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($totalVotes > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-400') }}">
                                             @if ($totalVotes > 0)
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -115,7 +115,7 @@
                                     @if (Auth::user()->isAdmin())
                                         <div class="flex items-center justify-end gap-3">
                                             <a href="{{ route('kb.articles.edit', ['company' => Auth::user()->company->slug, 'article' => $article->id]) }}"
-                                                wire:navigate class="text-zinc-400 hover:text-teal-500 transition">
+                                                wire:navigate class="text-zinc-400 hover:text-emerald-500 transition">
                                                 <span class="sr-only">Edit</span>
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">

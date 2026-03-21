@@ -16,7 +16,7 @@
         <div class="flex items-center gap-3">
             <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Widget Preview</span>
             <span
-                class="text-xs bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-full font-medium">Live</span>
+                class="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-medium">Live</span>
         </div>
         <a href="{{ url()->previous() }}"
             class="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition">&larr;
@@ -48,7 +48,7 @@
 
         <p class="text-center text-sm text-zinc-400 dark:text-zinc-500 pt-8">
             This is a preview of how the widget appears on your website.
-            <br>Click the <span class="text-teal-600 dark:text-teal-400 font-medium">teal button</span> in the
+            <br>Click the <span class="text-emerald-600 dark:text-emerald-400 font-medium">teal button</span> in the
             bottom-right corner to try it.
         </p>
     </div>

@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <button wire:click="toggleActive"
-                    class="px-4 py-2 rounded {{ $is_active ? 'bg-blue-600 text-white' : 'border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300' }}">
+                    class="px-4 py-2 rounded {{ $is_active ? 'bg-emerald-600 text-white' : 'border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300' }}">
                     {{ $is_active ? __('Active') : __('Inactive') }}
                 </button>
             </div>
@@ -145,7 +145,7 @@
                         </div>
                         <div class="flex justify-end px-5">
                             <button wire:click="save" type="button"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
                                 {{ __('Save Settings') }}
                             </button>
 

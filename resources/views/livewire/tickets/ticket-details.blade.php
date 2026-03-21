@@ -1,7 +1,7 @@
 <div class="min-h-screen">
     <x-ui.flash-message />
 
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-enter">
         {{-- Header Component --}}
         <x-app.tickets.header :ticket="$ticket" :state="$state" />
 
@@ -38,7 +38,7 @@
                 </div>
 
                 {{-- Conversation Tab --}}
-                <div x-show="activeTab === 'conversation'" class="space-y-6">
+                <div x-show="activeTab === 'conversation'" class="space-y-6" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
                     @if ($this->aiSettings->ai_summary_enabled && $showSummary)
                         <x-app.tickets.ai-summary />
                     @endif
@@ -48,12 +48,12 @@
                 </div>
 
                 {{-- Internal Notes Tab --}}
-                <div x-show="activeTab === 'internal-notes'" style="display: none;">
+                <div x-show="activeTab === 'internal-notes'" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
                     <x-app.tickets.internal-notes :notes="$this->internalNotes" :ticket="$ticket" />
                 </div>
 
                 {{-- Activity Logs Tab --}}
-                <div x-show="activeTab === 'logs'" style="display: none;">
+                <div x-show="activeTab === 'logs'" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
                     <x-app.tickets.activity-log :logs="$this->ticketLogs" />
                 </div>
             </div>

@@ -24,7 +24,7 @@
                     <p class="text-zinc-500 dark:text-zinc-400 mb-4">Create categories in Settings to organize your KB
                         articles.</p>
                     <a href="{{ route('categories', ['company' => Auth::user()->company->slug]) }}"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition">
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

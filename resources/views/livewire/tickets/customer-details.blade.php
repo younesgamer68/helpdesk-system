@@ -19,7 +19,7 @@
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div class="flex items-start gap-4">
                 <div
-                    class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0 shadow-lg shadow-teal-500/20">
+                    class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0 shadow-lg shadow-emerald-500/20">
                     {{ substr($customer->name, 0, 1) }}
                 </div>
                 <div>
@@ -45,7 +45,7 @@
                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                             <a href="mailto:{{ $customer->email }}"
-                                class="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{{ $customer->email }}</a>
+                                class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">{{ $customer->email }}</a>
                         </div>
                         @if ($customer->phone)
                             <div class="flex items-center gap-1.5">
@@ -55,7 +55,7 @@
                                         d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                                 <a href="tel:{{ $customer->phone }}"
-                                    class="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">{{ $customer->phone }}</a>
+                                    class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">{{ $customer->phone }}</a>
                             </div>
                         @endif
                         <div class="flex items-center gap-1.5">
@@ -95,21 +95,21 @@
     <!-- Navigation Tabs -->
     <div class="border-b border-zinc-200 dark:border-zinc-800 mb-6 flex gap-6">
         <button wire:click="setTab('tickets')"
-            class="pb-4 text-sm font-medium transition-colors relative {{ $activeTab === 'tickets' ? 'text-teal-600 dark:text-teal-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}">
+            class="pb-4 text-sm font-medium transition-colors relative {{ $activeTab === 'tickets' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}">
             Tickets
             <span
-                class="ml-1.5 px-2 py-0.5 rounded-full text-xs {{ $activeTab === 'tickets' ? 'bg-teal-500/20 text-teal-600 dark:text-teal-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400' }}">
+                class="ml-1.5 px-2 py-0.5 rounded-full text-xs {{ $activeTab === 'tickets' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400' }}">
                 {{ $customer->tickets_count }}
             </span>
             @if ($activeTab === 'tickets')
-                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500 dark:bg-teal-400 rounded-t-full"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 dark:bg-emerald-400 rounded-t-full"></div>
             @endif
         </button>
         <button wire:click="setTab('conversations')"
-            class="pb-4 text-sm font-medium transition-colors relative {{ $activeTab === 'conversations' ? 'text-teal-600 dark:text-teal-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}">
+            class="pb-4 text-sm font-medium transition-colors relative {{ $activeTab === 'conversations' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}">
             Conversation History
             @if ($activeTab === 'conversations')
-                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500 dark:bg-teal-400 rounded-t-full"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 dark:bg-emerald-400 rounded-t-full"></div>
             @endif
         </button>
     </div>
@@ -206,7 +206,7 @@
                                     @if ($ticket->user)
                                         <div class="flex items-center gap-2">
                                             <div
-                                                class="w-6 h-6 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white text-[10px] font-bold">
+                                                class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white text-[10px] font-bold">
                                                 {{ substr($ticket->user->name, 0, 1) }}
                                             </div>
                                             <span
@@ -253,10 +253,10 @@
             <div class="space-y-6">
                 @forelse ($this->conversations as $reply)
                     <div
-                        class="flex gap-4 p-5 rounded-lg border {{ $reply->user_id ? 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800' : 'bg-teal-500/5 border-teal-500/10' }}">
+                        class="flex gap-4 p-5 rounded-lg border {{ $reply->user_id ? 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800' : 'bg-emerald-500/5 border-emerald-500/10' }}">
                         @if ($reply->user_id)
                             <div
-                                class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-bold flex-shrink-0">
                                 {{ substr($reply->user->name, 0, 1) }}
                             </div>
                         @else
@@ -275,7 +275,7 @@
                                         </span>
                                         @if ($reply->user_id)
                                             <span
-                                                class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] font-medium tracking-wide uppercase">
+                                                class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium tracking-wide uppercase">
                                                 Agent
                                             </span>
                                         @else
@@ -288,7 +288,7 @@
                                     <div class="text-xs text-zinc-500 mt-0.5 flex items-center gap-2">
                                         <span>in <a
                                                 href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $reply->ticket]) }}"
-                                                class="hover:text-teal-600 dark:hover:text-teal-400 underline">{{ $reply->ticket->ticket_number }}</a></span>
+                                                class="hover:text-emerald-600 dark:hover:text-emerald-400 underline">{{ $reply->ticket->ticket_number }}</a></span>
                                         <span>&bull;</span>
                                         <span>{{ $reply->created_at->format('M j AT g:i A') }}</span>
                                     </div>

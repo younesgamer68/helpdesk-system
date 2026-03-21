@@ -26,7 +26,7 @@
     x-transition:leave="transition transform ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0"
     x-transition:leave-end="opacity-0 -translate-y-4"
     :class="{
-        'bg-teal-600': type === 'success',
+        'bg-emerald-600': type === 'success',
         'bg-red-500': type === 'error',
         'bg-orange-500': type === 'warning',
         'bg-blue-500': type === 'info'

@@ -47,7 +47,7 @@
                                                 <span
                                                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
                                                     {{ match ($convo->outcome) {
-                                                        'active' => 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-teal-300',
+                                                        'active' => 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-emerald-300',
                                                         'resolved' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
                                                         'escalated' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
                                                         'abandoned' => 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',

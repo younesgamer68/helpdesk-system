@@ -29,7 +29,7 @@
                     <div class="relative">
                         <input type="checkbox" wire:model="is_enabled" class="sr-only peer">
                         <div
-                            class="w-11 h-6 bg-zinc-700 bg-opacity-50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500 duration-300">
+                            class="w-11 h-6 bg-zinc-700 bg-opacity-50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 duration-300">
                         </div>
                     </div>
                 </label>
@@ -43,7 +43,7 @@
                     <p class="text-xs text-zinc-500 mt-1">Used for SLA deadlines display and operational reporting.</p>
                 </div>
                 <select wire:model="timezone"
-                    class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                    class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                     @foreach ($this->timezones as $value => $label)
                         <option value="{{ $value }}">{{ $label }}</option>
                     @endforeach
@@ -62,7 +62,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="number" wire:model="low_minutes" min="1"
-                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <span class="text-sm text-zinc-400">minutes</span>
                     </div>
                     @error('low_minutes')
@@ -79,7 +79,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="number" wire:model="medium_minutes" min="1"
-                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <span class="text-sm text-zinc-400">minutes</span>
                     </div>
                     @error('medium_minutes')
@@ -96,7 +96,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="number" wire:model="high_minutes" min="1"
-                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <span class="text-sm text-zinc-400">minutes</span>
                     </div>
                     @error('high_minutes')
@@ -113,7 +113,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="number" wire:model="urgent_minutes" min="1"
-                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                            class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                         <span class="text-sm text-zinc-400">minutes</span>
                     </div>
                     @error('urgent_minutes')
@@ -136,7 +136,7 @@
                         <p class="text-xs text-zinc-500 mb-3">Hours before closure to send customer warning</p>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="warning_hours" min="1"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <span class="text-sm text-zinc-400 whitespace-nowrap">hours</span>
                         </div>
                         @error('warning_hours')
@@ -151,7 +151,7 @@
                         <p class="text-xs text-zinc-500 mb-3">Hours after resolution before ticket is auto-closed</p>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="auto_close_hours" min="1"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <span class="text-sm text-zinc-400 whitespace-nowrap">hours</span>
                         </div>
                         @error('auto_close_hours')
@@ -166,7 +166,7 @@
                         <p class="text-xs text-zinc-500 mb-3">Hours after resolution customer can reopen ticket</p>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="reopen_hours" min="1"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <span class="text-sm text-zinc-400 whitespace-nowrap">hours</span>
                         </div>
                         @error('reopen_hours')
@@ -182,7 +182,7 @@
                         </p>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="linked_ticket_days" min="1"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <span class="text-sm text-zinc-400 whitespace-nowrap">days</span>
                         </div>
                         @error('linked_ticket_days')
@@ -198,7 +198,7 @@
                             (soft-deleted)</p>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="soft_delete_days" min="1"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <span class="text-sm text-zinc-400 whitespace-nowrap">days</span>
                         </div>
                         @error('soft_delete_days')
@@ -214,7 +214,7 @@
                         </p>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="hard_delete_days" min="1"
-                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-teal-500">
+                                class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200 focus:outline-none focus:border-emerald-500">
                             <span class="text-sm text-zinc-400 whitespace-nowrap">days</span>
                         </div>
                         @error('hard_delete_days')
@@ -227,7 +227,7 @@
 
             <div class="flex justify-end">
                 <button type="submit"
-                    class="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition flex items-center gap-2">
+                    class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition flex items-center gap-2">
                     <svg wire:loading.remove wire:target="save" class="w-4 h-4" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
