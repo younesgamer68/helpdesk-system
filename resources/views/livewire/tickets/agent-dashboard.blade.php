@@ -1,455 +1,384 @@
 <div class="animate-enter">
-    <!-- Header -->
-    <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Dashboard</h1>
-            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Welcome back, {{ Auth::user()->name }}</p>
-        </div>
-        <button type="button" wire:click="toggleAvailability"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors {{ Auth::user()->is_available ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500' }}">
-            <span
-                class="w-2 h-2 rounded-full {{ Auth::user()->is_available ? 'bg-green-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-            <span class="text-xs font-medium">{{ Auth::user()->is_available ? 'Available' : 'Unavailable' }}</span>
+    {{-- Greeting Header --}}
+    <div class="mb-6">
+        <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+            {{ $this->greeting }}, {{ Auth::user()->name }}
+        </h1>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ $this->subtitle }}</p>
+    </div>
+
+    {{-- Filter Pills: Urgent | Needs Reply | Mentions | Unassigned | All Mine --}}
+    <div class="flex items-center gap-2 mb-4 flex-wrap">
+        <button wire:click="setPill('urgent')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ $activePill === 'urgent'
+                      ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30'
+                      : ($this->urgentCount > 0
+                          ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                          : 'bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-600 border border-transparent') }}">
+            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            Urgent
+            <span class="text-xs opacity-70">({{ $this->urgentCount }})</span>
+        </button>
+
+        <button wire:click="setPill('needs-reply')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ $activePill === 'needs-reply'
+                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                      : ($this->needsReplyCount > 0
+                          ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                          : 'bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-600 border border-transparent') }}">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            Needs Reply
+            <span class="text-xs opacity-70">({{ $this->needsReplyCount }})</span>
+        </button>
+
+        @if ($this->mentionCount > 0)
+            <button wire:click="setPill('mentions')"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors
+                      {{ $activePill === 'mentions'
+                          ? 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/30'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700' }}">
+                <span class="w-2 h-2 rounded-full bg-violet-500"></span>
+                Mentions
+                <span class="text-xs opacity-70">({{ $this->mentionCount }})</span>
+            </button>
+        @endif
+
+        @if ($this->unassignedCount > 0)
+            <button wire:click="setPill('unassigned')"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors
+                      {{ $activePill === 'unassigned'
+                          ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700' }}">
+                <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                Unassigned
+                <span class="text-xs opacity-70">({{ $this->unassignedCount }})</span>
+            </button>
+        @endif
+
+        <button wire:click="setPill('all')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors
+                  {{ $activePill === 'all'
+                      ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                      : ($this->allMyCount > 0
+                          ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                          : 'bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-600 border border-transparent') }}">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            All Mine
+            <span class="text-xs opacity-70">({{ $this->allMyCount }})</span>
         </button>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
-        <button type="button" x-on:click="$flux.modal('open-tickets-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Open
-                    Tickets</span>
-                <div class="p-1.5 bg-blue-500/10 rounded-lg">
-                    <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                        </path>
-                    </svg>
-                </div>
-            </div>
-            <p class="text-3xl font-bold text-zinc-900 dark:text-white">{{ $this->openTicketsCount }}</p>
-        </button>
-
-        <button type="button" x-on:click="$flux.modal('resolved-tickets-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolved
-                    Today</span>
-                <div class="p-1.5 bg-green-500/10 rounded-lg">
-                    <svg class="w-4 h-4 text-green-500 dark:text-green-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-            </div>
-            <p class="text-3xl font-bold text-zinc-900 dark:text-white">{{ $this->resolvedTodayCount }}</p>
-        </button>
-
-        <button type="button" x-on:click="$flux.modal('pending-tickets-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Pending
-                    Reply</span>
-                <div class="p-1.5 bg-yellow-500/10 rounded-lg">
-                    <svg class="w-4 h-4 text-yellow-500 dark:text-yellow-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-            </div>
-            <p class="text-3xl font-bold text-zinc-900 dark:text-white">{{ $this->pendingReplyCount }}</p>
-        </button>
-
-        <a href="{{ route('notifications', Auth::user()->company->slug) }}" wire:navigate
-            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Unread
-                    Notifications</span>
-                <div class="p-1.5 bg-emerald-500/10 rounded-lg">
-                    <svg class="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                        </path>
-                    </svg>
-                </div>
-            </div>
-            <p class="text-3xl font-bold text-zinc-900 dark:text-white">{{ $this->unreadNotificationsCount }}</p>
-        </a>
-
-        <button type="button" x-on:click="$flux.modal('sla-breached-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">SLA
-                    Breached</span>
-                <div class="p-1.5 bg-red-500/10 rounded-lg">
-                    <svg class="w-4 h-4 text-red-500 dark:text-red-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z">
-                        </path>
-                    </svg>
-                </div>
-            </div>
-            <p
-                class="text-3xl font-bold {{ $this->slaBreachedCount > 0 ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white' }}">
-                {{ $this->slaBreachedCount }}</p>
-        </button>
-    </div>
-
-
-
-    <!-- Two Column Layout -->
-    <div class="grid lg:grid-cols-5 gap-6">
-        <!-- Left Column (3/5) -->
-        <div class="lg:col-span-3 space-y-6">
-            <!-- My Tickets -->
-            <div
-                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
-                    <h2 class="text-base font-semibold text-zinc-900 dark:text-white">My Tickets</h2>
-                    <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-                        class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
-                        View all →
-                    </a>
-                </div>
-
-                @if ($this->myTickets->isNotEmpty())
-                    <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                        @foreach ($this->myTickets as $ticket)
-                            <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}"
-                                wire:navigate
-                                class="animate-enter flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
-                                style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span
-                                            class="text-xs text-zinc-500 font-mono">{{ $ticket->ticket_number }}</span>
-                                        @php
-                                            $priorityBg = match ($ticket->priority) {
-                                                'low' => 'bg-green-500/10 text-green-400 border-green-500/20',
-                                                'medium' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                                'high' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                                                'urgent' => 'bg-red-500/10 text-red-400 border-red-500/20',
-                                                default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-                                            };
-                                        @endphp
-                                        <span
-                                            class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border {{ $priorityBg }}">
-                                            {{ ucfirst($ticket->priority) }}
-                                        </span>
-                                        @php
-                                            $statusBg = match ($ticket->status) {
-                                                'open' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                                'pending' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                                                'in_progress'
-                                                    => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                                default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-                                            };
-                                        @endphp
-                                        <span
-                                            class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border {{ $statusBg }}">
-                                            {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
-                                        </span>
-                                    </div>
-                                    <p
-                                        class="text-sm text-zinc-700 dark:text-zinc-200 truncate group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                                        {{ $ticket->subject }}</p>
-                                    <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->customer_name }}</p>
-                                </div>
-                                <span
-                                    class="text-[11px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap">{{ $ticket->updated_at->diffForHumans() }}</span>
-                            </a>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="px-5 py-12 text-center">
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">You have no open tickets 🎉</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <!-- Right Column (2/5) -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Unassigned Tickets -->
-            <div
-                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-                <div class="px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
-                    <h2 class="text-base font-semibold text-zinc-900 dark:text-white">Unassigned Tickets</h2>
-                    <p class="text-xs text-zinc-500 mt-0.5">Pick up a ticket</p>
-                </div>
-
-                @if ($this->unassignedTickets->isNotEmpty())
-                    <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                        @foreach ($this->unassignedTickets as $ticket)
-                            <div class="animate-enter px-5 py-3.5"
-                                style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span
-                                                class="text-xs text-zinc-500 font-mono">{{ $ticket->ticket_number }}</span>
-                                            @php
-                                                $uPriorityBg = match ($ticket->priority) {
-                                                    'low' => 'bg-green-500/10 text-green-400 border-green-500/20',
-                                                    'medium' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                                    'high' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                                                    'urgent' => 'bg-red-500/10 text-red-400 border-red-500/20',
-                                                    default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-                                                };
-                                            @endphp
-                                            <span
-                                                class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border {{ $uPriorityBg }}">
-                                                {{ ucfirst($ticket->priority) }}
-                                            </span>
-                                        </div>
-                                        <p class="text-sm text-zinc-700 dark:text-zinc-200 truncate">
-                                            {{ $ticket->subject }}</p>
-                                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                            {{ $ticket->customer_name }} · {{ $ticket->category->name ?? 'N/A' }}</p>
-                                    </div>
-                                    <button wire:click="assignToMe({{ $ticket->id }})" wire:loading.attr="disabled"
-                                        wire:target="assignToMe({{ $ticket->id }})"
-                                        class="flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-medium text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-colors disabled:opacity-50">
-                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign
-                                            to me</span>
-                                        <span wire:loading
-                                            wire:target="assignToMe({{ $ticket->id }})">Assigning…</span>
-                                    </button>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="px-5 py-10 text-center">
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">No unassigned tickets right now</p>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Recent Activity -->
-            <div
-                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-                <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
-                    <h2 class="text-base font-semibold text-zinc-900 dark:text-white">Recent Activity</h2>
-                    <a href="{{ route('notifications', Auth::user()->company->slug) }}" wire:navigate
-                        class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
-                        View all →
-                    </a>
-                </div>
-
-                @if ($this->recentNotifications->isNotEmpty())
-                    <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                        @foreach ($this->recentNotifications as $notification)
-                            <div class="animate-enter flex items-start gap-3 px-5 py-3.5"
-                                style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
-                                @if (is_null($notification->read_at))
-                                    <div class="w-2 h-2 mt-1.5 rounded-full bg-emerald-400 flex-shrink-0"></div>
-                                @else
-                                    <div class="w-2 h-2 mt-1.5 rounded-full flex-shrink-0"></div>
-                                @endif
-                                <div class="min-w-0 flex-1">
-                                    <p
-                                        class="text-sm {{ is_null($notification->read_at) ? 'font-medium text-zinc-900 dark:text-zinc-100' : 'text-zinc-600 dark:text-zinc-300' }}">
-                                        {{ $notification->data['message'] ?? 'Notification' }}
-                                    </p>
-                                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                        {{ $notification->created_at->diffForHumans() }}</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="px-5 py-10 text-center">
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400">No recent activity</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    {{-- My Team's Tickets --}}
-    @if (Auth::user()->teams()->count() > 0)
-        <div
-            class="mt-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
-                <div>
-                    <h2 class="text-base font-semibold text-zinc-900 dark:text-white">My Team's Tickets</h2>
-                    <p class="text-xs text-zinc-500 mt-0.5">Recent tickets from your team</p>
-                </div>
-            </div>
-
-            @if ($this->teamTickets->isNotEmpty())
+    {{-- Mentions view (special non-table layout) --}}
+    @if ($activePill === 'mentions')
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            @if ($this->mentionTickets->isNotEmpty())
                 <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                    @foreach ($this->teamTickets as $ticket)
-                        <div class="animate-enter flex items-center justify-between gap-4 px-5 py-3.5"
-                            style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                    @foreach ($this->mentionTickets as $mention)
+                        <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $mention->ticket]) }}#note-{{ $mention->ticket_reply_id }}"
+                            wire:click="markMentionRead({{ $mention->id }})" wire:navigate
+                            wire:key="mention-{{ $mention->id }}"
+                            class="flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group no-underline">
+                            <div class="w-1 self-stretch rounded-full bg-violet-500"></div>
                             <div class="min-w-0 flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs text-zinc-500 font-mono">{{ $ticket->ticket_number }}</span>
-                                    @php
-                                        $tStatusBg = match ($ticket->status) {
-                                            'open' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                            'pending' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                                            'in_progress' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                            default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-                                        };
-                                    @endphp
-                                    <span
-                                        class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border {{ $tStatusBg }}">
-                                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
-                                    </span>
-                                </div>
-                                <p class="text-sm text-zinc-700 dark:text-zinc-200 truncate">{{ $ticket->subject }}
+                                <p
+                                    class="text-sm text-zinc-800 dark:text-zinc-200 truncate group-hover:text-zinc-900 dark:group-hover:text-white transition-colors font-medium">
+                                    {{ $mention->ticket->subject ?? 'Ticket' }}
                                 </p>
-                                <p class="text-xs text-zinc-500 mt-0.5">
-                                    {{ $ticket->customer_name }}
-                                    @if ($ticket->assignedTo)
-                                        · Assigned to {{ $ticket->assignedTo->name }}
-                                    @else
-                                        · <span class="text-amber-500">Unassigned</span>
-                                    @endif
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                    Mentioned by {{ $mention->mentionedByUser->name ?? 'Unknown' }}
                                 </p>
+                                @if ($mention->reply)
+                                    <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5 italic truncate">
+                                        {{ Str::limit(strip_tags($mention->reply->message), 80) }}
+                                    </p>
+                                @endif
                             </div>
-                            <div class="flex items-center gap-2 flex-shrink-0">
-                                @if (!$ticket->assigned_to)
+                            <span class="text-[11px] text-zinc-400 dark:text-zinc-500 whitespace-nowrap shrink-0">
+                                {{ $mention->created_at->diffForHumans(short: true) }}
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="px-5 py-16 text-center">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">No unread mentions</p>
+                </div>
+            @endif
+        </div>
+    @else
+        {{-- Filters Bar --}}
+        <div class="mb-4 space-y-3">
+            <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                <div class="relative w-full xl:max-w-sm">
+                    <svg class="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search tickets"
+                        class="w-full border-0 border-b border-zinc-200 bg-transparent py-2 pl-6 pr-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500">
+                </div>
+
+                <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
+                    <div class="relative">
+                        <select wire:model.live="statusFilter"
+                            class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                            <option value="">All Statuses</option>
+                            @foreach ($statuses as $status)
+                                <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+
+                    <div class="relative">
+                        <select wire:model.live="priorityFilter"
+                            class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                            <option value="">All Priorities</option>
+                            @foreach ($priorities as $priority)
+                                <option value="{{ $priority }}">{{ ucfirst($priority) }}</option>
+                            @endforeach
+                        </select>
+                        <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+
+                    <div class="relative">
+                        <select wire:model.live="categoryFilter"
+                            class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                            <option value="">All Categories</option>
+                            @foreach ($this->categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            @if ($this->hasActiveFilters)
+                <div class="flex items-center gap-3 text-xs">
+                    <button wire:click="resetFilters"
+                        class="text-zinc-500 transition-colors hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+                        Clear all filters
+                    </button>
+                </div>
+            @endif
+        </div>
+
+        {{-- Bulk Actions Bar --}}
+        @if (!empty($selectedTickets))
+            <div
+                class="mb-4 p-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ count($selectedTickets) }}
+                        tickets selected</span>
+                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                    {{-- Bulk Status --}}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open"
+                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                            Set Status
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-cloak
+                            class="absolute left-0 mt-2 w-40 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                            @foreach ($statuses as $status)
+                                <button wire:click="bulkSetStatus('{{ $status }}')" @click="open = false"
+                                    class="w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                    {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                    {{-- Bulk Priority --}}
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open"
+                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                            Set Priority
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-cloak
+                            class="absolute left-0 mt-2 w-40 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                            @foreach ($priorities as $priority)
+                                <button wire:click="bulkSetPriority('{{ $priority }}')" @click="open = false"
+                                    class="w-full text-left px-4 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                    {{ ucfirst($priority) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <button wire:click="$set('selectedTickets', [])"
+                    class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                    Cancel selection
+                </button>
+            </div>
+        @endif
+
+        {{-- Ticket Table --}}
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-zinc-100 dark:border-zinc-800">
+                        <th class="w-12 px-3 py-3 text-left">
+                            <input type="checkbox" wire:model.live="selectAll"
+                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                        </th>
+                        <th wire:click="setSortBy('subject')"
+                            class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 cursor-pointer hover:text-zinc-600 dark:hover:text-zinc-300">
+                            Subject
+                            @if ($sortBy === 'subject')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                            Customer
+                        </th>
+                        @if ($activePill === 'unassigned')
+                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
+                                Assigned To
+                            </th>
+                        @endif
+                        <th wire:click="setSortBy('status')"
+                            class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 cursor-pointer hover:text-zinc-600 dark:hover:text-zinc-300">
+                            Status
+                            @if ($sortBy === 'status')
+                                <span class="ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
+                        </th>
+                        <th class="w-14 px-4 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($this->tickets as $ticket)
+                        @php
+                            $priorityBorder = match ($ticket->priority) {
+                                'urgent' => 'border-l-red-500',
+                                'high' => 'border-l-orange-400',
+                                'medium' => 'border-l-blue-400',
+                                'low' => 'border-l-zinc-300 dark:border-l-zinc-600',
+                                default => 'border-l-zinc-300 dark:border-l-zinc-600',
+                            };
+
+                            $statusBadge = match ($ticket->status) {
+                                'open'
+                                    => 'border-zinc-300 bg-transparent text-zinc-600 dark:border-zinc-700 dark:text-zinc-300',
+                                'in_progress'
+                                    => 'border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900 dark:bg-blue-950/30 dark:text-blue-300',
+                                'pending'
+                                    => 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300',
+                                'resolved'
+                                    => 'border-green-200 bg-green-50 text-green-600 dark:border-green-900 dark:bg-green-950/30 dark:text-green-300',
+                                'closed'
+                                    => 'border-zinc-200 bg-zinc-100 text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400',
+                                default
+                                    => 'border-zinc-300 bg-zinc-50 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300',
+                            };
+                        @endphp
+                        <tr class="cursor-pointer border-b border-l-3 border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 {{ $priorityBorder }} {{ in_array($ticket->id, $selectedTickets) ? 'bg-teal-500/5' : '' }}"
+                            wire:key="{{ $ticket->id }}"
+                            onclick="Livewire.navigate('{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}')">
+                            <td class="px-3 py-4 text-left" wire:click.stop>
+                                <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
+                                    class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                            </td>
+                            <td class="px-4 py-4 align-middle">
+                                <p class="text-sm font-medium text-zinc-800 dark:text-zinc-100">
+                                    {{ Str::limit($ticket->subject, 65) }}
+                                </p>
+                                <p class="mt-0.5 text-xs text-zinc-400">
+                                    {{ $ticket->category->name ?? 'No category' }} · {{ $ticket->ticket_number }}
+                                </p>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-zinc-600 dark:text-zinc-400">
+                                {{ $ticket->customer->name ?? 'Unknown' }}
+                            </td>
+                            @if ($activePill === 'unassigned')
+                                <td class="px-4 py-4 text-sm" wire:click.stop>
                                     <button wire:click="takeTicket({{ $ticket->id }})" wire:loading.attr="disabled"
                                         wire:target="takeTicket({{ $ticket->id }})"
                                         class="px-3 py-1.5 text-xs font-medium text-teal-600 dark:text-teal-400 border border-teal-500/30 rounded-lg hover:bg-teal-500/10 transition-colors disabled:opacity-50">
-                                        <span wire:loading.remove
-                                            wire:target="takeTicket({{ $ticket->id }})">Take</span>
-                                        <span wire:loading wire:target="takeTicket({{ $ticket->id }})">...</span>
+                                        <span wire:loading.remove wire:target="takeTicket({{ $ticket->id }})">Take
+                                            this</span>
+                                        <span wire:loading
+                                            wire:target="takeTicket({{ $ticket->id }})">Taking...</span>
                                     </button>
+                                </td>
+                            @endif
+                            <td class="px-4 py-4 text-sm">
+                                <div class="inline-flex items-center">
+                                    <span
+                                        class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs {{ $statusBadge }}">
+                                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                    </span>
+                                    @if ($ticket->sla_status === 'breached')
+                                        <span class="group relative ml-2 inline-flex" aria-label="SLA Breached">
+                                            <span class="cursor-help text-sm leading-none text-red-400">⚠</span>
+                                            <span
+                                                class="pointer-events-none absolute left-1/2 top-full z-20 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] font-medium text-red-700 shadow-sm group-hover:block dark:border-red-900/70 dark:bg-red-950/50 dark:text-red-300">
+                                                SLA breached
+                                            </span>
+                                        </span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-right">
+                                <span class="text-[11px] text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
+                                    {{ $ticket->updated_at->diffForHumans(short: true) }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="{{ $activePill === 'unassigned' ? 6 : 5 }}" class="px-4 py-12 text-center">
+                                <svg class="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                </svg>
+                                @if ($activePill === 'urgent')
+                                    <p class="mt-4 text-zinc-500 dark:text-zinc-400">No urgent tickets right now 🎉</p>
+                                @elseif ($activePill === 'needs-reply')
+                                    <p class="mt-4 text-zinc-500 dark:text-zinc-400">No clients waiting for a reply</p>
+                                @elseif ($activePill === 'unassigned')
+                                    <p class="mt-4 text-zinc-500 dark:text-zinc-400">No unassigned tickets in your team
+                                    </p>
+                                @else
+                                    <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting
+                                        your filters.</p>
                                 @endif
-                                <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}"
-                                    wire:navigate
-                                    class="px-3 py-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="px-5 py-10 text-center">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">No team tickets at the moment</p>
-                </div>
-            @endif
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        <div class="mt-4 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+            {{ $this->tickets->links('pagination.tickets-compact') }}
         </div>
     @endif
-
-    <!-- Modals for KPI Lists -->
-    <!-- Open Tickets Modal -->
-    <flux:modal name="open-tickets-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">Open Tickets</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->openTicketsList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No open tickets at this time.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800/90">
-                    @foreach ($this->openTicketsList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                    {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
-                            </div>
-                            <flux:badge variant="primary" size="sm">
-                                {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
-
-    <!-- Resolved Today Modal -->
-    <flux:modal name="resolved-tickets-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">Resolved Today</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->resolvedTodayList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No tickets resolved today.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800/90">
-                    @foreach ($this->resolvedTodayList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                    {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
-                            </div>
-                            <flux:badge variant="success" size="sm">Resolved</flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
-
-    <!-- Pending Tickets Modal -->
-    <flux:modal name="pending-tickets-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">Pending Reply</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->pendingTicketsList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No tickets pending reply.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800/90">
-                    @foreach ($this->pendingTicketsList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                    {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
-                            </div>
-                            <flux:badge variant="warning" size="sm">Pending</flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
-
-    <!-- SLA Breached Tickets Modal -->
-    <flux:modal name="sla-breached-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">SLA Breached Tickets</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->slaBreachedList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No SLA breaches — great work!</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800/90">
-                    @foreach ($this->slaBreachedList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                    {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}
-                                    @if ($ticket->due_time)
-                                        &middot; Due {{ $ticket->due_time->diffForHumans() }}
-                                    @endif
-                                </p>
-                            </div>
-                            <flux:badge color="red" size="sm">Breached</flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
 </div>

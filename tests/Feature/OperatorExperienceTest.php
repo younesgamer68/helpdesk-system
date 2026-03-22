@@ -313,7 +313,7 @@ test('operator can access my team settings route', function () {
 
 // ─── Phase 9: SLA Breached KPI on Dashboard ───
 
-test('operator dashboard shows sla breached count', function () {
+test('operator dashboard includes sla breached tickets in urgent pill', function () {
     [$operator, $admin, $company] = operatorSetup();
 
     Ticket::withoutEvents(function () use ($company, $operator) {
@@ -343,9 +343,8 @@ test('operator dashboard shows sla breached count', function () {
 
     Livewire::actingAs($operator)
         ->test(AgentDashboard::class)
-        ->assertSee('SLA')
-        ->assertSee('Breached')
-        ->assertSet('slaBreachedCount', 2);
+        ->assertSee('Urgent')
+        ->assertSet('activePill', 'urgent');
 });
 
 // ─── Phase 10: Teams Tab in Notifications ───

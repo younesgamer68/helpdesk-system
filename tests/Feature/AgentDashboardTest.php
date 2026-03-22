@@ -3,8 +3,11 @@
 use App\Livewire\Dashboard\AgentDashboard;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
+use App\Models\TicketMention;
+use App\Models\TicketReply;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -49,20 +52,58 @@ it('renders the dashboard for authenticated users', function () {
         ->assertOk();
 });
 
-it('shows correct KPI counts', function () {
+it('shows greeting and subtitle', function () {
     [$user, $company] = dashboardUser();
-
-    dashboardTicket($company, $user->id, 'open');
-    dashboardTicket($company, $user->id, 'in_progress');
-    dashboardTicket($company, $user->id, 'pending');
-    $resolved = dashboardTicket($company, $user->id, 'resolved');
-    $resolved->update(['resolved_at' => now()]);
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->assertSee('Open Tickets')
-        ->assertSee('Resolved Today')
-        ->assertSee('Pending Reply');
+        ->assertSee($user->name)
+        ->assertSee('You are all caught up');
+});
+
+it('shows urgent pill with count', function () {
+    [$user, $company] = dashboardUser();
+
+    dashboardTicket($company, $user->id, 'open', 'urgent');
+    dashboardTicket($company, $user->id, 'open', 'medium');
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertSee('Urgent')
+        ->assertSet('activePill', 'urgent');
+});
+
+it('defaults to needs-reply pill when no urgent tickets', function () {
+    [$user, $company] = dashboardUser();
+
+    dashboardTicket($company, $user->id, 'pending', 'medium');
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertSet('activePill', 'needs-reply');
+});
+
+it('defaults to all pill when no urgent or pending tickets', function () {
+    [$user, $company] = dashboardUser();
+
+    dashboardTicket($company, $user->id, 'open', 'low');
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertSet('activePill', 'all');
+});
+
+it('switches pills correctly', function () {
+    [$user, $company] = dashboardUser();
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->call('setPill', 'urgent')
+        ->assertSet('activePill', 'urgent')
+        ->call('setPill', 'needs-reply')
+        ->assertSet('activePill', 'needs-reply')
+        ->call('setPill', 'all')
+        ->assertSet('activePill', 'all');
 });
 
 it('shows my tickets sorted by priority', function () {
@@ -74,10 +115,10 @@ it('shows my tickets sorted by priority', function () {
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->assertSee($urgent->ticket_number);
+        ->assertSee($urgent->subject);
 });
 
-it('does not show resolved or closed tickets in my tickets', function () {
+it('does not show resolved or closed tickets', function () {
     [$user, $company] = dashboardUser();
 
     $open = dashboardTicket($company, $user->id, 'open');
@@ -86,9 +127,10 @@ it('does not show resolved or closed tickets in my tickets', function () {
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->assertSee($open->ticket_number)
-        ->assertDontSee($resolved->ticket_number)
-        ->assertDontSee($closed->ticket_number);
+        ->call('setPill', 'all')
+        ->assertSee($open->subject)
+        ->assertDontSee($resolved->subject)
+        ->assertDontSee($closed->subject);
 });
 
 it('shows empty state when no tickets', function () {
@@ -96,60 +138,43 @@ it('shows empty state when no tickets', function () {
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->assertSee('You have no open tickets');
+        ->call('setPill', 'all')
+        ->assertSee('No tickets found');
 });
 
-it('shows unassigned tickets', function () {
+it('shows unassigned team tickets in pill', function () {
     [$user, $company] = dashboardUser();
 
-    $unassigned = dashboardTicket($company, null, 'open');
+    $team = Team::factory()->create(['company_id' => $company->id]);
+    $team->members()->attach($user->id, ['role' => 'member']);
+
+    dashboardTicket($company, null, 'open');
+    $ticket = Ticket::latest('id')->first();
+    $ticket->update(['team_id' => $team->id]);
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->assertSee($unassigned->ticket_number)
-        ->assertSee('Assign to me');
+        ->call('setPill', 'unassigned')
+        ->assertSee('Unassigned')
+        ->assertSee($ticket->subject)
+        ->assertSee('Take this');
 });
 
-it('assigns an unassigned ticket to the authenticated user', function () {
+it('takes unassigned ticket from pill', function () {
     [$user, $company] = dashboardUser();
+
+    $team = Team::factory()->create(['company_id' => $company->id]);
+    $team->members()->attach($user->id, ['role' => 'member']);
 
     $ticket = dashboardTicket($company, null, 'open');
+    $ticket->update(['team_id' => $team->id]);
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->call('assignToMe', $ticket->id)
+        ->call('takeTicket', $ticket->id)
         ->assertDispatched('show-toast');
 
     expect($ticket->fresh()->assigned_to)->toBe($user->id);
-    expect($ticket->fresh()->status)->toBe('in_progress');
-
-    $this->assertDatabaseHas('ticket_logs', [
-        'ticket_id' => $ticket->id,
-        'user_id' => $user->id,
-        'action' => 'assigned',
-    ]);
-});
-
-it('shows recent notifications', function () {
-    [$user] = dashboardUser();
-
-    $user->notifications()->create([
-        'id' => fake()->uuid(),
-        'type' => 'App\Notifications\Test',
-        'data' => ['message' => 'Test notification message', 'type' => 'assigned'],
-    ]);
-
-    Livewire::actingAs($user)
-        ->test(AgentDashboard::class)
-        ->assertSee('Test notification message');
-});
-
-it('shows empty state for no recent activity', function () {
-    [$user] = dashboardUser();
-
-    Livewire::actingAs($user)
-        ->test(AgentDashboard::class)
-        ->assertSee('No recent activity');
 });
 
 it('toggles availability status', function () {
@@ -168,4 +193,84 @@ it('toggles availability status', function () {
         ->call('toggleAvailability');
 
     expect($user->fresh()->is_available)->toBeTrue();
+});
+
+it('includes sla breached tickets in urgent pill', function () {
+    [$user, $company] = dashboardUser();
+
+    $slaTicket = dashboardTicket($company, $user->id, 'open', 'medium');
+    $slaTicket->update(['sla_status' => 'breached']);
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertSet('activePill', 'urgent')
+        ->assertSee($slaTicket->subject);
+});
+
+it('defaults to mentions pill when only mentions exist', function () {
+    [$user, $company] = dashboardUser();
+
+    $ticket = dashboardTicket($company, null, 'open');
+    $reply = TicketReply::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => $user->id,
+        'message' => 'test note',
+        'is_internal' => true,
+        'is_technician' => false,
+    ]);
+
+    $mentioner = User::factory()->create(['company_id' => $company->id, 'role' => 'agent']);
+    TicketMention::create([
+        'ticket_id' => $ticket->id,
+        'ticket_reply_id' => $reply->id,
+        'mentioned_user_id' => $user->id,
+        'mentioned_by_user_id' => $mentioner->id,
+        'company_id' => $company->id,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertSet('activePill', 'mentions');
+});
+
+it('marks mention as read', function () {
+    [$user, $company] = dashboardUser();
+
+    $ticket = dashboardTicket($company, null, 'open');
+    $reply = TicketReply::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => $user->id,
+        'message' => 'test note',
+        'is_internal' => true,
+        'is_technician' => false,
+    ]);
+
+    $mentioner = User::factory()->create(['company_id' => $company->id, 'role' => 'agent']);
+    $mention = TicketMention::create([
+        'ticket_id' => $ticket->id,
+        'ticket_reply_id' => $reply->id,
+        'mentioned_user_id' => $user->id,
+        'mentioned_by_user_id' => $mentioner->id,
+        'company_id' => $company->id,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->call('markMentionRead', $mention->id);
+
+    expect($mention->fresh()->read_at)->not->toBeNull();
+});
+
+it('shows unassigned pill in smart default when unassigned tickets exist', function () {
+    [$user, $company] = dashboardUser();
+
+    $team = Team::factory()->create(['company_id' => $company->id]);
+    $team->members()->attach($user->id, ['role' => 'member']);
+
+    $ticket = dashboardTicket($company, null, 'open');
+    $ticket->update(['team_id' => $team->id]);
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertSet('activePill', 'unassigned');
 });

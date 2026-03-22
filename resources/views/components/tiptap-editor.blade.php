@@ -4,7 +4,7 @@
     'kbResults' => collect(),
 ])
 <div x-data="tiptapEditor({ model: '{{ $model }}' })"
-    class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-600">
+    class="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-300 dark:border-zinc-600 rounded-lg overflow-hidden focus-within:ring-1 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-500">
     {{-- Toolbar --}}
     <div class="flex flex-wrap items-center gap-1 p-2 border-b border-zinc-200 dark:border-zinc-700/50">
         <button type="button" @mousedown.prevent="" @click="bold()"

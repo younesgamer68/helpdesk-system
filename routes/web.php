@@ -132,6 +132,12 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
             Route::livewire('home', \App\Livewire\App\AgentDashboard::class)
                 ->name('agent.dashboard')
                 ->middleware(\App\Http\Middleware\AgentOnly::class);
+            Route::livewire('team', \App\Livewire\App\TeamPage::class)
+                ->name('operator.team')
+                ->middleware(\App\Http\Middleware\AgentOnly::class);
+            Route::livewire('me', \App\Livewire\App\MePage::class)
+                ->name('operator.me')
+                ->middleware(\App\Http\Middleware\AgentOnly::class);
             Route::livewire('admin/dashboard', \App\Livewire\App\AdminDashboard::class)
                 ->name('admin.dashboard')
                 ->middleware(\App\Http\Middleware\AdminOnly::class);
