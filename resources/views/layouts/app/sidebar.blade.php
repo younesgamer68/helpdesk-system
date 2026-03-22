@@ -96,8 +96,7 @@
         {{-- Nav --}}
         <nav class="flex-1 flex flex-col gap-1 py-3 overflow-y-auto overflow-x-hidden">
 
-            @if (Auth::user()->isAdmin())
-                {{-- ═══ ADMIN NAV ═══ --}}
+            @if (in_array(Auth::user()->role, ['admin', 'operator']))
                 @php $active = request()->routeIs('dashboard', 'admin.dashboard', 'agent.dashboard'); @endphp
                 <a href="{{ route('dashboard', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
@@ -113,157 +112,42 @@
                     </div>
                     <span class="sidebar-label">{{ __('Dashboard') }}</span>
                 </a>
+            @endif
 
-                @php $active = request()->routeIs('tickets'); @endphp
-                <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
+            @php $active = request()->routeIs('tickets'); @endphp
+            <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                <div class="w-10 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path
+                            d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7a2 2 0 0 1 2-2z" />
+                    </svg>
+                </div>
+                <span class="sidebar-label">{{ __('Tickets') }}</span>
+            </a>
+
+            @can('view-operators')
+                @php $active = request()->routeIs('customers*'); @endphp
+                <a href="{{ route('customers', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
                           {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path
-                                d="M15 5v2M15 11v2M15 17v2M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V7a2 2 0 0 1 2-2z" />
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <circle cx="9" cy="10" r="2.5" />
+                            <path d="M7 16.5c.7-1.4 2-2.5 4-2.5s3.3 1.1 4 2.5" />
+                            <path d="M15.5 9h3" />
+                            <path d="M15.5 12h3" />
                         </svg>
                     </div>
-                    <span class="sidebar-label">{{ __('Tickets') }}</span>
+                    <span class="sidebar-label">{{ __('Customers') }}</span>
                 </a>
 
-                @can('view-operators')
-                    @php $active = request()->routeIs('customers*'); @endphp
-                    <a href="{{ route('customers', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <rect x="3" y="4" width="18" height="16" rx="2" />
-                                <circle cx="9" cy="10" r="2.5" />
-                                <path d="M7 16.5c.7-1.4 2-2.5 4-2.5s3.3 1.1 4 2.5" />
-                                <path d="M15.5 9h3" />
-                                <path d="M15.5 12h3" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Customers') }}</span>
-                    </a>
-
-                    @php $active = request()->routeIs('operators'); @endphp
-                    <a href="{{ route('operators', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Operators') }}</span>
-                    </a>
-
-                    @php $active = request()->routeIs('teams'); @endphp
-                    <a href="{{ route('teams', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="7" height="7" rx="1" />
-                                <rect x="14" y="3" width="7" height="7" rx="1" />
-                                <rect x="3" y="14" width="7" height="7" rx="1" />
-                                <rect x="14" y="14" width="7" height="7" rx="1" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Teams') }}</span>
-                    </a>
-
-                    @php $active = request()->routeIs('categories'); @endphp
-                    <a href="{{ route('categories', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Categories') }}</span>
-                    </a>
-
-                    @php $active = request()->routeIs('automation', 'automation.*'); @endphp
-                    <a href="{{ route('automation', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Automation') }}</span>
-                    </a>
-
-                    @php $active = request()->routeIs('channels'); @endphp
-                    <a href="{{ route('channels', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2H8.5C7.57 2 6.5 2.5 6.5 4s1.07 2 2 2H12v4H8c-1.1 0-2 .9-2 2v2h4v4h2v-4h4v-2c0-1.1-.9-2-2-2h-2V6h3.5c.93 0 2-.5 2-2s-1.07-2-2-2H12z" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Integrations') }}</span>
-                    </a>
-
-                    @php $active = request()->routeIs('reports'); @endphp
-                    <a href="{{ route('reports', Auth::user()->company->slug) }}" wire:navigate
-                        class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                              {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                        <div class="w-10 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <line x1="18" y1="20" x2="18" y2="10" />
-                                <line x1="12" y1="20" x2="12" y2="4" />
-                                <line x1="6" y1="20" x2="6" y2="14" />
-                            </svg>
-                        </div>
-                        <span class="sidebar-label">{{ __('Reports') }}</span>
-                    </a>
-                @endcan
-
-                @php $active = request()->routeIs('kb.*'); @endphp
-                <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                    <div class="w-10 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        </svg>
-                    </div>
-                    <span class="sidebar-label">{{ __('Knowledge Base') }}</span>
-                </a>
-            @else
-                {{-- ═══ OPERATOR NAV ═══ --}}
-                @php $active = request()->routeIs('agent.dashboard'); @endphp
-                <a href="{{ route('agent.dashboard', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                    <div class="w-10 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                        </svg>
-                    </div>
-                    <span class="sidebar-label">{{ __('Work') }}</span>
-                </a>
-
-                @php $active = request()->routeIs('operator.team'); @endphp
-                <a href="{{ route('operator.team', Auth::user()->company->slug) }}" wire:navigate
+                @php $active = request()->routeIs('operators'); @endphp
+                <a href="{{ route('operators', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
                           {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
@@ -274,21 +158,110 @@
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
                     </div>
-                    <span class="sidebar-label">{{ __('Team') }}</span>
+                    <span class="sidebar-label">{{ __('Operators') }}</span>
                 </a>
 
-                @php $active = request()->routeIs('operator.me'); @endphp
-                <a href="{{ route('operator.me', Auth::user()->company->slug) }}" wire:navigate
+                @php $active = request()->routeIs('teams'); @endphp
+                <a href="{{ route('teams', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
                           {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="7" height="7" rx="1" />
                         </svg>
                     </div>
-                    <span class="sidebar-label">{{ __('Me') }}</span>
+                    <span class="sidebar-label">{{ __('Teams') }}</span>
+                </a>
+
+                @php $active = request()->routeIs('categories'); @endphp
+                <a href="{{ route('categories', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('Categories') }}</span>
+                </a>
+
+                @php $active = request()->routeIs('automation', 'automation.*'); @endphp
+                <a href="{{ route('automation', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('Automation') }}</span>
+                </a>
+
+                @php $active = request()->routeIs('channels'); @endphp
+                <a href="{{ route('channels', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2H8.5C7.57 2 6.5 2.5 6.5 4s1.07 2 2 2H12v4H8c-1.1 0-2 .9-2 2v2h4v4h2v-4h4v-2c0-1.1-.9-2-2-2h-2V6h3.5c.93 0 2-.5 2-2s-1.07-2-2-2H12z" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('Integrations') }}</span>
+                </a>
+
+                @php $active = request()->routeIs('reports'); @endphp
+                <a href="{{ route('reports', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <line x1="18" y1="20" x2="18" y2="10" />
+                            <line x1="12" y1="20" x2="12" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="14" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('Reports') }}</span>
+                </a>
+            @endcan
+
+            @php $active = request()->routeIs('kb.*'); @endphp
+            <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                <div class="w-10 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                </div>
+                <span class="sidebar-label">{{ __('Knowledge Base') }}</span>
+            </a>
+
+            @if (Auth::user()->isOperator())
+                @php $active = request()->routeIs('settings.my-team'); @endphp
+                <a href="{{ route('settings.my-team', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('My Teams') }}</span>
                 </a>
             @endif
 
@@ -319,28 +292,27 @@
                 <span class="sidebar-label">{{ __('Notifications') }}</span>
             </a>
 
-            @if (Auth::user()->isAdmin())
-                {{-- Settings icon (admin only) --}}
-                @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit', 'settings.my-team'); @endphp
-                <a href="{{ route('company.profile', Auth::user()->company->slug) }}" wire:navigate
-                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $settingsActive ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
-                    <div class="w-10 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path
-                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    </div>
-                    <span class="sidebar-label">{{ __('Settings') }}</span>
-                </a>
-
-                {{-- Profile dropdown (admin only) --}}
-                <div class="mx-3">
-                    <x-app.desktop-user-menu />
+            {{-- Settings icon --}}
+            @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit', 'settings.my-team'); @endphp
+            <a href="{{ Auth::user()->isAdmin() ? route('company.profile', Auth::user()->company->slug) : route('settings.security', Auth::user()->company->slug) }}"
+                wire:navigate
+                class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                      {{ $settingsActive ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                <div class="w-10 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
                 </div>
-            @endif
+                <span class="sidebar-label">{{ __('Settings') }}</span>
+            </a>
+
+            {{-- Profile dropdown --}}
+            <div class="mx-3">
+                <x-app.desktop-user-menu />
+            </div>
 
         </div>
     </div>
