@@ -1,11 +1,7 @@
-@props([
-    'notes',
-    'ticket'
-])
+@props(['notes', 'ticket'])
 
-<div
-    class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-    <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
+<div>
+    <div class="p-6">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Internal Notes</h2>
             <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible only to your team</span>
@@ -25,7 +21,7 @@
         @endforelse
     </div>
 
-    <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-indigo-50/50 dark:bg-indigo-900/10">
+    <div class="p-6 border-t border-black/10 dark:border-white/10 bg-indigo-50/50 dark:bg-indigo-900/10">
         <form wire:submit="addInternalNote">
             <div class="relative">
                 <textarea wire:model="internalNote" rows="3" placeholder="Add a new internal note..." required

@@ -9,7 +9,7 @@
     'aiSuggestionsEnabled' => false,
 ])
 
-<div class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+<div class="p-6 border-t border-black/10 dark:border-white/10">
     <form wire:submit="addReply">
         <div class="mb-4">
             <div class="flex items-center justify-between mb-3">

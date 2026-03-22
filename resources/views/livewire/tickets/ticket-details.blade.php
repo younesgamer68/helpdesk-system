@@ -1,15 +1,15 @@
-<div class="min-h-screen">
+<div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
     <x-ui.flash-message />
 
-    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-enter">
+    <div class="w-full animate-enter flex flex-col flex-1 min-h-0">
         {{-- Header Component --}}
         <x-app.tickets.header :ticket="$ticket" :state="$state" />
 
         {{-- Main Content Grid --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-4 flex-1 min-h-0">
 
             {{-- Left Column - Content Tabs --}}
-            <div class="lg:col-span-2 space-y-6" x-data="{ activeTab: 'conversation' }">
+            <div class="lg:overflow-y-auto space-y-4 lg:pr-2" x-data="{ activeTab: 'conversation' }">
 
                 {{-- Teammate Banner --}}
                 @if ($this->isTeammate)
@@ -32,25 +32,24 @@
 
                 {{-- Tab Switcher --}}
                 <div class="flex items-center justify-between mb-4">
-                    <div
-                        class="flex space-x-1 p-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg w-full max-w-[320px]">
+                    <div class="flex space-x-1 w-full max-w-[320px]">
                         <button @click="activeTab = 'conversation'"
-                            :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'conversation' }"
-                            class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
+                            :class="{ 'text-zinc-900 dark:text-zinc-100 border-b-2 border-zinc-900 dark:border-zinc-100': activeTab === 'conversation', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300': activeTab !== 'conversation' }"
+                            class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-all">
                             <flux:icon.chat-bubble-left-right variant="micro" />
                             Conversation
                         </button>
                         <button @click="activeTab = 'internal-notes'"
-                            :class="{ 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow': activeTab === 'internal-notes', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'internal-notes' }"
-                            class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all">
+                            :class="{ 'text-zinc-900 dark:text-zinc-100 border-b-2 border-zinc-900 dark:border-zinc-100': activeTab === 'internal-notes', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300': activeTab !== 'internal-notes' }"
+                            class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-all">
                             <flux:icon.document-text variant="micro" />
                             Notes
                         </button>
                     </div>
 
                     <button @click="activeTab = 'logs'"
-                        :class="{ 'text-zinc-600 dark:text-zinc-300 bg-zinc-200 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700': activeTab === 'logs', 'text-zinc-500 bg-transparent border-transparent hover:text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50': activeTab !== 'logs' }"
-                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-transparent transition-all">
+                        :class="{ 'text-zinc-900 dark:text-zinc-100 border-b-2 border-zinc-900 dark:border-zinc-100': activeTab === 'logs', 'text-zinc-500 hover:text-zinc-600 dark:text-zinc-300': activeTab !== 'logs' }"
+                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all">
                         <flux:icon.clock variant="micro" />
                         Activity Logs
                     </button>
@@ -61,7 +60,7 @@
                     x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 translate-y-2"
                     x-transition:enter-end="opacity-100 translate-y-0">
-                    @if ($this->aiSettings->ai_summary_enabled && $showSummary)
+                    @if ($this->aiSettings->ai_summary_enabled)
                         <x-app.tickets.ai-summary />
                     @endif
 
@@ -88,8 +87,10 @@
             </div>
 
             {{-- Right Column - Sidebar --}}
-            <x-app.tickets.sidebar :ticket="$ticket" :agents="$agents" :teams="$teams" :isTeammate="$this->isTeammate"
-                :isAssignee="$this->isAssignee" />
+            <div class="lg:overflow-y-auto lg:pl-4 lg:border-l border-black/10 dark:border-white/10">
+                <x-app.tickets.sidebar :ticket="$ticket" :agents="$agents" :teams="$teams" :isTeammate="$this->isTeammate"
+                    :isAssignee="$this->isAssignee" />
+            </div>
         </div>
     </div>
 </div>

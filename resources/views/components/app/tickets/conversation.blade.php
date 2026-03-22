@@ -11,8 +11,8 @@
     'isTeammate' => false,
 ])
 
-<div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-    <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
+<div>
+    <div class="p-6">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Conversation</h2>
             <span class="text-sm text-zinc-500 dark:text-zinc-400">Visible to customer</span>
@@ -34,7 +34,7 @@
 
     @if ($isTeammate)
         {{-- Teammate: internal note box only --}}
-        <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 bg-amber-50/50 dark:bg-amber-900/10">
+        <div class="p-6 border-t border-black/10 dark:border-white/10 bg-amber-50/50 dark:bg-amber-900/10">
             <form wire:submit="addInternalNote">
                 <textarea wire:model="internalNote" rows="3"
                     placeholder="Add a note for {{ $ticket->assignedTo?->name ?? 'the assignee' }}..." required

@@ -47,7 +47,7 @@
 }
 $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); });" data-has-alpine-state="true">
     <div @clear-summary-display.window="stopTyping(); displayedSummary = '';">
-        <div class="p-4 border-b border-zinc-200 dark:border-zinc-700" :class="{ 'border-b-0': showSummary }">
+        <div class="p-4 border-l-2 border-teal-500" :class="{ 'border-b-0': showSummary }">
             <div class="flex items-center justify-between">
                 <button @click="showSummary = !showSummary" class="flex items-center gap-2 text-left">
                     <div class="flex items-center gap-1.5 text-emerald-400">
@@ -66,7 +66,8 @@ $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); 
                 <button wire:click="regenerateSummary" @click="isLoading = true; stopTyping(); displayedSummary = '';"
                     :disabled="isLoading"
                     class="flex items-center gap-1.5 text-xs px-2.5 py-1 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 dark:hover:text-emerald-400 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg x-show="!isLoading" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg x-show="!isLoading" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                         </path>
@@ -113,7 +114,8 @@ $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); 
                 </div>
             </div>
 
-            <div x-show="displayedSummary || (!isLoading && !displayedSummary)" class="border-l-2 border-emerald-500 pl-4">
+            <div x-show="displayedSummary || (!isLoading && !displayedSummary)"
+                class="border-l-2 border-emerald-500 pl-4">
                 <div class="space-y-4 px-2 text-sm">
                     <div>
                         <span class="font-semibold text-emerald-400 text-xs uppercase tracking-wide">Issue</span>

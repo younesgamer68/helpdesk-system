@@ -1,7 +1,7 @@
 @props(['ticket', 'agents', 'teams' => collect(), 'isTeammate' => false, 'isAssignee' => false])
 
-<div class="lg:sticky lg:top-8 h-fit space-y-6">
-    <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 space-y-4">
+<div class="space-y-4">
+    <div class="pb-4 border-b border-black/10 dark:border-white/10 space-y-4">
         <div class="flex items-center justify-between">
             <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Ticket details</h3>
         </div>
@@ -120,7 +120,7 @@
         $tz = $ticket->company->timezone ?? config('app.timezone');
     @endphp
 
-    <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 space-y-4">
+    <div class="pt-4 space-y-4">
         <div class="flex items-center gap-2">
             <flux:icon.clock class="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
             <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">SLA Information</h3>
@@ -207,7 +207,7 @@
 
     {{-- Actions --}}
     @if (!$isTeammate)
-        <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 space-y-2">
+        <div class="mt-4 pt-4 border-t border-black/10 dark:border-white/10 space-y-2">
             @if (auth()->user()->isAdmin())
                 <x-ui.dropdown-btn>
                     <x-slot:title>

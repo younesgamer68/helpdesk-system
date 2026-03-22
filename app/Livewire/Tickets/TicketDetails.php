@@ -54,7 +54,7 @@ class TicketDetails extends Component
 
     public $summaryLoading = false;
 
-    public $showSummary = true;
+    public $showSummary = false;
 
     public $agentSearch = '';
 

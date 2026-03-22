@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="flex-1">
-        <div class="rounded-lg p-4 border {{ $bgClass }}">
+        <div class="rounded-lg p-4 {{ $bgClass }}">
             <div class="flex items-start justify-between mb-2">
                 <div>
                     <div class="font-semibold text-zinc-900 dark:text-zinc-100">
