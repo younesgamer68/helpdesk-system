@@ -7,13 +7,9 @@
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     
     <!-- Header -->
-    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); background-color: #10b981; color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+    <div style="background-color: #ffffff; color: #333333; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
         <div style="margin-bottom: 16px;">
-            <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="40" height="40" rx="8" fill="white"/>
-                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#10b981" text-anchor="middle">HD</text>
-                <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="white">HelpDesk</text>
-            </svg>
+            <img src="https://iili.io/q8QZWzJ.png" alt="HelpDesk" style="height: 80px; width: auto;">
         </div>
         <h1 style="margin: 0; font-size: 24px;">✓ Ticket Verified Successfully!</h1>
         <div style="display: inline-block; background: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-top: 15px;">Verified</div>

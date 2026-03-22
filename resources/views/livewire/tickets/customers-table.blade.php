@@ -16,18 +16,28 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
-                <div class="relative">
-                    <select wire:model.live="statusFilter"
-                        class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                        <option value="">All Statuses</option>
-                        <option value="active">Active</option>
-                        <option value="deactivated">Deactivated</option>
-                    </select>
-                    <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
+                <flux:dropdown>
+                    <button type="button" class="flex items-center justify-between min-w-[150px] rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                        <span>
+                            @php
+                                $statusLabels = [
+                                    '' => 'All Statuses',
+                                    'active' => 'Active',
+                                    'deactivated' => 'Deactivated'
+                                ];
+                            @endphp
+                            {{ $statusLabels[$statusFilter] ?? 'All Statuses' }}
+                        </span>
+                        <svg class="h-3.5 w-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="statusFilter">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Statuses</flux:menu.radio>
+                            <flux:menu.radio value="active" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Active</flux:menu.radio>
+                            <flux:menu.radio value="deactivated" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Deactivated</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
             </div>
         </div>
 
@@ -155,8 +165,7 @@
                                     </svg>
                                 </a>
 
-                                <button wire:click="toggleStatus({{ $customer->id }})"
-                                    wire:confirm="Are you sure you want to {{ $customer->is_active ? 'deactivate' : 'activate' }} this customer?"
+                                <button @click="confirmAction($wire, {{ $customer->id }}, 'toggleStatus', 'Are you sure?', 'Are you sure you want to {{ $customer->is_active ? 'deactivate' : 'activate' }} this customer?', 'Yes, {{ $customer->is_active ? 'deactivate' : 'activate' }}!')"
                                     class="p-1 {{ $customer->is_active ? 'text-zinc-400 hover:text-red-500' : 'text-zinc-400 hover:text-emerald-500' }} transition-colors"
                                     title="{{ $customer->is_active ? 'Deactivate' : 'Activate' }}">
                                     @if ($customer->is_active)

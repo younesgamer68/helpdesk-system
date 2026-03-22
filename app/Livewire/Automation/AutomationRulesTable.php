@@ -298,10 +298,11 @@ class AutomationRulesTable extends Component
         $this->showDeleteConfirmation = false;
     }
 
-    public function deleteRule(): void
+    public function deleteRule(?int $id = null): void
     {
+        $id = $id ?? $this->deletingRuleId;
         $rule = AutomationRule::where('company_id', Auth::user()->company_id)
-            ->findOrFail($this->deletingRuleId);
+            ->findOrFail($id);
 
         $ruleName = $rule->name;
         $rule->delete();
@@ -352,13 +353,25 @@ class AutomationRulesTable extends Component
 
     protected function buildActions(): array
     {
-        return match ($this->type) {
-            'assignment' => [
+        if ($this->type === 'assignment') {
+            $actions = [
                 'assign_to_specialist' => $this->assign_to_specialist,
-                'fallback_to_generalist' => $this->fallback_to_generalist,
-                'assign_to_operator_id' => $this->assign_to_operator_id,
-                'assign_to_team_id' => $this->assign_to_team_id,
-            ],
+            ];
+
+            if ($this->assign_to_specialist) {
+                $actions['fallback_to_generalist'] = $this->fallback_to_generalist;
+            } else {
+                if ($this->assign_to_team_id) {
+                    $actions['assign_to_team_id'] = $this->assign_to_team_id;
+                } elseif ($this->assign_to_operator_id) {
+                    $actions['assign_to_operator_id'] = $this->assign_to_operator_id;
+                }
+            }
+
+            return $actions;
+        }
+
+        return match ($this->type) {
             'priority' => [
                 'set_priority' => $this->set_priority,
             ],

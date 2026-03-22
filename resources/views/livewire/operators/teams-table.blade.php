@@ -11,7 +11,7 @@
             </svg>
             <input wire:model.live.debounce.500ms="search" type="text"
                 placeholder="Search teams..."
-                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-0 transition-colors">
         </div>
     </div>
 
@@ -69,7 +69,7 @@
                                             d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </button>
-                                <button wire:click="confirmDelete({{ $team->id }})"
+                                <button @click="confirmDeletion($wire, {{ $team->id }}, 'deleteTeam', 'team')"
                                     class="p-1 text-zinc-400 hover:text-red-500 transition-colors"
                                     title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,6 @@
-<flux:dropdown position="bottom" align="start">
+<flux:dropdown position="bottom" align="start" class="mx-3">
     <flux:button variant="ghost"
-        class="w-full h-10 !p-0 min-w-0 rounded-lg text-emerald-300 hover:bg-emerald-800 hover:text-white"
+        class="h-10 w-full flex items-center justify-start rounded-lg transition-all duration-200 hover:translate-x-1 no-underline !text-emerald-400 hover:!bg-emerald-800 hover:!text-white !p-0 min-w-0"
         data-test="sidebar-menu-button">
         <div class="flex items-center w-full">
             <div class="w-10 flex items-center justify-center shrink-0">
@@ -31,3 +31,4 @@
         </form>
     </flux:menu>
 </flux:dropdown>
+

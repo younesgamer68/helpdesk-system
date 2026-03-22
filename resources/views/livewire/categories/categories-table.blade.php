@@ -11,7 +11,7 @@
             </svg>
             <input wire:model.live.debounce.500ms="search" type="text"
                 placeholder="Search categories..."
-                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-0 transition-colors">
         </div>
     </div>
 
@@ -95,7 +95,7 @@
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button wire:click="confirmDelete({{ $category->id }})"
+                                    <button @click="confirmDeletion($wire, {{ $childCategory->id }}, 'deleteCategory', 'category')"
                                         class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +158,8 @@
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button wire:click="confirmDelete({{ $category->id }})"
+                                    <button
+                                        @click="confirmDeletion($wire, {{ $category->id }}, 'deleteCategory', 'category')"
                                         class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +209,8 @@
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                         </button>
-                                        <button wire:click="confirmDelete({{ $childCategory->id }})"
+                                        <button
+                                            @click="confirmDeletion($wire, {{ $childCategory->id }}, 'deleteCategory', 'subcategory')"
                                             class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                             title="Delete">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"

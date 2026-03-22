@@ -205,10 +205,11 @@ class TeamsTable extends Component
         $this->showDeleteConfirmation = false;
     }
 
-    public function deleteTeam(): void
+    public function deleteTeam(?int $id = null): void
     {
+        $id = $id ?? $this->deletingTeamId;
         $team = Team::where('company_id', Auth::user()->company_id)
-            ->findOrFail($this->deletingTeamId);
+            ->findOrFail($id);
 
         $teamName = $team->name;
         $team->members()->detach();

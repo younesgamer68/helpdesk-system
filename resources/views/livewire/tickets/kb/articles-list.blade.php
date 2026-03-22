@@ -1,7 +1,5 @@
 <div>
     <section class="w-full">
-        <flux:separator class="mb-5 border-b border-zinc-200 dark:border-zinc-700" />
-
         <x-dashboard.kb-layout heading="Articles" subheading="Manage your Knowledge Base articles">
             @if (Auth::user()->isAdmin())
                 <div class="mb-5 flex justify-end">
@@ -28,13 +26,30 @@
                         class="pl-10 w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
 
-                <select wire:model.live="status"
-                    class="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <option value="">All Statuses</option>
-                    <option value="published">Published</option>
-                    <option value="draft">Draft</option>
-                    <option value="archived">Archived</option>
-                </select>
+                <flux:dropdown>
+                    <button type="button" class="w-[150px] flex items-center justify-between rounded-lg border border-zinc-300 dark:border-zinc-700 px-4 py-2 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <span>
+                            @php
+                                $statusLabels = [
+                                    '' => 'All Statuses',
+                                    'published' => 'Published',
+                                    'draft' => 'Draft',
+                                    'archived' => 'Archived'
+                                ];
+                            @endphp
+                            {{ $statusLabels[$status] ?? 'All Statuses' }}
+                        </span>
+                        <svg class="h-4 w-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="status">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Statuses</flux:menu.radio>
+                            <flux:menu.radio value="published" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Published</flux:menu.radio>
+                            <flux:menu.radio value="draft" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Draft</flux:menu.radio>
+                            <flux:menu.radio value="archived" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Archived</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
             </div>
 
             <div

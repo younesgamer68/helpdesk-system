@@ -1,6 +1,5 @@
 <x-layouts::app :title="($filterMode ?? 'ticket') === 'assignment' ? __('Assignment Rules') : __('Ticket Rules')">
     <section class="w-full">
-        <flux:separator class="mb-5 border-b border-zinc-200 dark:border-zinc-700" />
 
         <flux:heading class="sr-only">{{ __('Automation Settings') }}</flux:heading>
 

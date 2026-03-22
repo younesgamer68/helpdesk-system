@@ -43,7 +43,7 @@
             </svg>
         </button>
         <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-            class="flex items-center gap-2 no-underline text-emerald-400 text-sm font-bold italic transition-colors hover:text-white">
+            class="flex items-center gap-2 no-underline text-emerald-400 text-lg font-bold transition-colors hover:text-white">
             <img src="{{ asset('images/logodm.png') }}" alt="" class="w-6 h-6">
             Helpdesk
         </a>
@@ -89,7 +89,7 @@
             <div class="w-10 flex items-center justify-center shrink-0">
                 <img src="{{ asset('images/logodm.png') }}" alt="Helpdesk" class="w-7 h-7">
             </div>
-            <span class="sidebar-label ml-3 text-emerald-400 font-bold italic transition-colors hover:text-white">Helpdesk</span>
+            <span class="sidebar-label text-emerald-400 font-bold !text-xl transition-colors hover:text-white">Helpdesk</span>
         </div>
 
         {{-- Nav --}}
@@ -309,9 +309,7 @@
             </a>
 
             {{-- Profile dropdown --}}
-            <div class="mx-3">
-                <x-app.desktop-user-menu />
-            </div>
+            <x-app.desktop-user-menu />
 
         </div>
     </div>

@@ -11,31 +11,66 @@
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search rules..."
-                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-0 transition-colors">
         </div>
 
         <!-- Type Filter -->
-        <select wire:model.live="filterType"
-            class="w-full px-3 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
-            <option value="">All Types</option>
-            @if ($filterMode === 'all' || $filterMode === 'assignment')
-                <option value="assignment">Auto Assignment</option>
-            @endif
-            @if ($filterMode === 'all' || $filterMode === 'ticket')
-                <option value="priority">Priority Change</option>
-                <option value="auto_reply">Auto Reply</option>
-                <option value="escalation">Escalation</option>
-                <option value="sla_breach">SLA Breach</option>
-            @endif
-        </select>
+        <flux:dropdown>
+            <button type="button" class="w-full flex justify-between items-center px-3 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                <span>
+                    @php
+                        $typeLabels = [
+                            '' => 'All Types',
+                            'assignment' => 'Auto Assignment',
+                            'priority' => 'Priority Change',
+                            'auto_reply' => 'Auto Reply',
+                            'escalation' => 'Escalation',
+                            'sla_breach' => 'SLA Breach'
+                        ];
+                    @endphp
+                    {{ $typeLabels[$filterType] ?? 'All Types' }}
+                </span>
+                <svg class="h-4 w-4 text-zinc-900 dark:text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <flux:menu class="w-[200px]">
+                <flux:menu.radio.group wire:model.live="filterType">
+                    <flux:menu.radio value="" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Types</flux:menu.radio>
+                    @if ($filterMode === 'all' || $filterMode === 'assignment')
+                        <flux:menu.radio value="assignment" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Auto Assignment</flux:menu.radio>
+                    @endif
+                    @if ($filterMode === 'all' || $filterMode === 'ticket')
+                        <flux:menu.radio value="priority" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Priority Change</flux:menu.radio>
+                        <flux:menu.radio value="auto_reply" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Auto Reply</flux:menu.radio>
+                        <flux:menu.radio value="escalation" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Escalation</flux:menu.radio>
+                        <flux:menu.radio value="sla_breach" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">SLA Breach</flux:menu.radio>
+                    @endif
+                </flux:menu.radio.group>
+            </flux:menu>
+        </flux:dropdown>
 
         <!-- Status Filter -->
-        <select wire:model.live="filterStatus"
-            class="w-full px-3 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
-            <option value="">All Status</option>
-            <option value="1">Active</option>
-            <option value="0">Inactive</option>
-        </select>
+        <flux:dropdown>
+            <button type="button" class="w-full flex justify-between items-center px-3 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                <span>
+                    @php
+                        $statusLabels = [
+                            '' => 'All Status',
+                            '1' => 'Active',
+                            '0' => 'Inactive'
+                        ];
+                    @endphp
+                    {{ $statusLabels[$filterStatus] ?? 'All Status' }}
+                </span>
+                <svg class="h-4 w-4 text-zinc-900 dark:text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <flux:menu class="w-[200px]">
+                <flux:menu.radio.group wire:model.live="filterStatus">
+                    <flux:menu.radio value="" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Status</flux:menu.radio>
+                    <flux:menu.radio value="1" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Active</flux:menu.radio>
+                    <flux:menu.radio value="0" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Inactive</flux:menu.radio>
+                </flux:menu.radio.group>
+            </flux:menu>
+        </flux:dropdown>
     </div>
 
     <!-- Table -->
@@ -154,7 +189,7 @@
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                <button wire:click="confirmDelete({{ $rule->id }})"
+                                <button @click="confirmDeletion($wire, {{ $rule->id }}, 'deleteRule', 'automation rule')"
                                     class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

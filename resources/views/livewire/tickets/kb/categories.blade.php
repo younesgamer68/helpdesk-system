@@ -1,7 +1,5 @@
 <div>
     <section class="w-full">
-        <flux:separator class="mb-5 border-b border-zinc-200 dark:border-zinc-700" />
-
         <x-dashboard.kb-layout heading="Categories" subheading="Available categories for your Knowledge Base">
             <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900 rounded-lg">
                 <p class="text-sm text-blue-700 dark:text-blue-300">

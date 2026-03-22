@@ -20,32 +20,52 @@
             <!-- Right Side: Filters -->
             <div class="flex flex-wrap items-center justify-start gap-3 xl:justify-end">
                 <!-- Role Filter -->
-                <div class="relative">
-                    <select wire:model.live="roleFilter"
-                        class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                        <option value="">All Roles</option>
-                        <option value="admin">Admin</option>
-                        <option value="operator">Operator</option>
-                    </select>
-                    <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
+                <flux:dropdown>
+                    <button type="button" class="flex items-center justify-between min-w-[150px] rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                        <span>
+                            @php
+                                $roleLabels = [
+                                    '' => 'All Roles',
+                                    'admin' => 'Admin',
+                                    'operator' => 'Operator'
+                                ];
+                            @endphp
+                            {{ $roleLabels[$roleFilter] ?? 'All Roles' }}
+                        </span>
+                        <svg class="h-3.5 w-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="roleFilter">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Roles</flux:menu.radio>
+                            <flux:menu.radio value="admin" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Admin</flux:menu.radio>
+                            <flux:menu.radio value="operator" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Operator</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
 
                 <!-- Status Filter -->
-                <div class="relative">
-                    <select wire:model.live="statusFilter"
-                        class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                        <option value="">All Statuses</option>
-                        <option value="active">Active Members</option>
-                        <option value="pending">Pending Invites</option>
-                    </select>
-                    <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
+                <flux:dropdown>
+                    <button type="button" class="flex items-center justify-between min-w-[150px] rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                        <span>
+                            @php
+                                $statusLabels = [
+                                    '' => 'All Statuses',
+                                    'active' => 'Active Members',
+                                    'pending' => 'Pending Invites'
+                                ];
+                            @endphp
+                            {{ $statusLabels[$statusFilter] ?? 'All Statuses' }}
+                        </span>
+                        <svg class="h-3.5 w-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="statusFilter">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Statuses</flux:menu.radio>
+                            <flux:menu.radio value="active" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Active Members</flux:menu.radio>
+                            <flux:menu.radio value="pending" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Pending Invites</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
 
                 @if ($this->hasActiveFilters)
                      <button wire:click="$set('showSaveViewModal', true)"
@@ -369,9 +389,8 @@
                                             </button>
                                         @endif
 
-                                        <button wire:click="removeUser({{ $user->id }})"
-                                            wire:confirm="Are you sure you want to {{ $user->isPendingInvite() ? 'revoke this invitation' : 'remove this team member? Their tickets will be unassigned.' }}?"
-                                            @click="open = false"
+                                        <button
+                                            @click="open = false; confirmAction($wire, {{ $user->id }}, 'removeUser', 'Are you sure?', '{{ $user->isPendingInvite() ? 'Revoke this invitation?' : 'Remove this team member? Their tickets will be unassigned.' }}', 'Yes, {{ $user->isPendingInvite() ? 'revoke' : 'remove' }} it!')"
                                             class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -411,73 +430,44 @@
 
     <!-- Create Operator Modal -->
     @if ($showCreateModal)
-        <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" x-data="{ showingDiscard: @entangle('showDiscardConfirmation') }"
-            @click.self="$wire.attemptCloseCreateModal()" @keydown.escape.window="$wire.attemptCloseCreateModal()">
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                @click.stop>
-                <!-- Header -->
-                <div
-                    class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
-                    <div>
-                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Invite Agent</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Send a secure invite link to onboard a
-                            new operator or
-                            admin.</p>
-                    </div>
-                    <button wire:click="attemptCloseCreateModal"
-                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <flux:modal wire:model="showCreateModal" class="md:w-[600px]">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Invite Agent</flux:heading>
+                    <flux:subheading>Send a secure invite link to onboard a new operator or admin.</flux:subheading>
                 </div>
 
-                <!-- Form -->
-                <form wire:submit="createAgent" class="p-6 space-y-6">
-                    <div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Agent Name <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="inviteName" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                                    placeholder="John Doe">
-                                @error('inviteName')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                <form wire:submit="createAgent" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <flux:field>
+                                <flux:label>Agent Name</flux:label>
+                                <flux:input wire:model.blur="inviteName" placeholder="John Doe" />
+                                <flux:error name="inviteName" />
+                            </flux:field>
+                        </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Email Address <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="inviteEmail" type="email"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                                    placeholder="john@example.com">
-                                @error('inviteEmail')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div>
+                            <flux:field>
+                                <flux:label>Email Address</flux:label>
+                                <flux:input wire:model.blur="inviteEmail" type="email" placeholder="john@example.com" />
+                                <flux:error name="inviteEmail" />
+                            </flux:field>
+                        </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Account Role <span class="text-red-400">*</span>
-                                </label>
-                                <select wire:model.live="inviteRole"
-                                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
-                                    <option value="operator">Operator</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                                @error('inviteRole')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div>
+                            <flux:field>
+                                <flux:label>Account Role</flux:label>
+                                <flux:select wire:model.live="inviteRole" placeholder="Select role...">
+                                    <flux:select.option value="operator">Operator</flux:select.option>
+                                    <flux:select.option value="admin">Admin</flux:select.option>
+                                </flux:select>
+                                <flux:error name="inviteRole" />
+                            </flux:field>
                         </div>
                     </div>
 
-                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mt-6">
+                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div class="flex gap-3">
                             <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -492,130 +482,65 @@
                         </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="flex gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <button type="button" wire:click="attemptCloseCreateModal"
-                            class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
+                    <div class="flex gap-3">
+                        <flux:button type="button" wire:click="attemptCloseCreateModal" variant="ghost" class="flex-1">
                             Cancel
-                        </button>
-                        <button type="submit" wire:loading.attr="disabled" wire:target="createAgent"
-                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-
-                            {{-- Plus icon: hidden while loading --}}
-                            <svg wire:loading.remove wire:target="createAgent" class="w-4 h-4 shrink-0"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-
-                            {{-- Spinner: shown while loading --}}
-                            <svg wire:loading wire:target="createAgent" class="w-4 h-4 shrink-0 animate-spin"
-                                viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                    stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-
+                        </flux:button>
+                        <flux:button type="submit" variant="primary" class="flex-1">
                             Dispatch Invite
-                        </button>
+                        </flux:button>
                     </div>
                 </form>
+            </div>
+        </flux:modal>
 
-                <!-- Discard Confirmation Dianlog -->
-                <div x-show="showingDiscard" x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="absolute inset-0 bg-black/60 flex items-center justify-center p-4" style="display: none;">
-                    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-2xl max-w-md w-full p-6"
-                        @click.stop>
-                        <div class="flex items-start gap-4">
-                            <div
-                                class="flex-shrink-0 w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard invitation?
-                                </h3>
-                                <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-                                    You have unsaved changes. If you close now, your progress will be lost.
-                                </p>
-                                <div class="flex gap-3 mt-6">
-                                    <button wire:click="cancelDiscard"
-                                        class="flex-1 px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-200 font-medium rounded-lg transition-colors">
-                                        Keep editing
-                                    </button>
-                                    <button wire:click="confirmDiscard"
-                                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors">
-                                        Discard
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Discard Confirmation Dialog -->
+        <flux:modal wire:model="showDiscardConfirmation" class="md:w-96">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Discard invitation?</flux:heading>
+                    <flux:subheading>You have unsaved changes. If you close now, your progress will be lost.</flux:subheading>
+                </div>
+
+                <div class="flex gap-3">
+                    <flux:button wire:click="cancelDiscard" variant="ghost" class="flex-1">
+                        Keep editing
+                    </flux:button>
+                    <flux:button wire:click="confirmDiscard" variant="danger" class="flex-1">
+                        Discard
+                    </flux:button>
                 </div>
             </div>
-        </div>
+        </flux:modal>
     @endif
 
     <!-- Bulk Invite Modal -->
     @if ($showBulkInviteModal)
-        <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            @click.self="$wire.closeBulkInviteModal()" @keydown.escape.window="$wire.closeBulkInviteModal()">
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                @click.stop>
-                <!-- Header -->
-                <div
-                    class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
-                    <div>
-                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Bulk Invite Agents</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Invite multiple team members by
-                            entering their email addresses.</p>
-                    </div>
-                    <button wire:click="closeBulkInviteModal"
-                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <flux:modal wire:model="showBulkInviteModal" class="md:w-[600px]">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Bulk Invite Agents</flux:heading>
+                    <flux:subheading>Invite multiple team members by entering their email addresses.</flux:subheading>
                 </div>
 
-                <!-- Form -->
-                <form wire:submit="processBulkInvite" class="p-6 space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                            Email Addresses <span class="text-red-400">*</span>
-                        </label>
-                        <p class="text-xs text-zinc-500 mb-2">Enter emails separated by commas or new lines.</p>
-                        <textarea wire:model="bulkInviteEmails" rows="5"
-                            class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                            placeholder="john@example.com, jane@example.com"></textarea>
-                        @error('bulkInviteEmails')
-                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <form wire:submit="processBulkInvite" class="space-y-6">
+                    <flux:field>
+                        <flux:label>Email Addresses</flux:label>
+                        <flux:description>Enter emails separated by commas or new lines</flux:description>
+                        <flux:textarea wire:model="bulkInviteEmails" rows="5" placeholder="john@example.com, jane@example.com" />
+                        <flux:error name="bulkInviteEmails" />
+                    </flux:field>
 
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                            Account Role for all <span class="text-red-400">*</span>
-                        </label>
-                        <select wire:model.live="bulkInviteRole"
-                            class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
-                            <option value="operator">Operator</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                        @error('bulkInviteRole')
-                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <flux:field>
+                        <flux:label>Account Role for all</flux:label>
+                        <flux:select wire:model.live="bulkInviteRole" placeholder="Select role...">
+                            <flux:select.option value="operator">Operator</flux:select.option>
+                            <flux:select.option value="admin">Admin</flux:select.option>
+                        </flux:select>
+                        <flux:error name="bulkInviteRole" />
+                    </flux:field>
 
-                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mt-6">
+                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div class="flex gap-3">
                             <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -630,39 +555,17 @@
                         </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="flex gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <button type="button" wire:click="closeBulkInviteModal"
-                            class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
+                    <div class="flex gap-3">
+                        <flux:button type="button" wire:click="closeBulkInviteModal" variant="ghost" class="flex-1">
                             Cancel
-                        </button>
-                        <button type="submit" wire:loading.attr="disabled" wire:target="processBulkInvite"
-                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
-                            <span wire:loading.remove wire:target="processBulkInvite"
-                                class="inline-flex items-center gap-2 whitespace-nowrap">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Dispatch Bulk Invites
-                            </span>
-
-                            <span wire:loading wire:target="processBulkInvite"
-                                class="inline-flex items-center gap-2 whitespace-nowrap">
-                                <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"
-                                    aria-hidden="true">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                        stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                </svg>
-                                Sending Invites...
-                            </span>
-                        </button>
+                        </flux:button>
+                        <flux:button type="submit" variant="primary" class="flex-1">
+                            Dispatch Bulk Invites
+                        </flux:button>
                     </div>
                 </form>
             </div>
-        </div>
+        </flux:modal>
     @endif
 
     <!-- Save View Modal -->

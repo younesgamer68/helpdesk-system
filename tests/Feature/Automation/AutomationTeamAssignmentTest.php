@@ -185,7 +185,7 @@ test('team assignment respects priority condition', function () {
     expect($ticket->team_id)->toBeNull();
 });
 
-test('assign_to_team_id takes precedence over assign_to_specialist in same rule', function () {
+test('assign_to_specialist takes precedence over assign_to_team_id in same rule', function () {
     $team = Team::factory()->create(['company_id' => $this->company->id]);
     $teamOperator = User::factory()->operator()->create(['company_id' => $this->company->id]);
     $team->members()->attach($teamOperator->id, ['role' => 'member']);
@@ -194,6 +194,9 @@ test('assign_to_team_id takes precedence over assign_to_specialist in same rule'
     $category = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Network']);
     $specialist = User::factory()->operator()->create(['company_id' => $this->company->id]);
     $specialist->categories()->attach($category->id);
+
+    // Ensure specialist is available
+    $specialist->update(['status' => 'online']);
 
     AutomationRule::factory()->assignment()->create([
         'company_id' => $this->company->id,
@@ -214,8 +217,10 @@ test('assign_to_team_id takes precedence over assign_to_specialist in same rule'
     $this->engine->processNewTicket($ticket);
 
     $ticket->refresh();
-    expect($ticket->team_id)->toBe($team->id);
-    expect($ticket->assigned_to)->toBe($teamOperator->id);
+    
+    // Should be assigned to the specialist (globally), ignoring the stale team ID
+    expect($ticket->team_id)->toBeNull();
+    expect($ticket->assigned_to)->toBe($specialist->id);
 });
 
 test('team assignment records rule execution count', function () {
