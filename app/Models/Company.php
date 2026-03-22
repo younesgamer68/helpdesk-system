@@ -61,11 +61,6 @@ class Company extends Model
         return $this->hasOne(CompanyAiSettings::class);
     }
 
-    public function autoTriageRules()
-    {
-        return $this->hasMany(AutoTriageRule::class);
-    }
-
     public function goldenResponses()
     {
         return $this->hasMany(GoldenResponse::class);

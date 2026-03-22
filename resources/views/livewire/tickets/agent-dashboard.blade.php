@@ -187,7 +187,8 @@
                 @if ($this->unassignedTickets->isNotEmpty())
                     <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                         @foreach ($this->unassignedTickets as $ticket)
-                            <div class="animate-enter px-5 py-3.5" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                            <div class="animate-enter px-5 py-3.5"
+                                style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2 mb-1">
@@ -215,7 +216,8 @@
                                     <button wire:click="assignToMe({{ $ticket->id }})" wire:loading.attr="disabled"
                                         wire:target="assignToMe({{ $ticket->id }})"
                                         class="flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-medium text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-colors disabled:opacity-50">
-                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign to me</span>
+                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign
+                                            to me</span>
                                         <span wire:loading
                                             wire:target="assignToMe({{ $ticket->id }})">Assigning…</span>
                                     </button>
@@ -244,7 +246,8 @@
                 @if ($this->recentNotifications->isNotEmpty())
                     <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                         @foreach ($this->recentNotifications as $notification)
-                            <div class="animate-enter flex items-start gap-3 px-5 py-3.5" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                            <div class="animate-enter flex items-start gap-3 px-5 py-3.5"
+                                style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
                                 @if (is_null($notification->read_at))
                                     <div class="w-2 h-2 mt-1.5 rounded-full bg-emerald-400 flex-shrink-0"></div>
                                 @else
@@ -269,6 +272,76 @@
             </div>
         </div>
     </div>
+
+    {{-- My Team's Tickets --}}
+    @if (Auth::user()->teams()->count() > 0)
+        <div
+            class="mt-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                <div>
+                    <h2 class="text-base font-semibold text-zinc-900 dark:text-white">My Team's Tickets</h2>
+                    <p class="text-xs text-zinc-500 mt-0.5">Recent tickets from your team</p>
+                </div>
+            </div>
+
+            @if ($this->teamTickets->isNotEmpty())
+                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                    @foreach ($this->teamTickets as $ticket)
+                        <div class="animate-enter flex items-center justify-between gap-4 px-5 py-3.5"
+                            style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xs text-zinc-500 font-mono">{{ $ticket->ticket_number }}</span>
+                                    @php
+                                        $tStatusBg = match ($ticket->status) {
+                                            'open' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                                            'pending' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+                                            'in_progress' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                                            default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+                                        };
+                                    @endphp
+                                    <span
+                                        class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium border {{ $tStatusBg }}">
+                                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-zinc-700 dark:text-zinc-200 truncate">{{ $ticket->subject }}
+                                </p>
+                                <p class="text-xs text-zinc-500 mt-0.5">
+                                    {{ $ticket->customer_name }}
+                                    @if ($ticket->assignedTo)
+                                        · Assigned to {{ $ticket->assignedTo->name }}
+                                    @else
+                                        · <span class="text-amber-500">Unassigned</span>
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                @if (!$ticket->assigned_to)
+                                    <button wire:click="takeTicket({{ $ticket->id }})" wire:loading.attr="disabled"
+                                        wire:target="takeTicket({{ $ticket->id }})"
+                                        class="px-3 py-1.5 text-xs font-medium text-teal-600 dark:text-teal-400 border border-teal-500/30 rounded-lg hover:bg-teal-500/10 transition-colors disabled:opacity-50">
+                                        <span wire:loading.remove
+                                            wire:target="takeTicket({{ $ticket->id }})">Take</span>
+                                        <span wire:loading wire:target="takeTicket({{ $ticket->id }})">...</span>
+                                    </button>
+                                @endif
+                                <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}"
+                                    wire:navigate
+                                    class="px-3 py-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="px-5 py-10 text-center">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">No team tickets at the moment</p>
+                </div>
+            @endif
+        </div>
+    @endif
 
     <!-- Modals for KPI Lists -->
     <!-- Open Tickets Modal -->

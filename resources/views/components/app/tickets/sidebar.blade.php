@@ -1,4 +1,4 @@
-@props(['ticket', 'agents', 'teams' => collect()])
+@props(['ticket', 'agents', 'teams' => collect(), 'isTeammate' => false, 'isAssignee' => false])
 
 <div class="lg:sticky lg:top-8 h-fit space-y-6">
     <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6 space-y-4">
@@ -206,102 +206,140 @@
     </div>
 
     {{-- Actions --}}
-    <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 space-y-2">
-        @if (auth()->user()->isAdmin())
-            <x-ui.dropdown-btn>
-                <x-slot:title>
-                    <flux:icon.user-plus class="w-4 h-4 shrink-0" />
-                    {{ $ticket->assignedTo ? 'Reassign' : 'Assign' }}
-                </x-slot:title>
-                <button type="button" wire:click="assign(null)" wire:confirm="Unassign this ticket?"
-                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
-                    <span class="flex items-center gap-2">
-                        <span
-                            class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
-                        Unassigned
-                    </span>
-                </button>
-                @foreach ($agents as $agent)
-                    <button type="button" wire:click="assign({{ $agent->id }})"
-                        wire:confirm="Assign to {{ $agent->name }}?" @click="open = false"
-                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
+    @if (!$isTeammate)
+        <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 space-y-2">
+            @if (auth()->user()->isAdmin())
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.user-plus class="w-4 h-4 shrink-0" />
+                        {{ $ticket->assignedTo ? 'Reassign' : 'Assign' }}
+                    </x-slot:title>
+                    <button type="button" wire:click="assign(null)" wire:confirm="Unassign this ticket?"
+                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
                         <span class="flex items-center gap-2">
                             <span
-                                class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
-                            <span class="flex flex-col">
-                                <span class="font-medium">{{ $agent->name }}</span>
-                                <span class="text-[10px] text-zinc-500">{{ $agent->email }}</span>
+                                class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
+                            Unassigned
+                        </span>
+                    </button>
+                    @foreach ($agents as $agent)
+                        <button type="button" wire:click="assign({{ $agent->id }})"
+                            wire:confirm="Assign to {{ $agent->name }}?" @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
+                            <span class="flex items-center gap-2">
+                                <span
+                                    class="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">{{ strtoupper(substr($agent->name, 0, 1)) }}</span>
+                                <span class="flex flex-col">
+                                    <span class="font-medium">{{ $agent->name }}</span>
+                                    <span class="text-[10px] text-zinc-500">
+                                        {{ $agent->teams->first()?->name ?? 'No team' }}
+                                    </span>
+                                </span>
                             </span>
-                        </span>
-                    </button>
-                @endforeach
-            </x-ui.dropdown-btn>
-        @endif
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+            @endif
 
-        @if (auth()->user()->isAdmin())
-            <x-ui.dropdown-btn>
-                <x-slot:title>
-                    <flux:icon.user-group class="w-4 h-4 shrink-0" />
-                    {{ $ticket->team ? 'Change Team' : 'Assign Team' }}
-                </x-slot:title>
-                <button type="button" wire:click="assignToTeam(null)" wire:confirm="Remove from team?"
-                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
-                    <span class="flex items-center gap-2">
-                        <span
-                            class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
-                        No team
-                    </span>
-                </button>
-                @foreach ($teams as $team)
-                    <button type="button" wire:click="assignToTeam({{ $team->id }})"
-                        wire:confirm="Assign to {{ $team->name }}?" @click="open = false"
-                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
+            @if (auth()->user()->isAdmin())
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.user-group class="w-4 h-4 shrink-0" />
+                        {{ $ticket->team ? 'Change Team' : 'Assign Team' }}
+                    </x-slot:title>
+                    <button type="button" wire:click="assignToTeam(null)" wire:confirm="Remove from team?"
+                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
                         <span class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full shrink-0"
-                                style="background-color: {{ $team->color }}"></span>
-                            {{ $team->name }}
+                            <span
+                                class="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center text-zinc-500 text-[10px]">?</span>
+                            No team
                         </span>
                     </button>
-                @endforeach
-            </x-ui.dropdown-btn>
-        @endif
+                    @foreach ($teams as $team)
+                        <button type="button" wire:click="assignToTeam({{ $team->id }})"
+                            wire:confirm="Assign to {{ $team->name }}?" @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full shrink-0"
+                                    style="background-color: {{ $team->color }}"></span>
+                                {{ $team->name }}
+                            </span>
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+            @endif
 
-        <x-ui.dropdown-btn>
-            <x-slot:title>
-                <flux:icon.exclamation-triangle class="w-4 h-4 shrink-0" />
-                Change Priority
-            </x-slot:title>
-            @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
-                <button type="button" wire:click="changePriority('{{ $priority }}')"
-                    wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
-                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
-                    {{ ucfirst($priority) }}
+            @if (!$isAssignee)
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.exclamation-triangle class="w-4 h-4 shrink-0" />
+                        Change Priority
+                    </x-slot:title>
+                    @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
+                        <button type="button" wire:click="changePriority('{{ $priority }}')"
+                            wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                            {{ ucfirst($priority) }}
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.adjustments-horizontal class="w-4 h-4 shrink-0" />
+                        Change Status
+                    </x-slot:title>
+                    @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
+                        <button type="button" wire:click="changeStatus('{{ $status }}')"
+                            wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?"
+                            @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                            {{ str_replace('_', ' ', ucfirst($status)) }}
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+            @endif
+
+            @if ($isAssignee)
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.exclamation-triangle class="w-4 h-4 shrink-0" />
+                        Change Priority
+                    </x-slot:title>
+                    @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
+                        <button type="button" wire:click="changePriority('{{ $priority }}')"
+                            wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                            {{ ucfirst($priority) }}
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+
+                <x-ui.dropdown-btn>
+                    <x-slot:title>
+                        <flux:icon.adjustments-horizontal class="w-4 h-4 shrink-0" />
+                        Change Status
+                    </x-slot:title>
+                    @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
+                        <button type="button" wire:click="changeStatus('{{ $status }}')"
+                            wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?"
+                            @click="open = false"
+                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
+                            {{ str_replace('_', ' ', ucfirst($status)) }}
+                        </button>
+                    @endforeach
+                </x-ui.dropdown-btn>
+            @endif
+
+            @if (Auth::user()->isAdmin())
+                <button type="button" wire:click="closeTicket"
+                    wire:confirm="Are you sure you want to close this ticket?"
+                    class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                    <flux:icon.x-mark class="w-4 h-4 shrink-0" />
+                    Close ticket
                 </button>
-            @endforeach
-        </x-ui.dropdown-btn>
-
-        <x-ui.dropdown-btn>
-            <x-slot:title>
-                <flux:icon.adjustments-horizontal class="w-4 h-4 shrink-0" />
-                Change Status
-            </x-slot:title>
-            @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
-                <button type="button" wire:click="changeStatus('{{ $status }}')"
-                    wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?" @click="open = false"
-                    class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
-                    {{ str_replace('_', ' ', ucfirst($status)) }}
-                </button>
-            @endforeach
-        </x-ui.dropdown-btn>
-
-        @if (Auth::user()->isAdmin())
-            <button type="button" wire:click="closeTicket"
-                wire:confirm="Are you sure you want to close this ticket?"
-                class="w-full px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-red-500 dark:text-red-400 rounded-lg transition text-sm flex items-center justify-center gap-2">
-                <flux:icon.x-mark class="w-4 h-4 shrink-0" />
-                Close ticket
-            </button>
-        @endif
-    </div>
+            @endif
+        </div>
+    @endif
 </div>
 </div>

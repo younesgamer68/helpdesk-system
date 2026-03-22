@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use App\Models\TicketLog;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -155,6 +156,60 @@ class AgentDashboard extends Component
             'action' => 'assigned',
             'description' => 'Self-assigned by '.Auth::user()->name.'.',
         ]);
+
+        $this->dispatch('show-toast', message: "Ticket #{$ticket->ticket_number} assigned to you!", type: 'success');
+    }
+
+    #[Computed]
+    public function teamTickets(): Collection
+    {
+        $teamIds = Auth::user()->teams()->pluck('teams.id');
+
+        if ($teamIds->isEmpty()) {
+            return collect();
+        }
+
+        return Ticket::query()
+            ->whereIn('team_id', $teamIds)
+            ->where('assigned_to', '!=', Auth::id())
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->with(['assignedTo:id,name', 'customer:id,name,email,phone'])
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
+    }
+
+    public function takeTicket(int $ticketId): void
+    {
+        $ticket = Ticket::query()
+            ->whereNull('assigned_to')
+            ->findOrFail($ticketId);
+
+        $userTeamIds = Auth::user()->teams()->pluck('teams.id');
+        if ($ticket->team_id === null || ! $userTeamIds->contains($ticket->team_id)) {
+            $this->dispatch('show-toast', message: 'You cannot take this ticket.', type: 'error');
+
+            return;
+        }
+
+        DB::transaction(function () use ($ticket) {
+            $ticket->update([
+                'assigned_to' => Auth::id(),
+                'status' => $ticket->status === 'open' ? 'in_progress' : $ticket->status,
+            ]);
+
+            $user = Auth::user();
+            $user->increment('assigned_tickets_count');
+            $user->update(['last_assigned_at' => now()]);
+
+            TicketLog::create([
+                'company_id' => $ticket->company_id,
+                'ticket_id' => $ticket->id,
+                'user_id' => Auth::id(),
+                'action' => 'self_assigned',
+                'description' => $user->name.' took this ticket',
+            ]);
+        });
 
         $this->dispatch('show-toast', message: "Ticket #{$ticket->ticket_number} assigned to you!", type: 'success');
     }

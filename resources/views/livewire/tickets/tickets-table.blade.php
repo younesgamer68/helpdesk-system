@@ -9,6 +9,10 @@
                 class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'mine' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 My Tickets
             </button>
+            <button wire:click="setTicketView('team')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'team' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                My Team
+            </button>
             <button wire:click="setTicketView('all')"
                 class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'all' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 All Tickets
@@ -329,6 +333,15 @@
                                             {{ $ticket->assignedTo->name }}
                                         @endif
                                     </span>
+                                @elseif ($ticketView === 'team')
+                                    <button wire:click.stop="takeTicket({{ $ticket->id }})"
+                                        wire:loading.attr="disabled" wire:target="takeTicket({{ $ticket->id }})"
+                                        class="px-3 py-1.5 text-xs font-medium text-teal-600 dark:text-teal-400 border border-teal-500/30 rounded-lg hover:bg-teal-500/10 transition-colors disabled:opacity-50">
+                                        <span wire:loading.remove wire:target="takeTicket({{ $ticket->id }})">Take
+                                            this ticket</span>
+                                        <span wire:loading
+                                            wire:target="takeTicket({{ $ticket->id }})">Taking...</span>
+                                    </button>
                                 @else
                                     <div
                                         class="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300">
@@ -427,8 +440,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                             </svg>
-                            <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting your
-                                filters.</p>
+                            @if ($ticketView === 'team' && Auth::user()->isOperator() && Auth::user()->teams()->count() === 0)
+                                <p class="mt-4 text-zinc-500 dark:text-zinc-400">You are not part of any team yet.</p>
+                            @else
+                                <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting your
+                                    filters.</p>
+                            @endif
                         </td>
                     </tr>
                 @endforelse

@@ -16,7 +16,6 @@ class CompanyAiSettings extends Model
         'ai_suggestions_enabled',
         'ai_summary_enabled',
         'ai_chatbot_enabled',
-        'ai_auto_triage_enabled',
         'ai_model',
         'chatbot_greeting',
         'chatbot_fallback_threshold',
@@ -30,7 +29,6 @@ class CompanyAiSettings extends Model
             'ai_suggestions_enabled' => 'boolean',
             'ai_summary_enabled' => 'boolean',
             'ai_chatbot_enabled' => 'boolean',
-            'ai_auto_triage_enabled' => 'boolean',
             'chatbot_fallback_threshold' => 'integer',
         ];
     }

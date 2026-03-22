@@ -1,7 +1,6 @@
 <?php
 
 use App\Ai\Agents\SupportReplyAgent;
-use App\Livewire\Ai\AutoTriageRules;
 use App\Livewire\Ai\ChatHistory;
 use App\Livewire\Ai\SuggestedRepliesTraining;
 use App\Livewire\Ai\UsageStats;
@@ -9,15 +8,12 @@ use App\Livewire\AiChatWidget;
 use App\Livewire\Settings\AiCopilot;
 use App\Livewire\Tickets\TicketDetails;
 use App\Models\AiSuggestionLog;
-use App\Models\AutoTriageRule;
 use App\Models\ChatbotConversation;
 use App\Models\Company;
 use App\Models\CompanyAiSettings;
 use App\Models\GoldenResponse;
 use App\Models\Ticket;
-use App\Models\TicketCategory;
 use App\Models\User;
-use App\Services\AutoTriageService;
 use Livewire\Livewire;
 
 function createAiAdmin(): array
@@ -86,108 +82,6 @@ test('copilot settings validates model selection', function () {
         ->set('ai_model', 'invalid-model')
         ->call('save')
         ->assertHasErrors(['ai_model']);
-});
-
-// ──────────────────────────────────────
-// Auto-Triage Rules
-// ──────────────────────────────────────
-
-test('auto-triage rules page renders for admin', function () {
-    [$admin] = createAiAdmin();
-
-    $this->actingAs($admin);
-
-    Livewire::test(AutoTriageRules::class)
-        ->assertSuccessful();
-});
-
-test('admin can create keyword triage rule', function () {
-    [$admin, $company] = createAiAdmin();
-
-    $this->actingAs($admin);
-
-    Livewire::test(AutoTriageRules::class)
-        ->call('openCreate')
-        ->set('name', 'Billing Issues')
-        ->set('type', 'keyword')
-        ->set('keywordsInput', 'billing, invoice, payment')
-        ->set('priority', 'high')
-        ->call('save')
-        ->assertDispatched('show-toast');
-
-    $this->assertDatabaseHas('auto_triage_rules', [
-        'company_id' => $company->id,
-        'name' => 'Billing Issues',
-        'type' => 'keyword',
-        'priority' => 'high',
-    ]);
-});
-
-test('admin can create ai triage rule', function () {
-    [$admin, $company] = createAiAdmin();
-    $category = TicketCategory::factory()->create(['company_id' => $company->id]);
-
-    $this->actingAs($admin);
-
-    Livewire::test(AutoTriageRules::class)
-        ->call('openCreate')
-        ->set('name', 'AI Catch All')
-        ->set('type', 'ai')
-        ->set('category_id', $category->id)
-        ->call('save')
-        ->assertDispatched('show-toast');
-
-    $this->assertDatabaseHas('auto_triage_rules', [
-        'company_id' => $company->id,
-        'name' => 'AI Catch All',
-        'type' => 'ai',
-    ]);
-});
-
-test('admin can edit triage rule', function () {
-    [$admin, $company] = createAiAdmin();
-    $rule = AutoTriageRule::factory()->create(['company_id' => $company->id, 'name' => 'Old Name']);
-
-    $this->actingAs($admin);
-
-    Livewire::test(AutoTriageRules::class)
-        ->call('openEdit', $rule->id)
-        ->set('name', 'New Name')
-        ->call('save')
-        ->assertDispatched('show-toast');
-
-    $this->assertDatabaseHas('auto_triage_rules', [
-        'id' => $rule->id,
-        'name' => 'New Name',
-    ]);
-});
-
-test('admin can toggle triage rule active', function () {
-    [$admin, $company] = createAiAdmin();
-    $rule = AutoTriageRule::factory()->create([
-        'company_id' => $company->id,
-        'is_active' => true,
-    ]);
-
-    $this->actingAs($admin);
-
-    Livewire::test(AutoTriageRules::class)
-        ->call('toggleActive', $rule->id);
-
-    expect($rule->fresh()->is_active)->toBeFalse();
-});
-
-test('admin can delete triage rule', function () {
-    [$admin, $company] = createAiAdmin();
-    $rule = AutoTriageRule::factory()->create(['company_id' => $company->id]);
-
-    $this->actingAs($admin);
-
-    Livewire::test(AutoTriageRules::class)
-        ->call('delete', $rule->id)
-        ->assertDispatched('show-toast');
-
-    $this->assertDatabaseMissing('auto_triage_rules', ['id' => $rule->id]);
 });
 
 // ──────────────────────────────────────
@@ -424,118 +318,6 @@ test('usage stats computes correct metrics', function () {
 });
 
 // ──────────────────────────────────────
-// Auto-Triage Service (keyword matching)
-// ──────────────────────────────────────
-
-test('auto-triage applies keyword rule to ticket', function () {
-    $company = Company::factory()->create();
-    $category = TicketCategory::factory()->create(['company_id' => $company->id, 'name' => 'Billing']);
-
-    CompanyAiSettings::create([
-        'company_id' => $company->id,
-        'ai_auto_triage_enabled' => true,
-        'ai_suggestions_enabled' => false,
-        'ai_summary_enabled' => false,
-        'ai_chatbot_enabled' => false,
-    ]);
-
-    AutoTriageRule::create([
-        'company_id' => $company->id,
-        'name' => 'Billing Rule',
-        'type' => 'keyword',
-        'keywords' => ['invoice', 'billing'],
-        'category_id' => $category->id,
-        'priority' => 'high',
-        'is_active' => true,
-        'order' => 1,
-    ]);
-
-    $ticket = Ticket::factory()->create([
-        'company_id' => $company->id,
-        'subject' => 'Problem with my invoice',
-        'description' => 'I cannot download my invoice',
-        'category_id' => null,
-        'priority' => 'medium',
-    ]);
-
-    $service = new AutoTriageService;
-    $service->triage($ticket);
-
-    $ticket->refresh();
-    expect($ticket->category_id)->toBe($category->id);
-    expect($ticket->priority)->toBe('high');
-});
-
-test('auto-triage does nothing when disabled', function () {
-    $company = Company::factory()->create();
-
-    CompanyAiSettings::create([
-        'company_id' => $company->id,
-        'ai_auto_triage_enabled' => false,
-        'ai_suggestions_enabled' => false,
-        'ai_summary_enabled' => false,
-        'ai_chatbot_enabled' => false,
-    ]);
-
-    $ticket = Ticket::factory()->create([
-        'company_id' => $company->id,
-        'subject' => 'Test',
-        'category_id' => null,
-        'priority' => 'medium',
-    ]);
-
-    $service = new AutoTriageService;
-    $service->triage($ticket);
-
-    $ticket->refresh();
-    expect($ticket->category_id)->toBeNull();
-    expect($ticket->priority)->toBe('medium');
-});
-
-test('auto-triage skips when no keywords match', function () {
-    $company = Company::factory()->create();
-    $category = TicketCategory::factory()->create(['company_id' => $company->id]);
-
-    CompanyAiSettings::create([
-        'company_id' => $company->id,
-        'ai_auto_triage_enabled' => true,
-        'ai_suggestions_enabled' => false,
-        'ai_summary_enabled' => false,
-        'ai_chatbot_enabled' => false,
-        'ai_model' => 'gemini-2.5-flash',
-    ]);
-
-    AutoTriageRule::create([
-        'company_id' => $company->id,
-        'name' => 'Billing Rule',
-        'type' => 'keyword',
-        'keywords' => ['invoice', 'billing'],
-        'category_id' => $category->id,
-        'priority' => 'high',
-        'is_active' => true,
-        'order' => 1,
-    ]);
-
-    $ticket = Ticket::factory()->create([
-        'company_id' => $company->id,
-        'subject' => 'My printer is broken',
-        'description' => 'Paper jam every time',
-        'category_id' => null,
-        'priority' => 'medium',
-    ]);
-
-    // Fake the agent so generic AI triage doesn't make a real API call
-    SupportReplyAgent::fake(['No matching category or priority found.']);
-
-    $service = new AutoTriageService;
-    $service->triage($ticket);
-
-    $ticket->refresh();
-    // Keyword rules shouldn't match; AI response doesn't contain valid Priority/Category format
-    expect($ticket->priority)->toBe('medium');
-});
-
-// ──────────────────────────────────────
 // Settings Enforcement
 // ──────────────────────────────────────
 
@@ -547,7 +329,6 @@ test('ai suggestion is blocked when ai_suggestions_enabled is false', function (
         'ai_suggestions_enabled' => false,
         'ai_summary_enabled' => false,
         'ai_chatbot_enabled' => false,
-        'ai_auto_triage_enabled' => false,
         'ai_model' => 'gemini-2.5-flash',
     ]);
 
@@ -572,7 +353,6 @@ test('ai suggestion works when ai_suggestions_enabled is true', function () {
         'ai_suggestions_enabled' => true,
         'ai_summary_enabled' => false,
         'ai_chatbot_enabled' => false,
-        'ai_auto_triage_enabled' => false,
         'ai_model' => 'gemini-2.5-flash',
     ]);
 
@@ -599,7 +379,6 @@ test('ai summary is blocked when ai_summary_enabled is false', function () {
         'ai_suggestions_enabled' => false,
         'ai_summary_enabled' => false,
         'ai_chatbot_enabled' => false,
-        'ai_auto_triage_enabled' => false,
         'ai_model' => 'gemini-2.5-flash',
     ]);
 
@@ -625,7 +404,6 @@ test('ai summary generates when ai_summary_enabled is true', function () {
         'ai_suggestions_enabled' => false,
         'ai_summary_enabled' => true,
         'ai_chatbot_enabled' => false,
-        'ai_auto_triage_enabled' => false,
         'ai_model' => 'gemini-2.5-flash',
     ]);
 
@@ -671,7 +449,6 @@ test('ai suggestion passes configured model to agent', function () {
         'ai_suggestions_enabled' => true,
         'ai_summary_enabled' => false,
         'ai_chatbot_enabled' => false,
-        'ai_auto_triage_enabled' => false,
         'ai_model' => 'gpt-4o-mini',
     ]);
 
@@ -699,7 +476,6 @@ test('chatbot is blocked when ai_chatbot_enabled is false', function () {
         'ai_suggestions_enabled' => false,
         'ai_summary_enabled' => false,
         'ai_chatbot_enabled' => false,
-        'ai_auto_triage_enabled' => false,
         'ai_model' => 'gemini-2.5-flash',
     ]);
 
