@@ -85,3 +85,22 @@ it('renders recent ticket customers without lazy loading violations', function (
         ->assertSee('TKT-CUSTOMER')
         ->assertSee('Acme Customer');
 });
+
+it('only renders the admin KPI flyout after a KPI is clicked', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $agent = User::factory()->create(['company_id' => $company->id, 'role' => 'agent', 'email' => 'agent@example.com']);
+
+    Livewire::actingAs($user)
+        ->test(AdminDashboard::class)
+        ->assertDontSee('All Agents')
+        ->assertDontSee('agent@example.com')
+        ->call('loadModal', 'total-agents')
+        ->assertSet('activeModal', 'total-agents')
+        ->assertSee('All Agents')
+        ->assertSee('agent@example.com')
+        ->call('closeModal')
+        ->assertSet('activeModal', null)
+        ->assertDontSee('All Agents')
+        ->assertDontSee('agent@example.com');
+});
