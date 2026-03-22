@@ -639,6 +639,243 @@ document.addEventListener("alpine:init", () => {
         },
     }));
 
+    Alpine.data("agentCharts", (config) => ({
+        charts: {},
+
+        init() {
+            this.destroyCharts();
+            this.$nextTick(() => setTimeout(() => this.initCharts(config), 80));
+        },
+
+        destroyCharts() {
+            Object.values(this.charts).forEach((ch) => {
+                try {
+                    ch?.destroy?.();
+                } catch (e) {}
+            });
+            this.charts = {};
+        },
+
+        initCharts(cfg) {
+            if (typeof window.Chart === "undefined") return;
+            const Chart = window.Chart;
+            const gridColor = "rgba(113, 113, 122, 0.4)";
+            const textColor = "#a1a1aa";
+            const tooltipBg = "#18181b";
+            const tooltipBorder = "#3f3f46";
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 600, easing: "easeOutQuart" },
+                plugins: {
+                    tooltip: {
+                        backgroundColor: tooltipBg,
+                        borderColor: tooltipBorder,
+                        borderWidth: 1,
+                        titleColor: "#fff",
+                        bodyColor: "#d4d4d8",
+                        padding: 10,
+                        cornerRadius: 8,
+                    },
+                    legend: { display: false },
+                },
+            };
+
+            const vol = cfg.ticketVolume || {};
+            if (vol.labels?.length) {
+                const el = document.getElementById("agent-chart-volume");
+                if (el) {
+                    const existing = Chart.getChart?.(el);
+                    if (existing) existing.destroy();
+                    this.charts.volume = new Chart(el, {
+                        type: "line",
+                        data: {
+                            labels: vol.labels,
+                            datasets: [
+                                {
+                                    label: "Assigned",
+                                    data: vol.created,
+                                    borderColor: "#14b8a6",
+                                    backgroundColor: "rgba(20,184,166,0.08)",
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 2,
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: "Resolved",
+                                    data: vol.resolved,
+                                    borderColor: "#22c55e",
+                                    backgroundColor: "rgba(34,197,94,0.08)",
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 2,
+                                    borderWidth: 2,
+                                },
+                            ],
+                        },
+                        options: {
+                            ...commonOptions,
+                            plugins: {
+                                ...commonOptions.plugins,
+                                legend: {
+                                    display: true,
+                                    position: "top",
+                                    labels: {
+                                        color: textColor,
+                                        usePointStyle: true,
+                                        pointStyle: "circle",
+                                        padding: 16,
+                                    },
+                                },
+                            },
+                            scales: {
+                                x: {
+                                    grid: { color: gridColor },
+                                    ticks: {
+                                        color: textColor,
+                                        font: { size: 11 },
+                                    },
+                                },
+                                y: {
+                                    grid: { color: gridColor },
+                                    ticks: {
+                                        color: textColor,
+                                        precision: 0,
+                                    },
+                                    beginAtZero: true,
+                                },
+                            },
+                        },
+                    });
+                }
+            }
+
+            const st = cfg.statusBreakdown || {};
+            if (st.labels?.length) {
+                const el = document.getElementById("agent-chart-status");
+                if (el) {
+                    const existing = Chart.getChart?.(el);
+                    if (existing) existing.destroy();
+                    this.charts.status = new Chart(el, {
+                        type: "doughnut",
+                        data: {
+                            labels: st.labels,
+                            datasets: [
+                                {
+                                    data: st.values,
+                                    backgroundColor: st.colors,
+                                    borderWidth: 0,
+                                    hoverOffset: 6,
+                                },
+                            ],
+                        },
+                        options: {
+                            ...commonOptions,
+                            cutout: "68%",
+                            plugins: {
+                                ...commonOptions.plugins,
+                                tooltip: {
+                                    ...commonOptions.plugins.tooltip,
+                                    callbacks: {
+                                        label: (ctx) =>
+                                            `${ctx.label}: ${ctx.raw} tickets`,
+                                    },
+                                },
+                            },
+                        },
+                    });
+                }
+            }
+
+            const pr = cfg.priorityBreakdown || {};
+            if (pr.labels?.length) {
+                const el = document.getElementById("agent-chart-priority");
+                if (el) {
+                    const existing = Chart.getChart?.(el);
+                    if (existing) existing.destroy();
+                    this.charts.priority = new Chart(el, {
+                        type: "bar",
+                        data: {
+                            labels: pr.labels,
+                            datasets: [
+                                {
+                                    data: pr.values,
+                                    backgroundColor: pr.colors,
+                                    borderRadius: 4,
+                                    barPercentage: 0.6,
+                                },
+                            ],
+                        },
+                        options: {
+                            ...commonOptions,
+                            indexAxis: "y",
+                            scales: {
+                                x: {
+                                    grid: { color: gridColor },
+                                    ticks: {
+                                        color: textColor,
+                                        precision: 0,
+                                    },
+                                    beginAtZero: true,
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: { color: textColor },
+                                },
+                            },
+                        },
+                    });
+                }
+            }
+
+            const cb = cfg.categoryBreakdown || {};
+            if (cb.labels?.length) {
+                const el = document.getElementById("agent-chart-category");
+                if (el) {
+                    const existing = Chart.getChart?.(el);
+                    if (existing) existing.destroy();
+                    this.charts.catBreak = new Chart(el, {
+                        type: "bar",
+                        data: {
+                            labels: cb.labels,
+                            datasets: [
+                                {
+                                    data: cb.values,
+                                    backgroundColor: "rgba(20,184,166,0.6)",
+                                    borderRadius: 4,
+                                    barPercentage: 0.6,
+                                },
+                            ],
+                        },
+                        options: {
+                            ...commonOptions,
+                            indexAxis: "y",
+                            scales: {
+                                x: {
+                                    grid: { color: gridColor },
+                                    ticks: {
+                                        color: textColor,
+                                        precision: 0,
+                                    },
+                                    beginAtZero: true,
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        color: textColor,
+                                        font: { size: 11 },
+                                    },
+                                },
+                            },
+                        },
+                    });
+                }
+            }
+        },
+    }));
+
     Alpine.data("tiptapEditor", (config = {}) => {
         let editor;
         const model = config.model || "message";

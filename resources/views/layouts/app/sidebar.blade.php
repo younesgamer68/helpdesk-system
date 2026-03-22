@@ -277,6 +277,20 @@
                     <span class="sidebar-label">{{ __('Team') }}</span>
                 </a>
 
+                @php $active = request()->routeIs('kb.*'); @endphp
+                <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $active ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('Knowledge Base') }}</span>
+                </a>
+
                 @php $active = request()->routeIs('operator.me'); @endphp
                 <a href="{{ route('operator.me', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
@@ -319,8 +333,8 @@
                 <span class="sidebar-label">{{ __('Notifications') }}</span>
             </a>
 
+            {{-- Settings --}}
             @if (Auth::user()->isAdmin())
-                {{-- Settings icon (admin only) --}}
                 @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit', 'settings.my-team'); @endphp
                 <a href="{{ route('company.profile', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
@@ -335,12 +349,27 @@
                     </div>
                     <span class="sidebar-label">{{ __('Settings') }}</span>
                 </a>
-
-                {{-- Profile dropdown (admin only) --}}
-                <div class="mx-3">
-                    <x-app.desktop-user-menu />
-                </div>
+            @else
+                @php $settingsActive = request()->routeIs('appearance.edit', 'settings.security', 'notifications.preferences', 'profile.edit', 'two-factor.show'); @endphp
+                <a href="{{ route('profile.edit', Auth::user()->company->slug) }}" wire:navigate
+                    class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
+                          {{ $settingsActive ? 'bg-emerald-700 text-white' : 'text-emerald-400 hover:bg-emerald-800 hover:text-white' }}">
+                    <div class="w-10 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </div>
+                    <span class="sidebar-label">{{ __('Settings') }}</span>
+                </a>
             @endif
+
+            {{-- Profile dropdown --}}
+            <div class="mx-3">
+                <x-app.desktop-user-menu />
+            </div>
 
         </div>
     </div>
