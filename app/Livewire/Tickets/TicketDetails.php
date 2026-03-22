@@ -54,7 +54,7 @@ class TicketDetails extends Component
 
     public $summaryLoading = false;
 
-    public $showSummary = true;
+    public $showSummary = false;
 
     public $agentSearch = '';
 
@@ -80,6 +80,21 @@ class TicketDetails extends Component
             'company.slaPolicy:id,company_id,is_enabled',
         ]);
         $this->state = $ticket->status;
+
+        // Redirect outsider operators (inline check — computed props may not be available in mount)
+        if (Auth::user()->isOperator()) {
+            $isAssignee = $this->ticket->assigned_to === Auth::id();
+            $isTeammate = ! $isAssignee
+                && $this->ticket->team_id !== null
+                && Auth::user()->teams()->pluck('teams.id')->contains($this->ticket->team_id);
+
+            if (! $isAssignee && ! $isTeammate) {
+                session()->flash('error', 'You do not have access to this ticket.');
+                $this->redirect(route('tickets', ['company' => $ticket->company->slug]));
+
+                return;
+            }
+        }
     }
 
     #[Computed]
@@ -91,6 +106,7 @@ class TicketDetails extends Component
         $query = User::query()
             ->where('company_id', '=', $user->company_id)
             ->select('id', 'name', 'email')
+            ->with('teams:id,name,color')
             ->orderBy('name', 'asc');
 
         if (! empty($this->agentSearch)) {
@@ -153,7 +169,6 @@ class TicketDetails extends Component
                 'ai_suggestions_enabled' => false,
                 'ai_summary_enabled' => false,
                 'ai_chatbot_enabled' => false,
-                'ai_auto_triage_enabled' => false,
                 'ai_model' => 'gemini-2.5-flash',
             ]
         );
@@ -188,6 +203,36 @@ class TicketDetails extends Component
             ->with('user:id,name')
             ->orderBy('created_at', 'desc')
             ->get();
+    }
+
+    #[Computed]
+    public function isAssignee(): bool
+    {
+        return Auth::user()->isOperator() && $this->ticket->assigned_to === Auth::id();
+    }
+
+    #[Computed]
+    public function isTeammate(): bool
+    {
+        if (! Auth::user()->isOperator()) {
+            return false;
+        }
+
+        if ($this->ticket->assigned_to === Auth::id()) {
+            return false;
+        }
+
+        if ($this->ticket->team_id === null) {
+            return false;
+        }
+
+        return Auth::user()->teams()->pluck('teams.id')->contains($this->ticket->team_id);
+    }
+
+    #[Computed]
+    public function isOutsider(): bool
+    {
+        return Auth::user()->isOperator() && ! $this->isAssignee && ! $this->isTeammate;
     }
 
     private function logAction($action, $description)
@@ -236,13 +281,13 @@ class TicketDetails extends Component
 
         $customerEmail = $this->ticket->customer_email;
 
-        if ($customerEmail) {
-            Mail::to($customerEmail)->send(new TicketResolved($this->ticket));
-        }
-
         $this->logAction('resolved', 'Ticket resolved.');
 
         $this->dispatch('show-toast', message: 'Ticket marked as resolved!', type: 'success');
+
+        if ($customerEmail) {
+            Mail::to($customerEmail)->queue(new TicketResolved($this->ticket));
+        }
     }
 
     public function unresolve()

@@ -129,7 +129,6 @@ class AiCopilot extends Component
                 'ai_suggestions_enabled' => false,
                 'ai_summary_enabled' => false,
                 'ai_chatbot_enabled' => false,
-                'ai_auto_triage_enabled' => false,
                 'ai_model' => 'gemini-2.5-flash',
             ]
         );

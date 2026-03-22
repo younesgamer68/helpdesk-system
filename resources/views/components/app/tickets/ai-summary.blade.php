@@ -47,10 +47,10 @@
 }
 $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); });" data-has-alpine-state="true">
     <div @clear-summary-display.window="stopTyping(); displayedSummary = '';">
-        <div class="p-4 border-b border-zinc-200 dark:border-zinc-700" :class="{ 'border-b-0': showSummary }">
-            <div class="flex items-center justify-between">
+        <div class="border-l-2 border-zinc-500" :class="{ 'border-b-0': showSummary }">
+            <div class="flex items-center justify-between  pl-2.5">
                 <button @click="showSummary = !showSummary" class="flex items-center gap-2 text-left">
-                    <div class="flex items-center gap-1.5 text-emerald-400">
+                    <div class="flex items-center gap-1.5 text-zinc-800">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
@@ -65,8 +65,9 @@ $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); 
                 </button>
                 <button wire:click="regenerateSummary" @click="isLoading = true; stopTyping(); displayedSummary = '';"
                     :disabled="isLoading"
-                    class="flex items-center gap-1.5 text-xs px-2.5 py-1 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 dark:hover:text-emerald-400 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg x-show="!isLoading" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="flex items-center gap-1.5 text-xs px-2.5 py-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-400 dark:hover:text-zinc-400 rounded font-medium transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg x-show="!isLoading" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                         </path>
@@ -84,13 +85,13 @@ $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); 
                 <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                     <span x-text="displayedSummary.split('\n')[0].replace('Issue: ', '')"></span>
                     <span x-show="isTyping"
-                        class="animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-emerald-400"
+                        class="animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-zinc-400"
                         style="display: none;"></span>
                 </p>
             </div>
         </div>
 
-        <div x-show="showSummary" class="p-4 bg-zinc-50 dark:bg-zinc-800/50 transition-all duration-300"
+        <div x-show="showSummary" class="bg-zinc-50 dark:bg-zinc-800/50 transition-all duration-300"
             style="display: none;">
 
             <div x-show="isLoading && !displayedSummary" class="space-y-4" style="display: none;">
@@ -107,36 +108,37 @@ $watch('summaryText', value => { if (value && !displayedSummary) startTyping(); 
                     <div class="h-3 bg-zinc-200 dark:bg-zinc-700 rounded w-3/6"></div>
                 </div>
 
-                <div class="flex items-center gap-2 text-emerald-400 mt-2">
-                    <span class="animate-pulse inline-block w-[8px] h-[1em] align-middle bg-emerald-400"></span>
+                <div class="flex items-center gap-2 text-zinc-400 mt-2">
+                    <span class="animate-pulse inline-block w-[8px] h-[1em] align-middle bg-zinc-400"></span>
                     <span class="text-xs">Generating summary...</span>
                 </div>
             </div>
 
-            <div x-show="displayedSummary || (!isLoading && !displayedSummary)" class="border-l-2 border-emerald-500 pl-4">
+            <div x-show="displayedSummary || (!isLoading && !displayedSummary)"
+                class="border-l-2 border-zinc-500 pl-4">
                 <div class="space-y-4 px-2 text-sm">
                     <div>
-                        <span class="font-semibold text-emerald-400 text-xs uppercase tracking-wide">Issue</span>
+                        <span class="font-semibold text-zinc-400 text-xs uppercase tracking-wide">Issue</span>
                         <p class="text-zinc-600 dark:text-zinc-300 mt-1 leading-relaxed whitespace-pre-wrap"
-                            x-html="getIssue() + (isSectionActive('issue') ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-emerald-400\'></span>' : '')">
+                            x-html="getIssue() + (isSectionActive('issue') ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-zinc-400\'></span>' : '')">
                         </p>
                     </div>
                     <div>
-                        <span class="font-semibold text-emerald-400 text-xs uppercase tracking-wide">Progress</span>
+                        <span class="font-semibold text-zinc-400 text-xs uppercase tracking-wide">Progress</span>
                         <p class="text-zinc-600 dark:text-zinc-300 mt-1 leading-relaxed whitespace-pre-wrap"
-                            x-html="getProgress() + (isSectionActive('progress') ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-emerald-400\'></span>' : '')">
+                            x-html="getProgress() + (isSectionActive('progress') ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-zinc-400\'></span>' : '')">
                         </p>
                     </div>
                     <div>
-                        <span class="font-semibold text-emerald-400 text-xs uppercase tracking-wide">Next Step</span>
+                        <span class="font-semibold text-zinc-400 text-xs uppercase tracking-wide">Next Step</span>
                         <p class="text-zinc-600 dark:text-zinc-300 mt-1 leading-relaxed whitespace-pre-wrap"
-                            x-html="getNextStep() + (isSectionActive('next step') ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-emerald-400\'></span>' : '')">
+                            x-html="getNextStep() + (isSectionActive('next step') ? '<span class=\'animate-pulse inline-block ml-0.5 w-[8px] h-[1em] align-middle bg-zinc-400\'></span>' : '')">
                         </p>
                     </div>
                 </div>
                 <div x-show="!displayedSummary && !isLoading" class="text-sm px-1 text-zinc-500 dark:text-zinc-400"
                     style="display: none;">
-                    <span class="animate-pulse inline-block mr-1 w-[8px] h-[1em] align-middle bg-emerald-400"></span>
+                    <span class="animate-pulse inline-block mr-1 w-[8px] h-[1em] align-middle bg-zinc-400"></span>
                     Waiting for summary...
                 </div>
             </div>

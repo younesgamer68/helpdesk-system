@@ -23,7 +23,6 @@ class CompanyAiSettingsFactory extends Factory
             'ai_suggestions_enabled' => false,
             'ai_summary_enabled' => false,
             'ai_chatbot_enabled' => false,
-            'ai_auto_triage_enabled' => false,
             'ai_model' => 'gemini-2.5-flash',
             'chatbot_greeting' => null,
             'chatbot_fallback_threshold' => 0.5,

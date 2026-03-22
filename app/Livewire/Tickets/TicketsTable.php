@@ -5,7 +5,9 @@ namespace App\Livewire\Tickets;
 use App\Models\SavedFilterView;
 use App\Models\TenantConfig;
 use App\Models\Ticket;
+use App\Models\TicketLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -204,7 +206,7 @@ class TicketsTable extends Component
 
     public function setTicketView(string $view): void
     {
-        if (in_array($view, ['mine', 'all'])) {
+        if (in_array($view, ['mine', 'team', 'all'])) {
             $this->ticketView = $view;
             $this->resetPage();
         }
@@ -299,6 +301,14 @@ class TicketsTable extends Component
                         });
                     }
                 });
+            } elseif ($this->ticketView === 'team') {
+                // Show tickets from teams the operator belongs to
+                $teamIds = $user->teams()->pluck('teams.id');
+                if ($teamIds->isNotEmpty()) {
+                    $query->whereIn('team_id', $teamIds);
+                } else {
+                    $query->whereRaw('1 = 0');
+                }
             } else {
                 // "mine" - show only tickets assigned to this operator
                 $query->where('assigned_to', $user->id);
@@ -613,6 +623,43 @@ class TicketsTable extends Component
         $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets assigned successfully', type: 'success');
         $this->selectedTickets = [];
         $this->selectAll = false;
+        $this->refreshTickets();
+    }
+
+    public function takeTicket(int $ticketId): void
+    {
+        $ticket = Ticket::where('company_id', Auth::user()->company_id)
+            ->whereNull('assigned_to')
+            ->findOrFail($ticketId);
+
+        // Verify operator is in the ticket's team
+        $userTeamIds = Auth::user()->teams()->pluck('teams.id');
+        if ($ticket->team_id === null || ! $userTeamIds->contains($ticket->team_id)) {
+            $this->dispatch('show-toast', message: 'You cannot take this ticket.', type: 'error');
+
+            return;
+        }
+
+        DB::transaction(function () use ($ticket) {
+            $ticket->update([
+                'assigned_to' => Auth::id(),
+                'status' => $ticket->status === 'open' ? 'in_progress' : $ticket->status,
+            ]);
+
+            $user = Auth::user();
+            $user->increment('assigned_tickets_count');
+            $user->update(['last_assigned_at' => now()]);
+
+            TicketLog::create([
+                'company_id' => $ticket->company_id,
+                'ticket_id' => $ticket->id,
+                'user_id' => Auth::id(),
+                'action' => 'self_assigned',
+                'description' => $user->name.' took this ticket',
+            ]);
+        });
+
+        $this->dispatch('show-toast', message: "Ticket #{$ticket->ticket_number} assigned to you!", type: 'success');
         $this->refreshTickets();
     }
 

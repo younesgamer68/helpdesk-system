@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\Automation\AutomationEngine;
-use App\Services\AutoTriageService;
 use App\Services\TicketAssignmentService;
 
 class TicketObserver
@@ -14,7 +13,6 @@ class TicketObserver
     public function __construct(
         protected TicketAssignmentService $assignmentService,
         protected AutomationEngine $automationEngine,
-        protected AutoTriageService $autoTriageService,
     ) {}
 
     /**
@@ -86,9 +84,6 @@ class TicketObserver
     {
         // Only process if ticket is verified
         if ($ticket->verified) {
-            // Auto-triage before automation rules
-            $this->autoTriageService->triage($ticket);
-
             $this->automationEngine->processNewTicket($ticket);
 
             // Fallback: If still unassigned after automation, use default assignment
@@ -107,8 +102,6 @@ class TicketObserver
     {
         // Process automation when ticket becomes verified
         if ($ticket->wasChanged('verified') && $ticket->verified) {
-            // Auto-triage before automation rules
-            $this->autoTriageService->triage($ticket);
 
             $this->automationEngine->processNewTicket($ticket);
 
