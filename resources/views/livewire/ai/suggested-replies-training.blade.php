@@ -68,50 +68,50 @@
                         </div>
                     @else
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm">
-                                <thead>
-                                    <tr class="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500">
-                                        <th class="px-4 py-3 font-medium">Ticket</th>
-                                        <th class="px-4 py-3 font-medium">Agent</th>
-                                        <th class="px-4 py-3 font-medium">Action</th>
-                                        <th class="px-4 py-3 font-medium">When</th>
+                            <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+                                <thead class="border-b border-zinc-100 dark:border-zinc-800">
+                                    <tr>
+                                        <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Ticket</th>
+                                        <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Agent</th>
+                                        <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Action</th>
+                                        <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">When</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                                     @foreach ($this->suggestionFeed as $log)
                                         <tr wire:key="log-{{ $log->id }}"
-                                            class="border-b border-zinc-100 dark:border-zinc-800/70">
-                                            <td class="px-4 py-3 text-zinc-900 dark:text-zinc-100">
+                                            class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                            <td class="px-4 py-4 text-zinc-900 dark:text-zinc-100 font-medium">
                                                 @if ($log->ticket)
                                                     #{{ $log->ticket->ticket_number }}
                                                     <span
-                                                        class="text-zinc-500 dark:text-zinc-400 ml-1">{{ Str::limit($log->ticket->subject, 30) }}</span>
+                                                        class="text-zinc-500 dark:text-zinc-400 ml-1 font-normal">{{ Str::limit($log->ticket->subject, 30) }}</span>
                                                 @else
                                                     <span class="text-zinc-400">Deleted</span>
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                                            <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400">
                                                 {{ $log->user?->name ?? '—' }}</td>
-                                            <td class="px-4 py-3">
+                                            <td class="px-4 py-4">
                                                 <span
-                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border
                                                     {{ match ($log->action) {
-                                                        'use' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-                                                        'dismiss' => 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-                                                        'regenerate' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-                                                        default => 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-emerald-300',
+                                                        'use' => 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
+                                                        'dismiss' => 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+                                                        'regenerate' => 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20',
+                                                        default => 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700',
                                                     } }}">
                                                     {{ ucfirst($log->action) }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-3 text-zinc-500 dark:text-zinc-400">
+                                            <td class="px-4 py-4 text-zinc-500 dark:text-zinc-400">
                                                 {{ $log->created_at->diffForHumans() }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800">
+                        <div class="px-4 py-4 border-t border-zinc-200 dark:border-zinc-800">
                             {{ $this->suggestionFeed->links() }}
                         </div>
                     @endif

@@ -15,12 +15,6 @@
             @endif
 
             <flux:navlist.item
-                :href="route('appearance.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate
-                icon="paint-brush">{{ __('Appearance') }}</flux:navlist.item>
-
-
-
-            <flux:navlist.item
                 :href="route('settings.security', ['company' => Auth::user()->company?->slug ?? 'default'])"
                 wire:navigate icon="shield-check">{{ __('Security') }}</flux:navlist.item>
 
@@ -28,10 +22,6 @@
                 <flux:navlist.item
                     :href="route('settings.email', ['company' => Auth::user()->company?->slug ?? 'default'])"
                     wire:navigate icon="envelope">{{ __('Email') }}</flux:navlist.item>
-
-                <flux:navlist.item
-                    :href="route('form-widget.edit', ['company' => Auth::user()->company?->slug ?? 'default'])"
-                    wire:navigate icon="window">{{ __('Form Widget') }}</flux:navlist.item>
             @endif
 
             <flux:navlist.item

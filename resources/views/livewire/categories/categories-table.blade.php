@@ -1,80 +1,73 @@
 <div>
     <x-ui.flash-message />
 
-    <!-- Filters Section -->
-    <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Search</h3>
-        </div>
-
-        <div class="grid grid-cols-1 gap-3">
-            <!-- Search Input -->
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input wire:model.live.debounce.500ms="search" type="text"
-                    placeholder="Search by name or description..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-            </div>
+    <!-- Search -->
+    <div class="mb-6 space-y-3">
+        <div class="relative">
+            <svg class="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input wire:model.live.debounce.500ms="search" type="text"
+                placeholder="Search categories..."
+                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
         </div>
     </div>
 
     <!-- Table -->
-    <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+            <thead class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200/50 dark:border-zinc-800">
+                <tr>
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider cursor-pointer group hover:text-zinc-700 dark:hover:text-zinc-300"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
                             Name
                             @if ($sortBy === 'name')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
                     <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                        class="px-4 py-3 text-xs font-medium uppercase tracking-wider">
                         Description
                     </th>
 
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider cursor-pointer group hover:text-zinc-700 dark:hover:text-zinc-300"
                         wire:click="setSortBy('default_priority')">
                         <div class="flex items-center gap-1">
                             Default Priority
                             @if ($sortBy === 'default_priority')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
                     <th
-                        class="px-4 py-3 text-right text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                        class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         Actions
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800" x-data="{ openMap: {} }">
+            <tbody x-data="{ openMap: {} }" class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                 @php
                     $priorityColors = [
-                        'low' => 'bg-green-500/10 text-green-400 border-green-500/20',
-                        'medium' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                        'high' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                        'urgent' => 'bg-red-500/10 text-red-400 border-red-500/20',
+                        'low' => 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20',
+                        'medium' => 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20',
+                        'high' => 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20',
+                        'urgent' => 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20',
                     ];
                 @endphp
 
                 @forelse ($this->categories as $category)
                     @if ($search)
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors"
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
                             wire:key="category-search-{{ $category->id }}">
-                            <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-4 align-middle">
                                 <div>
                                     <span
                                         class="font-medium text-zinc-900 dark:text-zinc-100">{{ $category->name }}</span>
@@ -83,19 +76,19 @@
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                            <td class="px-4 py-4">
                                 {{ Str::limit($category->description, 50) ?? '-' }}
                             </td>
-                            <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-4">
                                 <span
-                                    class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$category->default_priority] }}">
+                                    class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded border {{ $priorityColors[$category->default_priority] }}">
                                     {{ ucfirst($category->default_priority) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-right">
+                            <td class="px-4 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="editCategory({{ $category->id }})"
-                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -103,7 +96,7 @@
                                         </svg>
                                     </button>
                                     <button wire:click="confirmDelete({{ $category->id }})"
-                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -114,10 +107,10 @@
                             </td>
                         </tr>
                     @else
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors {{ $category->children->isNotEmpty() ? 'cursor-pointer select-none' : '' }}"
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $category->children->isNotEmpty() ? 'cursor-pointer select-none' : '' }}"
                             wire:key="category-parent-{{ $category->id }}"
                             @if ($category->children->isNotEmpty()) @click="openMap[{{ $category->id }}] = !(openMap[{{ $category->id }}] ?? true)" @endif>
-                            <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-4 align-middle">
                                 <div class="flex items-center gap-2">
                                     @if ($category->children->isNotEmpty())
                                         <span
@@ -142,23 +135,23 @@
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                            <td class="px-4 py-4 overflow-hidden max-w-xs truncate">
                                 {{ Str::limit($category->description, 50) ?? '-' }}
                             </td>
-                            <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-4">
                                 <span
-                                    class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$category->default_priority] }}">
+                                    class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded border {{ $priorityColors[$category->default_priority] }}">
                                     {{ ucfirst($category->default_priority) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-right" @click.stop>
+                            <td class="px-4 py-4 text-right" @click.stop>
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="openCreateModal({{ $category->id }})"
                                         class="rounded-lg px-2.5 py-1.5 text-xs font-medium text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                                         + Add subcategory
                                     </button>
                                     <button wire:click="editCategory({{ $category->id }})"
-                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -166,7 +159,7 @@
                                         </svg>
                                     </button>
                                     <button wire:click="confirmDelete({{ $category->id }})"
-                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -178,14 +171,14 @@
                         </tr>
 
                         @foreach ($category->children as $childCategory)
-                            <tr class="bg-zinc-50/70 hover:bg-zinc-50 dark:bg-zinc-900/20 dark:hover:bg-zinc-900/40 transition-colors"
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors bg-zinc-50/50 dark:bg-zinc-900/30"
                                 wire:key="category-child-{{ $childCategory->id }}"
                                 x-show="openMap[{{ $category->id }}] ?? true"
                                 x-transition:enter="transition ease-out duration-150"
                                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                 x-transition:leave="transition ease-in duration-100"
                                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-                                <td class="px-4 py-3 text-sm">
+                                <td class="px-4 py-4 align-middle">
                                     <div class="flex items-start gap-3 pl-6">
                                         <span class="mt-2 h-px w-4 bg-zinc-300 dark:bg-zinc-700"></span>
                                         <div>
@@ -195,19 +188,19 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                                <td class="px-4 py-4 overflow-hidden max-w-xs truncate">
                                     {{ Str::limit($childCategory->description, 50) ?? '-' }}
                                 </td>
-                                <td class="px-4 py-3 text-sm">
+                                <td class="px-4 py-4">
                                     <span
                                         class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $priorityColors[$childCategory->default_priority] }}">
                                         {{ ucfirst($childCategory->default_priority) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-right">
+                                <td class="px-4 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <button wire:click="editCategory({{ $childCategory->id }})"
-                                            class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                            class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                             title="Edit">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -216,7 +209,7 @@
                                             </svg>
                                         </button>
                                         <button wire:click="confirmDelete({{ $childCategory->id }})"
-                                            class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                            class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                             title="Delete">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">

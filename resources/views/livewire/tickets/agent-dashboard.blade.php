@@ -1,4 +1,4 @@
-<div class="animate-enter">
+<div>
     <!-- Header -->
     <div class="mb-8 flex items-center justify-between">
         <div>
@@ -16,7 +16,7 @@
     <!-- KPI Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
         <button type="button" x-on:click="$flux.modal('open-tickets-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
+            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Open
                     Tickets</span>
@@ -33,7 +33,7 @@
         </button>
 
         <button type="button" x-on:click="$flux.modal('resolved-tickets-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
+            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolved
                     Today</span>
@@ -49,7 +49,7 @@
         </button>
 
         <button type="button" x-on:click="$flux.modal('pending-tickets-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
+            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Pending
                     Reply</span>
@@ -65,12 +65,12 @@
         </button>
 
         <a href="{{ route('notifications', Auth::user()->company->slug) }}" wire:navigate
-            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Unread
                     Notifications</span>
-                <div class="p-1.5 bg-emerald-500/10 rounded-lg">
-                    <svg class="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor"
+                <div class="p-1.5 bg-teal-500/10 rounded-lg">
+                    <svg class="w-4 h-4 text-teal-500 dark:text-teal-400" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -82,7 +82,7 @@
         </a>
 
         <button type="button" x-on:click="$flux.modal('sla-breached-modal').show()"
-            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
+            class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/80">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">SLA
                     Breached</span>
@@ -113,7 +113,7 @@
                 <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
                     <h2 class="text-base font-semibold text-zinc-900 dark:text-white">My Tickets</h2>
                     <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-                        class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
+                        class="text-xs text-teal-400 hover:text-teal-300 transition-colors">
                         View all →
                     </a>
                 </div>
@@ -123,8 +123,7 @@
                         @foreach ($this->myTickets as $ticket)
                             <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}"
                                 wire:navigate
-                                class="animate-enter flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
-                                style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                                class="flex items-center gap-4 px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2 mb-1">
                                         <span
@@ -187,7 +186,7 @@
                 @if ($this->unassignedTickets->isNotEmpty())
                     <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                         @foreach ($this->unassignedTickets as $ticket)
-                            <div class="animate-enter px-5 py-3.5" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                            <div class="px-5 py-3.5">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2 mb-1">
@@ -214,8 +213,9 @@
                                     </div>
                                     <button wire:click="assignToMe({{ $ticket->id }})" wire:loading.attr="disabled"
                                         wire:target="assignToMe({{ $ticket->id }})"
-                                        class="flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-medium text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-colors disabled:opacity-50">
-                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign to me</span>
+                                        class="flex-shrink-0 mt-1 px-3 py-1.5 text-xs font-medium text-teal-400 border border-teal-500/30 rounded-lg hover:bg-teal-500/10 transition-colors disabled:opacity-50">
+                                        <span wire:loading.remove wire:target="assignToMe({{ $ticket->id }})">Assign
+                                            to me</span>
                                         <span wire:loading
                                             wire:target="assignToMe({{ $ticket->id }})">Assigning…</span>
                                     </button>
@@ -236,7 +236,7 @@
                 <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-200 dark:border-zinc-800">
                     <h2 class="text-base font-semibold text-zinc-900 dark:text-white">Recent Activity</h2>
                     <a href="{{ route('notifications', Auth::user()->company->slug) }}" wire:navigate
-                        class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
+                        class="text-xs text-teal-400 hover:text-teal-300 transition-colors">
                         View all →
                     </a>
                 </div>
@@ -244,9 +244,9 @@
                 @if ($this->recentNotifications->isNotEmpty())
                     <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                         @foreach ($this->recentNotifications as $notification)
-                            <div class="animate-enter flex items-start gap-3 px-5 py-3.5" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                            <div class="flex items-start gap-3 px-5 py-3.5">
                                 @if (is_null($notification->read_at))
-                                    <div class="w-2 h-2 mt-1.5 rounded-full bg-emerald-400 flex-shrink-0"></div>
+                                    <div class="w-2 h-2 mt-1.5 rounded-full bg-teal-400 flex-shrink-0"></div>
                                 @else
                                     <div class="w-2 h-2 mt-1.5 rounded-full flex-shrink-0"></div>
                                 @endif
@@ -284,7 +284,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                                     {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
@@ -311,7 +311,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                                     {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
@@ -337,7 +337,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                                     {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}</p>
@@ -363,7 +363,7 @@
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                             <div>
                                 <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
+                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
                                     {{ $ticket->subject }}</p>
                                 <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                                     {{ $ticket->ticket_number }} &middot; {{ $ticket->customer_name }}

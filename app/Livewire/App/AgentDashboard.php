@@ -15,6 +15,13 @@ use Livewire\Component;
 #[Title('Dashboard')]
 class AgentDashboard extends Component
 {
+    public $activeModal = null;
+
+    public function loadModal($modal)
+    {
+        $this->activeModal = $modal;
+    }
+
     #[Computed]
     public function openTicketsCount(): int
     {

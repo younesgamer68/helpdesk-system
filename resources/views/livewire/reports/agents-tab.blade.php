@@ -63,21 +63,22 @@
         </div>
 
         {{-- Recent Resolved Tickets --}}
-        <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
-            <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Recent Resolved Tickets</h2>
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800">
+                <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Recent Resolved Tickets</h2>
+            </div>
             @if ($sa['recent_resolved']->isNotEmpty())
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead
-                            class="text-zinc-500 dark:text-zinc-400 text-xs uppercase border-b border-zinc-200 dark:border-zinc-700">
+                    <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+                        <thead class="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
                             <tr>
-                                <th class="text-left py-2 px-3">Subject</th>
-                                <th class="text-left py-2 px-3">Category</th>
-                                <th class="text-right py-2 px-3">Resolution Time</th>
-                                <th class="text-right py-2 px-3"></th>
+                                <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Subject</th>
+                                <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Category</th>
+                                <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right">Resolution Time</th>
+                                <th class="px-4 py-3 text-right"></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700/90">
+                        <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                             @foreach ($sa['recent_resolved'] as $ticket)
                                 @php
                                     $resTime =
@@ -87,17 +88,17 @@
                                             )
                                             : null;
                                 @endphp
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30">
-                                    <td class="py-2 px-3 text-zinc-900 dark:text-zinc-100 max-w-xs truncate">
+                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                    <td class="px-4 py-4 text-zinc-900 dark:text-zinc-100 max-w-xs truncate font-medium">
                                         {{ $ticket->subject }}</td>
-                                    <td class="py-2 px-3 text-zinc-500 dark:text-zinc-400">
+                                    <td class="px-4 py-4 text-zinc-500 dark:text-zinc-400">
                                         {{ $ticket->category?->name ?? '—' }}</td>
-                                    <td class="py-2 px-3 text-right text-zinc-500 dark:text-zinc-400">
+                                    <td class="px-4 py-4 text-right text-zinc-500 dark:text-zinc-400">
                                         {{ $resTime !== null ? floor($resTime / 60) . 'h ' . $resTime % 60 . 'm' : '—' }}
                                     </td>
-                                    <td class="py-2 px-3 text-right">
+                                    <td class="px-4 py-4 text-right">
                                         <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}"
-                                            class="text-emerald-400 hover:text-emerald-300 text-xs" wire:navigate>View →</a>
+                                            class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 text-xs font-medium" wire:navigate>View &rarr;</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -105,46 +106,47 @@
                     </table>
                 </div>
             @else
-                <x-app.reports.reports-empty :show="true" message="No resolved tickets this period" />
+                <div class="p-6">
+                    <x-app.reports.reports-empty :show="true" message="No resolved tickets this period" />
+                </div>
             @endif
         </div>
     @else
         {{-- All Agents Overview --}}
-        <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-6">
-            <div class="flex items-center justify-between mb-4">
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                 <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">All Agent Performance</h2>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead
-                        class="text-zinc-500 dark:text-zinc-400 uppercase text-xs font-medium border-b border-zinc-200 dark:border-zinc-700">
+                <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+                    <thead class="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
                         <tr>
-                            <th class="text-left py-3 px-4">Agent</th>
-                            <th class="text-right py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Agent</th>
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300"
                                 wire:click="setAgentSort('tickets_assigned')">
                                 Assigned @if ($agentSortColumn === 'tickets_assigned')
                                     {{ $agentSortDirection === 'asc' ? '↑' : '↓' }}
                                 @endif
                             </th>
-                            <th class="text-right py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300"
                                 wire:click="setAgentSort('tickets_resolved')">
                                 Resolved @if ($agentSortColumn === 'tickets_resolved')
                                     {{ $agentSortDirection === 'asc' ? '↑' : '↓' }}
                                 @endif
                             </th>
-                            <th class="text-right py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300"
                                 wire:click="setAgentSort('avg_response_minutes')">
                                 Avg Response @if ($agentSortColumn === 'avg_response_minutes')
                                     {{ $agentSortDirection === 'asc' ? '↑' : '↓' }}
                                 @endif
                             </th>
-                            <th class="text-right py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300"
                                 wire:click="setAgentSort('avg_resolution_minutes')">
                                 Avg Resolution @if ($agentSortColumn === 'avg_resolution_minutes')
                                     {{ $agentSortDirection === 'asc' ? '↑' : '↓' }}
                                 @endif
                             </th>
-                            <th class="text-right py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300"
                                 wire:click="setAgentSort('resolution_rate')">
                                 Resolution Rate @if ($agentSortColumn === 'resolution_rate')
                                     {{ $agentSortDirection === 'asc' ? '↑' : '↓' }}
@@ -152,49 +154,49 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700/90">
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                         @forelse($this->allAgentPerformance as $row)
                             @php $isTop = $row['resolution_rate'] === $this->allAgentPerformance->max('resolution_rate') && $row['tickets_assigned'] > 0; @endphp
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 cursor-pointer {{ $isTop ? 'border-l-5' : '' }}"
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
                                 wire:click="selectAgent({{ $row['agent']->id }})">
-                                <td class="py-3 px-4">
+                                <td class="px-4 py-4">
                                     <div class="flex items-center gap-3">
                                         <div
-                                            class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-700 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                                            class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
                                             {{ $row['agent']->initials() }}
                                         </div>
                                         <div>
-                                            <p class="font-medium text-zinc-900 dark:text-zinc-100">
+                                            <p class="font-medium text-zinc-900 dark:text-zinc-100 text-sm">
                                                 {{ $row['agent']->name }}</p>
                                             <p class="text-xs text-zinc-500">{{ $row['agent']->email }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-3 px-4 text-right text-zinc-600 dark:text-zinc-300">
+                                <td class="px-4 py-4 text-right text-zinc-600 dark:text-zinc-400 text-sm">
                                     {{ $row['tickets_assigned'] }}</td>
-                                <td class="py-3 px-4 text-right text-zinc-600 dark:text-zinc-300">
+                                <td class="px-4 py-4 text-right text-zinc-600 dark:text-zinc-400 text-sm">
                                     {{ $row['tickets_resolved'] }}</td>
-                                <td class="py-3 px-4 text-right text-zinc-600 dark:text-zinc-300">
+                                <td class="px-4 py-4 text-right text-zinc-600 dark:text-zinc-400 text-sm">
                                     {{ $row['avg_response_minutes'] !== null ? floor($row['avg_response_minutes'] / 60) . 'h ' . round($row['avg_response_minutes'] % 60) . 'm' : '—' }}
                                 </td>
-                                <td class="py-3 px-4 text-right text-zinc-600 dark:text-zinc-300">
+                                <td class="px-4 py-4 text-right text-zinc-600 dark:text-zinc-400 text-sm">
                                     {{ $row['avg_resolution_minutes'] !== null ? floor($row['avg_resolution_minutes'] / 60) . 'h ' . round($row['avg_resolution_minutes'] % 60) . 'm' : '—' }}
                                 </td>
-                                <td class="py-3 px-4">
+                                <td class="px-4 py-4">
                                     <div class="flex items-center gap-2 justify-end">
                                         <div
-                                            class="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                                            class="w-16 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                                             <div class="h-full bg-emerald-500 rounded-full"
                                                 style="width: {{ min($row['resolution_rate'], 100) }}%"></div>
                                         </div>
                                         <span
-                                            class="text-zinc-600 dark:text-zinc-300 text-xs w-10 text-right">{{ $row['resolution_rate'] }}%</span>
+                                            class="text-zinc-600 dark:text-zinc-400 text-xs w-10 text-right">{{ $row['resolution_rate'] }}%</span>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-8 text-center text-zinc-500">No agents found</td>
+                                <td colspan="6" class="px-4 py-12 text-center text-zinc-500 dark:text-zinc-400">No agents found</td>
                             </tr>
                         @endforelse
                     </tbody>

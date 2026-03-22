@@ -35,28 +35,28 @@
             @else
                 <div
                     class="bg-white dark:bg-zinc-900 shadow-sm rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                    <table class="w-full text-left text-sm whitespace-nowrap">
+                    <table class="w-full text-left text-sm whitespace-nowrap text-zinc-500 dark:text-zinc-400">
                         <thead
-                            class="uppercase tracking-wider border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50">
+                            class="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
                             <tr>
-                                <th scope="col" class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400">Name
+                                <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Name
                                 </th>
-                                <th scope="col" class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400 w-1/3">
+                                <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider w-1/3">
                                     Description</th>
                                 <th scope="col"
-                                    class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400 text-center">Published
+                                    class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-center">Published
                                     Articles</th>
                             </tr>
                         </thead>
                         @foreach ($categories as $category)
                             {{-- One tbody per category group so Alpine x-data scopes correctly --}}
                             <tbody x-data="{ open: true }"
-                                class="divide-y divide-zinc-200 dark:divide-zinc-800 border-b border-zinc-200 dark:border-zinc-800">
+                                class="divide-y divide-zinc-100 dark:divide-zinc-800 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
                                 {{-- Parent category row --}}
                                 <tr wire:key="category-{{ $category->id }}"
-                                    class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition {{ $category->children->isNotEmpty() ? 'cursor-pointer select-none' : '' }}"
+                                    class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $category->children->isNotEmpty() ? 'cursor-pointer select-none' : '' }}"
                                     @if ($category->children->isNotEmpty()) @click="open = !open" @endif>
-                                    <td class="px-6 py-4 font-semibold text-zinc-900 dark:text-zinc-100">
+                                    <td class="px-4 py-4 font-medium text-zinc-900 dark:text-zinc-100">
                                         <div class="flex items-center gap-2">
                                             @if ($category->children->isNotEmpty())
                                                 <span
@@ -80,12 +80,12 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-zinc-500 dark:text-zinc-400 truncate max-w-xs">
+                                    <td class="px-4 py-4 text-zinc-500 dark:text-zinc-400 truncate max-w-xs">
                                         {{ $category->description ?? '-' }}
                                     </td>
-                                    <td class="px-6 py-4 text-center">
+                                    <td class="px-4 py-4 text-center">
                                         <span
-                                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
                                             {{ $category->kb_articles_count }}
                                         </span>
                                     </td>
@@ -97,7 +97,7 @@
                                         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                         x-transition:leave="transition ease-in duration-100"
                                         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                                        class="bg-zinc-50/50 dark:bg-zinc-800/20 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/40 transition">
+                                        class="bg-zinc-50/50 dark:bg-zinc-800/20 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
                                         <td class="px-6 py-4 text-zinc-700 dark:text-zinc-300">
                                             <div class="flex items-center gap-1.5 pl-8">
                                                 <span

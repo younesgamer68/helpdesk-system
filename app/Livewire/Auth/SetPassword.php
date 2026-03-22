@@ -11,7 +11,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('components.layouts.split-auth')]
+#[Layout('components.layouts.centered-auth')]
 #[Title('Finish Account Setup')]
 class SetPassword extends Component
 {
