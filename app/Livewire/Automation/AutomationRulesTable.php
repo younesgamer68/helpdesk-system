@@ -87,13 +87,23 @@ class AutomationRulesTable extends Component
 
     protected function rules(): array
     {
-        return [
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'type' => 'required|in:assignment,priority,auto_reply,escalation,sla_breach',
             'is_active' => 'boolean',
             'priority' => 'required|integer|min:0|max:1000',
         ];
+
+        if ($this->type === 'escalation') {
+            $rules['idle_hours'] = 'required|integer|min:1';
+        }
+
+        if ($this->type === 'auto_reply') {
+            $rules['email_message'] = 'required|string|min:1';
+        }
+
+        return $rules;
     }
 
     public function mount()
@@ -346,6 +356,9 @@ class AutomationRulesTable extends Component
                 'idle_hours' => $this->idle_hours,
                 'status' => $this->conditionStatuses,
             ],
+            'sla_breach' => [
+                'category_id' => $this->category_id,
+            ],
             default => [],
         };
     }
@@ -382,6 +395,12 @@ class AutomationRulesTable extends Component
             'escalation' => [
                 'escalate_priority' => $this->escalate_priority,
                 'set_priority' => $this->escalate_priority ? null : $this->set_priority,
+                'notify_admin' => $this->notify_admin,
+            ],
+            'sla_breach' => [
+                'escalate_priority' => $this->escalate_priority,
+                'set_priority' => $this->escalate_priority ? null : $this->set_priority,
+                'assign_to_operator_id' => $this->assign_to_operator_id,
                 'notify_admin' => $this->notify_admin,
             ],
             default => [],

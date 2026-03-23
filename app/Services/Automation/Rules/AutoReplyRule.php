@@ -20,15 +20,15 @@ class AutoReplyRule implements RuleInterface
 
         // Check if auto-reply should be sent on ticket creation
         if (! empty($conditions['on_create']) && $conditions['on_create'] === true) {
-            // Check if ticket was just created (within last minute)
-            if ($ticket->created_at->diffInMinutes(now()) > 1) {
+            // Check if ticket was just created (within last 5 minutes)
+            if ($ticket->created_at->diffInMinutes(now()) > 5) {
                 return false;
             }
         }
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id != $conditions['category_id']) {
+            if ($ticket->category_id !== (int) $conditions['category_id']) {
                 return false;
             }
         }
@@ -58,7 +58,13 @@ class AutoReplyRule implements RuleInterface
         $message = $actions['message'] ?? 'Thank you for your ticket. Our team will respond shortly.';
         $subject = $actions['subject'] ?? 'Re: '.$ticket->subject;
 
-        Mail::to($ticket->customer?->email ?? $ticket->customer_email)
+        $recipientEmail = $ticket->customer?->email ?? $ticket->customer_email;
+
+        if (! $recipientEmail) {
+            return;
+        }
+
+        Mail::to($recipientEmail)
             ->queue(new AutoReplyMail($ticket, $subject, $message));
     }
 }

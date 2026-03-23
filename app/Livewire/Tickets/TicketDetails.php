@@ -490,6 +490,12 @@ class TicketDetails extends Component
 
     public function changePriority($priority)
     {
+        if (Auth::user()->isOperator() && ! $this->isAssignee) {
+            $this->dispatch('show-toast', message: 'You are not authorized to change the priority.', type: 'error');
+
+            return;
+        }
+
         $normalizedPriority = strtolower($priority);
 
         if ($this->ticket->priority === $normalizedPriority) {
@@ -519,6 +525,12 @@ class TicketDetails extends Component
 
     public function changeStatus($status)
     {
+        if (Auth::user()->isOperator() && ! $this->isAssignee) {
+            $this->dispatch('show-toast', message: 'You are not authorized to change the status.', type: 'error');
+
+            return;
+        }
+
         $dbStatus = str_replace(' ', '_', strtolower($status));
 
         if ($this->ticket->status === $dbStatus) {
@@ -594,6 +606,12 @@ class TicketDetails extends Component
 
     public function addReply()
     {
+        if (Auth::user()->isOperator() && ! $this->isAssignee) {
+            $this->dispatch('show-toast', message: 'Only the assigned agent or an admin can reply to tickets.', type: 'error');
+
+            return;
+        }
+
         if ($this->ticket->status === 'closed') {
             $this->dispatch('show-toast', message: 'Cannot reply to a closed ticket!', type: 'error');
 

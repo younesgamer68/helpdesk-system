@@ -17,7 +17,8 @@ class SlaBreachRule implements RuleInterface
     public function evaluate(AutomationRule $rule, Ticket $ticket): bool
     {
         // Category check
-        if ($rule->category_id && $ticket->category_id !== $rule->category_id) {
+        $categoryId = $rule->conditions['category_id'] ?? null;
+        if ($categoryId && $ticket->category_id !== (int) $categoryId) {
             return false;
         }
 

@@ -95,7 +95,7 @@
                                         </svg>
                                     </button>
                                     <button
-                                        @click="confirmDeletion($wire, {{ $childCategory->id }}, 'deleteCategory', 'category')"
+                                        @click="confirmDeletion($wire, {{ $category->id }}, 'deleteCategory', 'category')"
                                         class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

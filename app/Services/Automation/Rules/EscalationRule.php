@@ -46,14 +46,19 @@ class EscalationRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id != $conditions['category_id']) {
+            if ($ticket->category_id !== (int) $conditions['category_id']) {
                 return false;
             }
         }
 
-        // Don't escalate already urgent tickets if escalate_priority is the only action
-        if ($ticket->priority === 'urgent' && empty($conditions['notify_admin'])) {
-            return false;
+        // Don't escalate already urgent tickets if priority escalation is the only action
+        if ($ticket->priority === 'urgent') {
+            $actions = $rule->actions;
+            $hasOtherActions = ! empty($actions['notify_admin']) || ! empty($actions['reassign']);
+
+            if (! $hasOtherActions) {
+                return false;
+            }
         }
 
         return true;

@@ -72,7 +72,7 @@
                                 </span>
                             @endif
                         </div>
-                        <div class="prose prose-sm max-w-none text-gray-700">{!! $reply->message !!}</div>
+                        <div class="prose prose-sm max-w-none text-gray-700">{!! \Mews\Purifier\Facades\Purifier::clean($reply->message) !!}</div>
 
                         {{-- Attachments Display --}}
                         @if (!empty($reply->attachments))

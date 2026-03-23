@@ -55,7 +55,7 @@ class WidgetController extends Controller
             'customer_phone' => $widget->require_phone ? 'required|string|max:20' : 'nullable|string|max:20',
             'subject' => 'required|string|max:500',
             'description' => 'required|string',
-            'category_id' => $widget->show_category ? 'nullable|exists:ticket_categories,id' : 'nullable',
+            'category_id' => $widget->show_category ? 'nullable|integer|exists:ticket_categories,id,company_id,'.$company->id : 'nullable',
         ];
 
         $validated = $request->validate($rules);
@@ -273,7 +273,7 @@ class WidgetController extends Controller
             'ticket_id' => $ticket->id,
             'user_id' => null,
             'customer_name' => $ticket->customer_name,
-            'message' => $validated['message'],
+            'message' => \Mews\Purifier\Facades\Purifier::clean($validated['message']),
             'is_internal' => false,
         ]);
 

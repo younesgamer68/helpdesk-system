@@ -84,7 +84,13 @@ class TicketObserver
     {
         // Only process if ticket is verified
         if ($ticket->verified) {
-            $this->automationEngine->processNewTicket($ticket);
+            try {
+                $this->automationEngine->processNewTicket($ticket);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Automation failed for new ticket: '.$e->getMessage(), [
+                    'ticket_id' => $ticket->id,
+                ]);
+            }
 
             // Fallback: If still unassigned after automation, use default assignment
             $ticket->refresh();
@@ -103,7 +109,13 @@ class TicketObserver
         // Process automation when ticket becomes verified
         if ($ticket->wasChanged('verified') && $ticket->verified) {
 
-            $this->automationEngine->processNewTicket($ticket);
+            try {
+                $this->automationEngine->processNewTicket($ticket);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Automation failed for verified ticket: '.$e->getMessage(), [
+                    'ticket_id' => $ticket->id,
+                ]);
+            }
 
             // Fallback: If still unassigned after automation, use default assignment
             $ticket->refresh();

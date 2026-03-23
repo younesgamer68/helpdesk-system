@@ -81,6 +81,11 @@ class Company extends Model
         return $this->hasOne(CompanyMailSettings::class);
     }
 
+    public function teams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Team::class);
+    }
+
     protected function casts(): array
     {
         return [
