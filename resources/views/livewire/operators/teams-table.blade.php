@@ -2,86 +2,80 @@
     <x-ui.flash-message />
 
     <!-- Search -->
-    <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Search</h3>
-        </div>
+    <div class="mb-6 space-y-3">
         <div class="relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none"
+            <svg class="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input wire:model.live.debounce.500ms="search" type="text"
-                placeholder="Search teams by name or description..."
-                class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
+            <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search teams..."
+                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-0 transition-colors">
         </div>
     </div>
 
     <!-- Table -->
-    <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+            <thead class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200/50 dark:border-zinc-800">
+                <tr>
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors group"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
                             Team
                             @if ($sortBy === 'name')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span
+                                    class="text-emerald-500 dark:text-emerald-400 ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
-                                <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
+                                <span
+                                    class="opacity-0 group-hover:opacity-100 ml-1 transition-opacity text-zinc-400">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Description
-                    </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Members
-                    </th>
-                    <th
-                        class="px-4 py-3 text-right text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Actions
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Description</th>
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Members</th>
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400 text-right">Actions
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse ($this->teams as $team)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors"
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
                         wire:key="team-{{ $team->id }}">
-                        <td class="px-4 py-3 text-sm">
-                            <div class="flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full shrink-0"
+                        <td class="px-4 py-4 font-medium text-zinc-900 dark:text-zinc-100">
+                            <div class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full ring-2 ring-zinc-100 dark:ring-zinc-800"
                                     style="background-color: {{ $team->color ?? '#14b8a6' }}"></span>
-                                <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $team->name }}</span>
+                                {{ $team->name }}
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                        <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400">
                             {{ Str::limit($team->description, 50) ?? '-' }}
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ $team->members_count }} {{ Str::plural('member', $team->members_count) }}
+                        <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400">
+                            <span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                                {{ $team->members_count }} {{ Str::plural('member', $team->members_count) }}
+                            </span>
                         </td>
-                        <td class="px-4 py-3 text-sm text-right">
-                            <div class="flex items-center justify-end gap-2">
+                        <td class="px-4 py-4 text-right">
+                            <div
+                                class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button wire:click="manageMembers({{ $team->id }})"
-                                    class="rounded-lg px-2.5 py-1.5 text-xs font-medium text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors">
                                     Manage Members
                                 </button>
+                                <div class="h-3 w-px bg-zinc-200 dark:bg-zinc-700"></div>
                                 <button wire:click="editTeam({{ $team->id }})"
-                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                    class="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                                     title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </button>
-                                <button wire:click="confirmDelete({{ $team->id }})"
-                                    class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
-                                    title="Delete">
+                                <button @click="confirmDeletion($wire, {{ $team->id }}, 'deleteTeam', 'team')"
+                                    class="p-1 text-zinc-400 hover:text-red-500 transition-colors" title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -93,16 +87,18 @@
                 @empty
                     <tr>
                         <td colspan="4" class="px-4 py-12 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none"
+                            <div class="flex flex-col items-center justify-center text-zinc-500">
+                                <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-600 mb-3" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                        d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <p class="text-zinc-500 dark:text-zinc-400">No teams found</p>
+                                <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">No teams found</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-4">Get started by creating a new
+                                    team.</p>
                                 <button wire:click="openCreateModal"
-                                    class="mt-2 px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg hover:bg-emerald-600 transition-colors">
-                                    Create your first team
+                                    class="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors shadow-sm">
+                                    Create Team
                                 </button>
                             </div>
                         </td>

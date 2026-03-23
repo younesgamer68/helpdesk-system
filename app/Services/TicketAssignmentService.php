@@ -220,6 +220,12 @@ class TicketAssignmentService
 
             if ($team) {
                 $ticket->team_id = $team->id;
+            } elseif (! $ticket->team_id) {
+                // Auto-resolve team if agent belongs to exactly one
+                $agentTeamIds = $operator->teams()->pluck('teams.id');
+                if ($agentTeamIds->count() === 1) {
+                    $ticket->team_id = $agentTeamIds->first();
+                }
             }
 
             $ticket->saveQuietly();

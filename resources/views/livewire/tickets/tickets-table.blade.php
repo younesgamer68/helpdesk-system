@@ -9,6 +9,10 @@
                 class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'mine' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 My Tickets
             </button>
+            <button wire:click="setTicketView('team')"
+                class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'team' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                My Team
+            </button>
             <button wire:click="setTicketView('all')"
                 class="px-4 py-2 text-sm font-medium rounded-md transition-colors {{ $ticketView === 'all' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 All Tickets
@@ -30,48 +34,86 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
-                <div class="relative">
-                    <select wire:model.live="statusFilter"
-                        class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                        <option value="">All Statuses</option>
-                        @foreach ($statuses as $status)
-                            <option value="{{ $status }}">{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                        @endforeach
-                    </select>
-                    <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
+                <flux:dropdown>
+                    <flux:button variant="outline"
+                        class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                        icon-trailing="chevron-down">
+                        {{ $statusFilter ? ucfirst(str_replace('_', ' ', $statusFilter)) : 'All Statuses' }}
+                    </flux:button>
+                    <flux:menu class="w-[140px]">
+                        <flux:menu.radio.group wire:model.live="statusFilter">
+                            <flux:menu.radio value=""
+                                class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                All Statuses</flux:menu.radio>
+                            @foreach ($statuses as $status)
+                                <flux:menu.radio value="{{ $status }}"
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    {{ ucfirst(str_replace('_', ' ', $status)) }}</flux:menu.radio>
+                            @endforeach
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
 
-                <div class="relative">
-                    <select wire:model.live="priorityFilter"
-                        class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                        <option value="">All Priorities</option>
-                        @foreach ($priorities as $priority)
-                            <option value="{{ $priority }}">{{ ucfirst($priority) }}</option>
-                        @endforeach
-                    </select>
-                    <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </div>
+                <flux:dropdown>
+                    <flux:button variant="outline"
+                        class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                        icon-trailing="chevron-down">
+                        {{ $priorityFilter ? ucfirst($priorityFilter) : 'All Priorities' }}
+                    </flux:button>
+                    <flux:menu class="w-[140px]">
+                        <flux:menu.radio.group wire:model.live="priorityFilter">
+                            <flux:menu.radio value=""
+                                class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                All Priorities</flux:menu.radio>
+                            @foreach ($priorities as $priority)
+                                <flux:menu.radio value="{{ $priority }}"
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    {{ ucfirst($priority) }}</flux:menu.radio>
+                            @endforeach
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
 
                 @if (Auth::user()->isAdmin())
-                    <div class="relative">
-                        <select wire:model.live="categoryFilter"
-                            class="appearance-none rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 pr-8 text-xs text-zinc-600 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
-                            <option value="">All Categories</option>
-                            @foreach ($this->categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                        <svg class="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </div>
+                    <flux:dropdown>
+                        <flux:button variant="outline"
+                            class="w-[150px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                            icon-trailing="chevron-down">
+                            {{ $categoryFilter ? $this->categoriesFlat->where('id', $categoryFilter)->first()?->name ?? 'All Categories' : 'All Categories' }}
+                        </flux:button>
+                        <flux:menu class="w-[150px]">
+                            <flux:menu.radio.group wire:model.live="categoryFilter">
+                                <flux:menu.radio value=""
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    All Categories</flux:menu.radio>
+                                @foreach ($this->categoriesFlat as $category)
+                                    <flux:menu.radio value="{{ $category->id }}"
+                                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                        {{ $category->name }}</flux:menu.radio>
+                                @endforeach
+                            </flux:menu.radio.group>
+                        </flux:menu>
+                    </flux:dropdown>
+
+                    <flux:dropdown>
+                        <flux:button variant="outline"
+                            class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                            icon-trailing="chevron-down">
+                            {{ $teamFilter ? $this->teamsForFilter->where('id', $teamFilter)->first()?->name ?? 'All Teams' : 'All Teams' }}
+                        </flux:button>
+                        <flux:menu class="w-[140px]">
+                            <flux:menu.radio.group wire:model.live="teamFilter">
+                                <flux:menu.radio value=""
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    All Teams</flux:menu.radio>
+                                @foreach ($this->teamsForFilter as $team)
+                                    <flux:menu.radio value="{{ $team->id }}"
+                                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                        {{ $team->name }}</flux:menu.radio>
+                                @endforeach
+                            </flux:menu.radio.group>
+                        </flux:menu>
+                    </flux:dropdown>
                 @endif
 
                 <input wire:model.live="dateFrom" type="date"
@@ -219,6 +261,29 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                    <!-- Bulk Assign Team -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open"
+                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                            Assign Team
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute left-0 mt-2 w-44 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                            @foreach ($this->teamsForFilter as $team)
+                                <button wire:click="bulkAssignTeam({{ $team->id }})" @click="open = false"
+                                    class="w-full px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                                    {{ $team->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
 
                 <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
@@ -329,12 +394,37 @@
                                             {{ $ticket->assignedTo->name }}
                                         @endif
                                     </span>
+                                    @if ($ticket->team)
+                                        <span class="block text-xs text-zinc-400 mt-0.5">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
+                                                style="background-color: {{ $ticket->team->color ?? '#71717a' }}"></span>
+                                            {{ $ticket->team->name }}
+                                        </span>
+                                    @endif
+                                @elseif ($ticketView === 'team')
+                                    <button wire:click.stop="takeTicket({{ $ticket->id }})"
+                                        wire:loading.attr="disabled" wire:target="takeTicket({{ $ticket->id }})"
+                                        class="px-3 py-1.5 text-xs font-medium text-teal-600 dark:text-teal-400 border border-teal-500/30 rounded-lg hover:bg-teal-500/10 transition-colors disabled:opacity-50">
+                                        <span wire:loading.remove wire:target="takeTicket({{ $ticket->id }})">Take
+                                            this ticket</span>
+                                        <span wire:loading
+                                            wire:target="takeTicket({{ $ticket->id }})">Taking...</span>
+                                    </button>
                                 @else
-                                    <div
-                                        class="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300">
-                                        U
-                                    </div>
-                                    <span class="text-sm text-zinc-400">Unassigned</span>
+                                    @if ($ticket->team)
+                                        <span class="text-sm text-amber-600 dark:text-amber-400">Unassigned</span>
+                                        <span class="block text-xs text-zinc-400 mt-0.5">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
+                                                style="background-color: {{ $ticket->team->color ?? '#71717a' }}"></span>
+                                            {{ $ticket->team->name }}
+                                        </span>
+                                    @else
+                                        <div
+                                            class="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300">
+                                            U
+                                        </div>
+                                        <span class="text-sm text-zinc-400">Unassigned</span>
+                                    @endif
                                 @endif
                             </div>
                         </td>
@@ -400,9 +490,7 @@
                                                 Restore
                                             </button>
                                         @else
-                                            <button wire:click="deleteTicket({{ $ticket->id }})"
-                                                wire:confirm="Are you sure you want to soft delete this ticket?"
-                                                @click="open = false"
+                                            <button @click="open = false; confirmDeletion($wire, {{ $ticket->id }})"
                                                 class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-red-300 transition-colors">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -427,8 +515,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                             </svg>
-                            <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting your
-                                filters.</p>
+                            @if ($ticketView === 'team' && Auth::user()->isOperator() && Auth::user()->teams()->count() === 0)
+                                <p class="mt-4 text-zinc-500 dark:text-zinc-400">You are not part of any team yet.</p>
+                            @else
+                                <p class="mt-4 text-zinc-500 dark:text-zinc-400">No tickets found. Try adjusting your
+                                    filters.</p>
+                            @endif
                         </td>
                     </tr>
                 @endforelse
@@ -444,31 +536,14 @@
 
     <!-- Create Ticket Modal -->
     @if ($showCreateModal)
-        <div class="fixed inset-0 bg-black/50 
-         z-50 flex items-center justify-center p-4"
-            x-data="{ showingDiscard: @entangle('showDiscardConfirmation') }" @click.self="$wire.attemptCloseCreateModal()"
-            @keydown.escape.window="$wire.attemptCloseCreateModal()">
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                @click.stop>
-                <!-- Header -->
-                <div
-                    class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
-                    <div>
-                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Create New Ticket</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Fill in the details to create a
-                            support ticket</p>
-                    </div>
-                    <button wire:click="attemptCloseCreateModal"
-                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <flux:modal wire:model="showCreateModal" class="md:w-[800px]">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Create New Ticket</flux:heading>
+                    <flux:subheading>Fill in the details to create a support ticket</flux:subheading>
                 </div>
 
-                <!-- Form -->
-                <form wire:submit="createTicket" class="p-6 space-y-6">
+                <form wire:submit="createTicket" class="space-y-6">
                     <!-- Draft Indicator -->
                     @if ($this->hasFormData)
                         <div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-center gap-3">
@@ -491,184 +566,138 @@
 
                     <!-- Customer Information Section -->
                     <div>
-                        <h4
-                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            Customer Information
-                        </h4>
+                        <flux:separator class="mb-6" />
+                        <flux:heading size="md" class="mb-4">Customer Information</flux:heading>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Customer Name -->
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Customer Name <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="customer_name" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                                    placeholder="John Doe">
-                                @error('customer_name')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
+                                <flux:field>
+                                    <flux:label>Customer Name</flux:label>
+                                    <flux:input wire:model.blur="customer_name" placeholder="John Doe" />
+                                    <flux:error name="customer_name" />
+                                </flux:field>
                             </div>
 
-                            <!-- Customer Email -->
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Customer Email <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="customer_email" type="email"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                                    placeholder="john@example.com">
-                                @error('customer_email')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <flux:field>
+                                <flux:label>Customer Email</flux:label>
+                                <flux:input wire:model.blur="customer_email" type="email"
+                                    placeholder="john@example.com" />
+                                <flux:error name="customer_email" />
+                            </flux:field>
 
-                            <!-- Customer Phone -->
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Customer Phone
-                                </label>
-                                <input wire:model.blur="customer_phone" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                                    placeholder="+1 (555) 123-4567">
-                                @error('customer_phone')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <flux:field>
+                                <flux:label>Customer Phone</flux:label>
+                                <flux:input wire:model.blur="customer_phone" placeholder="+1 (555) 123-4567" />
+                                <flux:error name="customer_phone" />
+                            </flux:field>
                         </div>
                     </div>
 
                     <!-- Ticket Details Section -->
-                    <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <h4
-                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Ticket Details
-                        </h4>
+                    <div>
+                        <flux:separator class="mb-6" />
+                        <flux:heading size="md" class="mb-4">Ticket Details</flux:heading>
 
                         <div class="space-y-4">
-                            <!-- Subject -->
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Subject <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="subject" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                                    placeholder="Brief description of the issue">
-                                @error('subject')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <flux:field>
+                                <flux:label>Subject</flux:label>
+                                <flux:input wire:model.blur="subject" placeholder="Brief description of the issue" />
+                                <flux:error name="subject" />
+                            </flux:field>
 
-                            <!-- Description -->
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Description <span class="text-red-400">*</span>
-                                </label>
-                                <textarea wire:model.blur="description" rows="5"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
-                                    placeholder="Detailed description of the issue..."></textarea>
-                                @error('description')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            <flux:field>
+                                <flux:label>Description</flux:label>
+                                <flux:textarea wire:model.blur="description" rows="5"
+                                    placeholder="Detailed description of the issue..." />
+                                <flux:error name="description" />
+                            </flux:field>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Priority -->
-                                <div>
-                                    <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                        Priority <span class="text-red-400">*</span>
-                                    </label>
-                                    <select wire:model.live="priority"
-                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                        <option value="urgent">Urgent</option>
-                                    </select>
-                                    @error('priority')
-                                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                <flux:field>
+                                    <flux:label>Priority</flux:label>
+                                    <flux:select wire:model.live="priority">
+                                        <flux:select.option value="low">Low</flux:select.option>
+                                        <flux:select.option value="medium">Medium</flux:select.option>
+                                        <flux:select.option value="high">High</flux:select.option>
+                                        <flux:select.option value="urgent">Urgent</flux:select.option>
+                                    </flux:select>
+                                    <flux:error name="priority" />
+                                </flux:field>
 
-                                <!-- Status -->
-                                <div>
-                                    <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                        Status <span class="text-red-400">*</span>
-                                    </label>
-                                    <select wire:model.live="status"
-                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                                        <option value="pending">Pending</option>
-                                        <option value="open">Open</option>
-                                        <option value="in_progress">In Progress</option>
-                                        <option value="resolved">Resolved</option>
-                                        <option value="closed">Closed</option>
-                                    </select>
-                                    @error('status')
-                                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                <flux:field>
+                                    <flux:label>Status</flux:label>
+                                    <flux:select wire:model.live="status">
+                                        <flux:select.option value="pending">Pending</flux:select.option>
+                                        <flux:select.option value="open">Open</flux:select.option>
+                                        <flux:select.option value="in_progress">In Progress</flux:select.option>
+                                        <flux:select.option value="resolved">Resolved</flux:select.option>
+                                        <flux:select.option value="closed">Closed</flux:select.option>
+                                    </flux:select>
+                                    <flux:error name="status" />
+                                </flux:field>
                             </div>
                         </div>
                     </div>
 
                     <!-- Assignment Section -->
-                    <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <h4
-                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-teal-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                            </svg>
-                            Assignment & Categorization
-                        </h4>
+                    <div>
+                        <flux:separator class="mb-6" />
+                        <flux:heading size="md" class="mb-4">Assignment & Categorization</flux:heading>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Assign To -->
-                            @if (Auth::user()->role === 'admin')
-                                <div>
-                                    <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                        Assign To
-                                    </label>
-                                    <select wire:model.live="assigned_to"
-                                        class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
-                                        <option value="">Unassigned</option>
-                                        @foreach ($this->agents as $agent)
-                                            <option value="{{ $agent->id }}">{{ $agent->name }}</option>
+                            @if (Auth::user()->isAdmin())
+                                <flux:field>
+                                    <flux:label>Team</flux:label>
+                                    <flux:select wire:model.live="createTeamId"
+                                        placeholder="No Team (assign to any agent)">
+                                        <flux:select.option value="">No Team</flux:select.option>
+                                        @foreach ($this->teamsForCreate as $team)
+                                            <flux:select.option value="{{ $team->id }}">{{ $team->name }}
+                                            </flux:select.option>
                                         @endforeach
-                                    </select>
-                                    @error('assigned_to')
-                                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                    </flux:select>
+                                </flux:field>
+
+                                <flux:field>
+                                    <flux:label>Assign To</flux:label>
+                                    <flux:select wire:model.live="assigned_to" placeholder="Unassigned">
+                                        <flux:select.option value="">Unassigned</flux:select.option>
+                                        @foreach ($this->agents as $agent)
+                                            <flux:select.option value="{{ $agent->id }}">{{ $agent->name }}
+                                            </flux:select.option>
+                                        @endforeach
+                                    </flux:select>
+                                    <p class="text-xs text-zinc-400 italic mt-1">
+                                        @if ($createTeamId)
+                                            Showing {{ count($this->agents) }} agents in this team
+                                        @else
+                                            Showing all agents
+                                        @endif
+                                    </p>
+                                    <flux:error name="assigned_to" />
+                                </flux:field>
                             @endif
 
-                            <!-- Category -->
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Category
-                                </label>
+                            <flux:field>
+                                <flux:label>Category</flux:label>
                                 <select wire:model.live="category_id"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                    class="block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-zinc-400 dark:focus:border-zinc-500 focus:outline-none focus:ring-0">
                                     <option value="">No Category</option>
-                                    @foreach ($this->categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @foreach ($this->categories as $parentCategory)
+                                        @if ($parentCategory->children->isNotEmpty())
+                                            <optgroup label="{{ $parentCategory->name }}">
+                                                @foreach ($parentCategory->children as $child)
+                                                    <option value="{{ $child->id }}">{{ $child->name }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        @else
+                                            <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
-                                @error('category_id')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                                <flux:error name="category_id" />
+                            </flux:field>
                         </div>
                     </div>
 
@@ -683,74 +712,44 @@
                             <div>
                                 <p class="text-sm text-blue-400 font-medium">Auto-verified Ticket</p>
                                 <p class="text-xs text-blue-300/80 mt-1">Tickets created by staff are automatically
-                                    verified
-                                    and don't require email confirmation.</p>
+                                    verified and don't require email confirmation.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex gap-3 pt-4">
-                        <button type="button" wire:click="attemptCloseCreateModal"
-                            class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
+                    <div class="flex gap-3">
+                        <flux:button type="button" wire:click="attemptCloseCreateModal" variant="ghost"
+                            class="flex-1">
                             Cancel
-                        </button>
-                        <button type="submit"
-                            class="flex-1 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
+                        </flux:button>
+                        <flux:button type="submit" variant="primary" class="flex-1">
                             Create Ticket
-                        </button>
+                        </flux:button>
                     </div>
                 </form>
+            </div>
+        </flux:modal>
 
-                <!-- Discard Confirmation Dialog -->
-                <div x-show="showingDiscard" x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="absolute inset-0 bg-black/60  flex items-center justify-center p-4" style="display: none;">
-                    <div x-show="showingDiscard" x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="transform scale-95 opacity-0"
-                        x-transition:enter-end="transform scale-100 opacity-100"
-                        x-transition:leave="transition ease-in duration-150"
-                        x-transition:leave-start="transform scale-100 opacity-100"
-                        x-transition:leave-end="transform scale-95 opacity-0"
-                        class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-2xl max-w-md w-full p-6"
-                        @click.stop>
-                        <div class="flex items-start gap-4">
-                            <div
-                                class="shrink-0 w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard changes?
-                                </h3>
-                                <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-                                    You have unsaved changes. If you close now, your progress will be lost.
-                                </p>
-                                <div class="flex gap-3 mt-6">
-                                    <button wire:click="cancelDiscard"
-                                        class="flex-1 px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-200 font-medium rounded-lg transition-colors">
-                                        Keep editing
-                                    </button>
-                                    <button wire:click="confirmDiscard"
-                                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors">
-                                        Discard
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Discard Confirmation Dialog -->
+        <flux:modal wire:model="showDiscardConfirmation" class="md:w-96">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Discard changes?</flux:heading>
+                    <flux:subheading>You have unsaved changes. If you close now, your progress will be lost.
+                    </flux:subheading>
+                </div>
+
+                <div class="flex gap-3">
+                    <flux:button wire:click="cancelDiscard" variant="ghost" class="flex-1">
+                        Keep editing
+                    </flux:button>
+                    <flux:button wire:click="confirmDiscard" variant="danger" class="flex-1">
+                        Discard
+                    </flux:button>
                 </div>
             </div>
-        </div>
+        </flux:modal>
     @endif
 
     <!-- Save View Modal -->

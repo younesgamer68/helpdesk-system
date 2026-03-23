@@ -247,11 +247,12 @@ class CategoriesTable extends Component
         $this->showDeleteConfirmation = false;
     }
 
-    public function deleteCategory(): void
+    public function deleteCategory(?int $id = null): void
     {
+        $id = $id ?? $this->deletingCategoryId;
         $category = TicketCategory::where('company_id', Auth::user()->company_id)
             ->with('children')
-            ->findOrFail($this->deletingCategoryId);
+            ->findOrFail($id);
 
         $categoryName = $category->name;
 

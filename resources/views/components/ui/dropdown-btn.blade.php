@@ -10,7 +10,7 @@
 
     <!-- DROPDOWN -->
     <div x-show="open" x-transition
-        class="absolute z-50 mt-2 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden shadow-lg">
+        class="absolute z-50 bottom-full mb-2 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden shadow-lg max-h-64 overflow-y-auto">
         {{ $slot }}
     </div>
 </div>

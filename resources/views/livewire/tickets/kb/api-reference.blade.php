@@ -2,8 +2,6 @@
     <x-ui.flash-message />
 
     <section class="w-full">
-        <flux:separator class="mb-5 border-b border-zinc-200 dark:border-zinc-700" />
-
         <x-dashboard.kb-layout heading="API Reference" subheading="Public REST API for your Knowledge Base">
             <div class="space-y-6">
 
@@ -14,7 +12,7 @@
                         <code
                             class="flex-1 text-sm font-mono bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 px-4 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 truncate">{{ $this->baseUrl }}</code>
                         <button wire:click="copyToClipboard(@js($this->baseUrl), 'base')" type="button"
-                            class="shrink-0 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 px-4 py-2 rounded-lg text-sm transition-colors text-zinc-700 dark:text-zinc-300">
+                            class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
                             {{ $copiedKey === 'base' ? __('Copied!') : __('Copy') }}
                         </button>
                     </div>
@@ -53,7 +51,7 @@
                             <label
                                 class="flex items-start gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
                                 <input type="radio" wire:model.live="widgetDefaultLinkMode" value="portal"
-                                    class="mt-0.5 text-emerald-600 focus:ring-emerald-500" />
+                                    class="mt-0.5 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 checked:bg-emerald-600 checked:border-emerald-600" />
                                 <span>
                                     <span class="block text-sm font-medium text-zinc-800 dark:text-zinc-200">Hosted
                                         Portal</span>
@@ -64,7 +62,7 @@
                             <label
                                 class="flex items-start gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3 cursor-pointer">
                                 <input type="radio" wire:model.live="widgetDefaultLinkMode" value="custom"
-                                    class="mt-0.5 text-emerald-600 focus:ring-emerald-500" />
+                                    class="mt-0.5 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 checked:bg-emerald-600 checked:border-emerald-600" />
                                 <span>
                                     <span class="block text-sm font-medium text-zinc-800 dark:text-zinc-200">Custom
                                         Website URL</span>
@@ -94,7 +92,7 @@
 
                     <label class="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                         <input type="checkbox" wire:model.live="widgetOpenInNewTab"
-                            class="rounded border-zinc-300 dark:border-zinc-600 text-emerald-600 focus:ring-emerald-500" />
+                            class="rounded border-zinc-300 dark:border-zinc-600 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 checked:bg-emerald-600 checked:border-emerald-600" />
                         Open widget results in a new tab
                     </label>
 
@@ -103,7 +101,7 @@
                             class="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4 text-xs overflow-x-auto font-mono text-zinc-700 dark:text-zinc-300"><code>{{ $this->widgetScriptTag }}</code></pre>
                         <button wire:click="copyToClipboard(@js($this->widgetScriptTag), 'widget-script')"
                             type="button"
-                            class="absolute top-2 right-2 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 px-3 py-1 rounded text-xs transition-colors text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800">
+                            class="absolute top-2 right-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs transition-colors">
                             {{ $copiedKey === 'widget-script' ? __('Copied!') : __('Copy') }}
                         </button>
                     </div>
@@ -131,7 +129,7 @@
                                     class="text-sm font-mono text-zinc-800 dark:text-zinc-200 truncate">{{ $listUrl }}</code>
                                 <button wire:click="copyToClipboard(@js($listUrl), 'list')"
                                     type="button"
-                                    class="ml-auto shrink-0 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 px-3 py-1 rounded text-xs transition-colors text-zinc-600 dark:text-zinc-400">
+                                    class="ml-auto shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs transition-colors">
                                     {{ $copiedKey === 'list' ? __('Copied!') : __('Copy') }}
                                 </button>
                             </div>
@@ -167,7 +165,7 @@
                                     class="text-sm font-mono text-zinc-800 dark:text-zinc-200 truncate">{{ $singleUrl }}</code>
                                 <button wire:click="copyToClipboard(@js($this->baseUrl . '/articles/{slug}'), 'single')"
                                     type="button"
-                                    class="ml-auto shrink-0 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 px-3 py-1 rounded text-xs transition-colors text-zinc-600 dark:text-zinc-400">
+                                    class="ml-auto shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs transition-colors">
                                     {{ $copiedKey === 'single' ? __('Copied!') : __('Copy') }}
                                 </button>
                             </div>
@@ -202,7 +200,7 @@
                                     class="text-sm font-mono text-zinc-800 dark:text-zinc-200 truncate">{{ $searchUrl }}</code>
                                 <button wire:click="copyToClipboard(@js($this->baseUrl . '/search?q={query}'), 'search')"
                                     type="button"
-                                    class="ml-auto shrink-0 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 px-3 py-1 rounded text-xs transition-colors text-zinc-600 dark:text-zinc-400">
+                                    class="ml-auto shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs transition-colors">
                                     {{ $copiedKey === 'search' ? __('Copied!') : __('Copy') }}
                                 </button>
                             </div>

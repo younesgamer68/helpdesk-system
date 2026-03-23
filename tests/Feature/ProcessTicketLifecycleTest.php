@@ -111,3 +111,35 @@ test('creates auto_closed log entry when auto-closing', function () {
 
     expect($ticket->fresh()->logs()->where('action', 'auto_closed')->exists())->toBeTrue();
 });
+
+test('sends closure warning for tickets without tracking_token and generates token', function () {
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => 'resolved',
+        'resolved_at' => now()->subHours(30),
+        'warning_sent_at' => null,
+        'tracking_token' => null,
+    ]);
+
+    $this->artisan('app:process-ticket-lifecycle')->assertExitCode(0);
+
+    Mail::assertQueued(TicketClosedWarning::class);
+    expect($ticket->fresh()->tracking_token)->not->toBeNull();
+});
+
+test('sends auto-close email for tickets without tracking_token and generates token', function () {
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'status' => 'resolved',
+        'resolved_at' => now()->subHours(50),
+        'warning_sent_at' => now()->subHours(26),
+        'tracking_token' => null,
+    ]);
+
+    $this->artisan('app:process-ticket-lifecycle')->assertExitCode(0);
+
+    Mail::assertQueued(TicketClosed::class);
+    $fresh = $ticket->fresh();
+    expect($fresh->status)->toBe('closed');
+    expect($fresh->tracking_token)->not->toBeNull();
+});

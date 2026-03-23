@@ -43,51 +43,50 @@
     </div>
 
     {{-- Tickets Table --}}
-    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left">
-                <thead
-                    class="text-zinc-500 dark:text-zinc-400 uppercase text-xs font-medium border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
+            <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+                <thead class="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
                     <tr>
                         @foreach (['ticket_number' => 'Ticket ID', 'subject' => 'Subject', '_customer' => 'Customer', 'category_id' => 'Category', 'priority' => 'Priority', 'status' => 'Status', 'assigned_to' => 'Agent', 'created_at' => 'Created'] as $col => $heading)
-                            <th class="py-3 px-4 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100"
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300"
                                 wire:click="setTicketSort('{{ $col }}')">
                                 {{ $heading }} @if ($ticketSortBy === $col)
                                     {{ $ticketSortDir === 'asc' ? '↑' : '↓' }}
                                 @endif
                             </th>
                         @endforeach
-                        <th class="py-3 px-4 text-right">Resolution</th>
+                        <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right">Resolution</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700/90">
+                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                     @forelse($this->paginatedTickets as $ticket)
-                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
                             onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <td class="py-3 px-4 text-zinc-500 dark:text-zinc-400 font-mono text-xs">
+                            <td class="px-4 py-4 font-mono text-sm text-zinc-600 dark:text-zinc-300">
                                 {{ $ticket->ticket_number }}</td>
-                            <td class="py-3 px-4 text-zinc-900 dark:text-zinc-100 max-w-[200px] truncate">
+                            <td class="px-4 py-4 font-medium text-zinc-900 dark:text-zinc-100 text-sm max-w-[200px] truncate">
                                 {{ $ticket->subject }}</td>
-                            <td class="py-3 px-4 text-zinc-600 dark:text-zinc-300">{{ $ticket->customer_name }}</td>
-                            <td class="py-3 px-4 text-zinc-500 dark:text-zinc-400">
+                            <td class="px-4 py-4 text-sm">{{ $ticket->customer_name }}</td>
+                            <td class="px-4 py-4 text-sm">
                                 {{ $ticket->category?->name ?? '—' }}</td>
-                            <td class="py-3 px-4">
+                            <td class="px-4 py-4 text-sm">
                                 <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border {{ $this->priorityBadgeClasses($ticket->priority) }}">
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border {{ $this->priorityBadgeClasses($ticket->priority) }}">
                                     {{ ucfirst($ticket->priority) }}
                                 </span>
                             </td>
-                            <td class="py-3 px-4">
+                            <td class="px-4 py-4 text-sm">
                                 <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border {{ $this->statusBadgeClasses($ticket->status) }}">
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border {{ $this->statusBadgeClasses($ticket->status) }}">
                                     {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                                 </span>
                             </td>
-                            <td class="py-3 px-4 text-zinc-500 dark:text-zinc-400">
+                            <td class="px-4 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                                 {{ $ticket->assignedTo?->name ?? '—' }}</td>
-                            <td class="py-3 px-4 text-zinc-500 dark:text-zinc-400 text-xs">
+                            <td class="px-4 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                                 {{ Carbon::parse($ticket->created_at)->format('M j, Y') }}</td>
-                            <td class="py-3 px-4 text-right text-zinc-500 dark:text-zinc-400 text-xs">
+                            <td class="px-4 py-4 text-right text-sm text-zinc-500 dark:text-zinc-400">
                                 @if ($ticket->resolved_at)
                                     @php $mins = Carbon::parse($ticket->created_at)->diffInMinutes(Carbon::parse($ticket->resolved_at)); @endphp
                                     {{ floor($mins / 60) }}h {{ $mins % 60 }}m
@@ -98,7 +97,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-12 text-center">
+                            <td colspan="9" class="px-4 py-12 text-center text-zinc-500 dark:text-zinc-400">
                                 <x-app.reports.reports-empty :show="true" />
                             </td>
                         </tr>
@@ -107,7 +106,7 @@
             </table>
         </div>
         @if ($this->paginatedTickets->hasPages())
-            <div class="px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
+            <div class="px-4 py-3 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
                 {{ $this->paginatedTickets->links() }}
             </div>
         @endif

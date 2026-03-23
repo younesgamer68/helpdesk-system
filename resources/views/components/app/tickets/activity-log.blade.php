@@ -1,58 +1,63 @@
-@props([
-    'logs'
-])
+@props(['logs'])
 
-<div
-    class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-    <div class="p-6 border-b border-zinc-200 dark:border-zinc-700">
-        <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Activity Log</h2>
-            <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ $logs->count() }} events</span>
-        </div>
-        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Timeline of ticket interactions</p>
-    </div>
-    <div class="p-6">
-        <div class="relative space-y-4 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-300 dark:before:via-zinc-800 before:to-transparent">
-            @forelse ($logs as $log)
-                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow sm:mx-0 mx-auto z-10">
-                        @switch($log->action)
-                            @case('status_changed')
-                                <flux:icon.check-circle class="w-4 h-4 text-emerald-500" />
-                                @break
-                            @case('priority_changed')
-                                <flux:icon.exclamation-triangle class="w-4 h-4 text-orange-500" />
-                                @break
-                            @case('assigned')
-                                <flux:icon.user class="w-4 h-4 text-indigo-500" />
-                                @break
-                            @case('reply_added')
-                                <flux:icon.chat-bubble-left-right class="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-                                @break
-                            @default
-                                <flux:icon.clock class="w-4 h-4 text-zinc-400" />
-                        @endswitch
-                    </div>
-                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
-                        <div class="flex items-center justify-between mb-1">
-                            <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                                {{ $log->user->name ?? 'System' }}
-                                @if($log->user_id === auth()->id())
-                                    <span class="text-[10px] text-zinc-500 font-normal">(you)</span>
-                                @endif
+<div class="flex flex-col flex-1 min-h-0">
+    {{-- Header --}}
+
+    {{-- Timeline --}}
+    <div class="flex-1 overflow-y-auto px-6 py-5">
+        @if ($logs->isEmpty())
+            <div class="flex flex-col items-center justify-center min-h-[200px] text-center py-12">
+                <div class="w-14 h-14 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+                    <flux:icon.clock class="w-7 h-7 text-zinc-400" />
+                </div>
+                <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">No activity yet</p>
+                <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Events will appear here as the ticket progresses</p>
+            </div>
+        @else
+            <div class="relative">
+                {{-- Vertical timeline line --}}
+                <div class="absolute left-4 top-3 bottom-3 w-px bg-zinc-200 dark:bg-zinc-800"></div>
+
+                <div class="space-y-0">
+                    @foreach ($logs as $log)
+                        <div class="flex gap-3 relative">
+                            {{-- Icon circle --}}
+                            <div class="relative shrink-0 w-8 h-8 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center z-10 shadow-sm">
+                                @switch($log->action)
+                                    @case('status_changed')
+                                        <flux:icon.check-circle class="w-3.5 h-3.5 text-emerald-500" />
+                                    @break
+
+                                    @case('priority_changed')
+                                        <flux:icon.exclamation-triangle class="w-3.5 h-3.5 text-orange-500" />
+                                    @break
+
+                                    @case('assigned')
+                                        <flux:icon.user class="w-3.5 h-3.5 text-indigo-500" />
+                                    @break
+
+                                    @case('reply_added')
+                                        <flux:icon.chat-bubble-left-right class="w-3.5 h-3.5 text-zinc-400" />
+                                    @break
+
+                                    @default
+                                        <flux:icon.clock class="w-3.5 h-3.5 text-zinc-400" />
+                                @endswitch
                             </div>
-                            <time class="text-[10px] text-zinc-500">{{ $log->created_at->diffForHumans() }}</time>
+
+                            {{-- Content --}}
+                            <div class="flex-1 py-1.5 pb-5 min-w-0">
+                                <p class="text-sm text-zinc-700 dark:text-zinc-300 leading-snug">{{ $log->description }}</p>
+                                <div class="flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">
+                                    <span>{{ $log->user->name ?? 'System' }}{{ $log->user_id === auth()->id() ? ' (you)' : '' }}</span>
+                                    <span>&middot;</span>
+                                    <time>{{ $log->created_at->diffForHumans() }}</time>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-sm text-zinc-600 dark:text-zinc-300">
-                            {{ $log->description }}
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-            @empty
-                <div class="text-center py-8">
-                    <p class="text-zinc-500 dark:text-zinc-400">No activity logged yet.</p>
-                </div>
-            @endforelse
-        </div>
+            </div>
+        @endif
     </div>
 </div>

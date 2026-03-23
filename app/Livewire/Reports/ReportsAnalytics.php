@@ -840,6 +840,8 @@ class ReportsAnalytics extends Component
             ->orderBy('name')
             ->get();
 
+        $diffSql = $this->diffMinutesSql('created_at', 'resolved_at');
+
         $ticketCounts = Ticket::where('company_id', $cid)
             ->whereNotNull('team_id')
             ->whereDate('created_at', '>=', $this->startDate)
@@ -848,6 +850,7 @@ class ReportsAnalytics extends Component
             ->selectRaw('count(*) as total')
             ->selectRaw("sum(case when status = 'resolved' or status = 'closed' then 1 else 0 end) as resolved")
             ->selectRaw("sum(case when status in ('open', 'in_progress', 'pending') then 1 else 0 end) as open_count")
+            ->selectRaw("avg(case when resolved_at is not null and status in ('resolved','closed') then {$diffSql} / 60.0 else null end) as avg_hours")
             ->groupBy('team_id')
             ->get()
             ->keyBy('team_id');
@@ -867,6 +870,7 @@ class ReportsAnalytics extends Component
                 'resolved' => $resolved,
                 'open' => $open,
                 'resolution_rate' => $total > 0 ? round(($resolved / $total) * 100) : 0,
+                'avg_resolution_hours' => $row ? round((float) $row->avg_hours, 1) : null,
             ];
         });
     }

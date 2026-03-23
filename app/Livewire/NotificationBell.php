@@ -9,51 +9,13 @@ use Livewire\Component;
 
 class NotificationBell extends Component
 {
-    public ?int $userId = null;
-
-    public function mount()
-    {
-        $this->userId = Auth::id();
-    }
-
     #[On('notifications-updated')]
-    #[On('echo-private:App.Models.User.{userId},.Illuminate\Notifications\Events\BroadcastNotificationCreated')]
-    public function refreshNotifications($event = [])
+    public function refreshNotifications(): void
     {
-        if (isset($event['message'])) {
-            $ticketUrl = null;
-            $type = $event['type'] ?? '';
-
-            if (isset($event['ticket_number']) && $type !== 'reassigned') {
-                $ticketUrl = route('details', [
-                    'company' => Auth::user()->company->slug,
-                    'ticket' => $event['ticket_number'],
-                ]);
-            }
-
-            $title = match ($type) {
-                'assigned' => 'Ticket Assigned',
-                'reassigned' => 'Ticket Reassigned',
-                'client_replied' => 'New Client Reply',
-                'status_changed' => 'Status Updated',
-                'internal_note' => 'New Internal Note',
-                'ticket_submitted' => 'New Ticket',
-                'ticket_unassigned' => 'Unassigned Ticket',
-                'sla_breached' => 'SLA Breached',
-                default => 'New Notification',
-            };
-
-            $message = $event['subject'] ?? (collect(explode('—', $event['message']))->last() ?? $event['message']);
-
-            $this->dispatch('show-notification-toast',
-                message: $message,
-                title: $title,
-                url: $ticketUrl,
-            );
-        }
+        unset($this->notifications, $this->unreadCount);
     }
 
-    public function markRead($id)
+    public function markRead(string $id): mixed
     {
         $notification = Auth::user()->notifications()->find($id);
 
@@ -69,27 +31,29 @@ class NotificationBell extends Component
                 ]);
             }
         }
+
+        return null;
     }
 
-    public function markAllRead()
+    public function markAllRead(): void
     {
         Auth::user()->unreadNotifications()->update(['read_at' => now()]);
         $this->dispatch('notifications-updated');
     }
 
     #[Computed]
-    public function notifications()
+    public function notifications(): \Illuminate\Database\Eloquent\Collection
     {
         return Auth::user()->notifications()->latest()->take(10)->get();
     }
 
     #[Computed]
-    public function unreadCount()
+    public function unreadCount(): int
     {
         return Auth::user()->unreadNotifications()->count();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.notification-bell');
     }

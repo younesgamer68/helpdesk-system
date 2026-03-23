@@ -298,11 +298,13 @@ class OperatorsTable extends Component
     #[\Livewire\Attributes\On('open-create-operator-modal')]
     public function openCreateModal()
     {
+        $this->showCreateModal = true;
+        $this->showDiscardConfirmation = false;
+
         if (! $this->hasFormData()) {
             $this->inviteRole = 'operator';
         }
 
-        $this->showCreateModal = true;
         $this->resetValidation();
     }
 

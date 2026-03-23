@@ -60,9 +60,9 @@ it('shows correct KPI counts', function () {
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
-        ->assertSee('Open Tickets')
-        ->assertSee('Resolved Today')
-        ->assertSee('Pending Reply');
+        ->assertSeeInOrder(['Open', 'Tickets'])
+        ->assertSeeInOrder(['Resolved', 'Today'])
+        ->assertSeeInOrder(['Pending', 'Reply']);
 });
 
 it('shows my tickets sorted by priority', function () {
@@ -103,11 +103,23 @@ it('shows unassigned tickets', function () {
     [$user, $company] = dashboardUser();
 
     $unassigned = dashboardTicket($company, null, 'open');
+    $user->categories()->attach($unassigned->category_id);
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
         ->assertSee($unassigned->ticket_number)
-        ->assertSee('Assign to me');
+        ->assertSeeInOrder(['Assign', 'to me']);
+});
+
+it('hides unassigned tickets outside operator speciality categories', function () {
+    [$user, $company] = dashboardUser();
+
+    $unassigned = dashboardTicket($company, null, 'open');
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertDontSee($unassigned->ticket_number)
+        ->assertSee('Set your speciality categories');
 });
 
 it('assigns an unassigned ticket to the authenticated user', function () {
@@ -168,4 +180,24 @@ it('toggles availability status', function () {
         ->call('toggleAvailability');
 
     expect($user->fresh()->is_available)->toBeTrue();
+});
+
+it('only renders the agent KPI flyout after a KPI is clicked', function () {
+    [$user, $company] = dashboardUser();
+
+    $resolved = dashboardTicket($company, $user->id, 'resolved');
+    $resolved->update([
+        'ticket_number' => 'TKT-RESOLVED-FLYOUT',
+        'resolved_at' => now(),
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertDontSee('TKT-RESOLVED-FLYOUT')
+        ->call('loadModal', 'resolved-tickets')
+        ->assertSet('activeModal', 'resolved-tickets')
+        ->assertSee('TKT-RESOLVED-FLYOUT')
+        ->call('closeModal')
+        ->assertSet('activeModal', null)
+        ->assertDontSee('TKT-RESOLVED-FLYOUT');
 });

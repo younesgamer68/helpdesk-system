@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketReassigned extends Notification
+class TicketReassigned extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -31,7 +33,7 @@ class TicketReassigned extends Notification
             return [];
         }
 
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -46,5 +48,15 @@ class TicketReassigned extends Notification
             'type' => 'reassigned',
             'message' => "Ticket #{$this->ticket->ticket_number} has been reassigned to another agent.",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'reassigned';
     }
 }

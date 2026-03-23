@@ -51,6 +51,13 @@ class AssignmentRule implements RuleInterface
     {
         $actions = $rule->actions;
 
+        // Use default assignment service if configured (prioritize this over specific assignment to handle UI toggle behavior)
+        if (! empty($actions['assign_to_specialist'])) {
+            $this->assignmentService->assignTicket($ticket);
+
+            return;
+        }
+
         if (! empty($actions['assign_to_team_id'])) {
             $team = Team::query()->find($actions['assign_to_team_id']);
 
@@ -59,13 +66,6 @@ class AssignmentRule implements RuleInterface
 
                 return;
             }
-        }
-
-        // Use default assignment service if configured
-        if (! empty($actions['assign_to_specialist'])) {
-            $this->assignmentService->assignTicket($ticket);
-
-            return;
         }
 
         // Assign to specific operator if configured

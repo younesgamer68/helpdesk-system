@@ -12,6 +12,7 @@ use App\Models\KbArticle;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketLog;
+use App\Models\TicketMention;
 use App\Models\TicketReply;
 use App\Models\User;
 use App\Notifications\InternalNoteAdded;
@@ -19,8 +20,10 @@ use App\Notifications\TicketAssigned;
 use App\Notifications\TicketPriorityChanged;
 use App\Notifications\TicketReassigned;
 use App\Notifications\TicketStatusChanged;
+use App\Notifications\UserMentioned;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
@@ -54,16 +57,22 @@ class TicketDetails extends Component
 
     public $summaryLoading = false;
 
-    public $showSummary = true;
+    public $showSummary = false;
 
     public $agentSearch = '';
 
     public string $kbSearch = '';
 
+    public ?int $pendingAssignAgentId = null;
+
+    public bool $showTeamPickerModal = false;
+
     #[Validate('required|string|max:5000')]
     public $message = '';
 
     public $internalNote = '';
+
+    public array $mentionedUserIds = [];
 
     #[Validate(['attachments.*' => 'nullable|file|max:10240'])] // 10MB Max for admins
     public $attachments = [];
@@ -80,6 +89,21 @@ class TicketDetails extends Component
             'company.slaPolicy:id,company_id,is_enabled',
         ]);
         $this->state = $ticket->status;
+
+        // Redirect outsider operators (inline check — computed props may not be available in mount)
+        if (Auth::user()->isOperator()) {
+            $isAssignee = $this->ticket->assigned_to === Auth::id();
+            $isTeammate = ! $isAssignee
+                && $this->ticket->team_id !== null
+                && Auth::user()->teams()->pluck('teams.id')->contains($this->ticket->team_id);
+
+            if (! $isAssignee && ! $isTeammate) {
+                session()->flash('error', 'You do not have access to this ticket.');
+                $this->redirect(route('tickets', ['company' => $ticket->company->slug]));
+
+                return;
+            }
+        }
     }
 
     #[Computed]
@@ -91,6 +115,7 @@ class TicketDetails extends Component
         $query = User::query()
             ->where('company_id', '=', $user->company_id)
             ->select('id', 'name', 'email')
+            ->with('teams:id,name,color')
             ->orderBy('name', 'asc');
 
         if (! empty($this->agentSearch)) {
@@ -108,6 +133,18 @@ class TicketDetails extends Component
             ->select('id', 'name', 'color')
             ->orderBy('name')
             ->get();
+    }
+
+    #[Computed]
+    public function pendingAgentTeams(): \Illuminate\Database\Eloquent\Collection
+    {
+        if (! $this->pendingAssignAgentId) {
+            return new \Illuminate\Database\Eloquent\Collection;
+        }
+
+        $agent = User::query()->find($this->pendingAssignAgentId);
+
+        return $agent ? $agent->teams()->select('teams.id', 'teams.name', 'teams.color')->get() : new \Illuminate\Database\Eloquent\Collection;
     }
 
     /**
@@ -153,7 +190,6 @@ class TicketDetails extends Component
                 'ai_suggestions_enabled' => false,
                 'ai_summary_enabled' => false,
                 'ai_chatbot_enabled' => false,
-                'ai_auto_triage_enabled' => false,
                 'ai_model' => 'gemini-2.5-flash',
             ]
         );
@@ -190,6 +226,36 @@ class TicketDetails extends Component
             ->get();
     }
 
+    #[Computed]
+    public function isAssignee(): bool
+    {
+        return Auth::user()->isOperator() && $this->ticket->assigned_to === Auth::id();
+    }
+
+    #[Computed]
+    public function isTeammate(): bool
+    {
+        if (! Auth::user()->isOperator()) {
+            return false;
+        }
+
+        if ($this->ticket->assigned_to === Auth::id()) {
+            return false;
+        }
+
+        if ($this->ticket->team_id === null) {
+            return false;
+        }
+
+        return Auth::user()->teams()->pluck('teams.id')->contains($this->ticket->team_id);
+    }
+
+    #[Computed]
+    public function isOutsider(): bool
+    {
+        return Auth::user()->isOperator() && ! $this->isAssignee && ! $this->isTeammate;
+    }
+
     private function logAction($action, $description)
     {
         TicketLog::create([
@@ -199,6 +265,8 @@ class TicketDetails extends Component
             'action' => $action,
             'description' => $description,
         ]);
+
+        unset($this->ticketLogs);
     }
 
     private function logSuggestionAction(string $action, ?string $text = null): void
@@ -236,13 +304,17 @@ class TicketDetails extends Component
 
         $customerEmail = $this->ticket->customer_email;
 
-        if ($customerEmail) {
-            Mail::to($customerEmail)->send(new TicketResolved($this->ticket));
-        }
-
         $this->logAction('resolved', 'Ticket resolved.');
 
         $this->dispatch('show-toast', message: 'Ticket marked as resolved!', type: 'success');
+
+        if ($customerEmail) {
+            if (! $this->ticket->tracking_token) {
+                $this->ticket->update(['tracking_token' => Str::random(32)]);
+            }
+
+            Mail::to($customerEmail)->queue(new TicketResolved($this->ticket));
+        }
     }
 
     public function unresolve()
@@ -299,9 +371,90 @@ class TicketDetails extends Component
         }
 
         $oldAgentId = $this->ticket->assigned_to;
-        $this->ticket->update(['assigned_to' => $agentId]);
+
+        $teamId = null;
+        if ($agentId !== null) {
+            $agentTeams = $agent->teams()->pluck('teams.id');
+            if ($agentTeams->count() === 1) {
+                $teamId = $agentTeams->first();
+            } elseif ($agentTeams->count() > 1) {
+                // If ticket already has a team the agent belongs to, keep it
+                if ($this->ticket->team_id && $agentTeams->contains($this->ticket->team_id)) {
+                    $teamId = $this->ticket->team_id;
+                } else {
+                    // Show team picker modal
+                    $this->pendingAssignAgentId = $agentId;
+                    $this->showTeamPickerModal = true;
+
+                    return;
+                }
+            }
+        }
+
+        $this->performAssignment($agentId, $teamId);
+    }
+
+    public function confirmAssignWithTeam(int $teamId): void
+    {
+        $agentId = $this->pendingAssignAgentId;
+        $this->showTeamPickerModal = false;
+        $this->pendingAssignAgentId = null;
+
+        if ($agentId === null) {
+            return;
+        }
+
+        $agent = $this->agents()->where('id', '=', $agentId)->first();
+        if (! $agent) {
+            return;
+        }
+
+        // Validate the team belongs to this agent
+        $agentTeams = $agent->teams()->pluck('teams.id');
+        if (! $agentTeams->contains($teamId)) {
+            $this->dispatch('show-toast', message: 'Agent does not belong to that team.', type: 'error');
+
+            return;
+        }
+
+        $this->performAssignment($agentId, $teamId);
+    }
+
+    public function cancelAssign(): void
+    {
+        $this->showTeamPickerModal = false;
+        $this->pendingAssignAgentId = null;
+    }
+
+    private function performAssignment(?int $agentId, ?int $teamId): void
+    {
+        $agent = $agentId !== null ? $this->agents()->where('id', '=', $agentId)->first() : null;
+        $oldAgentId = $this->ticket->assigned_to;
+
+        // Decrement old agent counter
+        if ($this->ticket->assigned_to) {
+            $oldAgent = User::find($this->ticket->assigned_to);
+            if ($oldAgent && $oldAgent->assigned_tickets_count > 0
+                && ! in_array($this->ticket->status, ['resolved', 'closed'])) {
+                $oldAgent->decrement('assigned_tickets_count');
+            }
+        }
+
+        // Update ticket
+        $this->ticket->update([
+            'assigned_to' => $agentId,
+            'team_id' => $agentId === null ? null : $teamId,
+        ]);
+
+        // Increment new agent counter and update last_assigned_at
+        if ($agentId !== null && $agent
+            && ! in_array($this->ticket->status, ['resolved', 'closed'])) {
+            $agent->increment('assigned_tickets_count');
+            $agent->update(['last_assigned_at' => now()]);
+        }
+
         $this->ticket->refresh();
-        $this->ticket->load('assignedTo');
+        $this->ticket->load(['assignedTo', 'team:id,name,color']);
 
         if ($agentId !== null && $agentId !== Auth::id() && $agent) {
             $agent->notify(new TicketAssigned($this->ticket));
@@ -427,6 +580,10 @@ class TicketDetails extends Component
         $customerEmail = $this->ticket->customer_email;
 
         if ($customerEmail) {
+            if (! $this->ticket->tracking_token) {
+                $this->ticket->update(['tracking_token' => Str::random(32)]);
+            }
+
             Mail::to($customerEmail)->send(new TicketClosed($this->ticket, 'manual'));
         }
 
@@ -717,6 +874,51 @@ class TicketDetails extends Component
         array_splice($this->attachments, $index, 1);
     }
 
+    #[Computed]
+    public function availableTeammates(): array
+    {
+        $query = User::query()
+            ->where('id', '!=', Auth::id())
+            ->where('company_id', Auth::user()->company_id);
+
+        if (Auth::user()->isOperator()) {
+            $teamIds = Auth::user()->teams()->pluck('teams.id');
+
+            if ($teamIds->isEmpty()) {
+                return [];
+            }
+
+            $query->where(function ($q) use ($teamIds) {
+                $q->whereHas('teams', fn ($sub) => $sub->whereIn('teams.id', $teamIds))
+                    ->orWhere('role', 'admin');
+            });
+        }
+
+        return $query->limit(50)
+            ->get(['id', 'name'])
+            ->map(fn (User $user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'initials' => $user->initials(),
+            ])->toArray();
+    }
+
+    public function addMentionedUser(int $userId): void
+    {
+        $user = User::where('id', $userId)
+            ->where('company_id', Auth::user()->company_id)
+            ->first();
+
+        if (! $user) {
+            return;
+        }
+
+        if (! in_array($userId, $this->mentionedUserIds)) {
+            $this->mentionedUserIds[] = $userId;
+        }
+
+    }
+
     public function addInternalNote()
     {
         if ($this->ticket->status === 'closed') {
@@ -729,7 +931,7 @@ class TicketDetails extends Component
             'internalNote' => 'required|string|max:5000',
         ]);
 
-        TicketReply::create([
+        $reply = TicketReply::create([
             'ticket_id' => $this->ticket->id,
             'user_id' => Auth::id(),
             'customer_name' => $this->ticket->customer?->name ?? '',
@@ -738,6 +940,30 @@ class TicketDetails extends Component
             'is_technician' => false,
             'attachments' => null,
         ]);
+
+        foreach ($this->mentionedUserIds as $mentionedId) {
+            $mentionedUser = User::where('id', $mentionedId)
+                ->where('company_id', Auth::user()->company_id)
+                ->first();
+
+            if (! $mentionedUser) {
+                continue;
+            }
+
+            TicketMention::create([
+                'ticket_id' => $this->ticket->id,
+                'ticket_reply_id' => $reply->id,
+                'mentioned_user_id' => $mentionedId,
+                'mentioned_by_user_id' => Auth::id(),
+                'company_id' => Auth::user()->company_id,
+            ]);
+
+            $mentionedUser->notify(new UserMentioned(
+                $this->ticket, $reply, Auth::user()
+            ));
+        }
+
+        $this->mentionedUserIds = [];
 
         $this->reset(['internalNote']);
 

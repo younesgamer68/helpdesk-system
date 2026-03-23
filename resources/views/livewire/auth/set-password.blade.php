@@ -1,7 +1,7 @@
 <div>
     <!-- Header -->
-    <div class="mb-8">
-        <h2 class="mt-6 text-3xl font-extrabold text-gray-900 border-none">Finish Account Setup</h2>
+    <div class="mb-6 text-center">
+        <h2 class="text-2xl font-bold text-gray-900">Finish Account Setup</h2>
         <p class="mt-2 text-sm text-gray-600">
             You've been invited to join the team! Please set a secure password to activate your account.
         </p>

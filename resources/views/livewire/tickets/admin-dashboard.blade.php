@@ -1,4 +1,4 @@
-<div class="animate-enter">
+<div>
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Admin Dashboard</h1>
@@ -9,8 +9,8 @@
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <!-- Open Tickets -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
-            x-on:click="$flux.modal('open-tickets-modal').show()">
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            wire:click="loadModal('open-tickets')">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Open
                     Tickets</span>
@@ -27,8 +27,8 @@
 
         <!-- Resolved Today -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
-            x-on:click="$flux.modal('resolved-tickets-modal').show()">
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            wire:click="loadModal('resolved-tickets')">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolved
                     Today</span>
@@ -44,8 +44,8 @@
 
         <!-- Unassigned Tickets -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
-            x-on:click="$flux.modal('unassigned-tickets-modal').show()">
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            wire:click="loadModal('unassigned-tickets')">
             <div class="flex items-center justify-between mb-3">
                 <span
                     class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Unassigned</span>
@@ -60,8 +60,8 @@
 
         <!-- Total Agents -->
         <button type="button"
-            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
-            x-on:click="$flux.modal('total-agents-modal').show()">
+            class="text-left bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            wire:click="loadModal('total-agents')">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Total
                     Agents</span>
@@ -104,7 +104,7 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Recent Tickets</h2>
                 <a href="{{ route('tickets', Auth::user()->company->slug) }}"
-                    class="text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
+                    class="text-sm text-teal-400 hover:text-teal-300 transition-colors">
                     View all &rarr;
                 </a>
             </div>
@@ -140,12 +140,12 @@
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                                 @foreach ($this->recentTickets as $ticket)
-                                    <tr class="animate-enter hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors group cursor-pointer" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;"
+                                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors group cursor-pointer"
                                         onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
                                         <td class="px-6 py-3.5 text-zinc-500 dark:text-zinc-400 font-mono">
                                             {{ $ticket->ticket_number }}</td>
                                         <td
-                                            class="px-6 py-3.5 font-medium text-zinc-900 dark:text-zinc-100 min-w-[200px] truncate max-w-xs transition-colors group-hover:text-emerald-400">
+                                            class="px-6 py-3.5 font-medium text-zinc-900 dark:text-zinc-100 min-w-[200px] truncate max-w-xs transition-colors group-hover:text-teal-400">
                                             {{ $ticket->subject }}</td>
                                         <td class="px-6 py-3.5 text-zinc-600 dark:text-zinc-300">
                                             {{ $ticket->customer_name }}</td>
@@ -223,7 +223,7 @@
                         </div>
                     @else
                         @foreach ($this->agentsActivity as $agent)
-                            <div class="animate-enter px-5 py-4 flex items-center justify-between" style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                            <div class="px-5 py-4 flex items-center justify-between">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="relative flex-shrink-0">
                                         <div
@@ -304,8 +304,8 @@
             @else
                 <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                     @foreach ($this->recentActivity as $log)
-                        <div class="animate-enter px-5 py-3 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors"
-                        style="animation-delay: {{ $loop->index * 50 }}ms; animation-fill-mode: both;">
+                        <div
+                            class="px-5 py-3 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
                             <div class="flex-shrink-0">
                                 @if ($log->action === 'assigned')
                                     <div
@@ -359,7 +359,7 @@
                                 @if ($log->ticket)
                                     <p class="text-xs text-zinc-500 mt-0.5 max-w-2xl truncate">
                                         <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $log->ticket->ticket_number]) }}"
-                                            class="hover:text-emerald-400 transition-colors">
+                                            class="hover:text-teal-400 transition-colors">
                                             {{ $log->ticket->ticket_number }} &mdash; {{ $log->ticket->subject }}
                                         </a>
                                     </p>
@@ -376,129 +376,135 @@
         </div>
     </div>
 
-    <!-- Modals for KPI Lists -->
-    <!-- Open Tickets Modal -->
-    <flux:modal name="open-tickets-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">Open Tickets</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->openTicketsList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No open tickets at this time.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                    @foreach ($this->openTicketsList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
-                                    {{ $ticket->customer_name }}</p>
-                            </div>
-                            <flux:badge variant="primary" size="sm">
-                                {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
-
-    <!-- Resolved Today Modal -->
-    <flux:modal name="resolved-tickets-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">Resolved Today</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->resolvedTodayList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No tickets resolved today.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                    @foreach ($this->resolvedTodayList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
-                                    {{ $ticket->customer_name }}</p>
-                            </div>
-                            <flux:badge variant="success" size="sm">Resolved</flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
-
-    <!-- Unassigned Tickets Modal -->
-    <flux:modal name="unassigned-tickets-modal" variant="flyout" class="max-w-4xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">Unassigned Tickets</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->unassignedTicketsList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No unassigned tickets pending.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                    @foreach ($this->unassignedTicketsList as $ticket)
-                        <div class="py-3 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
-                            <div>
-                                <p
-                                    class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-400 transition-colors">
-                                    {{ $ticket->subject }}</p>
-                                <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
-                                    {{ $ticket->customer_name }}</p>
-                            </div>
-                            <flux:badge variant="warning" size="sm">{{ ucfirst($ticket->priority) }}
-                            </flux:badge>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
-
-    <!-- Total Agents Modal -->
-    <flux:modal name="total-agents-modal" variant="flyout" class="max-w-2xl max-h-[85vh] flex flex-col">
-        <flux:heading size="lg" class="mb-4">All Agents</flux:heading>
-        <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
-            @if ($this->totalAgentsList->isEmpty())
-                <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No active agents.</p>
-            @else
-                <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                    @foreach ($this->totalAgentsList as $agent)
-                        <div class="py-4 flex items-center justify-between group cursor-pointer"
-                            onclick="window.location='{{ route('operators', ['company' => Auth::user()->company->slug]) }}'">
-                            <div class="flex items-center gap-3">
-                                <div class="relative">
-                                    <div
-                                        class="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-sm font-medium text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700">
-                                        {{ collect(explode(' ', $agent->name))->map(fn($n) => substr($n, 0, 1))->take(2)->join('') }}
+    @if ($activeModal)
+        <flux:modal name="admin-dashboard-kpi-modal" flyout wire:key="admin-dashboard-kpi-modal-{{ $activeModal }}"
+            wire:close="closeModal" wire:cancel="closeModal" x-init="$nextTick(() => { const _s = window.scrollY;
+                $flux.modal('admin-dashboard-kpi-modal').show();
+                requestAnimationFrame(() => window.scrollTo({ top: _s, behavior: 'instant' })); })"
+            class="{{ $activeModal === 'total-agents' ? 'max-w-2xl' : 'max-w-4xl' }} max-h-[85vh] flex flex-col">
+            @switch($activeModal)
+                @case('open-tickets')
+                    <flux:heading size="lg" class="mb-4">Open Tickets</flux:heading>
+                    <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
+                        @if ($this->openTicketsList->isEmpty())
+                            <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No open tickets at this time.</p>
+                        @else
+                            <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                                @foreach ($this->openTicketsList as $ticket)
+                                    <div class="py-3 flex items-center justify-between group cursor-pointer"
+                                        onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
+                                        <div>
+                                            <p
+                                                class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-400 transition-colors">
+                                                {{ $ticket->subject }}</p>
+                                            <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
+                                                {{ $ticket->customer_name }}</p>
+                                        </div>
+                                        <flux:badge variant="primary" size="sm">
+                                            {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</flux:badge>
                                     </div>
-                                    <span
-                                        class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
-                                </div>
-                                <div>
-                                    <p
-                                        class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-emerald-400 transition-colors">
-                                        @if ($agent->id === Auth::id())
-                                            You <span
-                                                class="text-xs text-zinc-500 font-normal">({{ $agent->name }})</span>
-                                        @else
-                                            {{ $agent->name }}
-                                        @endif
-                                    </p>
-                                    <p class="text-xs text-zinc-500">{{ $agent->email }}</p>
-                                </div>
+                                @endforeach
                             </div>
-                            <div class="text-right">
-                                <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                                    {{ $agent->open_tickets_count }}</p>
-                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider">Open</p>
+                        @endif
+                    </div>
+                @break
+
+                @case('resolved-tickets')
+                    <flux:heading size="lg" class="mb-4">Resolved Today</flux:heading>
+                    <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
+                        @if ($this->resolvedTodayList->isEmpty())
+                            <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No tickets resolved today.</p>
+                        @else
+                            <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                                @foreach ($this->resolvedTodayList as $ticket)
+                                    <div class="py-3 flex items-center justify-between group cursor-pointer"
+                                        onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
+                                        <div>
+                                            <p
+                                                class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-400 transition-colors">
+                                                {{ $ticket->subject }}</p>
+                                            <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
+                                                {{ $ticket->customer_name }}</p>
+                                        </div>
+                                        <flux:badge variant="success" size="sm">Resolved</flux:badge>
+                                    </div>
+                                @endforeach
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </flux:modal>
+                        @endif
+                    </div>
+                @break
+
+                @case('unassigned-tickets')
+                    <flux:heading size="lg" class="mb-4">Unassigned Tickets</flux:heading>
+                    <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
+                        @if ($this->unassignedTicketsList->isEmpty())
+                            <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No unassigned tickets pending.</p>
+                        @else
+                            <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                                @foreach ($this->unassignedTicketsList as $ticket)
+                                    <div class="py-3 flex items-center justify-between group cursor-pointer"
+                                        onclick="window.location='{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket->ticket_number]) }}'">
+                                        <div>
+                                            <p
+                                                class="text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-teal-400 transition-colors">
+                                                {{ $ticket->subject }}</p>
+                                            <p class="text-xs text-zinc-500 mt-0.5">{{ $ticket->ticket_number }} &middot;
+                                                {{ $ticket->customer_name }}</p>
+                                        </div>
+                                        <flux:badge variant="warning" size="sm">{{ ucfirst($ticket->priority) }}
+                                        </flux:badge>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @break
+
+                @case('total-agents')
+                    <flux:heading size="lg" class="mb-4">All Agents</flux:heading>
+                    <div class="overflow-y-auto flex-1 custom-scrollbar -mx-6 px-6">
+                        @if ($this->totalAgentsList->isEmpty())
+                            <p class="text-zinc-500 dark:text-zinc-400 py-4 text-center">No active agents.</p>
+                        @else
+                            <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                                @foreach ($this->totalAgentsList as $agent)
+                                    <div class="py-4 flex items-center justify-between group cursor-pointer"
+                                        onclick="window.location='{{ route('operators', ['company' => Auth::user()->company->slug]) }}'">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <div
+                                                    class="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-sm font-medium text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700">
+                                                    {{ collect(explode(' ', $agent->name))->map(fn($n) => substr($n, 0, 1))->take(2)->join('') }}
+                                                </div>
+                                                <span
+                                                    class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-zinc-900 rounded-full"></span>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-sm font-medium text-zinc-900 dark:text-white group-hover:text-teal-400 transition-colors">
+                                                    @if ($agent->id === Auth::id())
+                                                        You <span
+                                                            class="text-xs text-zinc-500 font-normal">({{ $agent->name }})</span>
+                                                    @else
+                                                        {{ $agent->name }}
+                                                    @endif
+                                                </p>
+                                                <p class="text-xs text-zinc-500">{{ $agent->email }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                                                {{ $agent->open_tickets_count }}</p>
+                                            <p class="text-[10px] text-zinc-500 uppercase tracking-wider">Open</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @break
+
+            @endswitch
+        </flux:modal>
+    @endif
 </div>

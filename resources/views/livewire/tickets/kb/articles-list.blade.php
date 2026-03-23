@@ -1,7 +1,5 @@
 <div>
     <section class="w-full">
-        <flux:separator class="mb-5 border-b border-zinc-200 dark:border-zinc-700" />
-
         <x-dashboard.kb-layout heading="Articles" subheading="Manage your Knowledge Base articles">
             @if (Auth::user()->isAdmin())
                 <div class="mb-5 flex justify-end">
@@ -28,58 +26,75 @@
                         class="pl-10 w-full bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
 
-                <select wire:model.live="status"
-                    class="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    <option value="">All Statuses</option>
-                    <option value="published">Published</option>
-                    <option value="draft">Draft</option>
-                    <option value="archived">Archived</option>
-                </select>
+                <flux:dropdown>
+                    <button type="button" class="w-[150px] flex items-center justify-between rounded-lg border border-zinc-300 dark:border-zinc-700 px-4 py-2 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <span>
+                            @php
+                                $statusLabels = [
+                                    '' => 'All Statuses',
+                                    'published' => 'Published',
+                                    'draft' => 'Draft',
+                                    'archived' => 'Archived'
+                                ];
+                            @endphp
+                            {{ $statusLabels[$status] ?? 'All Statuses' }}
+                        </span>
+                        <svg class="h-4 w-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="status">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Statuses</flux:menu.radio>
+                            <flux:menu.radio value="published" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Published</flux:menu.radio>
+                            <flux:menu.radio value="draft" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Draft</flux:menu.radio>
+                            <flux:menu.radio value="archived" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Archived</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
             </div>
 
             <div
                 class="bg-white dark:bg-zinc-900 shadow-sm rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                <table class="w-full text-left text-sm whitespace-nowrap">
+                <table class="w-full text-left text-sm whitespace-nowrap text-zinc-500 dark:text-zinc-400">
                     <thead
-                        class="uppercase tracking-wider border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50">
+                        class="bg-zinc-50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border-b border-zinc-100 dark:border-zinc-800">
                         <tr>
-                            <th scope="col" class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400">Title</th>
-                            <th scope="col" class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400">Category
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Title</th>
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Category
                             </th>
-                            <th scope="col" class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400">Status
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Status
                             </th>
                             <th scope="col"
-                                class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400 text-center">Views</th>
-                            <th scope="col" class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400">Last
+                                class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-center">Views</th>
+                            <th scope="col" class="px-4 py-3 text-xs font-medium uppercase tracking-wider">Last
                                 Updated</th>
                             <th scope="col"
-                                class="px-6 py-4 font-medium text-zinc-500 dark:text-zinc-400 text-right">Actions</th>
+                                class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                         @forelse($articles as $article)
                             @php
                                 $statusColors = [
-                                    'draft' => 'bg-gray-100 text-gray-800 dark:bg-zinc-800 dark:text-zinc-300',
-                                    'published' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-                                    'archived' => 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
+                                    'draft' => 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700',
+                                    'published' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+                                    'archived' => 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300 border-zinc-300 dark:border-zinc-600',
                                 ];
                             @endphp
                             <tr wire:key="article-{{ $article->id }}"
-                                class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition">
-                                <td class="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100 truncate max-w-xs">
+                                class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                <td class="px-4 py-4 font-medium text-zinc-900 dark:text-zinc-100 truncate max-w-xs">
                                     {{ $article->title }}
                                 </td>
-                                <td class="px-6 py-4 text-zinc-500 dark:text-zinc-400">
+                                <td class="px-4 py-4 text-zinc-500 dark:text-zinc-400">
                                     {{ $article->category->name ?? 'Uncategorized' }}
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-4">
                                     <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$article->status] }}">
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium border {{ $statusColors[$article->status] }}">
                                         {{ ucfirst($article->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="px-4 py-4 text-center">
                                     <div class="flex flex-col items-center">
                                         <span
                                             class="text-zinc-900 dark:text-zinc-100 font-medium">{{ number_format($article->views) }}
@@ -92,7 +107,7 @@
                                                     : 0;
                                         @endphp
                                         <span
-                                            class="mt-1 flex items-center gap-1 {{ $helpfulPercent >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($totalVotes > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-400') }}">
+                                            class="mt-1 text-xs flex items-center gap-1 {{ $helpfulPercent >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($totalVotes > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-400') }}">
                                             @if ($totalVotes > 0)
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
@@ -108,10 +123,10 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-zinc-500 dark:text-zinc-400">
+                                <td class="px-4 py-4 text-zinc-500 dark:text-zinc-400">
                                     {{ $article->updated_at->diffForHumans() }}
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-4 py-4 text-right">
                                     @if (Auth::user()->isAdmin())
                                         <div class="flex items-center justify-end gap-3">
                                             <a href="{{ route('kb.articles.edit', ['company' => Auth::user()->company->slug, 'article' => $article->id]) }}"

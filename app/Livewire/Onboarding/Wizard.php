@@ -4,8 +4,10 @@ namespace App\Livewire\Onboarding;
 
 use App\Models\Company;
 use App\Models\SlaPolicy;
+use App\Models\Team;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -35,7 +37,7 @@ class Wizard extends Component
 
     // Step 3: Invite Team
     public array $invites = [
-        ['email' => '', 'name' => '', 'role' => 'operator'],
+        ['email' => '', 'name' => '', 'role' => 'operator', 'team_id' => ''],
     ];
 
     // Step 4: Widget
@@ -181,7 +183,7 @@ class Wizard extends Component
 
     public function addInvite(): void
     {
-        $this->invites[] = ['email' => '', 'name' => '', 'role' => 'operator'];
+        $this->invites[] = ['email' => '', 'name' => '', 'role' => 'operator', 'team_id' => ''];
     }
 
     public function removeInvite($index): void
@@ -238,6 +240,13 @@ class Wizard extends Component
 
                 $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute('invitations.accept', $expiresAt, ['user' => $user->id]);
                 \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\UserInvitationMail($user, $signedUrl));
+
+                if (! empty($inviteData['team_id'])) {
+                    $team = Team::find($inviteData['team_id']);
+                    if ($team && $team->company_id === Auth::user()->company_id) {
+                        $team->members()->syncWithoutDetaching([$user->id => ['role' => 'member']]);
+                    }
+                }
             }
         }
 
@@ -263,6 +272,15 @@ class Wizard extends Component
     public function render(): View
     {
         return view('livewire.onboarding.wizard');
+    }
+
+    #[Computed]
+    public function teamsForWizard()
+    {
+        return Team::where('company_id', Auth::user()->company_id)
+            ->select('id', 'name', 'color')
+            ->orderBy('name')
+            ->get();
     }
 
     protected function saveSlaPolicy(Company $company): void

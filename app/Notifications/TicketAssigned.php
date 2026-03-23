@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketAssigned extends Notification
+class TicketAssigned extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -31,7 +33,7 @@ class TicketAssigned extends Notification
             return [];
         }
 
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -46,5 +48,15 @@ class TicketAssigned extends Notification
             'type' => 'assigned',
             'message' => "Ticket #{$this->ticket->ticket_number} has been assigned to you — {$this->ticket->subject}",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'assigned';
     }
 }

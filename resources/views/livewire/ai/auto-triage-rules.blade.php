@@ -14,68 +14,69 @@
                 </button>
             </div>
 
-            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg">
+            <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
                 @if ($this->rules_list->isEmpty())
                     <div class="p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
                         No triage rules yet. Add your first rule to start auto-triaging tickets.
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead>
-                                <tr class="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500">
-                                    <th class="px-4 py-3 font-medium">Name</th>
-                                    <th class="px-4 py-3 font-medium">Type</th>
-                                    <th class="px-4 py-3 font-medium">Keywords / Trigger</th>
-                                    <th class="px-4 py-3 font-medium">Category</th>
-                                    <th class="px-4 py-3 font-medium">Priority</th>
-                                    <th class="px-4 py-3 font-medium">Status</th>
-                                    <th class="px-4 py-3 text-right font-medium">Actions</th>
+                        <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+                            <thead class="border-b border-zinc-100 dark:border-zinc-800">
+                                <tr>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Name</th>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Type</th>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Keywords / Trigger</th>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Category</th>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Priority</th>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Status</th>
+                                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                                 @foreach ($this->rules_list as $rule)
                                     <tr wire:key="rule-{{ $rule->id }}"
-                                        class="border-b border-zinc-100 dark:border-zinc-800/70">
-                                        <td class="px-4 py-3 text-zinc-900 dark:text-zinc-100 font-medium">
+                                        class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                        <td class="px-4 py-4 text-zinc-900 dark:text-zinc-100 font-medium">
                                             {{ $rule->name }}</td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-4">
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $rule->type === 'ai' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-[#0B4F4A]/10 text-[#0B4F4A] dark:bg-[#0B4F4A]/20 dark:text-emerald-300' }}">
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border
+                                                {{ $rule->type === 'ai' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' }}">
                                                 {{ $rule->type === 'ai' ? 'AI' : 'Keyword' }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300 max-w-48 truncate">
+                                        <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400 max-w-48 truncate">
                                             @if ($rule->type === 'keyword' && $rule->keywords)
                                                 {{ implode(', ', $rule->keywords) }}
                                             @else
                                                 <span class="text-zinc-400 italic">AI decides</span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                                        <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400">
                                             {{ $rule->category?->name ?? '—' }}
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-4">
                                             @if ($rule->priority)
                                                 <span class="capitalize">{{ $rule->priority }}</span>
                                             @else
                                                 —
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 py-4">
                                             <button wire:click="toggleActive({{ $rule->id }})" type="button"
-                                                class="text-xs font-medium px-2 py-0.5 rounded {{ $rule->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400' }}">
+                                                class="text-xs font-medium px-2 py-0.5 rounded border {{ $rule->is_active ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700' }}">
                                                 {{ $rule->is_active ? 'Active' : 'Inactive' }}
                                             </button>
                                         </td>
-                                        <td class="px-4 py-3 text-right space-x-2">
+                                        <td class="px-4 py-4 text-right space-x-2">
                                             <button wire:click="openEdit({{ $rule->id }})" type="button"
-                                                class="px-3 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                                class="px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-xs font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors">
                                                 Edit
                                             </button>
                                             <button wire:click="delete({{ $rule->id }})"
                                                 wire:confirm="Delete this rule?" type="button"
-                                                class="px-3 py-1.5 rounded border border-red-300 text-red-500 text-xs hover:bg-red-50 dark:hover:bg-red-900/20">
+                                                class="px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
                                                 Delete
                                             </button>
                                         </td>

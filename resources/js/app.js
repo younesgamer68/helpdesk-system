@@ -11,6 +11,27 @@ window.jspdf = { jsPDF };
 window.Chart = Chart;
 
 document.addEventListener("livewire:init", () => {
+    // Boot the Echo private channel subscription once per page load.
+    // Dispatches 'helpdesk:notification' to window so any listener can react.
+    const userId = document
+        .querySelector('meta[name="auth-user-id"]')
+        ?.getAttribute("content");
+
+    if (userId && window.Echo) {
+        window.Echo.private(`App.Models.User.${userId}`).notification(
+            (notification) => {
+                window.dispatchEvent(
+                    new CustomEvent("helpdesk:notification", {
+                        detail: notification,
+                    }),
+                );
+
+                // Refresh all NotificationBell Livewire components
+                Livewire.dispatch("notifications-updated");
+            },
+        );
+    }
+
     Livewire.hook("morph.morphed", ({ el, component }) => {
         const isReports =
             el?.id === "reports-page" ||

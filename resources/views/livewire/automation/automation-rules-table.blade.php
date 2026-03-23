@@ -1,126 +1,198 @@
 <div>
     <x-ui.flash-message />
 
+    <!-- Header with Add Rule button -->
+    <div class="mb-4 flex justify-end">
+        <button wire:click="openCreateModal"
+            class="px-4 py-2 bg-emerald-500 text-white text-sm font-medium rounded-lg flex items-center gap-2 hover:bg-emerald-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Rule
+        </button>
+    </div>
+
     <!-- Filters Section -->
-    <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Filters</h3>
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Search Input -->
+        <div class="relative">
+            <svg class="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search rules..."
+                class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-0 transition-colors">
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <!-- Search Input -->
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <!-- Type Filter -->
+        <flux:dropdown>
+            <button type="button"
+                class="w-full flex justify-between items-center px-3 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                <span>
+                    @php
+                        $typeLabels = [
+                            '' => 'All Types',
+                            'assignment' => 'Auto Assignment',
+                            'priority' => 'Priority Change',
+                            'auto_reply' => 'Auto Reply',
+                            'escalation' => 'Escalation',
+                            'sla_breach' => 'SLA Breach',
+                        ];
+                    @endphp
+                    {{ $typeLabels[$filterType] ?? 'All Types' }}
+                </span>
+                <svg class="h-4 w-4 text-zinc-900 dark:text-zinc-100" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
-                <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search rules..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-            </div>
+            </button>
+            <flux:menu class="w-[200px]">
+                <flux:menu.radio.group wire:model.live="filterType">
+                    <flux:menu.radio value=""
+                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                        All Types</flux:menu.radio>
+                    @if ($filterMode === 'all' || $filterMode === 'assignment')
+                        <flux:menu.radio value="assignment"
+                            class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                            Auto Assignment</flux:menu.radio>
+                    @endif
+                    @if ($filterMode === 'all' || $filterMode === 'ticket')
+                        <flux:menu.radio value="priority"
+                            class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                            Priority Change</flux:menu.radio>
+                        <flux:menu.radio value="auto_reply"
+                            class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                            Auto Reply</flux:menu.radio>
+                        <flux:menu.radio value="escalation"
+                            class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                            Escalation</flux:menu.radio>
+                        <flux:menu.radio value="sla_breach"
+                            class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                            SLA Breach</flux:menu.radio>
+                    @endif
+                </flux:menu.radio.group>
+            </flux:menu>
+        </flux:dropdown>
 
-            <!-- Type Filter -->
-            <select wire:model.live="filterType"
-                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-                <option value="">All Types</option>
-                @if ($filterMode === 'all' || $filterMode === 'assignment')
-                    <option value="assignment">Auto Assignment</option>
-                @endif
-                @if ($filterMode === 'all' || $filterMode === 'ticket')
-                    <option value="priority">Priority Change</option>
-                    <option value="auto_reply">Auto Reply</option>
-                    <option value="escalation">Escalation</option>
-                    <option value="sla_breach">SLA Breach</option>
-                @endif
-            </select>
-
-            <!-- Status Filter -->
-            <select wire:model.live="filterStatus"
-                class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-                <option value="">All Status</option>
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-            </select>
-        </div>
+        <!-- Status Filter -->
+        <flux:dropdown>
+            <button type="button"
+                class="w-full flex justify-between items-center px-3 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-0 transition-colors">
+                <span>
+                    @php
+                        $statusLabels = [
+                            '' => 'All Status',
+                            '1' => 'Active',
+                            '0' => 'Inactive',
+                        ];
+                    @endphp
+                    {{ $statusLabels[$filterStatus] ?? 'All Status' }}
+                </span>
+                <svg class="h-4 w-4 text-zinc-900 dark:text-zinc-100" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <flux:menu class="w-[200px]">
+                <flux:menu.radio.group wire:model.live="filterStatus">
+                    <flux:menu.radio value=""
+                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                        All Status</flux:menu.radio>
+                    <flux:menu.radio value="1"
+                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                        Active</flux:menu.radio>
+                    <flux:menu.radio value="0"
+                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                        Inactive</flux:menu.radio>
+                </flux:menu.radio.group>
+            </flux:menu>
+        </flux:dropdown>
     </div>
 
     <!-- Table -->
-    <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <table class="w-full">
-            <thead>
-                <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+            <thead class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200/50 dark:border-zinc-800">
+                <tr>
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider cursor-pointer group hover:text-zinc-700 dark:hover:text-zinc-300"
                         wire:click="setSortBy('priority')">
                         <div class="flex items-center gap-1">
                             Priority
                             @if ($sortBy === 'priority')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span
+                                    class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider cursor-pointer group hover:text-zinc-700 dark:hover:text-zinc-300"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
                             Name
                             @if ($sortBy === 'name')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span
+                                    class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider">
                         Type
                     </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider">
                         Status
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider cursor-pointer group hover:text-zinc-700 dark:hover:text-zinc-300"
                         wire:click="setSortBy('executions_count')">
                         <div class="flex items-center gap-1">
                             Executions
                             @if ($sortBy === 'executions_count')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span
+                                    class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         Actions
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse ($this->automationRules as $rule)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors"
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
                         wire:key="rule-{{ $rule->id }}">
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-zinc-600 dark:text-zinc-400">
                             <span
-                                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-medium text-xs">
+                                class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium text-xs border border-zinc-200 dark:border-zinc-700">
                                 {{ $rule->priority }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4">
                             <div>
-                                <span class="font-medium text-zinc-900 dark:text-zinc-100">{{ $rule->name }}</span>
+                                <span
+                                    class="font-medium text-zinc-900 dark:text-zinc-100 text-sm">{{ $rule->name }}</span>
                                 @if ($rule->description)
-                                    <p class="text-xs text-zinc-500 mt-0.5">{{ Str::limit($rule->description, 50) }}</p>
+                                    <p class="mt-0.5 text-xs text-zinc-500">{{ Str::limit($rule->description, 50) }}</p>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4">
                             @php
                                 $typeColors = [
-                                    'assignment' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                    'priority' => 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                                    'auto_reply' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                    'escalation' => 'bg-red-500/10 text-red-400 border-red-500/20',
-                                    'sla_breach' => 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                                    'assignment' =>
+                                        'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+                                    'priority' =>
+                                        'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20',
+                                    'auto_reply' =>
+                                        'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+                                    'escalation' => 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20',
+                                    'sla_breach' =>
+                                        'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
                                 ];
                                 $typeLabels = [
                                     'assignment' => 'Auto Assignment',
@@ -131,28 +203,28 @@
                                 ];
                             @endphp
                             <span
-                                class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border {{ $typeColors[$rule->type] }}">
+                                class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded border {{ $typeColors[$rule->type] }}">
                                 {{ $typeLabels[$rule->type] }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4">
                             <button wire:click="toggleRuleStatus({{ $rule->id }})"
-                                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $rule->is_active ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700' }}">
+                                class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 {{ $rule->is_active ? 'bg-emerald-500' : 'bg-zinc-200 dark:bg-zinc-700' }}">
                                 <span
-                                    class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {{ $rule->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                                    class="inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform {{ $rule->is_active ? 'translate-x-4' : 'translate-x-0.5' }}"></span>
                             </button>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                        <td class="px-4 py-4">
                             <div>
                                 <span
-                                    class="font-medium text-zinc-900 dark:text-white">{{ number_format($rule->executions_count) }}</span>
+                                    class="font-medium text-zinc-900 dark:text-zinc-100 text-sm">{{ number_format($rule->executions_count) }}</span>
                                 @if ($rule->last_executed_at)
                                     <p class="text-xs text-zinc-500">Last:
                                         {{ $rule->last_executed_at->diffForHumans() }}</p>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-right">
+                        <td class="px-4 py-4 text-sm text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button wire:click="editRule({{ $rule->id }})"
                                     class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-emerald-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
@@ -162,7 +234,8 @@
                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                <button wire:click="confirmDelete({{ $rule->id }})"
+                                <button
+                                    @click="confirmDeletion($wire, {{ $rule->id }}, 'deleteRule', 'automation rule')"
                                     class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                     title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

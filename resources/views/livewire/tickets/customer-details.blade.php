@@ -120,48 +120,40 @@
             <!-- Tickets Table -->
             <div
                 class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm overflow-hidden">
-                <table class="w-full">
-                    <thead>
-                        <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
+                    <thead class="border-b border-zinc-100 dark:border-zinc-800">
+                        <tr>
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Ticket ID</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Subject</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Status</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Priority</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Agent</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
                                 Created</th>
-                            <th
-                                class="px-4 py-3 text-right text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                            </th>
+                            <th class="px-4 py-3 text-right"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
                         @forelse ($this->tickets as $ticket)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors">
-                                <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 font-mono">
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                <td class="px-4 py-4 text-zinc-600 dark:text-zinc-300 font-mono text-sm">
                                     {{ $ticket->ticket_number }}</td>
-                                <td class="px-4 py-3 text-sm text-zinc-900 dark:text-white font-medium">
+                                <td class="px-4 py-4 font-medium text-zinc-900 dark:text-zinc-100 text-sm">
                                     {{ Str::limit($ticket->subject, 40) }}</td>
-                                <td class="px-4 py-3 text-sm">
+                                <td class="px-4 py-4 text-sm">
                                     @php
                                         $statusBg = match ($ticket->status) {
-                                            'open' => 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-                                            'pending' => 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                                            'resolved' => 'bg-green-500/10 text-green-400 border-green-500/20',
-                                            'closed' => 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-                                            'in_progress' => 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                                            default => 'bg-gray-500/10 text-gray-400 border-gray-500/20',
+                                            'open' => 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+                                            'pending' => 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20',
+                                            'resolved' => 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20',
+                                            'closed' => 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
+                                            'in_progress' => 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+                                            default => 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20',
                                         };
                                     @endphp
                                     <span
@@ -169,14 +161,14 @@
                                         {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm">
+                                <td class="px-4 py-4 text-sm">
                                     @php
                                         $priorityBg = match ($ticket->priority) {
-                                            'low' => 'text-green-400',
-                                            'medium' => 'text-blue-400',
-                                            'high' => 'text-orange-400',
-                                            'urgent' => 'text-red-400',
-                                            default => 'text-gray-400',
+                                            'low' => 'text-emerald-500',
+                                            'medium' => 'text-blue-500',
+                                            'high' => 'text-orange-500',
+                                            'urgent' => 'text-red-500',
+                                            default => 'text-zinc-500',
                                         };
                                     @endphp
                                     <span class="flex items-center gap-1.5 {{ $priorityBg }}">

@@ -14,6 +14,18 @@ use Livewire\Component;
 
 class AdminDashboard extends Component
 {
+    public ?string $activeModal = null;
+
+    public function loadModal(string $modal): void
+    {
+        $this->activeModal = $modal;
+    }
+
+    public function closeModal(): void
+    {
+        $this->activeModal = null;
+    }
+
     #[Computed]
     public function openTicketsCount(): int
     {

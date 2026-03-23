@@ -11,6 +11,7 @@ use App\Scopes\CompanyScope;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class ProcessTicketLifecycle extends Command
 {
@@ -50,6 +51,7 @@ class ProcessTicketLifecycle extends Command
             ->whereNull('warning_sent_at')
             ->where('resolved_at', '<=', $warningThreshold)
             ->where('resolved_at', '>', $autoCloseThreshold)
+            ->with('customer')
             ->each(function (Ticket $ticket) use ($autoCloseHours) {
                 $resolvedAt = $ticket->resolved_at;
                 $closesAt = $resolvedAt->copy()->addHours($autoCloseHours);
@@ -58,6 +60,10 @@ class ProcessTicketLifecycle extends Command
                 $customerEmail = $ticket->customer_email;
 
                 if ($customerEmail) {
+                    if (! $ticket->tracking_token) {
+                        $ticket->update(['tracking_token' => Str::random(32)]);
+                    }
+
                     Mail::to($customerEmail)->send(new TicketClosedWarning($ticket, $remainingHours));
                 }
 
@@ -75,10 +81,15 @@ class ProcessTicketLifecycle extends Command
             ->where('company_id', $companyId)
             ->where('status', 'resolved')
             ->where('resolved_at', '<=', $threshold)
+            ->with('customer')
             ->each(function (Ticket $ticket) {
                 $customerEmail = $ticket->customer_email;
 
                 if ($customerEmail) {
+                    if (! $ticket->tracking_token) {
+                        $ticket->update(['tracking_token' => Str::random(32)]);
+                    }
+
                     Mail::to($customerEmail)->send(new TicketClosed($ticket, 'auto_closed'));
                 }
 

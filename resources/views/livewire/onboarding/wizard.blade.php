@@ -156,6 +156,20 @@
                                             <flux:select.option value="admin">Admin</flux:select.option>
                                         </flux:select>
                                     </div>
+                                    <div class="w-full md:w-44">
+                                        <flux:select wire:model="invites.{{ $index }}.team_id" label="Team"
+                                            :disabled="$this->teamsForWizard->isEmpty()">
+                                            <flux:select.option value="">No team</flux:select.option>
+                                            @foreach ($this->teamsForWizard as $team)
+                                                <flux:select.option value="{{ $team->id }}">{{ $team->name }}
+                                                </flux:select.option>
+                                            @endforeach
+                                        </flux:select>
+                                        @if ($this->teamsForWizard->isEmpty())
+                                            <p class="text-xs text-zinc-400 italic mt-1">No teams yet. Assign later
+                                                from Operators page.</p>
+                                        @endif
+                                    </div>
                                     <flux:button wire:click="removeInvite({{ $index }})" variant="subtle"
                                         icon="trash"
                                         class="text-zinc-400 hover:text-red-500 mb-1 w-full md:w-auto" />
@@ -215,7 +229,8 @@
                                     class="w-full max-w-sm {{ $widgetThemeMode === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200' }} rounded-2xl shadow-xl overflow-hidden border">
                                     <div
                                         class="px-6 py-5 {{ $widgetThemeMode === 'dark' ? 'bg-emerald-900 border-emerald-800/50' : 'bg-emerald-600 border-emerald-700/50' }} border-b text-white">
-                                        <div class="font-semibold text-lg">{{ $widgetFormTitle ?: 'Submit a Support Ticket' }}
+                                        <div class="font-semibold text-lg">
+                                            {{ $widgetFormTitle ?: 'Submit a Support Ticket' }}
                                         </div>
                                         <div class="text-sm text-emerald-100 mt-1">
                                             {{ $widgetWelcomeMessage ?: 'How can we help you today?' }}</div>

@@ -212,7 +212,7 @@ it('shows SLA section in sidebar even when SLA policy is disabled', function () 
     ]);
 
     Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
-        ->assertSee('SLA Status')
+        ->assertSee('SLA')
         ->assertSee('Disabled');
 });
 
@@ -234,5 +234,24 @@ it('shows SLA countdown state in sidebar when SLA is enabled and due time exists
     ]);
 
     Livewire::test(TicketDetails::class, ['ticket' => $this->ticket->fresh()])
-        ->assertSee('SLA Status');
+        ->assertSee('Time remaining');
+});
+
+it('shows ticket description as the first message in conversation', function () {
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->assertSee('Test Description')
+        ->assertSee($this->customer->name);
+});
+
+it('shows assigned agent in reply-as dropdown for admin', function () {
+    $agent = User::factory()->create(['company_id' => $this->company->id, 'role' => 'agent']);
+    $this->ticket->update(['assigned_to' => $agent->id]);
+
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket->fresh()])
+        ->assertSee('Reply as')
+        ->assertSee($agent->name);
 });

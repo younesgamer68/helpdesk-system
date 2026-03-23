@@ -1,7 +1,5 @@
 <div>
     <section class="w-full">
-        <flux:separator class="mb-5 border-b border-zinc-200 dark:border-zinc-700" />
-
         <x-dashboard.kb-layout :heading="$article ? 'Edit Article' : 'Create Article'" subheading="Manage your Knowledge Base article content">
             <div class="mb-5 flex justify-end">
                 <div class="flex items-center gap-3">

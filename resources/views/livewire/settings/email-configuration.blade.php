@@ -29,13 +29,30 @@
 
                 <div>
                     <flux:label>{{ __('Encryption') }}</flux:label>
-                    <select wire:model="smtpEncryption"
-                        class="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500">
-                        <option value="tls">TLS (recommended)</option>
-                        <option value="ssl">SSL</option>
-                        <option value="starttls">STARTTLS</option>
-                        <option value="none">None</option>
-                    </select>
+                    <flux:dropdown>
+                        <button type="button" class="mt-1 w-full flex items-center justify-between rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-800 text-sm text-zinc-900 dark:text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <span class="truncate">
+                                @php
+                                    $encryptionLabels = [
+                                        'tls' => 'TLS (recommended)',
+                                        'ssl' => 'SSL',
+                                        'starttls' => 'STARTTLS',
+                                        'none' => 'None',
+                                    ];
+                                @endphp
+                                {{ $encryptionLabels[$smtpEncryption] ?? 'TLS (recommended)' }}
+                            </span>
+                            <svg class="h-4 w-4 ml-2 flex-shrink-0 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <flux:menu class="w-[250px]">
+                            <flux:menu.radio.group wire:model="smtpEncryption">
+                                <flux:menu.radio value="tls" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">TLS (recommended)</flux:menu.radio>
+                                <flux:menu.radio value="ssl" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">SSL</flux:menu.radio>
+                                <flux:menu.radio value="starttls" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">STARTTLS</flux:menu.radio>
+                                <flux:menu.radio value="none" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">None</flux:menu.radio>
+                            </flux:menu.radio.group>
+                        </flux:menu>
+                    </flux:dropdown>
                 </div>
             </div>
 
@@ -75,7 +92,7 @@
                     <flux:label>{{ __('Email Footer Text') }}</flux:label>
                     <textarea wire:model="mailFooterText" rows="3"
                         placeholder="{{ __('e.g. © 2026 Acme Inc. · 123 Main St, Suite 100') }}"
-                        class="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500"></textarea>
+                        class="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"></textarea>
                     @error('mailFooterText')
                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                     @enderror

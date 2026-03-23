@@ -44,10 +44,7 @@
         <div class="relative max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
             
             <div class="mb-8 text-center">
-                <a href="{{ route('home') }}" class="inline-flex items-center justify-center p-3 bg-white rounded-xl shadow-lg border border-emerald-50 mb-6">
-                    <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
+                <a href="{{ route('home') }}" class="mb-6 inline-block">
                 </a>
                 <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
                     Ticket Tracking

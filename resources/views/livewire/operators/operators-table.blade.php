@@ -1,89 +1,112 @@
 <div>
     <x-ui.flash-message />
 
-    <!-- Filters Section -->
-    <div class="mb-3 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Filters & Search</h3>
-            <div class="flex items-center gap-2">
-                @if ($this->hasActiveFilters)
-                    <button wire:click="$set('showSaveViewModal', true)"
-                        class="px-3 py-1.5 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors font-medium">
-                        Save current view
+    <!-- Filters Bar -->
+    <div class="mb-6 space-y-4">
+        <!-- Top Row: Search and Actions -->
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <!-- Search -->
+            <div class="relative w-full xl:max-w-sm">
+                <svg class="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input wire:model.live.debounce.500ms="search" type="text"
+                    placeholder="Search by name or email..."
+                    class="w-full border-0 border-b border-zinc-200 bg-transparent py-2 pl-6 pr-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-0 dark:border-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500">
+            </div>
+
+            <!-- Right Side: Filters -->
+            <div class="flex flex-wrap items-center justify-start gap-3 xl:justify-end">
+                <!-- Role Filter -->
+                <flux:dropdown>
+                    <button type="button" class="flex items-center justify-between min-w-[150px] rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                        <span>
+                            @php
+                                $roleLabels = [
+                                    '' => 'All Roles',
+                                    'admin' => 'Admin',
+                                    'operator' => 'Operator'
+                                ];
+                            @endphp
+                            {{ $roleLabels[$roleFilter] ?? 'All Roles' }}
+                        </span>
+                        <svg class="h-3.5 w-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                     </button>
-                    <button wire:click="clearFilters" wire:confirm="Are you sure you want to clear all active filters?"
-                        class="px-3 py-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                        Clear all filters
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="roleFilter">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Roles</flux:menu.radio>
+                            <flux:menu.radio value="admin" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Admin</flux:menu.radio>
+                            <flux:menu.radio value="operator" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Operator</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
+
+                <!-- Status Filter -->
+                <flux:dropdown>
+                    <button type="button" class="flex items-center justify-between min-w-[150px] rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 focus:border-emerald-500 focus:outline-none focus:ring-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+                        <span>
+                            @php
+                                $statusLabels = [
+                                    '' => 'All Statuses',
+                                    'active' => 'Active Members',
+                                    'pending' => 'Pending Invites'
+                                ];
+                            @endphp
+                            {{ $statusLabels[$statusFilter] ?? 'All Statuses' }}
+                        </span>
+                        <svg class="h-3.5 w-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <flux:menu class="w-[150px]">
+                        <flux:menu.radio.group wire:model.live="statusFilter">
+                            <flux:menu.radio value="" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Statuses</flux:menu.radio>
+                            <flux:menu.radio value="active" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Active Members</flux:menu.radio>
+                            <flux:menu.radio value="pending" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Pending Invites</flux:menu.radio>
+                        </flux:menu.radio.group>
+                    </flux:menu>
+                </flux:dropdown>
+
+                @if ($this->hasActiveFilters)
+                     <button wire:click="$set('showSaveViewModal', true)"
+                        class="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors">
+                        Save View
+                    </button>
+                    <button wire:click="clearFilters"
+                        class="text-xs text-zinc-500 hover:text-zinc-700 transition-colors">
+                        Clear
                     </button>
                 @endif
             </div>
         </div>
 
-        <!-- Saved Filters (Presets) -->
-        <div class="mb-6 flex flex-wrap items-center gap-2">
-            <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mr-2">Saved
-                Views:</span>
-
+        <!-- Saved Views (if any) -->
+        @if(count($this->savedViews) > 0)
+        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+            <span class="text-xs font-medium text-zinc-400 uppercase tracking-wider mr-1">Views:</span>
             @foreach ($this->savedViews as $view)
                 <div class="flex items-center gap-1 group">
                     <button wire:click="applyPreset('{{ $view->id }}')"
-                        wire:confirm="Apply the '{{ $view->name }}' filter view?"
-                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        class="px-2 py-1 text-xs font-medium rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
                         {{ $view->name }}
                     </button>
                     <button wire:click="deleteSavedView({{ $view->id }})"
-                        wire:confirm="Are you sure you want to delete this view?"
-                        class="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-red-500 transition-all">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        wire:confirm="Delete view?"
+                        class="opacity-0 group-hover:opacity-100 text-zinc-300 hover:text-red-500 transition-opacity">
+                        &times;
                     </button>
                 </div>
             @endforeach
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <!-- Search Input -->
-            <div class="relative lg:col-span-2">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search by name or email..."
-                    class="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-            </div>
-
-            <!-- Role Filter -->
-            <div>
-                <select wire:model.live="roleFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-                    <option value="">All Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="operator">Operator</option>
-                </select>
-            </div>
-
-            <!-- Status Filter -->
-            <div>
-                <select wire:model.live="statusFilter"
-                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors">
-                    <option value="">All Statuses</option>
-                    <option value="active">Active Members</option>
-                    <option value="pending">Pending Invites</option>
-                </select>
-            </div>
-        </div>
+        @endif
     </div>
 
     <!-- Bulk Actions Bar -->
     @if (count($selected) > 0)
         <div
-            class="mb-4 p-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
+            class="mb-6 p-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
             <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ count($selected) }}
-                    members selected</span>
+                <span class="text-xs font-medium text-zinc-600 dark:text-zinc-300 ml-2">{{ count($selected) }} selected</span>
                 <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
 
                 @php
@@ -99,62 +122,38 @@
                 @if ($selectedPending)
                     <button wire:click="bulkResendInvites"
                         wire:confirm="Are you sure you want to resend invitations to these {{ count($selected) }} members?"
-                        wire:loading.attr="disabled" wire:target="bulkResendInvites"
-                        class="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors">
-                        <span wire:loading.remove wire:target="bulkResendInvites">Resend Invites</span>
-                        <span wire:loading wire:target="bulkResendInvites"
-                            class="inline-flex items-center gap-1.5 whitespace-nowrap">
-                            <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                            Sending...
-                        </span>
+                        class="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors">
+                        Resend Invites
                     </button>
                     <button wire:click="bulkRevokeInvites"
                         wire:confirm="Are you sure you want to revoke these invitations?"
-                        class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 transition-colors">
-                        Revoke Invites
+                        class="text-xs font-medium text-red-600 hover:text-red-700 transition-colors">
+                        Revoke
                     </button>
                 @endif
 
                 @if ($selectedActive && !$hasSelf)
                     <button wire:click="bulkRemoveMembers"
                         wire:confirm="Are you sure you want to remove these members? Their tickets will be unassigned."
-                        class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 transition-colors">
+                        class="text-xs font-medium text-red-600 hover:text-red-700 transition-colors">
                         Remove Members
                     </button>
                 @endif
 
                 @if (!$selectedPending && !$selectedActive && !$hasSelf)
                     <button wire:click="bulkResendInvites"
-                        wire:confirm="Are you sure you want to resend invitations to all selected pending members?"
-                        wire:loading.attr="disabled" wire:target="bulkResendInvites"
-                        class="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors">
-                        <span wire:loading.remove wire:target="bulkResendInvites">Resend (Pending)</span>
-                        <span wire:loading wire:target="bulkResendInvites"
-                            class="inline-flex items-center gap-1.5 whitespace-nowrap">
-                            <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-                            Sending...
-                        </span>
+                        class="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors">
+                        Resend (Pending)
                     </button>
                     <button wire:click="bulkRemoveMembers"
-                        wire:confirm="Are you sure you want to remove active members? Their tickets will be unassigned."
-                        class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 transition-colors">
+                        class="text-xs font-medium text-red-600 hover:text-red-700 transition-colors">
                         Remove (Active)
                     </button>
                 @endif
             </div>
             <button wire:click="deselectAll"
-                class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                Cancel selection
+                class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors mr-2">
+                Cancel
             </button>
         </div>
     @endif
@@ -163,174 +162,115 @@
     @if ($this->hasActiveFilters)
         <div class="mb-4 flex flex-wrap gap-2">
             @if ($search)
-                <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-full border border-emerald-500/20">
-                    Search: {{ $search }}
+                <span class="text-xs text-zinc-500">
+                    Searching for "{{ $search }}"
                 </span>
             @endif
             @if ($roleFilter)
-                <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-medium rounded-full border border-blue-500/20">
+                <span class="text-xs text-zinc-500">
                     Role: {{ ucfirst($roleFilter) }}
                 </span>
             @endif
             @if ($statusFilter)
-                <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-medium rounded-full border border-purple-500/20">
-                    Status: {{ $statusFilter === 'pending' ? 'Pending Invites' : 'Active Members' }}
+                <span class="text-xs text-zinc-500">
+                    Status: {{ $statusFilter === 'pending' ? 'Pending' : 'Active' }}
                 </span>
             @endif
         </div>
     @endif
 
     <!-- Table -->
-    <div class="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 shadow-sm">
+    <div class="overflow-x-auto">
         <table class="w-full">
             <thead>
-                <tr class="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-                    <th class="px-4 py-3 text-left">
-                        <input type="checkbox" wire:model.live="selectAll" wire:loading.attr="disabled"
-                            class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-white dark:bg-zinc-800">
+                <tr class="border-b border-zinc-200 dark:border-zinc-800">
+                    <th class="px-4 py-3 text-left w-10">
+                        <input type="checkbox" wire:model.live="selectAll"
+                            class="rounded border-zinc-300 text-teal-600 focus:ring-teal-600 dark:border-zinc-700 dark:bg-zinc-900">
                     </th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors group"
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400 cursor-pointer group hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                         wire:click="setSortBy('name')">
                         <div class="flex items-center gap-1">
                             Member
                             @if ($sortBy === 'name')
-                                <span class="text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span class="text-teal-500 dark:text-teal-400 ml-1">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
-                                <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
+                                <span class="opacity-0 group-hover:opacity-100 ml-1 transition-opacity text-zinc-400">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Role
-                    </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Status
-                    </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Specialities
-                    </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Teams
-                    </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        ONLINE
-                    </th>
-                    <th
-                        class="px-4 py-3 text-left text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                        Open Tickets
-                    </th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                        Joined
-                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Role</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Status</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Specialities</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Teams</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Activity</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">Tickets</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-400">Joined</th>
                     <th class="px-4 py-3"></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse ($this->operators as $user)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors {{ $user->isPendingInvite() ? 'cursor-default' : 'cursor-pointer' }} group/row"
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors group/row {{ $user->isPendingInvite() ? 'cursor-default' : 'cursor-pointer' }}"
                         wire:key="{{ $user->id }}"
                         @click="if (!{{ $user->isPendingInvite() ? 'true' : 'false' }} && !$event.target.closest('input') && !$event.target.closest('button') && !$event.target.closest('a')) { Livewire.navigate('{{ route('operator.profile', ['company' => Auth::user()->company->slug, 'operator' => $user->id]) }}') }">
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-left" wire:click.stop>
                             @if ($user->id !== Auth::id())
                                 <input type="checkbox" wire:model.live="selected" value="{{ $user->id }}"
                                     wire:key="checkbox-{{ $user->id }}" wire:loading.attr="disabled"
-                                    class="rounded border-zinc-300 dark:border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-white dark:bg-zinc-800">
+                                    class="w-4 h-4 rounded border-zinc-200 dark:border-zinc-700 text-teal-500 focus:ring-teal-500 bg-zinc-50 dark:bg-zinc-800">
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-sm">
                             <div class="flex items-center gap-3">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+                                <div class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 dark:text-zinc-400 text-xs font-medium border border-zinc-200 dark:border-zinc-700">
                                     {{ $user->initials() }}
                                 </div>
-                                <div>
-                                    <div class="font-medium text-zinc-900 dark:text-zinc-100">
+                                <div class="flex flex-col">
+                                    <span class="font-medium text-zinc-900 dark:text-zinc-100">
                                         @if ($user->id === Auth::id())
-                                            You <span
-                                                class="text-xs text-zinc-500 font-normal">({{ $user->name }})</span>
+                                            You <span class="text-zinc-400 font-normal">({{ $user->name }})</span>
                                         @else
                                             {{ $user->name }}
                                         @endif
-                                    </div>
-                                    <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $user->email }}</div>
+                                    </span>
+                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ $user->email }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-sm">
                             @if ($user->role === 'admin')
-                                <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-500/10 text-orange-400 text-xs font-medium rounded-full border border-orange-500/20">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                                        </path>
-                                    </svg>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-500/20">
                                     Admin
                                 </span>
                             @else
-                                <span
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-500/10 text-gray-400 text-xs font-medium rounded-full border border-gray-500/20">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
                                     Operator
                                 </span>
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-sm">
                             <div class="flex flex-col gap-1 items-start">
                                 @if ($user->isPendingInvite())
-                                    <span
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-400 text-xs font-medium rounded-full border border-amber-500/20">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-500 border border-amber-500/20">
                                         Pending
                                     </span>
                                     @php
                                         $hoursRemaining = $user->inviteHoursRemaining();
-                                        $isExpiredInvite = !is_null($hoursRemaining) && $hoursRemaining <= 0;
                                     @endphp
-                                    @if (is_null($hoursRemaining))
-                                        <span class="text-[10px] text-amber-500 font-medium">Expiring soon</span>
-                                    @elseif ($isExpiredInvite)
-                                        <span class="text-[10px] text-red-500 font-medium">Expired</span>
-                                    @else
-                                        <span
-                                            class="text-[10px] font-medium {{ $user->isInviteExpiringSoon() ? 'text-red-500' : 'text-amber-500' }}">
-                                            Expiring in {{ $hoursRemaining }}
-                                            {{ Str::plural('hour', $hoursRemaining) }}
+                                    @if (!is_null($hoursRemaining))
+                                        <span class="text-[10px] {{ (!is_null($hoursRemaining) && $hoursRemaining <= 0) ? 'text-red-500' : 'text-zinc-400' }}">
+                                            {{ (!is_null($hoursRemaining) && $hoursRemaining <= 0) ? 'Expired' : $hoursRemaining . 'h left' }}
                                         </span>
-
-                                        @if ($user->isInviteExpiringSoon())
-                                            <span
-                                                class="inline-flex items-center gap-1 px-2 py-0.5 bg-red-500/10 text-red-400 text-[10px] font-medium rounded-full border border-red-500/20">
-                                                Expiring soon
-                                            </span>
-                                        @endif
                                     @endif
                                 @else
-                                    <span
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full border border-green-500/20">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7"></path>
-                                        </svg>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border border-emerald-500/20">
                                         Active
                                     </span>
-                                    <!-- Online/Offline column placeholder - user teammate is adding this -->
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-sm">
                             <div class="flex flex-wrap gap-1 max-w-[200px]">
                                 @php
                                     $allSpecialties = collect();
@@ -344,72 +284,61 @@
                                 @endphp
 
                                 @forelse ($allSpecialties->take(3) as $spec)
-                                    <span
-                                        class="px-2 py-0.5 rounded-full text-[10px] font-medium border bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-600">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
                                         {{ $spec->name }}
                                     </span>
                                 @empty
-                                    <span class="text-zinc-500 italic">Not set</span>
+                                    <span class="text-zinc-400 text-xs">-</span>
                                 @endforelse
 
                                 @if ($allSpecialties->count() > 3)
-                                    <span
-                                        class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
-                                        +{{ $allSpecialties->count() - 3 }} more
-                                    </span>
+                                    <span class="text-[10px] text-zinc-400 font-medium">+{{ $allSpecialties->count() - 3 }}</span>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-sm">
                             <div class="flex flex-wrap gap-1 max-w-[200px]">
                                 @forelse ($user->teams->take(2) as $team)
-                                    <span
-                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-600">
-                                        <span class="w-1.5 h-1.5 rounded-full"
-                                            style="background-color: {{ $team->color }}"></span>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                        <span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ $team->color }}"></span>
                                         {{ $team->name }}
                                     </span>
                                 @empty
-                                    <span class="text-zinc-500 italic">None</span>
+                                    <span class="text-zinc-400 text-xs">-</span>
                                 @endforelse
                                 @if ($user->teams->count() > 2)
-                                    <span
-                                        class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
-                                        +{{ $user->teams->count() - 2 }} more
-                                    </span>
+                                    <span class="text-[10px] text-zinc-400 font-medium">+{{ $user->teams->count() - 2 }}</span>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm">
-
-                            <span
-                                class="font-semibold {{ $user->status == 'offline' ? 'text-red-400' : 'text-green-300' }}">
-                                {{ $user->status }}
+                        <td class="px-4 py-4 text-sm">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $user->status == 'offline' ? 'bg-zinc-300 dark:bg-zinc-600' : 'bg-emerald-500' }}"></span>
+                                <span class="text-xs {{ $user->status == 'offline' ? 'text-zinc-500' : 'text-zinc-700 dark:text-zinc-300' }}">
+                                    {{ ucfirst($user->status) }}
+                                </span>
                             </span>
-
                         </td>
-                        <td class="px-4 py-3 text-sm">
+                        <td class="px-4 py-4 text-sm text-zinc-600 dark:text-zinc-400">
                             @if ($user->open_tickets_count > 0)
-                                <span
-                                    class="font-semibold {{ $user->open_tickets_count > 8 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100' }}">
+                                <span class="font-medium {{ $user->open_tickets_count > 8 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100' }}">
                                     {{ $user->open_tickets_count }}
                                 </span>
                             @else
                                 <span class="text-zinc-400">-</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-right text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                        <td class="px-4 py-4 text-right text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
                             {{ $user->created_at->format('M j, Y') }}
                         </td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-4 text-right" wire:click.stop>
                             @if ($user->id !== Auth::user()->id)
                                 <div x-data="{ open: false }" @click.away="open = false"
                                     class="relative inline-block text-left">
                                     <button @click="open = !open"
-                                        class="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                                        class="p-1 text-zinc-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                         </svg>
                                     </button>
 
@@ -460,9 +389,8 @@
                                             </button>
                                         @endif
 
-                                        <button wire:click="removeUser({{ $user->id }})"
-                                            wire:confirm="Are you sure you want to {{ $user->isPendingInvite() ? 'revoke this invitation' : 'remove this team member? Their tickets will be unassigned.' }}?"
-                                            @click="open = false"
+                                        <button
+                                            @click="open = false; confirmAction($wire, {{ $user->id }}, 'removeUser', 'Are you sure?', '{{ $user->isPendingInvite() ? 'Revoke this invitation?' : 'Remove this team member? Their tickets will be unassigned.' }}', 'Yes, {{ $user->isPendingInvite() ? 'revoke' : 'remove' }} it!')"
                                             class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
@@ -502,73 +430,44 @@
 
     <!-- Create Operator Modal -->
     @if ($showCreateModal)
-        <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" x-data="{ showingDiscard: @entangle('showDiscardConfirmation') }"
-            @click.self="$wire.attemptCloseCreateModal()" @keydown.escape.window="$wire.attemptCloseCreateModal()">
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                @click.stop>
-                <!-- Header -->
-                <div
-                    class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
-                    <div>
-                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Invite Agent</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Send a secure invite link to onboard a
-                            new operator or
-                            admin.</p>
-                    </div>
-                    <button wire:click="attemptCloseCreateModal"
-                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <flux:modal wire:model="showCreateModal" class="md:w-[600px]">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Invite Agent</flux:heading>
+                    <flux:subheading>Send a secure invite link to onboard a new operator or admin.</flux:subheading>
                 </div>
 
-                <!-- Form -->
-                <form wire:submit="createAgent" class="p-6 space-y-6">
-                    <div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Agent Name <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="inviteName" type="text"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                                    placeholder="John Doe">
-                                @error('inviteName')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                <form wire:submit="createAgent" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <flux:field>
+                                <flux:label>Agent Name</flux:label>
+                                <flux:input wire:model.blur="inviteName" placeholder="John Doe" />
+                                <flux:error name="inviteName" />
+                            </flux:field>
+                        </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Email Address <span class="text-red-400">*</span>
-                                </label>
-                                <input wire:model.blur="inviteEmail" type="email"
-                                    class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                                    placeholder="john@example.com">
-                                @error('inviteEmail')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div>
+                            <flux:field>
+                                <flux:label>Email Address</flux:label>
+                                <flux:input wire:model.blur="inviteEmail" type="email" placeholder="john@example.com" />
+                                <flux:error name="inviteEmail" />
+                            </flux:field>
+                        </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                                    Account Role <span class="text-red-400">*</span>
-                                </label>
-                                <select wire:model.live="inviteRole"
-                                    class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
-                                    <option value="operator">Operator</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                                @error('inviteRole')
-                                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div>
+                            <flux:field>
+                                <flux:label>Account Role</flux:label>
+                                <flux:select wire:model.live="inviteRole" placeholder="Select role...">
+                                    <flux:select.option value="operator">Operator</flux:select.option>
+                                    <flux:select.option value="admin">Admin</flux:select.option>
+                                </flux:select>
+                                <flux:error name="inviteRole" />
+                            </flux:field>
                         </div>
                     </div>
 
-                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mt-6">
+                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div class="flex gap-3">
                             <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -583,130 +482,65 @@
                         </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="flex gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <button type="button" wire:click="attemptCloseCreateModal"
-                            class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
+                    <div class="flex gap-3">
+                        <flux:button type="button" wire:click="attemptCloseCreateModal" variant="ghost" class="flex-1">
                             Cancel
-                        </button>
-                        <button type="submit" wire:loading.attr="disabled" wire:target="createAgent"
-                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-
-                            {{-- Plus icon: hidden while loading --}}
-                            <svg wire:loading.remove wire:target="createAgent" class="w-4 h-4 shrink-0"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-
-                            {{-- Spinner: shown while loading --}}
-                            <svg wire:loading wire:target="createAgent" class="w-4 h-4 shrink-0 animate-spin"
-                                viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                    stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                            </svg>
-
+                        </flux:button>
+                        <flux:button type="submit" variant="primary" class="flex-1">
                             Dispatch Invite
-                        </button>
+                        </flux:button>
                     </div>
                 </form>
+            </div>
+        </flux:modal>
 
-                <!-- Discard Confirmation Dianlog -->
-                <div x-show="showingDiscard" x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="absolute inset-0 bg-black/60 flex items-center justify-center p-4" style="display: none;">
-                    <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-2xl max-w-md w-full p-6"
-                        @click.stop>
-                        <div class="flex items-start gap-4">
-                            <div
-                                class="flex-shrink-0 w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Discard invitation?
-                                </h3>
-                                <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-                                    You have unsaved changes. If you close now, your progress will be lost.
-                                </p>
-                                <div class="flex gap-3 mt-6">
-                                    <button wire:click="cancelDiscard"
-                                        class="flex-1 px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-200 font-medium rounded-lg transition-colors">
-                                        Keep editing
-                                    </button>
-                                    <button wire:click="confirmDiscard"
-                                        class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors">
-                                        Discard
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Discard Confirmation Dialog -->
+        <flux:modal wire:model="showDiscardConfirmation" class="md:w-96">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Discard invitation?</flux:heading>
+                    <flux:subheading>You have unsaved changes. If you close now, your progress will be lost.</flux:subheading>
+                </div>
+
+                <div class="flex gap-3">
+                    <flux:button wire:click="cancelDiscard" variant="ghost" class="flex-1">
+                        Keep editing
+                    </flux:button>
+                    <flux:button wire:click="confirmDiscard" variant="danger" class="flex-1">
+                        Discard
+                    </flux:button>
                 </div>
             </div>
-        </div>
+        </flux:modal>
     @endif
 
     <!-- Bulk Invite Modal -->
     @if ($showBulkInviteModal)
-        <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            @click.self="$wire.closeBulkInviteModal()" @keydown.escape.window="$wire.closeBulkInviteModal()">
-            <div class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                @click.stop>
-                <!-- Header -->
-                <div
-                    class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 flex items-center justify-between z-10">
-                    <div>
-                        <h3 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Bulk Invite Agents</h3>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Invite multiple team members by
-                            entering their email addresses.</p>
-                    </div>
-                    <button wire:click="closeBulkInviteModal"
-                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <flux:modal wire:model="showBulkInviteModal" class="md:w-[600px]">
+            <div class="space-y-6">
+                <div>
+                    <flux:heading size="lg">Bulk Invite Agents</flux:heading>
+                    <flux:subheading>Invite multiple team members by entering their email addresses.</flux:subheading>
                 </div>
 
-                <!-- Form -->
-                <form wire:submit="processBulkInvite" class="p-6 space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                            Email Addresses <span class="text-red-400">*</span>
-                        </label>
-                        <p class="text-xs text-zinc-500 mb-2">Enter emails separated by commas or new lines.</p>
-                        <textarea wire:model="bulkInviteEmails" rows="5"
-                            class="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                            placeholder="john@example.com, jane@example.com"></textarea>
-                        @error('bulkInviteEmails')
-                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <form wire:submit="processBulkInvite" class="space-y-6">
+                    <flux:field>
+                        <flux:label>Email Addresses</flux:label>
+                        <flux:description>Enter emails separated by commas or new lines</flux:description>
+                        <flux:textarea wire:model="bulkInviteEmails" rows="5" placeholder="john@example.com, jane@example.com" />
+                        <flux:error name="bulkInviteEmails" />
+                    </flux:field>
 
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-2">
-                            Account Role for all <span class="text-red-400">*</span>
-                        </label>
-                        <select wire:model.live="bulkInviteRole"
-                            class="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
-                            <option value="operator">Operator</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                        @error('bulkInviteRole')
-                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <flux:field>
+                        <flux:label>Account Role for all</flux:label>
+                        <flux:select wire:model.live="bulkInviteRole" placeholder="Select role...">
+                            <flux:select.option value="operator">Operator</flux:select.option>
+                            <flux:select.option value="admin">Admin</flux:select.option>
+                        </flux:select>
+                        <flux:error name="bulkInviteRole" />
+                    </flux:field>
 
-                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mt-6">
+                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div class="flex gap-3">
                             <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -721,39 +555,17 @@
                         </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="flex gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <button type="button" wire:click="closeBulkInviteModal"
-                            class="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
+                    <div class="flex gap-3">
+                        <flux:button type="button" wire:click="closeBulkInviteModal" variant="ghost" class="flex-1">
                             Cancel
-                        </button>
-                        <button type="submit" wire:loading.attr="disabled" wire:target="processBulkInvite"
-                            class="flex-1 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-70 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex flex-nowrap items-center justify-center gap-2">
-                            <span wire:loading.remove wire:target="processBulkInvite"
-                                class="inline-flex items-center gap-2 whitespace-nowrap">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Dispatch Bulk Invites
-                            </span>
-
-                            <span wire:loading wire:target="processBulkInvite"
-                                class="inline-flex items-center gap-2 whitespace-nowrap">
-                                <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"
-                                    aria-hidden="true">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                        stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                </svg>
-                                Sending Invites...
-                            </span>
-                        </button>
+                        </flux:button>
+                        <flux:button type="submit" variant="primary" class="flex-1">
+                            Dispatch Bulk Invites
+                        </flux:button>
                     </div>
                 </form>
             </div>
-        </div>
+        </flux:modal>
     @endif
 
     <!-- Save View Modal -->
