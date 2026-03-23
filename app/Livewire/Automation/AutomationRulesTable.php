@@ -8,7 +8,6 @@ use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -192,7 +191,6 @@ class AutomationRulesTable extends Component
             ->get();
     }
 
-    #[On('openCreateModal')]
     public function openCreateModal(): void
     {
         $this->resetForm();
@@ -223,6 +221,7 @@ class AutomationRulesTable extends Component
 
         $this->dispatch('show-toast', message: "Rule '{$this->name}' created successfully!", type: 'success');
         $this->closeCreateModal();
+        $this->resetPage();
         unset($this->automationRules);
     }
 

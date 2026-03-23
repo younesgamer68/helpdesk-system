@@ -12,6 +12,7 @@ use App\Models\KbArticle;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketLog;
+use App\Models\TicketMention;
 use App\Models\TicketReply;
 use App\Models\User;
 use App\Notifications\InternalNoteAdded;
@@ -19,6 +20,7 @@ use App\Notifications\TicketAssigned;
 use App\Notifications\TicketPriorityChanged;
 use App\Notifications\TicketReassigned;
 use App\Notifications\TicketStatusChanged;
+use App\Notifications\UserMentioned;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Computed;
@@ -64,6 +66,12 @@ class TicketDetails extends Component
     public $message = '';
 
     public $internalNote = '';
+
+    public array $mentionedUserIds = [];
+
+    public string $mentionSearch = '';
+
+    public array $teammateResults = [];
 
     #[Validate(['attachments.*' => 'nullable|file|max:10240'])] // 10MB Max for admins
     public $attachments = [];
@@ -762,6 +770,54 @@ class TicketDetails extends Component
         array_splice($this->attachments, $index, 1);
     }
 
+    public function searchTeammates(): void
+    {
+        if ($this->mentionSearch === '') {
+            $this->teammateResults = [];
+
+            return;
+        }
+
+        $teamIds = Auth::user()->teams()->pluck('teams.id');
+
+        if ($teamIds->isEmpty()) {
+            $this->teammateResults = [];
+
+            return;
+        }
+
+        $users = User::whereHas('teams', fn ($q) => $q->whereIn('teams.id', $teamIds))
+            ->where('id', '!=', Auth::id())
+            ->where('company_id', Auth::user()->company_id)
+            ->where('name', 'like', '%'.$this->mentionSearch.'%')
+            ->limit(8)
+            ->get(['id', 'name']);
+
+        $this->teammateResults = $users->map(fn (User $user) => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'initials' => $user->initials(),
+        ])->toArray();
+    }
+
+    public function addMentionedUser(int $userId): void
+    {
+        $user = User::where('id', $userId)
+            ->where('company_id', Auth::user()->company_id)
+            ->first();
+
+        if (! $user) {
+            return;
+        }
+
+        if (! in_array($userId, $this->mentionedUserIds)) {
+            $this->mentionedUserIds[] = $userId;
+        }
+
+        $this->mentionSearch = '';
+        $this->teammateResults = [];
+    }
+
     public function addInternalNote()
     {
         if ($this->ticket->status === 'closed') {
@@ -774,7 +830,7 @@ class TicketDetails extends Component
             'internalNote' => 'required|string|max:5000',
         ]);
 
-        TicketReply::create([
+        $reply = TicketReply::create([
             'ticket_id' => $this->ticket->id,
             'user_id' => Auth::id(),
             'customer_name' => $this->ticket->customer?->name ?? '',
@@ -783,6 +839,30 @@ class TicketDetails extends Component
             'is_technician' => false,
             'attachments' => null,
         ]);
+
+        foreach ($this->mentionedUserIds as $mentionedId) {
+            $mentionedUser = User::where('id', $mentionedId)
+                ->where('company_id', Auth::user()->company_id)
+                ->first();
+
+            if (! $mentionedUser) {
+                continue;
+            }
+
+            TicketMention::create([
+                'ticket_id' => $this->ticket->id,
+                'ticket_reply_id' => $reply->id,
+                'mentioned_user_id' => $mentionedId,
+                'mentioned_by_user_id' => Auth::id(),
+                'company_id' => Auth::user()->company_id,
+            ]);
+
+            $mentionedUser->notify(new UserMentioned(
+                $this->ticket, $reply, Auth::user()
+            ));
+        }
+
+        $this->mentionedUserIds = [];
 
         $this->reset(['internalNote']);
 

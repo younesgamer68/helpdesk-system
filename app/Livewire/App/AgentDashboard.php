@@ -4,6 +4,7 @@ namespace App\Livewire\App;
 
 use App\Models\Ticket;
 use App\Models\TicketLog;
+use App\Models\TicketMention;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -136,9 +137,16 @@ class AgentDashboard extends Component
     #[Computed]
     public function unassignedTickets(): Collection
     {
+        $categoryIds = Auth::user()->categories()->pluck('ticket_categories.id');
+
+        if ($categoryIds->isEmpty()) {
+            return collect();
+        }
+
         return Ticket::query()
             ->whereNull('assigned_to')
             ->where('status', '!=', 'closed')
+            ->whereIn('category_id', $categoryIds)
             ->with(['category:id,name', 'customer:id,name,email,phone'])
             ->latest()
             ->take(5)
@@ -231,6 +239,24 @@ class AgentDashboard extends Component
         $user = Auth::user();
         $user->is_available = ! $user->is_available;
         $user->save();
+    }
+
+    #[Computed]
+    public function unreadMentions(): Collection
+    {
+        return TicketMention::where('mentioned_user_id', Auth::id())
+            ->whereNull('read_at')
+            ->with(['ticket:id,ticket_number,subject', 'mentionedByUser:id,name'])
+            ->latest()
+            ->limit(5)
+            ->get();
+    }
+
+    public function markMentionRead(int $mentionId): void
+    {
+        TicketMention::where('id', $mentionId)
+            ->where('mentioned_user_id', Auth::id())
+            ->update(['read_at' => now()]);
     }
 
     public function render()

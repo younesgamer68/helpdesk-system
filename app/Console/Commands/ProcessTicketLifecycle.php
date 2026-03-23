@@ -50,6 +50,7 @@ class ProcessTicketLifecycle extends Command
             ->whereNull('warning_sent_at')
             ->where('resolved_at', '<=', $warningThreshold)
             ->where('resolved_at', '>', $autoCloseThreshold)
+            ->with('customer')
             ->each(function (Ticket $ticket) use ($autoCloseHours) {
                 $resolvedAt = $ticket->resolved_at;
                 $closesAt = $resolvedAt->copy()->addHours($autoCloseHours);
@@ -75,6 +76,7 @@ class ProcessTicketLifecycle extends Command
             ->where('company_id', $companyId)
             ->where('status', 'resolved')
             ->where('resolved_at', '<=', $threshold)
+            ->with('customer')
             ->each(function (Ticket $ticket) {
                 $customerEmail = $ticket->customer_email;
 

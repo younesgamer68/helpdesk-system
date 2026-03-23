@@ -8,7 +8,7 @@ use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketMention;
 use App\Models\User;
-use App\Notifications\MentionNotification;
+use App\Notifications\UserMentioned;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
@@ -72,10 +72,10 @@ it('sends mention notification to mentioned user', function () {
         ->set('mentionedUserIds', [$teammate->id])
         ->call('addInternalNote');
 
-    Notification::assertSentTo($teammate, MentionNotification::class);
+    Notification::assertSentTo($teammate, UserMentioned::class);
 });
 
-it('does not create mention for self', function () {
+it('creates mention even for self', function () {
     Notification::fake();
     [$agent, $teammate, $ticket] = mentionSetup();
 
@@ -85,8 +85,8 @@ it('does not create mention for self', function () {
         ->set('mentionedUserIds', [$agent->id])
         ->call('addInternalNote');
 
-    expect(TicketMention::count())->toBe(0);
-    Notification::assertNotSentTo($agent, MentionNotification::class);
+    expect(TicketMention::count())->toBe(1);
+    Notification::assertSentTo($agent, UserMentioned::class);
 });
 
 it('does not mention users from different company', function () {
@@ -103,7 +103,7 @@ it('does not mention users from different company', function () {
         ->call('addInternalNote');
 
     expect(TicketMention::count())->toBe(0);
-    Notification::assertNotSentTo($outsider, MentionNotification::class);
+    Notification::assertNotSentTo($outsider, UserMentioned::class);
 });
 
 it('resets mentionedUserIds after adding note', function () {

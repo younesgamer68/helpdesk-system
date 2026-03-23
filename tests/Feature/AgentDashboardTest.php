@@ -103,11 +103,23 @@ it('shows unassigned tickets', function () {
     [$user, $company] = dashboardUser();
 
     $unassigned = dashboardTicket($company, null, 'open');
+    $user->categories()->attach($unassigned->category_id);
 
     Livewire::actingAs($user)
         ->test(AgentDashboard::class)
         ->assertSee($unassigned->ticket_number)
         ->assertSeeInOrder(['Assign', 'to me']);
+});
+
+it('hides unassigned tickets outside operator speciality categories', function () {
+    [$user, $company] = dashboardUser();
+
+    $unassigned = dashboardTicket($company, null, 'open');
+
+    Livewire::actingAs($user)
+        ->test(AgentDashboard::class)
+        ->assertDontSee($unassigned->ticket_number)
+        ->assertSee('Set your speciality categories');
 });
 
 it('assigns an unassigned ticket to the authenticated user', function () {

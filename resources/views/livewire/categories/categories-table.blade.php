@@ -9,8 +9,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input wire:model.live.debounce.500ms="search" type="text"
-                placeholder="Search categories..."
+            <input wire:model.live.debounce.500ms="search" type="text" placeholder="Search categories..."
                 class="w-full pl-8 pr-4 py-2 bg-transparent border-0 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-0 transition-colors">
         </div>
     </div>
@@ -25,14 +24,14 @@
                         <div class="flex items-center gap-1">
                             Name
                             @if ($sortBy === 'name')
-                                <span class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span
+                                    class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th
-                        class="px-4 py-3 text-xs font-medium uppercase tracking-wider">
+                    <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider">
                         Description
                     </th>
 
@@ -41,19 +40,19 @@
                         <div class="flex items-center gap-1">
                             Default Priority
                             @if ($sortBy === 'default_priority')
-                                <span class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                                <span
+                                    class="text-emerald-500 dark:text-emerald-400 ml-2">{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                             @else
                                 <span class="opacity-0 group-hover:opacity-50 ml-2">↕</span>
                             @endif
                         </div>
                     </th>
-                    <th
-                        class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
+                    <th class="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider">
                         Actions
                     </th>
                 </tr>
             </thead>
-            <tbody x-data="{ openMap: {} }" class="divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
+            <tbody x-data="{ openMap: {} }" class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @php
                     $priorityColors = [
                         'low' => 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20',
@@ -95,7 +94,8 @@
                                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <button @click="confirmDeletion($wire, {{ $childCategory->id }}, 'deleteCategory', 'category')"
+                                    <button
+                                        @click="confirmDeletion($wire, {{ $childCategory->id }}, 'deleteCategory', 'category')"
                                         class="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                                         title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

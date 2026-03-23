@@ -36,11 +36,82 @@
 
     {{-- Add note form --}}
     <div class="shrink-0 border-t border-amber-200 dark:border-amber-800/40 bg-amber-50/40 dark:bg-amber-900/10 p-4">
-        <form wire:submit="addInternalNote">
-            <textarea wire:model="internalNote" rows="3" placeholder="Write an internal note... (visible only to your team)"
-                required
-                class="w-full bg-white dark:bg-zinc-800 border border-amber-200 dark:border-amber-700/50 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none disabled:opacity-50"
-                wire:loading.attr="disabled"></textarea>
+        <form wire:submit="addInternalNote" x-data="{
+            showMentions: false,
+            mentionChips: [],
+            removeMention(chipId) {
+                this.mentionChips = this.mentionChips.filter(c => c.id !== chipId);
+                $wire.set('mentionedUserIds', this.mentionChips.map(c => c.id));
+            },
+            selectMention(result) {
+                $wire.addMentionedUser(result.id);
+                this.mentionChips.push({ id: result.id, name: result.name });
+                this.showMentions = false;
+                const textarea = this.$refs.noteInput;
+                const val = textarea.value;
+                const atIndex = val.lastIndexOf('@');
+                if (atIndex !== -1) {
+                    textarea.value = val.substring(0, atIndex) + '@' + result.name + ' ';
+                    $wire.set('internalNote', textarea.value);
+                }
+                textarea.focus();
+            }
+        }">
+
+            {{-- Mention chips --}}
+            <template x-if="mentionChips.length > 0">
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                    <template x-for="chip in mentionChips" :key="chip.id">
+                        <span
+                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700/50">
+                            <span x-text="'@' + chip.name"></span>
+                            <button type="button" @click="removeMention(chip.id)"
+                                class="hover:text-red-500 transition-colors">&times;</button>
+                        </span>
+                    </template>
+                </div>
+            </template>
+
+            {{-- Textarea with mention detection --}}
+            <div class="relative">
+                <textarea x-ref="noteInput" wire:model="internalNote" rows="3"
+                    placeholder="Write an internal note... Use @ to mention teammates" required
+                    class="w-full bg-white dark:bg-zinc-800 border border-amber-200 dark:border-amber-700/50 rounded-xl px-4 py-3 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none disabled:opacity-50"
+                    wire:loading.attr="disabled"
+                    @input="
+                        const val = $event.target.value;
+                        const atIndex = val.lastIndexOf('@');
+                        if (atIndex !== -1) {
+                            const query = val.substring(atIndex + 1);
+                            if (query.length >= 0 && !query.includes(' ')) {
+                                showMentions = true;
+                                $wire.set('mentionSearch', query);
+                                $wire.searchTeammates();
+                            } else {
+                                showMentions = false;
+                            }
+                        } else {
+                            showMentions = false;
+                        }
+                    "
+                    @keydown.escape="showMentions = false"></textarea>
+
+                {{-- Mention dropdown --}}
+                <div x-show="showMentions && $wire.teammateResults.length > 0" x-transition
+                    @click.outside="showMentions = false"
+                    class="absolute bottom-full left-0 mb-1 w-72 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                    <template x-for="result in $wire.teammateResults" :key="result.id">
+                        <button type="button" @click="selectMention(result)"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                            <span
+                                class="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center text-xs font-semibold shrink-0"
+                                x-text="result.initials"></span>
+                            <span class="text-sm text-zinc-700 dark:text-zinc-200 truncate" x-text="result.name"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
             <div class="flex items-center justify-between mt-3">
                 <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                     <flux:icon.lock-closed class="w-3 h-3" />

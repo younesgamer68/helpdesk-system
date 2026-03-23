@@ -158,10 +158,14 @@ it('keeps the agent dashboard unassigned tickets isolated to the authenticated c
     $companyB = tenantCompany('agent-b');
     $agentA = tenantAgent($companyA);
 
+    $categoryA = tenantCategory($companyA, 'Support A');
+    $agentA->categories()->attach($categoryA->id);
+
     tenantTicket($companyA, [
         'subject' => 'Agent company ticket',
         'ticket_number' => 'TKT-AGENTA',
         'assigned_to' => null,
+        'category_id' => $categoryA->id,
     ]);
     tenantTicket($companyB, [
         'subject' => 'Other company ticket',
