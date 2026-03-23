@@ -35,28 +35,40 @@
 
             <div class="flex flex-wrap items-center justify-start gap-2 xl:justify-end">
                 <flux:dropdown>
-                    <flux:button variant="outline" class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700" icon-trailing="chevron-down">
+                    <flux:button variant="outline"
+                        class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                        icon-trailing="chevron-down">
                         {{ $statusFilter ? ucfirst(str_replace('_', ' ', $statusFilter)) : 'All Statuses' }}
                     </flux:button>
                     <flux:menu class="w-[140px]">
                         <flux:menu.radio.group wire:model.live="statusFilter">
-                            <flux:menu.radio value="" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Statuses</flux:menu.radio>
+                            <flux:menu.radio value=""
+                                class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                All Statuses</flux:menu.radio>
                             @foreach ($statuses as $status)
-                                <flux:menu.radio value="{{ $status }}" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">{{ ucfirst(str_replace('_', ' ', $status)) }}</flux:menu.radio>
+                                <flux:menu.radio value="{{ $status }}"
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    {{ ucfirst(str_replace('_', ' ', $status)) }}</flux:menu.radio>
                             @endforeach
                         </flux:menu.radio.group>
                     </flux:menu>
                 </flux:dropdown>
 
                 <flux:dropdown>
-                    <flux:button variant="outline" class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700" icon-trailing="chevron-down">
+                    <flux:button variant="outline"
+                        class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                        icon-trailing="chevron-down">
                         {{ $priorityFilter ? ucfirst($priorityFilter) : 'All Priorities' }}
                     </flux:button>
                     <flux:menu class="w-[140px]">
                         <flux:menu.radio.group wire:model.live="priorityFilter">
-                            <flux:menu.radio value="" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Priorities</flux:menu.radio>
+                            <flux:menu.radio value=""
+                                class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                All Priorities</flux:menu.radio>
                             @foreach ($priorities as $priority)
-                                <flux:menu.radio value="{{ $priority }}" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">{{ ucfirst($priority) }}</flux:menu.radio>
+                                <flux:menu.radio value="{{ $priority }}"
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    {{ ucfirst($priority) }}</flux:menu.radio>
                             @endforeach
                         </flux:menu.radio.group>
                     </flux:menu>
@@ -64,14 +76,40 @@
 
                 @if (Auth::user()->isAdmin())
                     <flux:dropdown>
-                        <flux:button variant="outline" class="w-[150px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700" icon-trailing="chevron-down">
-                            {{ $categoryFilter ? ($this->categories->where('id', $categoryFilter)->first()->name ?? 'All Categories') : 'All Categories' }}
+                        <flux:button variant="outline"
+                            class="w-[150px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                            icon-trailing="chevron-down">
+                            {{ $categoryFilter ? $this->categoriesFlat->where('id', $categoryFilter)->first()?->name ?? 'All Categories' : 'All Categories' }}
                         </flux:button>
                         <flux:menu class="w-[150px]">
                             <flux:menu.radio.group wire:model.live="categoryFilter">
-                                <flux:menu.radio value="" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">All Categories</flux:menu.radio>
-                                @foreach ($this->categories as $category)
-                                    <flux:menu.radio value="{{ $category->id }}" class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">{{ $category->name }}</flux:menu.radio>
+                                <flux:menu.radio value=""
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    All Categories</flux:menu.radio>
+                                @foreach ($this->categoriesFlat as $category)
+                                    <flux:menu.radio value="{{ $category->id }}"
+                                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                        {{ $category->name }}</flux:menu.radio>
+                                @endforeach
+                            </flux:menu.radio.group>
+                        </flux:menu>
+                    </flux:dropdown>
+
+                    <flux:dropdown>
+                        <flux:button variant="outline"
+                            class="w-[140px] justify-between px-3 py-2 text-xs font-normal text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"
+                            icon-trailing="chevron-down">
+                            {{ $teamFilter ? $this->teamsForFilter->where('id', $teamFilter)->first()?->name ?? 'All Teams' : 'All Teams' }}
+                        </flux:button>
+                        <flux:menu class="w-[140px]">
+                            <flux:menu.radio.group wire:model.live="teamFilter">
+                                <flux:menu.radio value=""
+                                    class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                    All Teams</flux:menu.radio>
+                                @foreach ($this->teamsForFilter as $team)
+                                    <flux:menu.radio value="{{ $team->id }}"
+                                        class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                        {{ $team->name }}</flux:menu.radio>
                                 @endforeach
                             </flux:menu.radio.group>
                         </flux:menu>
@@ -223,6 +261,29 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
+
+                    <!-- Bulk Assign Team -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open"
+                            class="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-teal-500 transition-colors">
+                            Assign Team
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute left-0 mt-2 w-44 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl z-20 overflow-hidden">
+                            @foreach ($this->teamsForFilter as $team)
+                                <button wire:click="bulkAssignTeam({{ $team->id }})" @click="open = false"
+                                    class="w-full px-4 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                                    {{ $team->name }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
 
                 <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700"></div>
@@ -333,6 +394,13 @@
                                             {{ $ticket->assignedTo->name }}
                                         @endif
                                     </span>
+                                    @if ($ticket->team)
+                                        <span class="block text-xs text-zinc-400 mt-0.5">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
+                                                style="background-color: {{ $ticket->team->color ?? '#71717a' }}"></span>
+                                            {{ $ticket->team->name }}
+                                        </span>
+                                    @endif
                                 @elseif ($ticketView === 'team')
                                     <button wire:click.stop="takeTicket({{ $ticket->id }})"
                                         wire:loading.attr="disabled" wire:target="takeTicket({{ $ticket->id }})"
@@ -343,11 +411,20 @@
                                             wire:target="takeTicket({{ $ticket->id }})">Taking...</span>
                                     </button>
                                 @else
-                                    <div
-                                        class="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300">
-                                        U
-                                    </div>
-                                    <span class="text-sm text-zinc-400">Unassigned</span>
+                                    @if ($ticket->team)
+                                        <span class="text-sm text-amber-600 dark:text-amber-400">Unassigned</span>
+                                        <span class="block text-xs text-zinc-400 mt-0.5">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
+                                                style="background-color: {{ $ticket->team->color ?? '#71717a' }}"></span>
+                                            {{ $ticket->team->name }}
+                                        </span>
+                                    @else
+                                        <div
+                                            class="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300">
+                                            U
+                                        </div>
+                                        <span class="text-sm text-zinc-400">Unassigned</span>
+                                    @endif
                                 @endif
                             </div>
                         </td>
@@ -470,14 +547,18 @@
                     <!-- Draft Indicator -->
                     @if ($this->hasFormData)
                         <div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-center gap-3">
-                            <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <div class="flex-1">
                                 <p class="text-sm text-amber-400 font-medium">Draft saved</p>
-                                <p class="text-xs text-amber-300/80 mt-0.5">Your changes are automatically preserved</p>
+                                <p class="text-xs text-amber-300/80 mt-0.5">Your changes are automatically preserved
+                                </p>
                             </div>
-                            <button type="button" wire:click="clearForm" class="text-xs text-amber-400 hover:text-amber-300 underline">
+                            <button type="button" wire:click="clearForm"
+                                class="text-xs text-amber-400 hover:text-amber-300 underline">
                                 Clear all
                             </button>
                         </div>
@@ -499,7 +580,8 @@
 
                             <flux:field>
                                 <flux:label>Customer Email</flux:label>
-                                <flux:input wire:model.blur="customer_email" type="email" placeholder="john@example.com" />
+                                <flux:input wire:model.blur="customer_email" type="email"
+                                    placeholder="john@example.com" />
                                 <flux:error name="customer_email" />
                             </flux:field>
 
@@ -515,7 +597,7 @@
                     <div>
                         <flux:separator class="mb-6" />
                         <flux:heading size="md" class="mb-4">Ticket Details</flux:heading>
-                        
+
                         <div class="space-y-4">
                             <flux:field>
                                 <flux:label>Subject</flux:label>
@@ -525,7 +607,8 @@
 
                             <flux:field>
                                 <flux:label>Description</flux:label>
-                                <flux:textarea wire:model.blur="description" rows="5" placeholder="Detailed description of the issue..." />
+                                <flux:textarea wire:model.blur="description" rows="5"
+                                    placeholder="Detailed description of the issue..." />
                                 <flux:error name="description" />
                             </flux:field>
 
@@ -562,27 +645,57 @@
                         <flux:heading size="md" class="mb-4">Assignment & Categorization</flux:heading>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @if (Auth::user()->role === 'admin')
+                            @if (Auth::user()->isAdmin())
+                                <flux:field>
+                                    <flux:label>Team</flux:label>
+                                    <flux:select wire:model.live="createTeamId"
+                                        placeholder="No Team (assign to any agent)">
+                                        <flux:select.option value="">No Team</flux:select.option>
+                                        @foreach ($this->teamsForCreate as $team)
+                                            <flux:select.option value="{{ $team->id }}">{{ $team->name }}
+                                            </flux:select.option>
+                                        @endforeach
+                                    </flux:select>
+                                </flux:field>
+
                                 <flux:field>
                                     <flux:label>Assign To</flux:label>
                                     <flux:select wire:model.live="assigned_to" placeholder="Unassigned">
                                         <flux:select.option value="">Unassigned</flux:select.option>
                                         @foreach ($this->agents as $agent)
-                                            <flux:select.option value="{{ $agent->id }}">{{ $agent->name }}</flux:select.option>
+                                            <flux:select.option value="{{ $agent->id }}">{{ $agent->name }}
+                                            </flux:select.option>
                                         @endforeach
                                     </flux:select>
+                                    <p class="text-xs text-zinc-400 italic mt-1">
+                                        @if ($createTeamId)
+                                            Showing {{ count($this->agents) }} agents in this team
+                                        @else
+                                            Showing all agents
+                                        @endif
+                                    </p>
                                     <flux:error name="assigned_to" />
                                 </flux:field>
                             @endif
 
                             <flux:field>
                                 <flux:label>Category</flux:label>
-                                <flux:select wire:model.live="category_id" placeholder="No Category">
-                                    <flux:select.option value="">No Category</flux:select.option>
-                                    @foreach ($this->categories as $category)
-                                        <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+                                <select wire:model.live="category_id"
+                                    class="block w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-zinc-400 dark:focus:border-zinc-500 focus:outline-none focus:ring-0">
+                                    <option value="">No Category</option>
+                                    @foreach ($this->categories as $parentCategory)
+                                        @if ($parentCategory->children->isNotEmpty())
+                                            <optgroup label="{{ $parentCategory->name }}">
+                                                @foreach ($parentCategory->children as $child)
+                                                    <option value="{{ $child->id }}">{{ $child->name }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        @else
+                                            <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                            </option>
+                                        @endif
                                     @endforeach
-                                </flux:select>
+                                </select>
                                 <flux:error name="category_id" />
                             </flux:field>
                         </div>
@@ -591,19 +704,23 @@
                     <!-- Info Note -->
                     <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                         <div class="flex gap-3">
-                            <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <div>
                                 <p class="text-sm text-blue-400 font-medium">Auto-verified Ticket</p>
-                                <p class="text-xs text-blue-300/80 mt-1">Tickets created by staff are automatically verified and don't require email confirmation.</p>
+                                <p class="text-xs text-blue-300/80 mt-1">Tickets created by staff are automatically
+                                    verified and don't require email confirmation.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Actions -->
                     <div class="flex gap-3">
-                        <flux:button type="button" wire:click="attemptCloseCreateModal" variant="ghost" class="flex-1">
+                        <flux:button type="button" wire:click="attemptCloseCreateModal" variant="ghost"
+                            class="flex-1">
                             Cancel
                         </flux:button>
                         <flux:button type="submit" variant="primary" class="flex-1">
@@ -619,7 +736,8 @@
             <div class="space-y-6">
                 <div>
                     <flux:heading size="lg">Discard changes?</flux:heading>
-                    <flux:subheading>You have unsaved changes. If you close now, your progress will be lost.</flux:subheading>
+                    <flux:subheading>You have unsaved changes. If you close now, your progress will be lost.
+                    </flux:subheading>
                 </div>
 
                 <div class="flex gap-3">

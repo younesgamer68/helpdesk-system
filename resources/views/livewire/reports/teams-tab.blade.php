@@ -37,6 +37,13 @@
                             </p>
                         </div>
                     </div>
+
+                    <div class="col-span-2 border-t border-zinc-100 dark:border-zinc-700 pt-3 mt-1">
+                        <p class="text-xs text-zinc-500 mb-1">Avg Resolution Time</p>
+                        <p class="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                            {{ $team['avg_resolution_hours'] !== null ? $team['avg_resolution_hours'] . 'h' : 'No data' }}
+                        </p>
+                    </div>
                 </div>
             @endforeach
         </div>

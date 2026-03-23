@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketUnassigned extends Notification
+class TicketUnassigned extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -27,12 +29,10 @@ class TicketUnassigned extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
-     * Get the array representation of the notification.
-     *
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
@@ -44,5 +44,15 @@ class TicketUnassigned extends Notification
             'type' => 'ticket_unassigned',
             'message' => "Ticket #{$this->ticket->ticket_number} could not be auto-assigned, needs manual assignment",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'ticket_unassigned';
     }
 }

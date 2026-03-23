@@ -47,6 +47,10 @@ class NotificationsPage extends Component
             return;
         }
 
+        if ($tab === 'mentions' && ! in_array(Auth::user()->role, ['admin', 'operator'])) {
+            return;
+        }
+
         $this->activeTab = $tab;
         $this->perPage = 20;
     }
@@ -108,6 +112,7 @@ class NotificationsPage extends Component
             }),
             'sla' => $query->whereJsonContains('data->type', 'sla_breached'),
             'teams' => $query->whereJsonContains('data->type', 'team_assigned'),
+            'mentions' => $query->whereJsonContains('data->type', 'mentioned'),
             default => null,
         };
 
@@ -132,6 +137,7 @@ class NotificationsPage extends Component
             }),
             'sla' => $query->whereJsonContains('data->type', 'sla_breached'),
             'teams' => $query->whereJsonContains('data->type', 'team_assigned'),
+            'mentions' => $query->whereJsonContains('data->type', 'mentioned'),
             default => null,
         };
 

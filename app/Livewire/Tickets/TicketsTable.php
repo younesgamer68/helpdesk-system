@@ -3,9 +3,12 @@
 namespace App\Livewire\Tickets;
 
 use App\Models\SavedFilterView;
+use App\Models\Team;
 use App\Models\TenantConfig;
 use App\Models\Ticket;
 use App\Models\TicketLog;
+use App\Models\User;
+use App\Services\TicketAssignmentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -70,6 +73,10 @@ class TicketsTable extends Component
 
     public $category_id = '';
 
+    public string $createTeamId = '';
+
+    public string $teamFilter = '';
+
     public $customViewName = '';
 
     public $showSaveViewModal = false;
@@ -87,6 +94,7 @@ class TicketsTable extends Component
             'priority' => 'required|in:low,medium,high,urgent',
             'status' => 'required|in:pending,open,in_progress,resolved,closed',
             'assigned_to' => 'nullable|exists:users,id',
+            'createTeamId' => 'nullable|exists:teams,id',
             'category_id' => 'nullable|exists:ticket_categories,id',
         ];
     }
@@ -102,11 +110,18 @@ class TicketsTable extends Component
     #[Computed]
     public function categories()
     {
-        return cache()->remember(
-            'company.'.Auth::user()->company_id.'.categories',
-            3600,
-            fn () => Auth::user()->company->categories()->select('id', 'name')->get()
-        );
+        return Auth::user()->company->categories()
+            ->parents()
+            ->select('id', 'name')
+            ->with('children:id,name,parent_id')
+            ->orderBy('name')
+            ->get();
+    }
+
+    #[Computed]
+    public function categoriesFlat()
+    {
+        return Auth::user()->company->categories()->select('id', 'name')->orderBy('name')->get();
     }
 
     #[Computed]
@@ -116,11 +131,36 @@ class TicketsTable extends Component
             return collect();
         }
 
-        return cache()->remember(
-            'company.'.Auth::user()->company_id.'.agents',
-            3600,
-            fn () => Auth::user()->company->user()->select('id', 'name')->orderBy('name')->get()
-        );
+        $query = User::where('company_id', Auth::user()->company_id)
+            ->operators()
+            ->select('id', 'name')
+            ->orderBy('name');
+
+        if ($this->createTeamId) {
+            $teamMemberIds = Team::find($this->createTeamId)?->members()->pluck('users.id') ?? collect();
+            $query->whereIn('id', $teamMemberIds);
+        }
+
+        return $query->get();
+    }
+
+    #[Computed]
+    public function teamsForCreate()
+    {
+        return Team::where('company_id', Auth::user()->company_id)
+            ->select('id', 'name', 'color')
+            ->with(['members' => fn ($q) => $q->select('users.id', 'users.name')->orderBy('name')])
+            ->orderBy('name')
+            ->get();
+    }
+
+    #[Computed]
+    public function teamsForFilter()
+    {
+        return Team::where('company_id', Auth::user()->company_id)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
     }
 
     public function refreshTickets()
@@ -157,6 +197,29 @@ class TicketsTable extends Component
     public function updatingCategoryFilter()
     {
         $this->resetPage();
+    }
+
+    public function updatingTeamFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCreateTeamId(): void
+    {
+        $this->assigned_to = '';
+        unset($this->agents);
+    }
+
+    public function updatedAssignedTo(): void
+    {
+        if ($this->assigned_to && ! $this->createTeamId) {
+            $agent = User::find($this->assigned_to);
+            $agentTeams = $agent?->teams()->pluck('teams.id') ?? collect();
+            if ($agentTeams->count() === 1) {
+                $this->createTeamId = (string) $agentTeams->first();
+                unset($this->agents);
+            }
+        }
     }
 
     public function updatingDateFrom()
@@ -221,6 +284,7 @@ class TicketsTable extends Component
         $this->categoryFilter = '';
         $this->dateFrom = '';
         $this->dateTo = '';
+        $this->teamFilter = '';
         $this->resetPage();
     }
 
@@ -285,7 +349,7 @@ class TicketsTable extends Component
             $query->onlyTrashed();
         }
 
-        $query->with(['assignedTo:id,name', 'category:id,name', 'customer:id,name,email,phone']);
+        $query->with(['assignedTo:id,name', 'category:id,name', 'customer:id,name,email,phone', 'team:id,name,color']);
 
         // Filter for non-admin users (operators)
         if ($user->role !== 'admin') {
@@ -343,6 +407,9 @@ class TicketsTable extends Component
         if ($this->assignedFilter && $user->role === 'admin') {
             $query->where('assigned_to', $this->assignedFilter);
         }
+        if ($this->teamFilter && $user->isAdmin()) {
+            $query->where('team_id', $this->teamFilter);
+        }
 
         if ($this->dateFrom) {
             $query->whereDate('created_at', '>=', $this->dateFrom);
@@ -358,7 +425,7 @@ class TicketsTable extends Component
     #[Computed]
     public function hasActiveFilters()
     {
-        return $this->search || $this->statusFilter || $this->priorityFilter || $this->assignedFilter || $this->categoryFilter || $this->dateFrom || $this->dateTo || $this->showDeletedOnly;
+        return $this->search || $this->statusFilter || $this->priorityFilter || $this->assignedFilter || $this->categoryFilter || $this->teamFilter || $this->dateFrom || $this->dateTo || $this->showDeletedOnly;
     }
 
     #[Computed]
@@ -429,6 +496,8 @@ class TicketsTable extends Component
             'category_id',
         ]);
 
+        $this->createTeamId = '';
+
         $this->priority = 'medium';
         $this->status = 'pending';
         $this->resetValidation();
@@ -464,6 +533,7 @@ class TicketsTable extends Component
             'priority' => $this->priority,
             'status' => $this->status,
             'assigned_to' => $this->assigned_to ?: null,
+            'team_id' => $this->createTeamId ?: null,
             'category_id' => $this->category_id ?: null,
             'verified' => true, // Auto-verify admin-created tickets
             'source' => 'agent',
@@ -621,6 +691,53 @@ class TicketsTable extends Component
         Ticket::whereIn('id', $this->selectedTickets)->where('company_id', Auth::user()->company_id)->update(['assigned_to' => $agentId]);
 
         $this->dispatch('show-toast', message: count($this->selectedTickets).' tickets assigned successfully', type: 'success');
+        $this->selectedTickets = [];
+        $this->selectAll = false;
+        $this->refreshTickets();
+    }
+
+    public function bulkAssignTeam(int $teamId): void
+    {
+        if (Auth::user()->role !== 'admin') {
+            $this->dispatch('show-toast', message: 'Unauthorized.', type: 'error');
+
+            return;
+        }
+
+        if (empty($this->selectedTickets)) {
+            return;
+        }
+
+        $team = Team::where('company_id', Auth::user()->company_id)
+            ->with('members')
+            ->findOrFail($teamId);
+
+        if ($team->members->isEmpty()) {
+            $this->dispatch('show-toast', message: 'This team has no members.', type: 'error');
+
+            return;
+        }
+
+        $assignmentService = app(TicketAssignmentService::class);
+        $count = 0;
+
+        $tickets = Ticket::whereIn('id', $this->selectedTickets)
+            ->where('company_id', Auth::user()->company_id)
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->get();
+
+        foreach ($tickets as $ticket) {
+            $assignmentService->assignToTeam($ticket, $team);
+            $count++;
+        }
+
+        // Set team_id on remaining selected tickets (resolved/closed ones skipped by loop)
+        Ticket::whereIn('id', $this->selectedTickets)
+            ->where('company_id', Auth::user()->company_id)
+            ->whereNull('team_id')
+            ->update(['team_id' => $teamId]);
+
+        $this->dispatch('show-toast', message: $count.' tickets assigned to '.$team->name, type: 'success');
         $this->selectedTickets = [];
         $this->selectAll = false;
         $this->refreshTickets();

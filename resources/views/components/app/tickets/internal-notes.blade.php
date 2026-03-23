@@ -2,20 +2,7 @@
 
 <div class="flex flex-col flex-1 min-h-0">
     {{-- Header --}}
-    <div
-        class="shrink-0 flex items-center justify-between px-6 py-3.5 bg-white dark:bg-zinc-900 border-b-2 border-zinc-300 dark:border-zinc-700">
-        <div class="flex items-center gap-2">
-            <flux:icon.lock-closed class="w-4 h-4 text-amber-500" />
-            <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Internal Notes</h2>
-            @if ($notes->count() > 0)
-                <span
-                    class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
-                    {{ $notes->count() }}
-                </span>
-            @endif
-        </div>
-        <p class="text-xs text-zinc-400 dark:text-zinc-500">Visible only to your team</p>
-    </div>
+
 
     {{-- Notes list --}}
     <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5 bg-zinc-50/40 dark:bg-zinc-950/40">
@@ -38,7 +25,14 @@
     <div class="shrink-0 border-t border-amber-200 dark:border-amber-800/40 bg-amber-50/40 dark:bg-amber-900/10 p-4">
         <form wire:submit="addInternalNote" x-data="{
             showMentions: false,
+            mentionQuery: '',
+            allTeammates: @js($this->availableTeammates),
             mentionChips: [],
+            get filteredTeammates() {
+                if (!this.mentionQuery) return this.allTeammates;
+                const q = this.mentionQuery.toLowerCase();
+                return this.allTeammates.filter(t => t.name.toLowerCase().includes(q));
+            },
             removeMention(chipId) {
                 this.mentionChips = this.mentionChips.filter(c => c.id !== chipId);
                 $wire.set('mentionedUserIds', this.mentionChips.map(c => c.id));
@@ -47,6 +41,7 @@
                 $wire.addMentionedUser(result.id);
                 this.mentionChips.push({ id: result.id, name: result.name });
                 this.showMentions = false;
+                this.mentionQuery = '';
                 const textarea = this.$refs.noteInput;
                 const val = textarea.value;
                 const atIndex = val.lastIndexOf('@');
@@ -85,22 +80,23 @@
                             const query = val.substring(atIndex + 1);
                             if (query.length >= 0 && !query.includes(' ')) {
                                 showMentions = true;
-                                $wire.set('mentionSearch', query);
-                                $wire.searchTeammates();
+                                mentionQuery = query;
                             } else {
                                 showMentions = false;
+                                mentionQuery = '';
                             }
                         } else {
                             showMentions = false;
+                            mentionQuery = '';
                         }
                     "
                     @keydown.escape="showMentions = false"></textarea>
 
                 {{-- Mention dropdown --}}
-                <div x-show="showMentions && $wire.teammateResults.length > 0" x-transition
+                <div x-show="showMentions && filteredTeammates.length > 0" x-transition
                     @click.outside="showMentions = false"
                     class="absolute bottom-full left-0 mb-1 w-72 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
-                    <template x-for="result in $wire.teammateResults" :key="result.id">
+                    <template x-for="result in filteredTeammates" :key="result.id">
                         <button type="button" @click="selectMention(result)"
                             class="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl">
                             <span

@@ -2,17 +2,6 @@
 
 <div class="flex flex-col flex-1 min-h-0">
     {{-- Header --}}
-    <div class="shrink-0 flex items-center justify-between px-6 py-3.5 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-        <div class="flex items-center gap-2">
-            <flux:icon.clock class="w-4 h-4 text-zinc-500" />
-            <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Activity Log</h2>
-            @if ($logs->count() > 0)
-                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400">
-                    {{ $logs->count() }}
-                </span>
-            @endif
-        </div>
-    </div>
 
     {{-- Timeline --}}
     <div class="flex-1 overflow-y-auto px-6 py-5">

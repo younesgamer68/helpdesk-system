@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketPriorityChanged extends Notification
+class TicketPriorityChanged extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -33,12 +35,10 @@ class TicketPriorityChanged extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
-     * Get the array representation of the notification.
-     *
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
@@ -50,5 +50,15 @@ class TicketPriorityChanged extends Notification
             'type' => 'priority_changed',
             'message' => "Ticket #{$this->ticket->ticket_number} priority changed from {$this->oldPriority} to {$this->newPriority}",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'priority_changed';
     }
 }

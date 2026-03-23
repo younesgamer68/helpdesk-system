@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Team;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class TeamAssigned extends Notification
+class TeamAssigned extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -21,7 +23,7 @@ class TeamAssigned extends Notification
             return [];
         }
 
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -36,5 +38,15 @@ class TeamAssigned extends Notification
             'type' => 'team_assigned',
             'message' => "You have been added to team '{$this->team->name}' as {$this->role}.",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'team_assigned';
     }
 }

@@ -35,6 +35,10 @@
 
                     <flux:switch wire:model="preferences.team_assigned" label="{{ __('Team Assignment') }}"
                         description="{{ __('When you are added to or removed from a team.') }}" />
+                    <flux:separator variant="subtle" />
+
+                    <flux:switch wire:model="preferences.mentioned" label="{{ __('Mentions') }}"
+                        description="{{ __('When someone mentions you with @ in an internal note.') }}" />
                 </div>
             </flux:fieldset>
 

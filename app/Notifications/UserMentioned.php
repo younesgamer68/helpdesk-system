@@ -6,9 +6,11 @@ use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class UserMentioned extends Notification
+class UserMentioned extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -23,7 +25,11 @@ class UserMentioned extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        if (method_exists($notifiable, 'wantsNotification') && ! $notifiable->wantsNotification('mentioned')) {
+            return [];
+        }
+
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -39,6 +45,17 @@ class UserMentioned extends Notification
             'ticket_reply_id' => $this->reply->id,
             'mentioned_by_name' => $this->mentionedBy->name,
             'excerpt' => \Illuminate\Support\Str::limit(strip_tags($this->reply->message), 100),
+            'message' => "{$this->mentionedBy->name} mentioned you in Ticket #{$this->ticket->ticket_number} — {$this->ticket->subject}",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'mentioned';
     }
 }

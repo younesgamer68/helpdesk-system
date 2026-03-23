@@ -134,3 +134,33 @@ test('client cannot create linked ticket for closed ticket past linked_ticket_da
 
     expect(Ticket::where('parent_ticket_id', $ticket->id)->count())->toBe(0);
 });
+
+test('resolving ticket without tracking_token generates token and sends email', function () {
+    $ticket = Ticket::factory()->open()->create([
+        'company_id' => $this->company->id,
+        'tracking_token' => null,
+    ]);
+
+    Livewire::test(\App\Livewire\Tickets\TicketDetails::class, ['ticket' => $ticket])
+        ->call('resolve');
+
+    Mail::assertQueued(TicketResolved::class);
+    expect($ticket->fresh()->status)->toBe('resolved');
+    expect($ticket->fresh()->tracking_token)->not->toBeNull();
+});
+
+test('closing ticket manually without tracking_token generates token and sends email', function () {
+    $ticket = Ticket::factory()->open()->create([
+        'company_id' => $this->company->id,
+        'tracking_token' => null,
+    ]);
+
+    Livewire::test(\App\Livewire\Tickets\TicketDetails::class, ['ticket' => $ticket])
+        ->call('closeTicket');
+
+    Mail::assertQueued(TicketClosed::class);
+    $fresh = $ticket->fresh();
+    expect($fresh->status)->toBe('closed');
+    expect($fresh->close_reason)->toBe('manual');
+    expect($fresh->tracking_token)->not->toBeNull();
+});

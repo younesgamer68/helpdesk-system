@@ -4,9 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Ticket;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class SlaBreached extends Notification
+class SlaBreached extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -27,12 +29,10 @@ class SlaBreached extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
-     * Get the array representation of the notification.
-     *
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
@@ -44,5 +44,15 @@ class SlaBreached extends Notification
             'type' => 'sla_breached',
             'message' => "SLA breached on ticket #{$this->ticket->ticket_number} -- {$this->ticket->subject}",
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+
+    public function broadcastType(): string
+    {
+        return 'sla_breached';
     }
 }

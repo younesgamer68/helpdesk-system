@@ -1,5 +1,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+@auth
+<meta name="auth-user-id" content="{{ Auth::id() }}" />@endauth
 
 <title>{{ $title ?? config('app.name') }}</title>
 
@@ -31,7 +33,8 @@
         })
     }
 
-    window.confirmAction = function(wire, id, method, title = 'Are you sure?', text = "You won't be able to revert this!", confirmBtnText = 'Yes, do it!', icon = 'warning') {
+    window.confirmAction = function(wire, id, method, title = 'Are you sure?', text =
+        "You won't be able to revert this!", confirmBtnText = 'Yes, do it!', icon = 'warning') {
         Swal.fire({
             title: title,
             text: text,

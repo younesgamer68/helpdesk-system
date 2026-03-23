@@ -42,19 +42,27 @@
     </style>
 </head>
 
-<body class="font-sans antialiased h-full overflow-hidden {{ $widget->theme_mode === 'dark' ? 'text-zinc-100 bg-zinc-950' : 'text-gray-900 bg-white' }}" x-data="{ show: false }" x-init="setTimeout(() => show = true, 50)">
-    <div class="h-full w-full overflow-y-auto {{ $widget->theme_mode === 'dark' ? 'bg-zinc-950' : 'bg-gray-50' }} flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<body
+    class="font-sans antialiased h-full overflow-hidden {{ $widget->theme_mode === 'dark' ? 'text-zinc-100 bg-zinc-950' : 'text-gray-900 bg-white' }}"
+    x-data="{ show: false }" x-init="setTimeout(() => show = true, 50)">
+    <div
+        class="h-full w-full overflow-y-auto {{ $widget->theme_mode === 'dark' ? 'bg-zinc-950' : 'bg-gray-50' }} flex flex-col justify-center py-12 sm:px-6 lg:px-8">
 
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-lg" x-show="show"
             x-transition:enter="transition ease-out duration-700 delay-150"
             x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-            <div class="{{ $widget->theme_mode === 'dark' ? 'bg-zinc-900 border border-zinc-800' : 'bg-white shadow' }} py-8 px-4 sm:rounded-lg sm:px-10">
+            <div
+                class="{{ $widget->theme_mode === 'dark' ? 'bg-zinc-900 border border-zinc-800' : 'bg-white shadow' }} py-8 px-4 sm:rounded-lg sm:px-10">
                 <!-- Form Header -->
                 <div>
-                    <h2 class="text-3xl font-extrabold {{ $widget->theme_mode === 'dark' ? 'text-zinc-100' : 'text-gray-900' }}">{{ $widget->form_title }}</h2>
+                    <h2
+                        class="text-3xl font-extrabold {{ $widget->theme_mode === 'dark' ? 'text-zinc-100' : 'text-gray-900' }}">
+                        {{ $widget->form_title }}</h2>
                     @if ($widget->welcome_message)
-                        <p class="mt-2 text-sm {{ $widget->theme_mode === 'dark' ? 'text-zinc-400' : 'text-gray-600' }}">{{ $widget->welcome_message }}</p>
+                        <p
+                            class="mt-2 text-sm {{ $widget->theme_mode === 'dark' ? 'text-zinc-400' : 'text-gray-600' }}">
+                            {{ $widget->welcome_message }}</p>
                     @endif
                 </div>
 
@@ -97,7 +105,8 @@
 
                         {{-- Customer Name --}}
                         <div>
-                            <label class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
+                            <label
+                                class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
                                 Your Name <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1">
@@ -109,7 +118,8 @@
 
                         {{-- Customer Email --}}
                         <div>
-                            <label class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
+                            <label
+                                class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
                                 Your Email <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1">
@@ -121,12 +131,14 @@
 
                         {{-- Customer Phone --}}
                         <div>
-                            <label class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
+                            <label
+                                class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
                                 Phone Number
                                 @if ($widget->require_phone)
                                     <span class="text-red-500">*</span>
                                 @else
-                                    <span class="{{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }} text-xs font-normal">(Optional)</span>
+                                    <span
+                                        class="{{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }} text-xs font-normal">(Optional)</span>
                                 @endif
                             </label>
                             <div class="mt-1">
@@ -139,7 +151,8 @@
 
                         {{-- Subject --}}
                         <div>
-                            <label class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
+                            <label
+                                class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
                                 Subject <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1">
@@ -151,7 +164,8 @@
 
                         {{-- Description --}}
                         <div>
-                            <label class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
+                            <label
+                                class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }}">
                                 Description <span class="text-red-500">*</span>
                             </label>
                             <div class="mt-1">
@@ -164,8 +178,10 @@
                         {{-- Category (Conditional) --}}
                         @if ($widget->show_category && $widget->company->categories->count() > 0)
                             <div>
-                                <label class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }} mb-1">
-                                    Category <span class="{{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }} text-xs font-normal">(Optional)</span>
+                                <label
+                                    class="block text-sm font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-700' }} mb-1">
+                                    Category <span
+                                        class="{{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }} text-xs font-normal">(Optional)</span>
                                 </label>
 
                                 <div class="relative mt-1">
@@ -176,11 +192,13 @@
                                             @if ($parentCategory->children->isNotEmpty())
                                                 <optgroup label="{{ $parentCategory->name }}">
                                                     @foreach ($parentCategory->children as $child)
-                                                        <option value="{{ $child->id }}">{{ $child->name }}</option>
+                                                        <option value="{{ $child->id }}">{{ $child->name }}
+                                                        </option>
                                                     @endforeach
                                                 </optgroup>
                                             @else
-                                                <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}</option>
+                                                <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                                </option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -207,8 +225,10 @@
                     </form>
 
                     <div class="mt-6">
-                        <p class="text-center text-xs {{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }}">
-                            Secured by <span class="font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-600' }}">{{ $widget->company->name }}</span>
+                        <p
+                            class="text-center text-xs {{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }}">
+                            Secured by <span
+                                class="font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-600' }}">{{ $widget->company->name }}</span>
                         </p>
                     </div>
                 </div>

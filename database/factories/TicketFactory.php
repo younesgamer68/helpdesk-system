@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Customer;
 use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class TicketFactory extends Factory
 {
@@ -40,6 +41,7 @@ class TicketFactory extends Factory
             'category_id' => null, // Will be set in seeder
             'verified' => true,
             'verification_token' => null,
+            'tracking_token' => Str::random(32),
             'created_at' => $createdAt,
             'updated_at' => $this->faker->dateTimeBetween($createdAt, 'now'),
             'resolved_at' => $resolvedAt,
