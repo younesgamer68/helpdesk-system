@@ -542,8 +542,14 @@ class TicketsTable extends Component
         $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} created successfully!", type: 'success');
         $this->closeCreateModal();
         $this->clearForm();
+        $this->clearFilters();
+
+        // Switch operators to "All" tab so the (likely unassigned) new ticket is visible
+        if (Auth::user()->isOperator()) {
+            $this->ticketView = 'all';
+        }
+
         $this->refreshTickets();
-        $this->resetPage();
     }
 
     private function generateTicketNumber()
