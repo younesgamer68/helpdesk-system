@@ -276,6 +276,7 @@ class TicketAssignmentService
             $ticket->assigned_to = $newOperator->id;
             $ticket->saveQuietly();
             $newOperator->increment('assigned_tickets_count');
+            $newOperator->update(['last_assigned_at' => now()]);
         });
 
         if ($previousOperatorId && $previousOperatorId !== $newOperator->id) {

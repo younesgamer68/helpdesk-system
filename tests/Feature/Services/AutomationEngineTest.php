@@ -334,6 +334,8 @@ test('assignment rule does not assign unverified ticket', function () {
 });
 
 test('assignment rule assigns to specific operator by id', function () {
+    Notification::fake();
+
     $company = Company::factory()->create();
     $specificOperator = User::factory()->create([
         'company_id' => $company->id,
@@ -356,7 +358,13 @@ test('assignment rule assigns to specific operator by id', function () {
     $engine->processNewTicket($ticket);
 
     $ticket->refresh();
-    expect($ticket->assigned_to)->toBe($specificOperator->id);
+    $specificOperator->refresh();
+
+    expect($ticket->assigned_to)->toBe($specificOperator->id)
+        ->and($specificOperator->assigned_tickets_count)->toBe(1)
+        ->and($specificOperator->last_assigned_at)->not->toBeNull();
+
+    Notification::assertSentTo($specificOperator, \App\Notifications\TicketAssigned::class);
 });
 
 test('assignment rule skips ticket with non-matching category', function () {

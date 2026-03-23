@@ -5,6 +5,7 @@ namespace App\Services\Automation\Rules;
 use App\Models\AutomationRule;
 use App\Models\Team;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Services\TicketAssignmentService;
 
 class AssignmentRule implements RuleInterface
@@ -70,7 +71,13 @@ class AssignmentRule implements RuleInterface
 
         // Assign to specific operator if configured
         if (! empty($actions['assign_to_operator_id'])) {
-            $ticket->update(['assigned_to' => $actions['assign_to_operator_id']]);
+            $operator = User::where('id', $actions['assign_to_operator_id'])
+                ->where('company_id', $ticket->company_id)
+                ->first();
+
+            if ($operator) {
+                $this->assignmentService->reassignTicket($ticket, $operator);
+            }
         }
     }
 
