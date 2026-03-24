@@ -506,7 +506,7 @@
                     <flux:button wire:click="cancelDiscard" variant="ghost" class="flex-1">
                         Keep editing
                     </flux:button>
-                    <flux:button wire:click="confirmDiscard" variant="danger" class="flex-1">
+                    <flux:button wire:click="confirmDiscard" variant="primary" class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
                         Discard
                     </flux:button>
                 </div>

@@ -85,6 +85,14 @@ class CustomersTable extends Component
         $this->dispatch('show-toast', message: "Customer {$customer->name} has been {$status}.", type: 'success');
     }
 
+    public function navigateToDetails(int $customerId): void
+    {
+        $this->redirect(route('customers.details', [
+            'company' => Auth::user()->company->slug,
+            'customer' => $customerId,
+        ]), navigate: true);
+    }
+
     public function render()
     {
         return view('livewire.tickets.customers-table');

@@ -179,6 +179,17 @@ class AiChatWidget extends Component
     #[\Livewire\Attributes\On('trigger-ai-response')]
     public function triggerAiResponse(string $message): void
     {
+        if (! Auth::check()) {
+            $this->messages[] = [
+                'role' => 'ai',
+                'content' => 'You must be logged in to use the AI chatbot.',
+            ];
+            $this->isTyping = false;
+            $this->dispatch('scroll-to-bottom');
+
+            return;
+        }
+
         $settings = CompanyAiSettings::query()->firstOrCreate(
             ['company_id' => Auth::user()->company_id],
             [

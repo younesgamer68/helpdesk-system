@@ -23,8 +23,8 @@
         class="mx-3 h-10 w-[calc(100%-1.5rem)] flex items-center rounded-lg
                transition-all duration-200 hover:translate-x-1
                {{ request()->routeIs('notifications')
-                   ? 'bg-[#007260] text-white'
-                   : 'text-[#00A983] hover:bg-[#0f3538] hover:text-white' }}">
+                   ? 'bg-[#217A5A] text-white'
+                   : 'text-[#4EBF8A] hover:bg-[#217A5A] hover:text-white' }}">
 
         <div class="w-10 flex items-center justify-center shrink-0 relative">
             <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor"

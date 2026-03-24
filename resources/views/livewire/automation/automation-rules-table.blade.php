@@ -813,7 +813,7 @@
                 <flux:button type="button" wire:click="cancelDelete" variant="ghost" class="flex-1">
                     Cancel
                 </flux:button>
-                <flux:button type="button" wire:click="deleteRule" variant="danger" class="flex-1">
+                <flux:button type="button" wire:click="deleteRule" variant="primary" class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
                     Delete Rule
                 </flux:button>
             </div>

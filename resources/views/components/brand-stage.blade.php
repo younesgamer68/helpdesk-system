@@ -5,7 +5,7 @@ Scroll-triggered with staggered fade-in and continuous rotation.
 <section class="w-full py-10 transition-colors duration-300"
     :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-white'">
 
-    <div class="brand-stage mx-auto flex max-w-[1200px] items-center justify-between px-10" id="brandStage">
+    <div class="brand-stage mx-auto flex max-w-300 items-center justify-between px-10" id="brandStage">
         <div class="brand-slot" id="brandSlot0"></div>
         <div class="brand-slot" id="brandSlot1"></div>
         <div class="brand-slot" id="brandSlot2"></div>

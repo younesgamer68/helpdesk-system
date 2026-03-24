@@ -78,6 +78,12 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+    /* Force green accent on all checkboxes & radios */
+    input[type="checkbox"],
+    input[type="radio"] {
+        accent-color: #10b981;
+    }
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {

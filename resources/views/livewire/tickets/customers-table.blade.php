@@ -203,7 +203,7 @@
 
         <!-- Pagination -->
         <div class="mt-4">
-            {{ $this->customers->links() }}
+            {{ $this->customers->links('pagination.tickets-compact') }}
         </div>
     </div>
 </div>

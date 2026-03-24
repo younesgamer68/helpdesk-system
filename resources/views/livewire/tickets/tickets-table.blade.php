@@ -315,7 +315,7 @@
                     @if (Auth::user()->isAdmin())
                         <th class="w-12 px-3 py-3 text-left">
                             <input type="checkbox" wire:model.live="selectAll"
-                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                                class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 rounded focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
                         </th>
                     @endif
                     <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-400">
@@ -366,7 +366,7 @@
                         @if (Auth::user()->isAdmin())
                             <td class="px-3 py-4 text-left" wire:click.stop>
                                 <input type="checkbox" wire:model.live="selectedTickets" value="{{ $ticket->id }}"
-                                    class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-teal-500 rounded focus:ring-teal-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
+                                    class="w-4 h-4 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-emerald-500 rounded focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-zinc-900">
                             </td>
                         @endif
                         <td class="px-4 py-4 align-middle">
@@ -744,7 +744,7 @@
                     <flux:button wire:click="cancelDiscard" variant="ghost" class="flex-1">
                         Keep editing
                     </flux:button>
-                    <flux:button wire:click="confirmDiscard" variant="danger" class="flex-1">
+                    <flux:button wire:click="confirmDiscard" variant="primary" class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
                         Discard
                     </flux:button>
                 </div>

@@ -18,7 +18,7 @@
                     <livewire:settings.two-factor.recovery-codes :$requiresConfirmation />
 
                     <div class="flex justify-start">
-                        <flux:button variant="danger" icon="shield-exclamation" icon:variant="outline"
+                        <flux:button variant="primary" class="!bg-emerald-500 hover:!bg-emerald-600" icon="shield-exclamation" icon:variant="outline"
                             wire:click="disable">
                             {{ __('Disable 2FA') }}
                         </flux:button>
