@@ -1,7 +1,7 @@
 <div x-on:open-media-library.window="$wire.set('showModal', true)">
     <flux:modal wire:model="showModal" class="md:w-[800px]">
         <div class="space-y-6">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between mr-6">
                 <flux:heading size="lg">Media Library</flux:heading>
                 <div x-data="{ uploading: false }" x-on:livewire-upload-start="uploading = true"
                     x-on:livewire-upload-finish="uploading = false" x-on:livewire-upload-error="uploading = false">
@@ -47,7 +47,7 @@
                                 Insert
                             </button>
                             <button type="button" wire:click="deleteMedia({{ $media->id }})"
-                                class="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition">
+                                class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded transition">
                                 Delete
                             </button>
                         </div>
@@ -72,15 +72,15 @@
                     </p>
 
                     <div class="flex flex-wrap items-center gap-2">
-                        <flux:button type="button" wire:click="selectAllMedia" variant="ghost" size="sm">
+                        <flux:button type="button" wire:click="selectAllMedia" variant="ghost" size="sm" class="!text-emerald-600 hover:!bg-emerald-50 dark:!text-emerald-400 dark:hover:!bg-emerald-950/30">
                             Select all
                         </flux:button>
                         <flux:button type="button" wire:click="clearSelectedMedia" variant="ghost" size="sm"
-                            :disabled="count($selectedMediaIds) === 0">
+                            :disabled="count($selectedMediaIds) === 0" class="!text-emerald-600 hover:!bg-emerald-50 dark:!text-emerald-400 dark:hover:!bg-emerald-950/30">
                             Clear
                         </flux:button>
                         <flux:button type="button" wire:click="deleteSelectedMedia" variant="ghost" size="sm"
-                            :disabled="count($selectedMediaIds) === 0">
+                            :disabled="count($selectedMediaIds) === 0" class="!text-emerald-600 hover:!bg-emerald-50 dark:!text-emerald-400 dark:hover:!bg-emerald-950/30">
                             Delete selected
                         </flux:button>
                     </div>
@@ -88,14 +88,14 @@
 
                 <div class="flex flex-wrap items-center justify-end gap-2">
                     <flux:button type="button" wire:click="deleteAllMedia" variant="ghost" size="sm"
-                        :disabled="$medias->isEmpty()">
+                        :disabled="$medias->isEmpty()" class="!text-emerald-600 hover:!bg-emerald-50 dark:!text-emerald-400 dark:hover:!bg-emerald-950/30">
                         Delete all
                     </flux:button>
-                    <flux:button type="button" wire:click="insertSelectedMedia"
-                        :disabled="count($selectedMediaIds) === 0">
+                    <flux:button type="button" wire:click="insertSelectedMedia" variant="primary"
+                        :disabled="count($selectedMediaIds) === 0" class="!bg-emerald-500 hover:!bg-emerald-600">
                         Insert Selected
                     </flux:button>
-                    <flux:button type="button" wire:click="$set('showModal', false)" variant="ghost">Close
+                    <flux:button type="button" wire:click="$set('showModal', false)" variant="ghost" class="!text-emerald-600 hover:!bg-emerald-50 dark:!text-emerald-400 dark:hover:!bg-emerald-950/30">Close
                     </flux:button>
                 </div>
             </div>
