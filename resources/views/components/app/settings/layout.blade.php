@@ -4,6 +4,10 @@
             <flux:navlist.item :href="route('profile.edit', ['company' => Auth::user()->company?->slug ?? 'default'])"
                 wire:navigate icon="user">{{ __('Profile') }}</flux:navlist.item>
 
+            <flux:navlist.item
+                :href="route('appearance.edit', ['company' => Auth::user()->company?->slug ?? 'default'])" wire:navigate
+                icon="paint-brush">{{ __('Appearance') }}</flux:navlist.item>
+
             @if (Auth::user()->isAdmin())
                 <flux:navlist.item
                     :href="route('company.profile', ['company' => Auth::user()->company?->slug ?? 'default'])"

@@ -180,7 +180,7 @@
                     <h3 class="font-semibold text-zinc-900 dark:text-zinc-100">Currently Open Tickets</h3>
                     <span
                         class="px-2 py-1 bg-zinc-100 dark:bg-zinc-700 rounded text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                        {{ $this->openTickets->count() }} active
+                        {{ $this->openTickets->total() }} active
                     </span>
                 </div>
 
@@ -217,6 +217,10 @@
                             <p class="text-sm text-zinc-500">No open tickets assigned.</p>
                         </div>
                     @endforelse
+                </div>
+
+                <div class="px-6 py-4 border-t border-zinc-100 dark:border-zinc-700">
+                    {{ $this->openTickets->withPath(route('operator.profile', ['company' => Auth::user()->company->slug, 'operator' => $operator]))->links('pagination.tickets-compact') }}
                 </div>
             </div>
 

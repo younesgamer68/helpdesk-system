@@ -9,9 +9,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class OperatorProfile extends Component
 {
+    use WithPagination;
+
     public User $operator;
 
     public $role;
@@ -56,7 +59,7 @@ class OperatorProfile extends Component
         return $this->operator->assignedTickets()
             ->open()
             ->latest()
-            ->get();
+            ->paginate(10);
     }
 
     #[Computed]

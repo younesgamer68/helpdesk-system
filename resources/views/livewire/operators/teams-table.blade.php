@@ -59,8 +59,7 @@
                             </span>
                         </td>
                         <td class="px-4 py-4 text-right">
-                            <div
-                                class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center justify-end gap-2">
                                 <button wire:click="manageMembers({{ $team->id }})"
                                     class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline transition-colors">
                                     Manage Members
@@ -203,7 +202,8 @@
                     <flux:button type="button" wire:click="cancelDelete" variant="ghost" class="flex-1">
                         Cancel
                     </flux:button>
-                    <flux:button type="button" wire:click="deleteTeam" variant="primary" class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
+                    <flux:button type="button" wire:click="deleteTeam" variant="primary"
+                        class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
                         Delete Team
                     </flux:button>
                 </div>
