@@ -240,31 +240,6 @@
                         </button>
                     @endforeach
                 </x-ui.dropdown-btn>
-
-                {{-- Assign Team --}}
-                <x-ui.dropdown-btn>
-                    <x-slot:title>
-                        <flux:icon.user-group class="w-4 h-4 shrink-0" />
-                        {{ $ticket->team ? 'Change Team' : 'Assign Team' }}
-                    </x-slot:title>
-                    <button type="button" wire:click="assignToTeam(null)" wire:confirm="Remove team assignment?"
-                        class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
-                        <span class="flex items-center gap-2">
-                            <flux:icon.x-mark class="w-4 h-4 text-zinc-400" />
-                            No team
-                        </span>
-                    </button>
-                    @foreach ($teams as $team)
-                        <button type="button" wire:click="assignToTeam({{ $team->id }})" @click="open = false"
-                            class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition last:rounded-b-lg">
-                            <span class="flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full shrink-0"
-                                    style="background-color: {{ $team->color ?? '#71717a' }}"></span>
-                                {{ $team->name }}
-                            </span>
-                        </button>
-                    @endforeach
-                </x-ui.dropdown-btn>
             @endif
 
             @if (!$isAssignee)
@@ -289,8 +264,7 @@
                     </x-slot:title>
                     @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
                         <button type="button" wire:click="changeStatus('{{ $status }}')"
-                            wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?"
-                            @click="open = false"
+                            wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?" @click="open = false"
                             class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                             {{ str_replace('_', ' ', ucfirst($status)) }}
                         </button>
