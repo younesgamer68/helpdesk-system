@@ -27,15 +27,17 @@
 - [TicketVerification.php](file://app/Mail/TicketVerification.php)
 - [TicketVerified.php](file://app/Mail/TicketVerified.php)
 - [form-widget.blade.php](file://resources/views/livewire/settings/form-widget.blade.php)
+- [HelpdeskAgent.php](file://app/Ai/Agents/HelpdeskAgent.php)
 </cite>
 
 ## Update Summary
 **Changes Made**
-- Added comprehensive chatbot widget system with AI-powered conversational support
-- Integrated knowledge base widget with floating search interface and JavaScript integration
+- Enhanced AI chatbot widget system with improved conversation management, escalation handling, and session persistence
+- Integrated comprehensive knowledge base widget with floating search interface and JavaScript integration
+- Added AI-powered chatbot widgets with intelligent fallback logic and threshold-based escalation
 - Enhanced portal integration with dedicated KB portal and improved API endpoints
-- Added widget JavaScript integration for seamless embedding across websites
-- Expanded widget API endpoints for enhanced functionality and rate limiting
+- Expanded widget JavaScript integration for seamless embedding across websites
+- Improved widget configuration options with enhanced theming and customization capabilities
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -52,7 +54,7 @@
 12. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the enhanced widget system that enables external websites to embed multiple support solutions including ticket forms, AI chatbots, and knowledge base search interfaces. The system now supports embedded forms, AI-powered chatbot widgets, knowledge base widgets, comprehensive API endpoints, and improved portal integration. It covers theming, custom fields, brand customization, email verification workflow, customer tracking, public reply interface, and security considerations including CSRF protection and rate limiting.
+This document explains the enhanced widget system that enables external websites to embed multiple support solutions including ticket forms, AI chatbots, and knowledge base search interfaces. The system now supports embedded forms, AI-powered chatbot widgets with intelligent escalation, knowledge base widgets with floating search interfaces, comprehensive API endpoints, and improved portal integration. It covers theming, custom fields, brand customization, email verification workflow, customer tracking, public reply interface, and security considerations including CSRF protection and rate limiting.
 
 ## Project Structure
 The enhanced widget system spans controllers, models, Livewire components, Blade templates, JavaScript widgets, migrations, and routes. The system now includes specialized controllers for chatbot and knowledge base widgets alongside the existing ticket widget controller.
@@ -73,6 +75,7 @@ DB["Database<br/>widget_settings, tickets, chatbot_conversations, kb_articles"]
 LV["Livewire AI Chat Widget"]
 Views["Blade Templates<br/>widget/form, chatbot/widget, kb/widget-js"]
 JS["JavaScript Widgets<br/>chatbot/widget-js, kb/widget-js"]
+AI["AI Agent<br/>HelpdeskAgent"]
 end
 Site --> |"Widget Embeds"| MW --> |"Attach Company"| WC
 Site --> |"Chatbot Widget"| CBC
@@ -87,6 +90,7 @@ CBC --> Views
 KBC --> JS
 KC --> Views
 LV --> DB
+AI --> CBC
 ```
 
 **Diagram sources**
@@ -99,6 +103,7 @@ LV --> DB
 - [TicketConversation.php:12-99](file://app/Livewire/Widget/TicketConversation.php#L12-L99)
 - [chatbot/widget.blade.php:1-512](file://resources/views/chatbot/widget.blade.php#L1-L512)
 - [kb/widget-js.blade.php:1-313](file://resources/views/kb/widget-js.blade.php#L1-L313)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 **Section sources**
 - [settings.php:73-93](file://routes/settings.php#L73-L93)
@@ -110,6 +115,7 @@ LV --> DB
 - [TicketConversation.php:12-99](file://app/Livewire/Widget/TicketConversation.php#L12-L99)
 - [chatbot/widget.blade.php:1-512](file://resources/views/chatbot/widget.blade.php#L1-L512)
 - [kb/widget-js.blade.php:1-313](file://resources/views/kb/widget-js.blade.php#L1-L313)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 ## Core Components
 - **WidgetController**: Renders the form, validates and persists tickets, sends verification emails, handles verification and tracking, and manages customer replies.
@@ -120,6 +126,7 @@ LV --> DB
 - **AI Chat Widget Livewire**: Advanced chat interface with animations, quick replies, and conversation management.
 - **Chatbot Blade Template**: Standalone chatbot widget with modern UI and session handling.
 - **Knowledge Base JavaScript Widget**: Floating search interface for instant KB article discovery.
+- **AI Agent**: Intelligent assistant powered by Laravel AI SDK for natural language processing.
 - **Middleware**: Identifies the company from the subdomain to scope requests.
 - **Email mailables**: Send verification and tracking emails.
 
@@ -133,6 +140,7 @@ LV --> DB
 - [ai-chat-widget.blade.php:1-480](file://resources/views/livewire/ai-chat-widget.blade.php#L1-L480)
 - [chatbot/widget.blade.php:1-512](file://resources/views/chatbot/widget.blade.php#L1-L512)
 - [kb/widget-js.blade.php:1-313](file://resources/views/kb/widget-js.blade.php#L1-L313)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 ## Architecture Overview
 The enhanced widget system uses a multi-layered approach supporting various widget types. Subdomain-scoped routing handles ticket widgets, while dedicated routes manage chatbot and knowledge base widgets. Each widget type serves distinct purposes while sharing common infrastructure for company scoping and authentication.
@@ -146,6 +154,7 @@ participant CBC as "ChatbotWidgetController"
 participant KBC as "KbWidgetController"
 participant KC as "KbPortalController"
 participant DB as "Database"
+participant AI as "HelpdeskAgent"
 C->>MW : "GET /{company}/widget/{key}"
 MW-->>RC : "Request with company attached"
 C->>MW : "GET /{company}/chatbot-widget/{key}"
@@ -156,6 +165,7 @@ C->>MW : "GET /{company}/kb"
 MW-->>KC : "KB portal request"
 RC->>DB : "Lookup WidgetSetting"
 CBC->>DB : "Lookup AI settings & FAQ"
+CBC->>AI : "Process with AI Agent"
 KBC->>DB : "Generate widget JS"
 KC->>DB : "Fetch KB articles"
 RC-->>C : "Render widget.form"
@@ -170,6 +180,7 @@ KC-->>C : "Render KB portal"
 - [ChatbotWidgetController.php:53-75](file://app/Http/Controllers/ChatbotWidgetController.php#L53-L75)
 - [KbWidgetController.php:11-29](file://app/Http/Controllers/KbWidgetController.php#L11-L29)
 - [KbPortalController.php:17-40](file://app/Http/Controllers/KbPortalController.php#L17-L40)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 ## Detailed Component Analysis
 
@@ -326,14 +337,15 @@ O --> N
 **Diagram sources**
 - [ChatbotWidgetController.php:77-223](file://app/Http/Controllers/ChatbotWidgetController.php#L77-L223)
 
-#### Chatbot JavaScript Integration
-The chatbot widget provides a floating interface with modern UI elements, smooth animations, and comprehensive session handling.
+#### AI Agent Integration
+The system leverages the HelpdeskAgent AI class powered by Laravel AI SDK to process natural language queries and provide intelligent responses.
 
 **Section sources**
 - [ChatbotWidgetController.php:16-337](file://app/Http/Controllers/ChatbotWidgetController.php#L16-L337)
 - [chatbot/widget.blade.php:1-512](file://resources/views/chatbot/widget.blade.php#L1-L512)
 - [chatbot/widget-js.blade.php:1-39](file://resources/views/chatbot/widget-js.blade.php#L1-L39)
 - [ai-chat-widget.blade.php:1-480](file://resources/views/livewire/ai-chat-widget.blade.php#L1-L480)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 ### Knowledge Base Widget System
 The knowledge base widget system provides instant search capabilities with floating interface and JavaScript integration.
@@ -370,6 +382,12 @@ JS-->>U : "Display Results"
 - [kb/home.blade.php:1-31](file://resources/views/kb/home.blade.php#L1-L31)
 - [kb/search.blade.php:1-99](file://resources/views/kb/search.blade.php#L1-L99)
 
+### Enhanced AI Chat Widget
+The AI chat widget provides a sophisticated conversational interface with advanced features including animated transitions, quick replies, and intelligent conversation management.
+
+**Section sources**
+- [ai-chat-widget.blade.php:1-480](file://resources/views/livewire/ai-chat-widget.blade.php#L1-L480)
+
 ## Dependency Analysis
 The enhanced widget system maintains clean separation of concerns with specialized controllers for each widget type while sharing common infrastructure.
 
@@ -382,6 +400,7 @@ MW --> KBC["KbWidgetController"]
 MW --> KC["KbPortalController"]
 WC --> WS["WidgetSetting"]
 CBC --> AI["AI Settings & Conversations"]
+CBC --> Agent["HelpdeskAgent"]
 KBC --> KB["Knowledge Base Data"]
 KC --> KB
 WC --> DB["Tickets & Replies"]
@@ -401,6 +420,7 @@ V --> LV["Livewire Components"]
 - [ChatbotWidgetController.php:16-337](file://app/Http/Controllers/ChatbotWidgetController.php#L16-L337)
 - [KbWidgetController.php:9-31](file://app/Http/Controllers/KbWidgetController.php#L9-L31)
 - [KbPortalController.php:10-132](file://app/Http/Controllers/KbPortalController.php#L10-L132)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 **Section sources**
 - [settings.php:73-93](file://routes/settings.php#L73-L93)
@@ -408,6 +428,7 @@ V --> LV["Livewire Components"]
 - [ChatbotWidgetController.php:16-337](file://app/Http/Controllers/ChatbotWidgetController.php#L16-L337)
 - [KbWidgetController.php:9-31](file://app/Http/Controllers/KbWidgetController.php#L9-L31)
 - [KbPortalController.php:10-132](file://app/Http/Controllers/KbPortalController.php#L10-L132)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 ## Performance Considerations
 - **Database indexing**: The widget settings table includes indexes on company_id, widget_key, and is_active to optimize lookups.
@@ -415,12 +436,14 @@ V --> LV["Livewire Components"]
 - **Attachment handling**: Livewire enforces per-file size limits and a cap on the number of attachments to control payload sizes.
 - **Widget caching**: Chatbot and KB widget JavaScript includes appropriate cache headers for optimal performance.
 - **Rate limiting**: Chatbot endpoints implement throttle middleware (30 requests per minute) to prevent abuse.
+- **AI processing**: The HelpdeskAgent leverages efficient prompt processing and conversation memory management.
 - **Rendering**: Tailwind CSS is included via CDN for simplicity; consider bundling and minification in production for performance.
 
 **Section sources**
 - [ChatbotWidgetController.php:90-92](file://app/Http/Controllers/ChatbotWidgetController.php#L90-L92)
 - [kb/widget-js.blade.php:21-28](file://resources/views/kb/widget-js.blade.php#L21-L28)
 - [chatbot/widget-js.blade.php:43-50](file://resources/views/chatbot/widget-js.blade.php#L43-L50)
+- [HelpdeskAgent.php:25-28](file://app/Ai/Agents/HelpdeskAgent.php#L25-L28)
 
 ## Security Considerations
 - **CSRF protection**: The form template includes a CSRF meta tag and sends the token in the X-CSRF-TOKEN header during submission.
@@ -431,6 +454,7 @@ V --> LV["Livewire Components"]
 - **Domain/subdomain scoping**: Middleware ties requests to a specific company, preventing cross-company access.
 - **Session management**: Chatbot widgets maintain session state with proper session IDs and conversation persistence.
 - **Content security**: Knowledge base widget implements proper escaping and sanitization for dynamic content.
+- **AI safety**: The HelpdeskAgent enforces response constraints and prevents markdown formatting.
 
 **Section sources**
 - [form.blade.php:6](file://resources/views/widget/form.blade.php#L6)
@@ -438,6 +462,7 @@ V --> LV["Livewire Components"]
 - [WidgetController.php:114-136](file://app/Http/Controllers/WidgetController.php#L114-L136)
 - [WidgetController.php:141-158](file://app/Http/Controllers/WidgetController.php#L141-L158)
 - [ChatbotWidgetController.php:90-92](file://app/Http/Controllers/ChatbotWidgetController.php#L90-L92)
+- [HelpdeskAgent.php:25-28](file://app/Ai/Agents/HelpdeskAgent.php#L25-L28)
 
 ## Integration Examples
 
@@ -449,9 +474,9 @@ V --> LV["Livewire Components"]
 - **Marketing landing pages**: Add the form as a conversion element to capture support needs alongside lead gen.
 
 ### Enhanced Widget Integration
-- **Chatbot Widget**: Embed the chatbot widget using the provided JavaScript snippet. The widget appears as a floating button in the bottom-right corner.
-- **Knowledge Base Widget**: Integrate the knowledge base search widget for instant article discovery. Configure link modes and custom article bases.
 - **AI Chat Widget**: Use the advanced Livewire-based chat interface with animations and quick replies.
+- **AI Chatbot Widget**: Embed the AI-powered chatbot widget using the provided JavaScript snippet with intelligent escalation.
+- **Knowledge Base Widget**: Integrate the knowledge base search widget for instant article discovery. Configure link modes and custom article bases.
 - **API Integration**: Utilize the comprehensive API endpoints for programmatic widget management and data retrieval.
 
 **Section sources**
@@ -470,11 +495,12 @@ V --> LV["Livewire Components"]
 - **Tracking link inaccessible**: Ensure the tracking token matches the ticket and company. Verify the ticket is marked as verified.
 - **Replies not appearing**: Confirm the ticket is open/pending and not closed. Check that replies are marked as public and ordered chronologically.
 
-### Chatbot Widget Issues
+### AI Chatbot Widget Issues
 - **Chatbot not responding**: Verify AI chatbot is enabled in company settings. Check that AI settings are properly configured.
 - **Session issues**: Ensure proper session handling. Check that X-Chatbot-Session header is being sent correctly.
 - **Escalation problems**: Verify escalation URL configuration in AI settings. Check that fallback thresholds are properly set.
 - **Rate limiting**: Chatbot endpoints are throttled at 30 requests per minute. Wait for the throttle to reset if exceeded.
+- **AI response quality**: Check that the HelpdeskAgent is properly configured with appropriate model and provider settings.
 
 ### Knowledge Base Widget Issues
 - **Widget not appearing**: Verify the KB widget JavaScript is loading correctly. Check browser console for JavaScript errors.
@@ -489,6 +515,7 @@ V --> LV["Livewire Components"]
 - [WidgetController.php:141-158](file://app/Http/Controllers/WidgetController.php#L141-L158)
 - [TicketConversation.php:30-82](file://app/Livewire/Widget/TicketConversation.php#L30-L82)
 - [ChatbotWidgetController.php:90-92](file://app/Http/Controllers/ChatbotWidgetController.php#L90-L92)
+- [HelpdeskAgent.php:16-42](file://app/Ai/Agents/HelpdeskAgent.php#L16-L42)
 
 ## Conclusion
-The enhanced widget system provides a comprehensive solution for external website integration with multiple widget types. It supports traditional ticket forms, AI-powered chatbot widgets with intelligent escalation, and knowledge base search interfaces with floating widgets. The system enforces email verification, offers robust configuration options, and exposes public tracking interfaces. For production deployments, consider implementing rate limiting for chatbot endpoints, optimizing widget caching, and monitoring widget performance across different integration scenarios.
+The enhanced widget system provides a comprehensive solution for external website integration with multiple widget types. It supports traditional ticket forms, AI-powered chatbot widgets with intelligent escalation, and knowledge base search interfaces with floating widgets. The system enforces email verification, offers robust configuration options, and exposes public tracking interfaces. The integration of AI agents enhances the chatbot functionality with natural language processing capabilities. For production deployments, consider implementing rate limiting for chatbot endpoints, optimizing widget caching, and monitoring widget performance across different integration scenarios.

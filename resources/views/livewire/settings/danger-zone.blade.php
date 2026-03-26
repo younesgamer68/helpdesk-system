@@ -13,7 +13,7 @@
                 </div>
 
                 <flux:modal.trigger name="confirm-user-deletion">
-                    <flux:button variant="primary" class="!bg-emerald-500 hover:!bg-emerald-600">{{ __('Delete my account') }}</flux:button>
+                    <flux:button variant="primary" class="!bg-red-500 hover:!bg-red-600">{{ __('Delete my account') }}</flux:button>
                 </flux:modal.trigger>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 <flux:modal.close>
                     <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
-                <flux:button variant="primary" type="submit" class="!bg-emerald-500 hover:!bg-emerald-600">{{ __('Delete account') }}</flux:button>
+                <flux:button variant="primary" type="submit" class="!bg-red-500 hover:!bg-red-600">{{ __('Delete account') }}</flux:button>
             </div>
         </form>
     </flux:modal>

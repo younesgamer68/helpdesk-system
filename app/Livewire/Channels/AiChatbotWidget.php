@@ -52,6 +52,25 @@ class AiChatbotWidget extends Component
         $this->custom_escalation_url = (string) ($this->settings->custom_escalation_url ?? '');
     }
 
+    public function updatedAiChatbotEnabled(): void
+    {
+        $this->settings = CompanyAiSettings::query()->firstOrCreate(
+            ['company_id' => Auth::user()->company_id],
+            [
+                'ai_chatbot_enabled' => false,
+                'chatbot_greeting' => 'Hi! How can I help you today?',
+                'chatbot_fallback_threshold' => 2,
+            ]
+        );
+
+        $this->settings->update(['ai_chatbot_enabled' => $this->ai_chatbot_enabled]);
+
+        $this->dispatch('show-toast',
+            message: $this->ai_chatbot_enabled ? 'Chatbot enabled.' : 'Chatbot disabled.',
+            type: 'success'
+        );
+    }
+
     #[Computed]
     public function faqs(): Collection
     {

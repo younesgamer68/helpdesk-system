@@ -152,6 +152,33 @@ it('validates escalation_url_type must be standalone or custom_url', function ()
         ->assertHasErrors(['escalation_url_type']);
 });
 
+it('persists ai_chatbot_enabled immediately when toggled', function () {
+    [$company, $admin, $widget, $aiSettings] = setupChatbotCompany([
+        'ai_chatbot_enabled' => false,
+    ]);
+
+    actingAs($admin);
+
+    // Toggle ON
+    Livewire\Livewire::test(\App\Livewire\Channels\AiChatbotWidget::class)
+        ->set('ai_chatbot_enabled', true)
+        ->assertDispatched('show-toast');
+
+    expect($aiSettings->fresh()->ai_chatbot_enabled)->toBeTrue();
+
+    // The chatbot widget page should now be accessible (no 404)
+    $this->get(
+        "http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$widget->widget_key}"
+    )->assertSuccessful();
+
+    // Toggle OFF
+    Livewire\Livewire::test(\App\Livewire\Channels\AiChatbotWidget::class)
+        ->set('ai_chatbot_enabled', false)
+        ->assertDispatched('show-toast');
+
+    expect($aiSettings->fresh()->ai_chatbot_enabled)->toBeFalse();
+});
+
 it('renders the floating chatbot widget with company name in header', function () {
     [$company, $admin, $widget] = setupChatbotCompany();
 
