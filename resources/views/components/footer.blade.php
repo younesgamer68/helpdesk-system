@@ -8,7 +8,7 @@
     </div>
 
     <div
-        class="pointer-events-none absolute -bottom-1 left-1/2 z-0 flex w-full -translate-x-1/2 select-none items-center justify-center gap-2 whitespace-nowrap px-3 sm:gap-3 md:-bottom-2 md:gap-4 lg:-bottom-4.5 lg:gap-6 lg:px-6">
+        class="pointer-events-none absolute bottom-[-4px] left-[170px] z-0 flex w-full select-none items-center justify-start gap-[8px] whitespace-nowrap px-[12px] sm:gap-[12px] md:bottom-[-8px] md:gap-[16px] lg:bottom-[-18px] lg:gap-[24px] lg:px-[24px]">
         <img class="h-auto w-[clamp(28px,9vw,56px)] opacity-[0.03] sm:w-[clamp(34px,8vw,78px)] lg:w-[clamp(180px,6.4vw,140px)]"
             src="{{ asset('images/Logos/logos without text DM.png') }}" alt="Logo" />
         <div
@@ -20,60 +20,65 @@
     <nav
         class="relative z-10 mb-16 grid grid-cols-1 gap-5 rounded-2xl border border-white/10 bg-[rgba(24,255,24,0.02)] p-4.5 backdrop-blur-[3px] sm:mb-20 sm:grid-cols-2 sm:gap-6 sm:p-5 lg:mb-50 lg:grid-cols-4 lg:gap-6 lg:p-6">
         <div>
-            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white">Product</div>
+            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white"
+                x-text="$store.ui.t('footerColProduct')"></div>
             <ul class="flex list-none flex-col gap-2">
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="gg.html">Dashboard</a></li>
+                        href="{{ route('login') }}" x-text="$store.ui.t('footerLinkDashboard')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Below.html">Features</a></li>
+                        href="{{ route('home') }}#features" x-text="$store.ui.t('footerLinkFeatures')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Discover_Section.html">Discover</a></li>
+                        href="{{ route('home') }}#discover" x-text="$store.ui.t('footerLinkDiscover')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="index.html">Footer</a></li>
+                        href="{{ route('home') }}#footer" x-text="$store.ui.t('footerLinkFooter')"></a></li>
             </ul>
         </div>
 
         <div>
-            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white">Resources</div>
+            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white"
+                x-text="$store.ui.t('footerColResources')"></div>
             <ul class="flex list-none flex-col gap-2">
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="gg.html">Getting Started</a></li>
+                        href="{{ route('help-center') }}" x-text="$store.ui.t('footerLinkGettingStarted')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Below.html">Automation Ideas</a></li>
+                        href="{{ route('help-center') }}#automation"
+                        x-text="$store.ui.t('footerLinkAutomationIdeas')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Discover_Section.html">Customer Stories</a></li>
+                        href="{{ route('about') }}" x-text="$store.ui.t('footerLinkCustomerStories')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="index.html">Brand Assets</a></li>
+                        href="{{ route('contact') }}" x-text="$store.ui.t('footerLinkBrandAssets')"></a></li>
             </ul>
         </div>
 
         <div>
-            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white">Quick Links</div>
+            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white"
+                x-text="$store.ui.t('footerColQuickLinks')"></div>
             <ul class="flex list-none flex-col gap-2">
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="gg.html">Home</a></li>
+                        href="{{ route('home') }}" x-text="$store.ui.t('footerLinkHome')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Below.html">Product Tour</a></li>
+                        href="{{ route('home') }}#product-tour" x-text="$store.ui.t('footerLinkProductTour')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Discover_Section.html">Testimonials</a></li>
+                        href="{{ route('home') }}#testimonials" x-text="$store.ui.t('footerLinkTestimonials')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="index.html">Footer Layout</a></li>
+                        href="{{ route('home') }}#footer" x-text="$store.ui.t('footerLinkFooterLayout')"></a></li>
             </ul>
         </div>
 
         <div>
-            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white">Company &amp; Support</div>
+            <div class="mb-3.5 text-[13px] font-semibold tracking-[0.2px] text-white"
+                x-text="$store.ui.t('footerColCompanySupport')"></div>
             <ul class="flex list-none flex-col gap-2">
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="gg.html">About</a></li>
+                        href="{{ route('about') }}" x-text="$store.ui.t('footerLinkAbout')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Below.html">Help Center</a></li>
+                        href="{{ route('help-center') }}" x-text="$store.ui.t('footerLinkHelpCenter')"></a></li>
                 <li><a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="Discover_Section.html">Contact</a></li>
+                        href="{{ route('contact') }}" x-text="$store.ui.t('footerLinkContact')"></a></li>
                 <li>
                     <a class="inline-flex items-center gap-1 text-[12.5px] text-[#8fa2b6] transition duration-200 hover:translate-x-0.75 hover:text-[#d9e8f7]"
-                        href="index.html">
-                        Status
+                        href="https://statuspage.io" target="_blank" rel="noopener noreferrer">
+                        <span x-text="$store.ui.t('footerLinkStatus')"></span>
                         <span
                             class="ml-1 inline-flex items-center gap-1 rounded border border-white/10 bg-white/[0.07] px-1.5 py-0.5 align-middle text-[10.5px] text-[#7a8a9a]">
                             <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-[#2cee73]"></span>99.99%
@@ -89,28 +94,28 @@
 
         <div class="flex flex-col items-end gap-4">
             <div class="flex items-center gap-4.5">
-                <a href="gg.html" aria-label="X"
+                <a href="https://x.com" aria-label="X" target="_blank" rel="noopener noreferrer"
                     class="flex items-center text-[#5a6a7a] transition-colors duration-150 hover:text-[#c8d8e8]">
                     <svg viewBox="0 0 24 24" class="h-4.25 w-4.25 fill-current">
                         <path
                             d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.261 5.636 5.903-5.636zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                     </svg>
                 </a>
-                <a href="Below.html" aria-label="Facebook"
+                <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener noreferrer"
                     class="flex items-center text-[#5a6a7a] transition-colors duration-150 hover:text-[#c8d8e8]">
                     <svg viewBox="0 0 24 24" class="h-4.25 w-4.25 fill-current">
                         <path
                             d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
                 </a>
-                <a href="Discover_Section.html" aria-label="LinkedIn"
+                <a href="https://linkedin.com" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"
                     class="flex items-center text-[#5a6a7a] transition-colors duration-150 hover:text-[#c8d8e8]">
                     <svg viewBox="0 0 24 24" class="h-4.25 w-4.25 fill-current">
                         <path
                             d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                     </svg>
                 </a>
-                <a href="index.html" aria-label="Instagram"
+                <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener noreferrer"
                     class="flex items-center text-[#5a6a7a] transition-colors duration-150 hover:text-[#c8d8e8]">
                     <svg viewBox="0 0 24 24" class="h-4.25 w-4.25 fill-current">
                         <path
@@ -137,7 +142,8 @@
                 </div>
             </div>
 
-            <div class="w-full pb-2 text-right text-[11.5px] text-[#4a5a6a]">&copy; 2026 Help Desk</div>
+            <div class="w-full pb-2 text-right text-[11.5px] text-[#4a5a6a]">&copy; 2026 <span
+                    x-text="$store.ui.t('footerBrand')"></span></div>
         </div>
     </div>
 </footer>

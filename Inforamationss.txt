@@ -1,0 +1,85 @@
+HelpDesk — Product Description for Landing Page Design
+What it is
+
+A complete customer support platform for businesses. Companies sign up, get their own subdomain, and immediately have a professional helpdesk they can embed on their website, manage tickets, organize their team, and let AI handle the repetitive work.
+The core promise
+
+A customer submits a problem. The right agent gets it instantly. AI helps them reply faster. The customer gets resolved. Everything is tracked, logged, and measured. Nothing falls through the cracks.
+Who uses it and how
+
+The Admin Sets everything up. Invites agents, organizes them into groups, configures categories and subcategories, sets SLA response time targets, customizes the widgets that go on the company website, writes knowledge base articles, builds automation rules. Sees the full picture — every ticket, every agent's performance, every breach. Has full control over what agents can and can't do.
+
+The Agent / Operator Lives in the ticket queue. Belongs to one or more agent groups, handles tickets in their assigned categories. Replies to customers, leaves internal notes for teammates, uses AI-generated reply suggestions to move faster. Sees only what they need — their assigned tickets, the knowledge base, their own performance stats.
+
+The Customer Never logs in. Submits a ticket through a form on the company's website. Gets a verification email. Receives a tracking link. Can follow their ticket status, reply to agents, and get notified at every step — all without creating an account.
+Features by area
+Ticket Management
+
+Every customer issue becomes a ticket with a unique ID. Tickets have status (open, in progress, pending, resolved, closed), priority (low, medium, high, urgent), an assigned agent, a category with optional subcategory, and a full conversation thread. Agents and customers talk through the ticket — agents can also leave internal notes that customers never see. Files can be attached to any reply.
+
+The full ticket lifecycle is automated: when an agent resolves a ticket, the customer gets an email with a tracking link and 48 hours to reply and reopen it. If they don't reply, a warning email goes out at 24 hours. At 48 hours the ticket auto-closes and the customer gets notified. If a customer replies to a closed ticket within 7 days a new linked ticket is automatically created. After 7 days the ticket is permanently closed. Closed tickets are soft-deleted after 30 days and permanently removed after 90.
+
+Agents can bulk-assign, bulk-change status, bulk-change priority, and bulk-delete. Tickets can be filtered and sorted by any combination of status, priority, category, subcategory, agent, agent group, date range, and SLA state. Filters can be saved as named views for quick access.
+AI Copilot
+
+Every ticket detail page has an AI suggestion strip. When an agent opens a ticket, AI reads the full conversation history and generates a suggested reply in the agent's chosen tone — professional, friendly, or formal. The agent can edit it, regenerate it with a different tone, or dismiss it. There's also an AI summary panel that collapses the entire ticket history into a short paragraph so the agent can understand context at a glance without reading every message. Admins can toggle both features on or off per company from the settings panel.
+Knowledge Base
+
+A full content management system for support articles. Rich text editor with formatting, images, and code blocks. Articles are organized in categories and subcategories, have tags, a slug, draft/published/archived states, and version history. The knowledge base is also a public-facing website — customers can browse articles by category and subcategory, search, and mark articles as helpful. It's automatically available at the company's subdomain under /kb.
+
+Agents can reference knowledge base articles directly while replying to a ticket — a search button in the reply toolbar lets them find and insert a link to any published article without leaving the ticket.
+Automation Engine
+
+Rules that run automatically when tickets come in or when conditions change. Admin configures rules with conditions (category matches, subcategory matches, priority matches, assigned group, customer is VIP) and actions (assign to agent, assign to agent group, change priority, send auto-reply, escalate, notify on SLA breach). Assignment happens instantly when a ticket is created — the engine finds the most suitable available agent based on their group, specialties, workload, and availability. If no agent is available the ticket stays unassigned and all admins are notified.
+SLA (Service Level Agreements)
+
+Admin sets response time targets per priority — for example urgent tickets must be resolved in 30 minutes, low priority tickets in 24 hours. Every ticket gets a due time calculated from these targets. A live countdown timer shows on every ticket. Tickets turn amber when they're at risk and red when they've breached. The system checks every minute and sends notifications to the assigned agent and all admins when a breach occurs. The admin dashboard shows a live count of active breaches.
+Team Management
+
+Admins invite agents by email — single invite or bulk invite for multiple emails at once. Invited agents get an email, set their password, and choose their specialties. Agents are organized into groups — a group can represent a department, a skill set, or a shift. Tickets can be assigned to an individual agent or to an entire group, with the automation engine distributing within the group based on workload. Agents can belong to multiple groups. Each agent has a profile showing their performance stats, current open tickets, and recent activity. Admins can edit specialties, manage group membership, change roles, and remove agents at any time.
+Customer Profiles
+
+Every customer who submits a ticket gets a profile automatically. Customer profiles show contact info, all past tickets, submission history, and internal notes agents leave about that customer. Customers can be blocked from submitting new tickets. All customer data is scoped to the company — no cross-company data is ever accessible.
+Analytics & Reporting
+
+Four report sections: overview (total tickets, resolution rate, response time trends), agent performance (individual stats, leaderboard, group breakdown), ticket analysis (filterable sortable full ticket list, exportable to CSV), and category health (resolution rate per category and subcategory). Charts use real data — ticket volume over time, status distribution, priority breakdown, agent rankings. Everything can be exported as PDF or CSV.
+Notifications
+
+Every important event triggers a notification — ticket assigned, client replied, status changed, SLA breached, new ticket submitted. Each agent chooses which notifications they want to receive. Notifications appear in real time in the bell menu and on the full notifications page, grouped by type and date. The SLA tab shows only breach notifications for quick admin triage.
+Embeddable Widgets
+
+Three widgets companies can embed on their own websites with a single script tag:
+
+Form Widget — a floating or iframe-embedded ticket submission form. Fully branded to the company. Admin configures the fields, theme, default priority and status, whether phone is required, whether category and subcategory are shown. Customers fill it in, verify their email, and get a tracking link.
+
+AI Chatbot Widget — a floating chat bubble. Customers describe their problem, the AI answers using the company's knowledge base and FAQ database. If the AI can't help after a configurable number of exchanges, it offers a link to submit a ticket. The whole conversation is logged.
+
+KB Search Widget — a floating search bubble that searches the company's published knowledge base from any page on their website. Customers type a question and get instant article suggestions with links.
+Integrations
+
+All three widgets are managed from a single Integrations page. Each has its own embed code — one script tag the admin pastes anywhere on their website. The Knowledge Base also exposes a public REST API for companies that want to pull articles or search results into their own custom interface.
+Settings
+
+Personal settings for each user: profile with avatar, password, two-factor authentication, appearance (dark/light mode), notification preferences.
+
+Company settings for admins: company profile (name, email, phone, timezone, logo), categories and subcategories, SLA policy, agent groups, AI copilot toggles.
+Key technical differentiators worth highlighting on the landing page
+
+Multi-tenant — every company is completely isolated. Different subdomain, different data, zero crossover. One platform, unlimited companies.
+
+No-login customer experience — customers never need to create an account. Email verification and a tracking link is all they need. Lower friction means more tickets submitted and fewer abandoned support requests.
+
+Smart routing — tickets automatically go to the right agent group, then the right agent within that group, based on category, subcategory, specialties, current workload, and availability.
+
+AI that actually helps — not a chatbot that replaces agents but a copilot that makes agents faster. Suggestions, summaries, and automated deflection working together.
+
+Everything automated — from ticket assignment to SLA alerts to auto-close emails. Admins configure the rules once and the system runs itself.
+
+Embeddable everywhere — one script tag on any website. No redirect to a third-party support portal. The helpdesk feels native to the company's brand.
+Flows worth illustrating visually on the landing page
+
+The ticket journey: Customer types on company website → chatbot tries to help → if unresolved, ticket form appears → ticket created → routed to correct agent group → best available agent assigned automatically → AI summary gives instant context → AI generates reply suggestion → agent replies → customer replies back → ticket resolved → auto-close countdown begins → ticket archived
+
+The agent experience: Opens dashboard → sees urgent tickets at top → picks up unassigned ticket in their specialty → AI summary gives instant context → types reply with AI suggestion → inserts KB article link → resolves → moves to next
+
+The admin setup: Signs up → onboarding wizard → sets categories, subcategories, and SLA targets → creates agent groups → invites agents → configures widgets → pastes one script tag on company website → helpdesk is live

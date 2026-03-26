@@ -52,8 +52,8 @@ Scroll-triggered with staggered fade-in and continuous rotation.
     <template id="tpl-betterhelp">
         <div class="bs-brand bs-betterhelp">
             <div class="bs-icon"><svg viewBox="0 0 60 40" fill="none">
-                <ellipse cx="20" cy="20" rx="18" ry="12" fill="#5cb85c" opacity="0.3" />
-                <path d="M5 20 Q20 5 35 20 Q20 35 5 20Z" fill="#5cb85c" />
+                <ellipse cx="20" cy="20" rx="18" ry="12" fill="#219653" opacity="0.3" />
+                <path d="M5 20 Q20 5 35 20 Q20 35 5 20Z" fill="#219653" />
                 <path d="M25 20 Q40 8 55 20 Q40 32 25 20Z" fill="#7dc87d" />
             </svg></div>
             <div class="bs-bh-text"><span class="bs-green">better</span>help</div>
@@ -171,7 +171,7 @@ Scroll-triggered with staggered fade-in and continuous rotation.
     .bs-privy span { font-family: 'DM Sans', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; }
     .bs-betterhelp .bs-icon { width: 30px; height: 22px; }
     .bs-bh-text { font-family: 'Raleway', sans-serif; font-size: 16px; font-weight: 600; display: flex; align-items: center; }
-    .bs-green { color: #5cb85c; font-weight: 700; }
+    .bs-green { color: #219653; font-weight: 700; }
     .bs-mixmax .bs-icon { width: 28px; height: 28px; }
     .bs-mixmax span { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: #2d1a4a; }
     .bs-clockwise .bs-icon { width: 22px; height: 22px; }
