@@ -22,11 +22,12 @@
                             <div style="padding: 28px 32px;">
                                 <!-- Logo -->
                                 <div style="text-align: center; margin-bottom: 28px;">
-                                    <img src="{{ asset('images/logolm.png') }}" alt="Helpdesk"
-                                        style="height: 34px; width: auto; display: inline-block; vertical-align: middle;">
-                                    <p
-                                        style="margin: 8px 0 0 0; font-size: 12px; line-height: 1.4; color: #71717a; font-weight: 600; letter-spacing: 0.02em;">
-                                        Secured by Helpdesk</p>
+                                    <p style="margin: 0; font-size: 12px; color: #9ca3af; text-align: center; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                        Secured by
+                                        <img src="https://iili.io/qL3UhmB.png" alt="Helpdesk"
+                                            style="display: inline-block; vertical-align: middle; height: 16px;margin:0 10px; width: 16px;">
+                                        <span style="font-weight: 600; color: #4b5563;">Helpdesk</span>
+                                    </p>
                                 </div>
 
                                 <!-- Title -->

@@ -64,6 +64,13 @@ class Wizard extends Component
     public function mount(): void
     {
         $company = Auth::user()->company;
+
+        if (! is_null($company->onboarding_completed_at)) {
+            $this->redirectRoute('agent.dashboard', ['company' => $company->slug]);
+
+            return;
+        }
+
         $this->timezone = $company->timezone ?? 'UTC';
 
         $slaPolicy = SlaPolicy::query()->where('company_id', $company->id)->first();
