@@ -31,9 +31,10 @@
     <div id="mobile-overlay" onclick="closeMobileSidebar()" class="fixed inset-0 z-40 bg-black/40 hidden lg:hidden"></div>
 
     {{-- Mobile header --}}
-    <div class="mobile-header lg:hidden fixed top-0 inset-x-0 h-12 bg-[#1F2937] flex items-center px-4 z-40 gap-3">
+    <div
+        class="mobile-header lg:hidden fixed top-0 inset-x-0 h-12 bg-black flex items-center px-4 z-40 gap-3 border-b border-zinc-800">
         <button onclick="openMobileSidebar()"
-            class="p-1.5 rounded-lg bg-transparent border-none text-[#9CA3AF] hover:bg-[#374151] transition-colors cursor-pointer">
+            class="p-1.5 rounded-lg bg-transparent border-none text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 transition-colors cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" viewBox="0 0 24 24">
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -42,7 +43,7 @@
             </svg>
         </button>
         <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
-            class="flex items-center gap-2 no-underline text-[#9CA3AF] text-lg font-bold transition-colors hover:text-white">
+            class="flex items-center gap-2 no-underline text-zinc-300 text-lg font-bold transition-colors hover:text-white">
             <img src="{{ asset('images/logodm.png') }}" alt="" class="w-6 h-6">
             Helpdesk
         </a>
@@ -77,17 +78,23 @@
     </div>
 
     {{-- ── Sidebar: expands on hover ──────────────────────────────────── --}}
-  <div id="app-sidebar"
-    x-data="{
-        wide: sessionStorage.getItem('sb-wide') === '1',
-        enter() { this.wide = true;  sessionStorage.setItem('sb-wide', '1'); },
-        leave() { this.wide = false; sessionStorage.setItem('sb-wide', '0'); }
-    }"
-    @mouseenter="enter()"
-    @mouseleave="leave()"
-    :class="wide ? 'lg:w-56 lg:shadow-xl sb-wide' : 'lg:w-16'"
-    class="fixed inset-y-0 left-0 z-50 flex flex-col
-           w-56 bg-[#1F2937] border-r border-[#111827]
+    <div id="app-sidebar" x-data="{
+        wide: false,
+        init() {
+            this.wide = window.__sidebarHovered === true;
+        },
+        enter() {
+            this.wide = true;
+            window.__sidebarHovered = true;
+        },
+        leave() {
+            this.wide = false;
+            window.__sidebarHovered = false;
+        }
+    }" @mouseenter="enter()" @mouseleave="leave()"
+        :class="wide ? 'lg:w-56 lg:shadow-xl sb-wide' : 'lg:w-16'"
+        class="fixed inset-y-0 left-0 z-50 flex flex-col
+            w-56 bg-black border-r border-zinc-900 dark:border-r-2 dark:border-dashed dark:border-zinc-700
            -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out
            overflow-hidden">
 
@@ -105,9 +112,9 @@
 
             @if (in_array(Auth::user()->role, ['admin', 'operator']))
                 @php $active = request()->routeIs('dashboard', 'admin.dashboard', 'agent.dashboard'); @endphp
-                <a href="{{ route('dashboard', Auth::user()->company->slug) }}" wire:navigate
+                <a href="{{ route('agent.dashboard', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -124,7 +131,7 @@
             @php $active = request()->routeIs('tickets'); @endphp
             <a href="{{ route('tickets', Auth::user()->company->slug) }}" wire:navigate
                 class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                      {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                        {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -139,7 +146,7 @@
                 @php $active = request()->routeIs('customers*'); @endphp
                 <a href="{{ route('customers', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -156,7 +163,7 @@
                 @php $active = request()->routeIs('operators'); @endphp
                 <a href="{{ route('operators', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -171,7 +178,7 @@
                 @php $active = request()->routeIs('teams'); @endphp
                 <a href="{{ route('teams', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -187,7 +194,7 @@
                 @php $active = request()->routeIs('categories'); @endphp
                 <a href="{{ route('categories', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -200,7 +207,7 @@
                 @php $active = request()->routeIs('automation', 'automation.*'); @endphp
                 <a href="{{ route('automation', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -214,7 +221,7 @@
                 @php $active = request()->routeIs('channels'); @endphp
                 <a href="{{ route('channels', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -228,7 +235,7 @@
                 @php $active = request()->routeIs('reports'); @endphp
                 <a href="{{ route('reports', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -244,7 +251,7 @@
             @php $active = request()->routeIs('kb.*'); @endphp
             <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
                 class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                      {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                        {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -259,7 +266,7 @@
                 @php $active = request()->routeIs('settings.my-team'); @endphp
                 <a href="{{ route('settings.my-team', Auth::user()->company->slug) }}" wire:navigate
                     class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                          {{ $active ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                          {{ $active ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                     <div class="w-10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -282,11 +289,11 @@
             @livewire('notification-bell')
 
             {{-- Settings icon --}}
-            @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit', 'settings.my-team'); @endphp
+            @php $settingsActive = request()->routeIs('company.profile', 'settings.ai-copilot', 'appearance.edit', 'settings.security', 'settings.email', 'notifications.preferences', 'settings.danger', 'profile.edit', 'form-widget.edit'); @endphp
             <a href="{{ Auth::user()->isAdmin() ? route('company.profile', Auth::user()->company->slug) : route('settings.security', Auth::user()->company->slug) }}"
                 wire:navigate
                 class="mx-3 h-10 flex items-center rounded-lg transition-all duration-200 hover:translate-x-1 no-underline
-                      {{ $settingsActive ? 'bg-[#374151] text-white' : 'text-[#9CA3AF] hover:bg-[#374151] hover:text-white' }}">
+                        {{ $settingsActive ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-900 hover:text-white' }}">
                 <div class="w-10 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">

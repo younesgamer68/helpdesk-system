@@ -148,7 +148,16 @@ class SlaConfiguration extends Component
             $newDueTime = $ticket->created_at->copy()->addMinutes($minutes);
 
             // Update SLA status based on new due time using company timezone
-            $slaStatus = now($timezone)->greaterThan($newDueTime) ? 'breached' : 'on_time';
+            $currentTime = now($timezone);
+            $remainingSeconds = $currentTime->diffInSeconds($newDueTime, false);
+
+            if ($remainingSeconds <= 0) {
+                $slaStatus = 'breached';
+            } else {
+                $totalSlaSeconds = max(1, $ticket->created_at->diffInSeconds($newDueTime));
+                $atRiskThreshold = (int) floor($totalSlaSeconds * 0.25);
+                $slaStatus = $remainingSeconds <= $atRiskThreshold ? 'at_risk' : 'on_time';
+            }
 
             $ticket->update([
                 'due_time' => $newDueTime,

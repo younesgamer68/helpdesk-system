@@ -65,18 +65,20 @@ class WidgetController extends Controller
             $ticketNumber = 'TKT-'.strtoupper(Str::random(6));
         } while (Ticket::where('ticket_number', $ticketNumber)->exists());
 
-        // Find or create customer
-        $customer = Customer::firstOrCreate(
-            [
-                'company_id' => $widget->company_id,
-                'email' => $validated['customer_email'],
-            ],
-            [
-                'name' => $validated['customer_name'],
-                'phone' => $validated['customer_phone'] ?? null,
-                'is_active' => true,
-            ]
-        );
+        // Keep customer profile in sync with the latest submitted widget identity.
+        $customer = Customer::firstOrNew([
+            'company_id' => $widget->company_id,
+            'email' => $validated['customer_email'],
+        ]);
+
+        $customer->name = $validated['customer_name'];
+        $customer->phone = $validated['customer_phone'] ?? null;
+
+        if (! $customer->exists) {
+            $customer->is_active = true;
+        }
+
+        $customer->save();
 
         if (! $customer->is_active) {
             return response()->json([

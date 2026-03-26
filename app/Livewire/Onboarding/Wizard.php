@@ -5,6 +5,7 @@ namespace App\Livewire\Onboarding;
 use App\Models\Company;
 use App\Models\SlaPolicy;
 use App\Models\Team;
+use DateTimeZone;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -35,12 +36,19 @@ class Wizard extends Component
         ['name' => 'Technical'],
     ];
 
-    // Step 3: Invite Team
+    // Step 3: Teams
+    public array $teams = [];
+
+    public string $newTeamName = '';
+
+    public string $newTeamColor = '#14b8a6';
+
+    // Step 4: Invite Team
     public array $invites = [
         ['email' => '', 'name' => '', 'role' => 'operator', 'team_id' => ''],
     ];
 
-    // Step 4: Widget
+    // Step 5: Widget
     public string $widgetThemeMode = 'dark';
 
     public string $widgetFormTitle = 'Submit a Support Ticket';
@@ -67,6 +75,28 @@ class Wizard extends Component
             $this->slaHighMinutes = $slaPolicy->high_minutes;
             $this->slaUrgentMinutes = $slaPolicy->urgent_minutes;
         }
+
+        $this->teams = Team::where('company_id', $company->id)
+            ->select('id', 'name', 'color')
+            ->orderBy('name')
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    #[Computed]
+    public function timezones(): array
+    {
+        $identifiers = DateTimeZone::listIdentifiers();
+        $timezones = [];
+
+        foreach ($identifiers as $tz) {
+            $timezones[$tz] = str_replace(['/', '_'], [' / ', ' '], $tz);
+        }
+
+        return $timezones;
     }
 
     public function nextStep(): void
@@ -99,6 +129,10 @@ class Wizard extends Component
         }
 
         if ($this->currentStep === 4) {
+            // Teams step — no required validation, teams are optional
+        }
+
+        if ($this->currentStep === 5) {
             $this->validate([
                 'invites' => 'nullable|array',
                 'invites.*.email' => 'required|email',
@@ -107,7 +141,7 @@ class Wizard extends Component
             ]);
         }
 
-        if ($this->currentStep < 5) {
+        if ($this->currentStep < 6) {
             $this->currentStep++;
         }
     }
@@ -121,7 +155,7 @@ class Wizard extends Component
 
     public function skipStep()
     {
-        if ($this->currentStep < 5) {
+        if ($this->currentStep < 6) {
             $this->currentStep++;
         } else {
             $this->skipEntireWizard();
@@ -165,7 +199,7 @@ class Wizard extends Component
             ]);
         }
 
-        return redirect()->route('tickets', ['company' => $company->slug]);
+        $this->dispatch('wizard-completed', url: route('agent.dashboard', ['company' => $company->slug]));
     }
 
     public function addCategory(): void
@@ -178,6 +212,42 @@ class Wizard extends Component
         if (count($this->categories) > 1) {
             unset($this->categories[$index]);
             $this->categories = array_values($this->categories); // Re-index array
+        }
+    }
+
+    public function addTeam(): void
+    {
+        $this->validate([
+            'newTeamName' => 'required|string|max:255',
+            'newTeamColor' => 'required|string|max:7',
+        ]);
+
+        $company = Auth::user()->company;
+
+        $team = Team::create([
+            'company_id' => $company->id,
+            'name' => $this->newTeamName,
+            'color' => $this->newTeamColor,
+        ]);
+
+        $this->teams[] = ['id' => $team->id, 'name' => $team->name, 'color' => $team->color];
+        $this->newTeamName = '';
+        $this->newTeamColor = '#14b8a6';
+
+        unset($this->teamsForWizard);
+    }
+
+    public function removeTeam(int $index): void
+    {
+        if (isset($this->teams[$index])) {
+            Team::where('company_id', Auth::user()->company_id)
+                ->where('id', $this->teams[$index]['id'])
+                ->delete();
+
+            unset($this->teams[$index]);
+            $this->teams = array_values($this->teams);
+
+            unset($this->teamsForWizard);
         }
     }
 
@@ -221,7 +291,9 @@ class Wizard extends Component
             );
         }
 
-        // Save Step 4 (Invites)
+        // Step 4 (Teams) — already saved live via addTeam()
+
+        // Save Step 5 (Invites)
         foreach ($this->invites as $inviteData) {
             if (! empty($inviteData['email'])) {
                 $expiresAt = now()->addHours((int) config('auth.invitation_expire_hours', 72));
@@ -250,7 +322,7 @@ class Wizard extends Component
             }
         }
 
-        // Save Step 5 (Widget Setting)
+        // Save Step 6 (Widget Setting)
         $company->widgetSettings()->updateOrCreate(
             ['company_id' => $company->id],
             [
@@ -265,7 +337,7 @@ class Wizard extends Component
             ]
         );
 
-        return redirect()->route('tickets', ['company' => $company->slug]);
+        $this->dispatch('wizard-completed', url: route('agent.dashboard', ['company' => $company->slug]));
     }
 
     #[Layout('layouts.app')]

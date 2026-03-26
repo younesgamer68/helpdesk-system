@@ -101,8 +101,8 @@ class SetPassword extends Component
         Auth::login($user);
         session()->forget('pending_user_email');
 
-        // Redirect to the company's subdomain tickets page
-        return redirect()->route('tickets', ['company' => $user->company->slug]);
+        // Redirect to the company's dashboard home page
+        return redirect()->route('agent.dashboard', ['company' => $user->company->slug]);
     }
 
     public function render()

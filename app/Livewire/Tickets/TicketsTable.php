@@ -510,18 +510,20 @@ class TicketsTable extends Component
         // Generate unique ticket number
         $ticketNumber = $this->generateTicketNumber();
 
-        // Find or create the customer
-        $customer = \App\Models\Customer::firstOrCreate(
-            [
-                'company_id' => Auth::user()->company_id,
-                'email' => $this->customer_email,
-            ],
-            [
-                'name' => $this->customer_name,
-                'phone' => $this->customer_phone ?: null,
-                'is_active' => true,
-            ]
-        );
+        // Keep customer profile in sync with the latest entered identity.
+        $customer = \App\Models\Customer::firstOrNew([
+            'company_id' => Auth::user()->company_id,
+            'email' => $this->customer_email,
+        ]);
+
+        $customer->name = $this->customer_name;
+        $customer->phone = $this->customer_phone ?: null;
+
+        if (! $customer->exists) {
+            $customer->is_active = true;
+        }
+
+        $customer->save();
 
         // Create the ticket
         $ticket = Ticket::create([

@@ -11,7 +11,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertSoftDeleted;
+use function Pest\Laravel\assertDatabaseMissing;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -97,8 +97,8 @@ test('operators table handles bulk removal with ticket reassignment', function (
         ->call('bulkRemoveMembers')
         ->assertDispatched('show-toast');
 
-    assertSoftDeleted('users', ['id' => $operator1->id]);
-    assertSoftDeleted('users', ['id' => $operator2->id]);
+    assertDatabaseMissing('users', ['id' => $operator1->id]);
+    assertDatabaseMissing('users', ['id' => $operator2->id]);
     expect($ticket1->fresh()->assigned_to)->toBeNull();
     expect($ticket2->fresh()->assigned_to)->toBeNull();
 });

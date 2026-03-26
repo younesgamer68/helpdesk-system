@@ -3,6 +3,7 @@
 use App\Livewire\Dashboard\TicketDetails;
 use App\Livewire\Widget\TicketConversation;
 use App\Mail\AgentRepliedToTicket;
+use App\Mail\TicketVerified;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\SlaPolicy;
@@ -10,6 +11,7 @@ use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -254,4 +256,73 @@ it('shows assigned agent in reply-as dropdown for admin', function () {
     Livewire::test(TicketDetails::class, ['ticket' => $this->ticket->fresh()])
         ->assertSee('Reply as')
         ->assertSee($agent->name);
+});
+
+it('shows live polling and operator name typing indicator on tracking chat', function () {
+    Cache::put('ticket:typing:agent:'.$this->ticket->id, 'Agent Smith', now()->addSeconds(6));
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->assertSee('Agent Smith is typing')
+        ->assertSeeHtml('wire:poll.5s');
+});
+
+it('shows fallback typing name for legacy boolean cache value', function () {
+    Cache::put('ticket:typing:agent:'.$this->ticket->id, true, now()->addSeconds(6));
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->assertSee('Support team is typing');
+});
+
+it('tracks and clears customer typing state in tracking chat', function () {
+    $typingKey = 'ticket:typing:customer:'.$this->ticket->id;
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->call('markTyping');
+
+    expect(Cache::has($typingKey))->toBeTrue();
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->set('message', 'sending now')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    expect(Cache::has($typingKey))->toBeFalse();
+});
+
+it('shows customer typing indicator in operator ticket details view', function () {
+    Cache::put('ticket:typing:customer:'.$this->ticket->id, true, now()->addSeconds(6));
+
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->assertSee('Customer is typing');
+});
+
+it('sends tracking link email when creating a follow-up ticket', function () {
+    Mail::fake();
+
+    SlaPolicy::create([
+        'company_id' => $this->company->id,
+        'linked_ticket_days' => 30,
+    ]);
+
+    $this->ticket->update([
+        'status' => 'closed',
+        'closed_at' => now()->subDay(),
+    ]);
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket->fresh()])
+        ->set('message', 'I still need help with this')
+        ->call('submitReply')
+        ->set('message', 'I still need help with this')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    $followUp = Ticket::where('parent_ticket_id', $this->ticket->id)->first();
+    expect($followUp)->not->toBeNull();
+    expect($followUp->tracking_token)->not->toBeEmpty();
+
+    Mail::assertQueued(TicketVerified::class, function ($mail) {
+        return $mail->hasTo($this->customer->email);
+    });
 });

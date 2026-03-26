@@ -4,88 +4,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 8px 8px 0 0;
-            text-align: center;
-        }
-
-        .content {
-            background: #f9fafb;
-            padding: 30px;
-            border: 1px solid #e5e7eb;
-            border-top: none;
-        }
-
-        .ticket-info {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .ticket-info p {
-            margin: 10px 0;
-        }
-
-        .ticket-number {
-            font-weight: bold;
-            color: #10b981;
-        }
-
-        .footer {
-            background: #1f2937;
-            color: #9ca3af;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            border-radius: 0 0 8px 8px;
-        }
-
-        .footer a {
-            color: #34d399;
-        }
-    </style>
 </head>
 
-<body>
-    <div class="header">
-        <h1 style="margin: 0;">Thank You for Contacting Us</h1>
-    </div>
+<body
+    style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" style="max-width: 520px; width: 100%;">
+                    <!-- Card -->
+                    <tr>
+                        <td
+                            style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                            <!-- Accent bar -->
+                            <div style="height: 3px; background: #10b981;"></div>
 
-    <div class="content">
-        <p>Dear {{ $ticket->customer_name }},</p>
+                            <div style="padding: 28px 32px;">
+                                <!-- Logo -->
+                                <div style="text-align: center; margin-bottom: 28px;">
+                                    <img src="{{ asset('images/logolm.png') }}" alt="Helpdesk"
+                                        style="height: 34px; width: auto; display: inline-block; vertical-align: middle;">
+                                    <p
+                                        style="margin: 8px 0 0 0; font-size: 12px; line-height: 1.4; color: #71717a; font-weight: 600; letter-spacing: 0.02em;">
+                                        Secured by Helpdesk</p>
+                                </div>
 
-        <p>{{ $message }}</p>
+                                <!-- Title -->
+                                <h1
+                                    style="margin: 0 0 20px 0; font-size: 20px; font-weight: 700; color: #18181b; text-align: center;">
+                                    Thank You for Contacting Us</h1>
 
-        <div class="ticket-info">
-            <p><strong>Ticket Number:</strong> <span class="ticket-number">#{{ $ticket->ticket_number }}</span></p>
-            <p><strong>Subject:</strong> {{ $ticket->subject }}</p>
-            <p><strong>Priority:</strong> {{ ucfirst($ticket->priority) }}</p>
-            <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</p>
-        </div>
+                                <!-- Body -->
+                                <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #52525b;">Dear
+                                    <strong style="color: #18181b;">{{ $ticket->customer_name }}</strong>,
+                                </p>
+                                <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #52525b;">
+                                    {{ $message }}</p>
 
-        <p>We have received your request and our team is working on it. You will receive updates via email as we make progress.</p>
+                                <!-- Ticket info card -->
+                                <div
+                                    style="background: #fafafa; border-radius: 8px; padding: 16px; margin: 20px 0; border-left: 3px solid #10b981;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #71717a; width: 110px;">
+                                                Ticket</td>
+                                            <td
+                                                style="padding: 4px 0; font-size: 13px; color: #18181b; font-weight: 600; font-family: monospace;">
+                                                #{{ $ticket->ticket_number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #71717a;">Subject</td>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #18181b;">
+                                                {{ $ticket->subject }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #71717a;">Priority</td>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #18181b;">
+                                                {{ ucfirst($ticket->priority) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #71717a;">Status</td>
+                                            <td style="padding: 4px 0; font-size: 13px; color: #18181b;">
+                                                {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
 
-        <p>Best regards,<br>Support Team</p>
-    </div>
+                                <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #52525b;">We
+                                    have received your request and our team is working on it. You will receive updates
+                                    via email as we make progress.</p>
 
-    <div class="footer">
-        <p>This is an automated message. Please do not reply directly to this email.</p>
-    </div>
+                                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #52525b;">Best
+                                    regards,<br>Support Team</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 24px 0; text-align: center;">
+                            <p style="margin: 0; font-size: 12px; color: #a1a1aa;">This is an automated message. Please
+                                do not reply directly to this email.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 
 </html>

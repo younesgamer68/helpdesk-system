@@ -128,7 +128,7 @@ class OperatorProfile extends Component
         // Reassign tickets to unassigned
         $this->operator->assignedTickets()->update(['assigned_to' => null]);
 
-        $this->operator->delete();
+        $this->operator->forceDelete();
 
         $this->dispatch('show-toast', message: 'Operator removed successfully.', type: 'success');
 

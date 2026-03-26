@@ -117,9 +117,9 @@
                 @forelse ($this->tickets as $ticket)
                     @php
                         $priorityBorder = match ($ticket->priority) {
-                            'urgent' => 'border-l-red-500',
-                            'high' => 'border-l-orange-400',
-                            'medium' => 'border-l-blue-400',
+                            'urgent' => 'border-l-red-500 dark:border-l-red-500',
+                            'high' => 'border-l-orange-400 dark:border-l-orange-400',
+                            'medium' => 'border-l-blue-400 dark:border-l-blue-400',
                             'low' => 'border-l-zinc-300 dark:border-l-zinc-600',
                             default => 'border-l-zinc-300 dark:border-l-zinc-600',
                         };
@@ -140,7 +140,7 @@
                         };
                     @endphp
                     <tr
-                        class="border-b border-l-3 border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 {{ $priorityBorder }}">
+                        class="border-b border-l-3 border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-b-zinc-800 dark:hover:bg-zinc-900 {{ $priorityBorder }}">
                         <td class="px-4 py-4 align-middle">
                             <p class="text-sm font-medium text-zinc-800 dark:text-zinc-100">
                                 {{ Str::limit($ticket->subject, 65) }}

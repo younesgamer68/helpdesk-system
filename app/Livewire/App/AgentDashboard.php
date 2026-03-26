@@ -246,6 +246,7 @@ class AgentDashboard extends Component
     {
         return TicketMention::where('mentioned_user_id', Auth::id())
             ->whereNull('read_at')
+            ->whereHas('ticket')
             ->with(['ticket:id,ticket_number,subject', 'mentionedByUser:id,name'])
             ->latest()
             ->limit(5)

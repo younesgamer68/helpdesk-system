@@ -15,7 +15,7 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-clip">
         <table class="w-full text-left text-sm text-zinc-500 dark:text-zinc-400">
             <thead class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200/50 dark:border-zinc-800">
                 <tr>
@@ -380,7 +380,8 @@
                     <flux:button type="button" wire:click="cancelDelete" variant="ghost" class="flex-1">
                         Cancel
                     </flux:button>
-                    <flux:button type="button" wire:click="deleteCategory" variant="primary" class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
+                    <flux:button type="button" wire:click="deleteCategory" variant="primary"
+                        class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
                         Delete Category
                     </flux:button>
                 </div>

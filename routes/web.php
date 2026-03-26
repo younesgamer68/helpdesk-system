@@ -122,11 +122,8 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
         Route::middleware(['company.is_onboarded'])->group(function () {
             Route::get('/dashboard', function () {
                 $user = Auth::user();
-                if ($user->role === 'admin') {
-                    return redirect('/admin/dashboard');
-                }
 
-                return redirect('/home');
+                return redirect()->route('agent.dashboard', ['company' => $user->company->slug]);
             })->name('dashboard');
 
             Route::livewire('home', \App\Livewire\App\AgentDashboard::class)

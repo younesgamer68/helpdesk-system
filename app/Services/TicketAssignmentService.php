@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Team;
 use App\Models\TenantConfig;
 use App\Models\Ticket;
+use App\Models\TicketCategory;
 use App\Models\User;
 use App\Notifications\TicketAssigned;
 use App\Notifications\TicketReassigned;
@@ -83,7 +84,9 @@ class TicketAssignmentService
         }
 
         // Pass 2: fall back to parent category when ticket is a subcategory
-        $parentId = $ticket->category?->parent_id;
+        $parentId = TicketCategory::query()
+            ->whereKey($ticket->category_id)
+            ->value('parent_id');
 
         if ($parentId) {
             return $baseQuery($parentId);
@@ -160,7 +163,17 @@ class TicketAssignmentService
     {
         $maxLoad = $this->getMaxTicketsPerAgent($ticket->company_id);
 
-        $categoryIds = $ticket->category?->ancestor_ids ?? [];
+        $categoryIds = [];
+        if ($ticket->category_id) {
+            $parentId = TicketCategory::query()
+                ->whereKey($ticket->category_id)
+                ->value('parent_id');
+
+            $categoryIds = array_values(array_unique(array_filter([
+                $parentId,
+                $ticket->category_id,
+            ])));
+        }
 
         $availableMembers = $team->members()
             ->operators()
@@ -316,6 +329,7 @@ class TicketAssignmentService
             ->whereNull('assigned_to')
             ->where('verified', true)
             ->whereNotIn('status', ['resolved', 'closed'])
+            ->with('category:id,parent_id')
             ->orderBy('created_at', 'asc')
             ->get();
 

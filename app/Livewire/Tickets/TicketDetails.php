@@ -22,6 +22,7 @@ use App\Notifications\TicketReassigned;
 use App\Notifications\TicketStatusChanged;
 use App\Notifications\UserMentioned;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
@@ -66,6 +67,20 @@ class TicketDetails extends Component
     public ?int $pendingAssignAgentId = null;
 
     public bool $showTeamPickerModal = false;
+
+    public bool $showActionConfirmationModal = false;
+
+    public string $confirmationTitle = 'Confirm action';
+
+    public string $confirmationMessage = 'Are you sure you want to continue?';
+
+    public string $confirmationButtonLabel = 'Confirm';
+
+    public string $confirmationButtonStyle = 'confirm';
+
+    public ?string $pendingConfirmationAction = null;
+
+    public ?string $pendingConfirmationValue = null;
 
     #[Validate('required|string|max:5000')]
     public $message = '';
@@ -604,6 +619,87 @@ class TicketDetails extends Component
         $this->dispatch('show-toast', message: 'Ticket closed successfully!', type: 'success');
     }
 
+    public function promptActionConfirmation(string $action, ?string $value = null): void
+    {
+        $actionConfig = match ($action) {
+            'resolve' => [
+                'title' => 'Mark As Resolved',
+                'message' => 'Confirm marking this ticket as resolved.',
+                'button' => 'Yes, resolve',
+                'style' => 'confirm',
+            ],
+            'unresolve' => [
+                'title' => 'Reopen Ticket',
+                'message' => 'Confirm reopening this ticket.',
+                'button' => 'Yes, reopen',
+                'style' => 'confirm',
+            ],
+            'unassign' => [
+                'title' => 'Unassign Ticket',
+                'message' => 'Remove the current assignee from this ticket?',
+                'button' => 'Yes, unassign',
+                'style' => 'danger',
+            ],
+            'priority' => [
+                'title' => 'Change Priority',
+                'message' => 'Set ticket priority to '.ucfirst((string) $value).'?',
+                'button' => 'Yes, update priority',
+                'style' => 'confirm',
+            ],
+            'status' => [
+                'title' => 'Change Status',
+                'message' => 'Set ticket status to '.str_replace('_', ' ', (string) $value).'?',
+                'button' => 'Yes, update status',
+                'style' => (string) $value === 'closed' ? 'danger' : 'confirm',
+            ],
+            'close' => [
+                'title' => 'Close Ticket',
+                'message' => 'Close this ticket now? This is a destructive action.',
+                'button' => 'Yes, close ticket',
+                'style' => 'danger',
+            ],
+            default => [
+                'title' => 'Confirm action',
+                'message' => 'Are you sure you want to continue?',
+                'button' => 'Confirm',
+                'style' => 'confirm',
+            ],
+        };
+
+        $this->pendingConfirmationAction = $action;
+        $this->pendingConfirmationValue = $value;
+        $this->confirmationTitle = $actionConfig['title'];
+        $this->confirmationMessage = $actionConfig['message'];
+        $this->confirmationButtonLabel = $actionConfig['button'];
+        $this->confirmationButtonStyle = $actionConfig['style'];
+        $this->showActionConfirmationModal = true;
+    }
+
+    public function cancelActionConfirmation(): void
+    {
+        $this->showActionConfirmationModal = false;
+        $this->pendingConfirmationAction = null;
+        $this->pendingConfirmationValue = null;
+    }
+
+    public function confirmActionConfirmation(): void
+    {
+        $action = $this->pendingConfirmationAction;
+        $value = $this->pendingConfirmationValue;
+
+        $this->cancelActionConfirmation();
+
+        match ($action) {
+            'resolve' => $this->resolve(),
+            'unresolve' => $this->unresolve(),
+            'unassign' => $this->assign(null),
+            'priority' => $this->changePriority((string) $value),
+            'status' => $this->changeStatus((string) $value),
+            'close' => $this->closeTicket(),
+            default => null,
+        };
+    }
+
     public function addReply()
     {
         if (Auth::user()->isOperator() && ! $this->isAssignee) {
@@ -672,6 +768,7 @@ class TicketDetails extends Component
         }
 
         $this->reset(['message', 'attachments']);
+        $this->clearAgentTypingState();
         $this->dispatch('resetEditor');
 
         // Notify assigned agent about the new reply if they aren't the sender
@@ -682,6 +779,35 @@ class TicketDetails extends Component
         $this->logAction('reply_added', 'Added a reply. Status set to pending.');
 
         $this->dispatch('show-toast', message: 'Reply added successfully!', type: 'success');
+    }
+
+    public function updatedMessage($value): void
+    {
+        $hasMessage = trim((string) $value) !== '';
+
+        if ($hasMessage) {
+            Cache::put($this->agentTypingCacheKey(), Auth::user()->name, now()->addSeconds(6));
+
+            return;
+        }
+
+        $this->clearAgentTypingState();
+    }
+
+    private function agentTypingCacheKey(): string
+    {
+        return 'ticket:typing:agent:'.$this->ticket->id;
+    }
+
+    private function clearAgentTypingState(): void
+    {
+        Cache::forget($this->agentTypingCacheKey());
+    }
+
+    #[Computed]
+    public function isCustomerTyping(): bool
+    {
+        return (bool) Cache::get('ticket:typing:customer:'.$this->ticket->id, false);
     }
 
     public function startAiSuggestion()
@@ -1008,6 +1134,7 @@ class TicketDetails extends Component
             'state' => $this->state,
             'agents' => $this->agents(),
             'teams' => $this->teamsForAssign(),
+            'isCustomerTyping' => $this->isCustomerTyping,
         ]);
     }
 }

@@ -75,15 +75,17 @@ it('completes the onboarding flow and saves data correctly', function () {
         ])
         ->call('nextStep')
         ->assertSet('currentStep', 4)
+        ->call('nextStep')
+        ->assertSet('currentStep', 5)
         ->set('invites', [
             ['email' => 'jane@example.com', 'name' => 'Jane Smith', 'role' => 'admin'],
         ])
         ->call('nextStep')
-        ->assertSet('currentStep', 5)
+        ->assertSet('currentStep', 6)
         ->set('widgetThemeMode', 'light')
         ->set('widgetWelcomeMessage', 'Hello World!')
         ->call('completeOnboarding')
-        ->assertRedirect(route('tickets', ['company' => $company->slug]));
+        ->assertDispatched('wizard-completed', url: route('agent.dashboard', ['company' => $company->slug]));
 
     // Assert database was updated
     $company->refresh();
@@ -132,7 +134,7 @@ it('allows skipping the entire wizard', function () {
 
     Livewire::test(Wizard::class)
         ->call('skipEntireWizard')
-        ->assertRedirect(route('tickets', ['company' => $company->slug]));
+        ->assertDispatched('wizard-completed', url: route('agent.dashboard', ['company' => $company->slug]));
 
     $company->refresh();
     expect($company->onboarding_completed_at)->not->toBeNull();
@@ -157,7 +159,9 @@ it('allows skipping individual steps', function () {
         ->call('skipStep')
         ->assertSet('currentStep', 5)
         ->call('skipStep')
-        ->assertRedirect(route('tickets', ['company' => $company->slug]));
+        ->assertSet('currentStep', 6)
+        ->call('skipStep')
+        ->assertDispatched('wizard-completed', url: route('agent.dashboard', ['company' => $company->slug]));
 
     expect($company->refresh()->onboarding_completed_at)->not->toBeNull();
 });

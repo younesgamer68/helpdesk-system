@@ -28,7 +28,7 @@ class AutoReplyRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id !== (int) $conditions['category_id']) {
+            if (! $this->matchesCategoryCondition($ticket, (int) $conditions['category_id'])) {
                 return false;
             }
         }
@@ -66,5 +66,14 @@ class AutoReplyRule implements RuleInterface
 
         Mail::to($recipientEmail)
             ->queue(new AutoReplyMail($ticket, $subject, $message));
+    }
+
+    protected function matchesCategoryCondition(Ticket $ticket, int $conditionCategoryId): bool
+    {
+        if ($ticket->category_id === $conditionCategoryId) {
+            return true;
+        }
+
+        return $ticket->category?->parent_id === $conditionCategoryId;
     }
 }

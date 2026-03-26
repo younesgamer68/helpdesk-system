@@ -8,11 +8,13 @@ test('login screen can be rendered', function () {
     $response = $this->get(route('login'));
 
     $response->assertOk();
+    $response->assertSee('Create your account');
+    $response->assertDontSee('Remember me');
 });
 
-test('users can authenticate using the login screen', function () {
+test('admins are redirected to the home dashboard route after login', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => now()]);
-    $user = User::factory()->create(['company_id' => $company->id]);
+    $user = User::factory()->admin()->create(['company_id' => $company->id]);
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -21,7 +23,23 @@ test('users can authenticate using the login screen', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', ['company' => $company->slug]));
+        ->assertRedirect(route('agent.dashboard', ['company' => $company->slug]));
+
+    $this->assertAuthenticated();
+});
+
+test('operators are redirected to the operator dashboard after login', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->operator()->create(['company_id' => $company->id]);
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('agent.dashboard', ['company' => $company->slug]));
 
     $this->assertAuthenticated();
 });

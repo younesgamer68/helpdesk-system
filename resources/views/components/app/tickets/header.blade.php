@@ -76,8 +76,7 @@
     {{-- Right: primary actions --}}
     <div class="shrink-0 flex items-center gap-2">
         @if ($state !== 'resolved')
-            <button wire:click="resolve" wire:confirm="Mark this ticket as resolved?" wire:loading.attr="disabled"
-                wire:target="resolve"
+            <button wire:click="promptActionConfirmation('resolve')" wire:loading.attr="disabled" wire:target="resolve"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-75 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition shadow-sm">
                 <svg wire:loading.remove wire:target="resolve" class="w-4 h-4" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24" stroke-width="2">
@@ -92,7 +91,7 @@
                 <span wire:loading wire:target="resolve">Resolving...</span>
             </button>
         @else
-            <button wire:click="unresolve" wire:confirm="Reopen this ticket?"
+            <button wire:click="promptActionConfirmation('unresolve')"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-lg transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 14L4 9m0 0l5-5M4 9h10a6 6 0 010 12h-1" />

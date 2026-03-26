@@ -67,7 +67,7 @@
                 x-transition:enter-end="opacity-100">
                 <x-app.tickets.conversation :replies="$this->replies" :ticket="$ticket" :senderId="$senderId" :showAiSuggestion="$showAiSuggestion"
                     :aiTone="$aiTone" :attachments="$attachments" :kbSearch="$kbSearch" :kbResults="$this->kbResults" :aiSuggestionsEnabled="$this->aiSettings->ai_suggestions_enabled"
-                    :isTeammate="$this->isTeammate" />
+                    :isTeammate="$this->isTeammate" :isCustomerTyping="$isCustomerTyping" />
             </div>
 
             {{-- Internal Notes Tab --}}
@@ -93,4 +93,22 @@
                 :isAssignee="$this->isAssignee" />
         </div>
     </div>
+
+    <flux:modal wire:model="showActionConfirmationModal" class="md:w-96">
+        <div class="space-y-4">
+            <flux:heading size="lg">{{ $confirmationTitle }}</flux:heading>
+            <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $confirmationMessage }}</p>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <flux:button wire:click="cancelActionConfirmation" variant="ghost" size="sm">
+                    Cancel
+                </flux:button>
+
+                <flux:button wire:click="confirmActionConfirmation" size="sm"
+                    class="{{ $confirmationButtonStyle === 'danger' ? '!bg-red-600 hover:!bg-red-700 !text-white' : '!bg-emerald-600 hover:!bg-emerald-700 !text-white' }}">
+                    {{ $confirmationButtonLabel }}
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

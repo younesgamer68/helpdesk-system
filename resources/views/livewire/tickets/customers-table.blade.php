@@ -61,7 +61,7 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-clip">
         <table class="w-full">
             <thead>
                 <tr class="border-b border-zinc-200 dark:border-zinc-800">

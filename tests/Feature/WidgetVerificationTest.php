@@ -3,6 +3,7 @@
 use App\Mail\TicketVerification;
 use App\Mail\TicketVerified;
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\WidgetSetting;
@@ -85,4 +86,31 @@ test('tickets created by agent have source set to agent', function () {
 
     $ticket = Ticket::where('company_id', $this->company->id)->first();
     expect($ticket->source)->toBe('agent');
+});
+
+test('widget submit updates existing customer name for matching email', function () {
+    Customer::create([
+        'company_id' => $this->company->id,
+        'name' => 'Hilary Warner',
+        'email' => 'customer@example.com',
+        'phone' => null,
+        'is_active' => true,
+    ]);
+
+    $response = $this->withHeader('Host', $this->company->slug.'.'.config('app.domain'))
+        ->postJson(route('widget.submit', ['company' => $this->company->slug, 'key' => $this->widget->widget_key]), [
+            'customer_name' => 'Bilal Newname',
+            'customer_email' => 'customer@example.com',
+            'subject' => 'Identity sync test',
+            'description' => 'Name should come from latest widget form input',
+        ]);
+
+    $response->assertSuccessful();
+
+    $updatedCustomer = Customer::where('company_id', $this->company->id)
+        ->where('email', 'customer@example.com')
+        ->first();
+
+    expect($updatedCustomer)->not->toBeNull();
+    expect($updatedCustomer->name)->toBe('Bilal Newname');
 });

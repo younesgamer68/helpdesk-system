@@ -1,34 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verification Code</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 40px 20px;">
-    <div style="max-width: 400px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 40px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div style="margin-bottom: 24px;">
-            <svg width="150" height="40" viewBox="0 0 150 40" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="40" height="40" rx="8" fill="#10b981"/>
-                <text x="20" y="26" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="white" text-anchor="middle">HD</text>
-                <text x="55" y="27" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#333">HelpDesk</text>
-            </svg>
-        </div>
-        <h1 style="color: #333; font-size: 24px; margin-bottom: 10px;">Verify your email</h1>
-        <p style="color: #666; font-size: 14px; margin-bottom: 30px;">
-            Enter this code to verify your email address
-        </p>
-        
-        <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #333;">{{ $code }}</span>
-        </div>
-        
-        <p style="color: #999; font-size: 12px; margin-bottom: 0;">
-            This code expires in 1 minute.
-        </p>
-        <p style="color: #999; font-size: 12px;">
-            If you didn't request this code, you can safely ignore this email.
-        </p>
-    </div>
+
+<body
+    style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" style="max-width: 520px; width: 100%;">
+                    <tr>
+                        <td
+                            style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                            <div style="height: 3px; background: #10b981;"></div>
+                            <div style="padding: 32px;">
+                                <!-- Logo -->
+                                <div style="text-align: center; margin-bottom: 28px;">
+                                    <img src="{{ asset('images/logolm.png') }}" alt="Helpdesk"
+                                        style="height: 34px; width: auto; display: inline-block; vertical-align: middle;">
+                                    <p
+                                        style="margin: 8px 0 0 0; font-size: 12px; line-height: 1.4; color: #71717a; font-weight: 600; letter-spacing: 0.02em;">
+                                        Secured by Helpdesk</p>
+                                </div>
+
+                                <!-- Heading -->
+                                <h1
+                                    style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #18181b; text-align: center;">
+                                    Verify your email</h1>
+                                <p style="margin: 0 0 28px 0; font-size: 14px; color: #a1a1aa; text-align: center;">
+                                    Enter this code to verify your email address</p>
+
+                                <!-- Code Box -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                                    style="margin-bottom: 28px;">
+                                    <tr>
+                                        <td align="center">
+                                            <table role="presentation" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td
+                                                        style="background: #fafafa; border-radius: 8px; padding: 20px 32px; text-align: center;">
+                                                        <span
+                                                            style="font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #18181b; font-family: monospace;">{{ $code }}</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <p style="margin: 0 0 6px 0; font-size: 12px; color: #a1a1aa; text-align: center;">This
+                                    code expires in 1 minute.</p>
+                                <p style="margin: 0; font-size: 12px; color: #a1a1aa; text-align: center;">If you didn't
+                                    request this code, you can safely ignore this email.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 24px 0; text-align: center;">
+                            <p style="margin: 0; font-size: 12px; color: #a1a1aa;">This is an automated security message
+                                from HelpDesk.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
+
 </html>

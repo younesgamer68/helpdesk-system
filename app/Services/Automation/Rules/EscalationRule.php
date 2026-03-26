@@ -5,6 +5,7 @@ namespace App\Services\Automation\Rules;
 use App\Mail\EscalationNotificationMail;
 use App\Models\AutomationRule;
 use App\Models\Ticket;
+use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
@@ -46,7 +47,7 @@ class EscalationRule implements RuleInterface
 
         // Check category condition
         if (! empty($conditions['category_id'])) {
-            if ($ticket->category_id !== (int) $conditions['category_id']) {
+            if (! $this->matchesCategoryCondition($ticket, (int) $conditions['category_id'])) {
                 return false;
             }
         }
@@ -111,7 +112,12 @@ class EscalationRule implements RuleInterface
             ->where('updated_at', '<', now()->subHours($idleHours));
 
         if (! empty($conditions['category_id'])) {
-            $query->where('category_id', $conditions['category_id']);
+            $conditionCategoryId = (int) $conditions['category_id'];
+            $subcategoryIds = TicketCategory::where('parent_id', $conditionCategoryId)->pluck('id');
+            $query->where(function ($q) use ($conditionCategoryId, $subcategoryIds) {
+                $q->where('category_id', $conditionCategoryId)
+                    ->orWhereIn('category_id', $subcategoryIds);
+            });
         }
 
         return $query->get();
@@ -157,5 +163,14 @@ class EscalationRule implements RuleInterface
                 app(\App\Services\TicketAssignmentService::class)->reassignTicket($ticket, $newOperator);
             }
         }
+    }
+
+    protected function matchesCategoryCondition(Ticket $ticket, int $conditionCategoryId): bool
+    {
+        if ($ticket->category_id === $conditionCategoryId) {
+            return true;
+        }
+
+        return $ticket->category?->parent_id === $conditionCategoryId;
     }
 }

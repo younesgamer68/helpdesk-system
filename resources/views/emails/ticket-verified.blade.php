@@ -1,59 +1,157 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-    
-    <!-- Header -->
-    <div style="background-color: #ffffff; color: #333333; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
-        <div style="margin-bottom: 16px;">
-            <img src="https://iili.io/q8QZWzJ.png" alt="HelpDesk" style="height: 80px; width: auto;">
-        </div>
-        <h1 style="margin: 0; font-size: 24px;">✓ Ticket Verified Successfully!</h1>
-        <div style="display: inline-block; background: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-top: 15px;">Verified</div>
-    </div>
 
-    <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
-        <p>Hello <strong>{{ $ticket->customer_name }}</strong>,</p>
+<body
+    style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" style="max-width: 520px; width: 100%;">
+                    <tr>
+                        <td
+                            style="background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                            <div style="height: 3px; background: #10b981;"></div>
+                            <div style="padding: 32px;">
+                                <!-- Logo -->
+                                <div style="text-align: center; margin-bottom: 28px;">
+                                    <img src="{{ asset('images/logolm.png') }}" alt="Helpdesk"
+                                        style="height: 34px; width: auto; display: inline-block; vertical-align: middle;">
+                                    <p
+                                        style="margin: 8px 0 0 0; font-size: 12px; line-height: 1.4; color: #71717a; font-weight: 600; letter-spacing: 0.02em;">
+                                        Secured by Helpdesk</p>
+                                </div>
 
-        <p>Great news! Your support ticket has been verified and is now in our queue. Our team will review it and respond as soon as possible.</p>
+                                <!-- Heading -->
+                                <h1
+                                    style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #18181b; text-align: center;">
+                                    Ticket Verified Successfully</h1>
+                                <p style="margin: 0 0 24px 0; font-size: 14px; color: #a1a1aa; text-align: center;">Your
+                                    ticket is now in our queue</p>
 
-        <!-- Ticket Info -->
-        <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e7eb; border-left: 4px solid #10b981;">
-            <p style="margin: 0 0 10px 0;"><strong>Ticket Number:</strong> <span style="font-family: monospace; color: #10b981;">{{ $ticket->ticket_number }}</span></p>
-            <p style="margin: 0 0 10px 0;"><strong>Subject:</strong> {{ $ticket->subject }}</p>
-            <p style="margin: 0 0 10px 0;"><strong>Status:</strong> <span style="text-transform: capitalize;">{{ str_replace('_', ' ', $ticket->status) }}</span></p>
-            <p style="margin: 0;"><strong>Priority:</strong> <span style="text-transform: capitalize;">{{ $ticket->priority }}</span></p>
-        </div>
+                                <!-- Body -->
+                                <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6; color: #52525b;">Hello
+                                    <strong style="color: #18181b;">{{ $ticket->customer_name }}</strong>,
+                                </p>
+                                <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6; color: #52525b;">Great
+                                    news! Your support ticket has been verified and is now in our queue. Our team will
+                                    review it and respond as soon as possible.</p>
 
-        <div style="text-align: center;">
-            <a href="{{ route('widget.track', ['company' => $ticket->company, 'ticketNumber' => $ticket->ticket_number, 'token' => $trackingToken]) }}" 
-               style="display: inline-block; padding: 14px 28px; background: #10b981; background-color: #10b981; color: white !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0;">
-                Track Your Ticket
-            </a>
-        </div>
+                                <!-- Ticket Info -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                                    style="margin-bottom: 24px;">
+                                    <tr>
+                                        <td
+                                            style="background: #fafafa; border-radius: 8px; border-left: 3px solid #10b981; padding: 16px;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                                                <tr>
+                                                    <td
+                                                        style="padding: 4px 0; font-size: 14px; color: #a1a1aa; width: 120px;">
+                                                        Ticket Number</td>
+                                                    <td
+                                                        style="padding: 4px 0; font-size: 14px; font-weight: 600; color: #18181b; font-family: monospace;">
+                                                        {{ $ticket->ticket_number }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 4px 0; font-size: 14px; color: #a1a1aa;">Subject
+                                                    </td>
+                                                    <td
+                                                        style="padding: 4px 0; font-size: 14px; font-weight: 600; color: #18181b;">
+                                                        {{ $ticket->subject }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 4px 0; font-size: 14px; color: #a1a1aa;">Status
+                                                    </td>
+                                                    <td
+                                                        style="padding: 4px 0; font-size: 14px; font-weight: 600; color: #18181b; text-transform: capitalize;">
+                                                        {{ str_replace('_', ' ', $ticket->status) }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 4px 0; font-size: 14px; color: #a1a1aa;">
+                                                        Priority</td>
+                                                    <td
+                                                        style="padding: 4px 0; font-size: 14px; font-weight: 600; color: #18181b; text-transform: capitalize;">
+                                                        {{ $ticket->priority }}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
 
-        <div style="background: #dbeafe; border: 1px solid #3b82f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0 0 10px 0; color: #1e40af;"><strong>📌 What happens next?</strong></p>
-            <ul style="margin: 0; padding-left: 20px; color: #1e40af;">
-                <li>Our support team will review your ticket</li>
-                <li>You'll receive updates via email</li>
-                <li>You can reply directly through the tracking link</li>
-                <li>All conversation history is saved in one place</li>
-            </ul>
-        </div>
+                                <!-- CTA Button -->
+                                <div style="text-align: center; margin-bottom: 24px;">
+                                    <a href="{{ route('widget.track', ['company' => $ticket->company, 'ticketNumber' => $ticket->ticket_number, 'token' => $trackingToken]) }}"
+                                        style="display: inline-block; padding: 12px 28px; background-color: #059669; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600;">Track
+                                        Your Ticket</a>
+                                </div>
 
-        <p><strong>Important:</strong> Save the tracking link above to view your ticket status and communicate with our team. You can also bookmark it for easy access.</p>
-        
-        <p>If you have any questions, simply reply through your tracking page and our team will get back to you.</p>
-    </div>
+                                <!-- What happens next -->
+                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%"
+                                    style="margin-bottom: 20px;">
+                                    <tr>
+                                        <td style="background: #fafafa; border-radius: 8px; padding: 16px;">
+                                            <p
+                                                style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600; color: #18181b;">
+                                                What happens next?</p>
+                                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                                                <tr>
+                                                    <td
+                                                        style="padding: 3px 0; font-size: 13px; color: #52525b; vertical-align: top; width: 16px;">
+                                                        &#8226;</td>
+                                                    <td style="padding: 3px 0; font-size: 13px; color: #52525b;">Our
+                                                        support team will review your ticket</td>
+                                                </tr>
+                                                <tr>
+                                                    <td
+                                                        style="padding: 3px 0; font-size: 13px; color: #52525b; vertical-align: top;">
+                                                        &#8226;</td>
+                                                    <td style="padding: 3px 0; font-size: 13px; color: #52525b;">You'll
+                                                        receive updates via email</td>
+                                                </tr>
+                                                <tr>
+                                                    <td
+                                                        style="padding: 3px 0; font-size: 13px; color: #52525b; vertical-align: top;">
+                                                        &#8226;</td>
+                                                    <td style="padding: 3px 0; font-size: 13px; color: #52525b;">You can
+                                                        reply directly through the tracking link</td>
+                                                </tr>
+                                                <tr>
+                                                    <td
+                                                        style="padding: 3px 0; font-size: 13px; color: #52525b; vertical-align: top;">
+                                                        &#8226;</td>
+                                                    <td style="padding: 3px 0; font-size: 13px; color: #52525b;">All
+                                                        conversation history is saved in one place</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
 
-    <div style="text-align: center; color: #6b7280; font-size: 14px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-        <p>This is an automated message, please do not reply to this email.</p>
-        <p>Use your tracking link above to communicate with our support team.</p>
-        <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
-    </div>
+                                <p style="margin: 0 0 8px 0; font-size: 13px; line-height: 1.5; color: #52525b;"><strong
+                                        style="color: #18181b;">Important:</strong> Save the tracking link above to view
+                                    your ticket status and communicate with our team.</p>
+                                <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #a1a1aa;">If you have any
+                                    questions, simply reply through your tracking page and our team will get back to
+                                    you.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 24px 0; text-align: center;">
+                            <p style="margin: 0 0 4px 0; font-size: 12px; color: #a1a1aa;">This is an automated message.
+                                Use your tracking link to communicate with our support team.</p>
+                            <p style="margin: 0; font-size: 12px; color: #a1a1aa;">&copy; {{ date('Y') }}
+                                {{ config('app.name') }}. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
+
 </html>

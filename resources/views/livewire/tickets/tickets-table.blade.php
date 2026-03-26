@@ -308,7 +308,7 @@
     @endif
 
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-clip">
         <table class="w-full">
             <thead>
                 <tr class="border-b border-zinc-100 dark:border-zinc-800">
@@ -338,9 +338,9 @@
                 @forelse ($this->tickets as $ticket)
                     @php
                         $priorityBorder = match ($ticket->priority) {
-                            'urgent' => 'border-l-red-500',
-                            'high' => 'border-l-orange-400',
-                            'medium' => 'border-l-blue-400',
+                            'urgent' => 'border-l-red-500 dark:border-l-red-500',
+                            'high' => 'border-l-orange-400 dark:border-l-orange-400',
+                            'medium' => 'border-l-blue-400 dark:border-l-blue-400',
                             'low' => 'border-l-zinc-300 dark:border-l-zinc-600',
                             default => 'border-l-zinc-300 dark:border-l-zinc-600',
                         };
@@ -360,7 +360,7 @@
                                 => 'border-zinc-300 bg-zinc-50 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300',
                         };
                     @endphp
-                    <tr class="cursor-pointer border-b border-l-3 border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900 {{ $priorityBorder }} {{ in_array($ticket->id, $selectedTickets) ? 'bg-teal-500/5' : '' }}"
+                    <tr class="cursor-pointer border-b border-l-3 border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-b-zinc-800 dark:hover:bg-zinc-900 {{ $priorityBorder }} {{ in_array($ticket->id, $selectedTickets) ? 'bg-teal-500/5' : '' }}"
                         wire:key="{{ $ticket->id }}"
                         onclick="Livewire.navigate('{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $ticket]) }}')">
                         @if (Auth::user()->isAdmin())
@@ -744,7 +744,8 @@
                     <flux:button wire:click="cancelDiscard" variant="ghost" class="flex-1">
                         Keep editing
                     </flux:button>
-                    <flux:button wire:click="confirmDiscard" variant="primary" class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
+                    <flux:button wire:click="confirmDiscard" variant="primary"
+                        class="flex-1 !bg-emerald-500 hover:!bg-emerald-600">
                         Discard
                     </flux:button>
                 </div>

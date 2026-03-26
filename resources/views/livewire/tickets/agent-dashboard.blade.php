@@ -365,6 +365,7 @@
 
             <div class="divide-y divide-zinc-200 dark:divide-zinc-800">
                 @foreach ($this->unreadMentions as $mention)
+                    @continue(!$mention->ticket || !$mention->mentionedByUser)
                     <a href="{{ route('details', ['company' => Auth::user()->company->slug, 'ticket' => $mention->ticket->ticket_number]) }}"
                         wire:navigate wire:click="markMentionRead({{ $mention->id }})"
                         class="animate-enter flex items-center justify-between gap-4 px-5 py-3.5 border-l-4 border-amber-400 hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-colors"

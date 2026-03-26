@@ -74,14 +74,27 @@ class CheckSlaBreaches extends Command
                 'due_time' => $ticket->due_time,
             ]);
 
-            $this->notifySlaBreachRecipients($ticket, $adminUsersByCompany);
+            // Notify assigned operator of the breach
+            if ($ticket->assignedTo) {
+                $ticket->assignedTo->notify(new SlaBreached($ticket));
+            }
 
+            // Let automation rules handle admin notifications to avoid duplicates
             if (! array_key_exists($ticket->company_id, $rulesByCompany)) {
                 $rulesByCompany[$ticket->company_id] = $automationEngine->getRulesOfType($ticket->company_id, AutomationRule::TYPE_SLA_BREACH);
             }
 
+            $ruleNotifiedAdmins = false;
             foreach ($rulesByCompany[$ticket->company_id] as $rule) {
                 $automationEngine->executeRule($rule, $ticket);
+                if (! empty($rule->actions['notify_admin'])) {
+                    $ruleNotifiedAdmins = true;
+                }
+            }
+
+            // Fallback: notify admins if no automation rule handled it
+            if (! $ruleNotifiedAdmins) {
+                $this->notifyAdminsOfBreach($ticket, $adminUsersByCompany);
             }
         }
 
@@ -111,12 +124,8 @@ class CheckSlaBreaches extends Command
         return $remainingSeconds <= $atRiskThreshold ? 'at_risk' : 'on_time';
     }
 
-    protected function notifySlaBreachRecipients(Ticket $ticket, array &$adminUsersByCompany): void
+    protected function notifyAdminsOfBreach(Ticket $ticket, array &$adminUsersByCompany): void
     {
-        if ($ticket->assignedTo) {
-            $ticket->assignedTo->notify(new SlaBreached($ticket));
-        }
-
         if (! array_key_exists($ticket->company_id, $adminUsersByCompany)) {
             $adminUsersByCompany[$ticket->company_id] = User::withoutGlobalScope(\App\Scopes\CompanyScope::class)
                 ->where('company_id', $ticket->company_id)

@@ -5,7 +5,7 @@
         <h2 class="mt-6 text-3xl font-extrabold text-gray-900 border-none">Welcome back</h2>
         <p class="mt-2 text-sm text-gray-600">
             Don't have an account? 
-            <a href="{{ route('register') }}" class="font-medium text-green-600 hover:text-green-500 transition-colors">Start your 14-day free trial</a>
+            <a href="{{ route('register') }}" class="font-medium text-green-600 hover:text-green-500 transition-colors underline">Create your account</a>
         </p>
     </div>
 
@@ -80,13 +80,7 @@
             @enderror
         </div>
 
-        <!-- Remember Me -->
-        <div class="flex items-center">
-            <input id="remember_me" name="remember" type="checkbox" required class="h-4 w-4 text-green-500 focus:ring-green-500 border-gray-300 rounded cursor-pointer accent-green-500">
-            <label for="remember_me" class="ml-2 block text-sm text-gray-600 cursor-pointer">
-                Remember me
-            </label>
-        </div>
+ 
 
         <!-- Submit Button -->
         <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">

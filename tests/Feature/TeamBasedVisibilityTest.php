@@ -12,7 +12,7 @@ use Livewire\Livewire;
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 // Helper to create a ticket without observer auto-assignment
-function createTicketQuietly(array $attributes): Ticket
+function createTicketWithoutEvents(array $attributes): Ticket
 {
     return Ticket::withoutEvents(fn () => Ticket::factory()->create($attributes));
 }
@@ -23,7 +23,7 @@ test('isAssignee returns true for the assigned operator', function () {
     $company = Company::factory()->create();
     $category = TicketCategory::factory()->create(['company_id' => $company->id]);
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'assigned_to' => $operator->id,
@@ -45,7 +45,7 @@ test('isTeammate returns true for operator in same team but not assigned', funct
     $teammate = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $teammate->teams()->attach($team);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'assigned_to' => $assignee->id,
@@ -68,7 +68,7 @@ test('isOutsider returns true for operator not in ticket team', function () {
     $outsider = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $outsider->teams()->attach($otherTeam);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
@@ -87,7 +87,7 @@ test('admin is never flagged as assignee teammate or outsider', function () {
     $team = Team::factory()->create(['company_id' => $company->id]);
     $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
@@ -110,7 +110,7 @@ test('outsider operator is redirected from ticket details', function () {
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     // operator has no teams
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
@@ -132,14 +132,14 @@ test('team view shows tickets from operator teams', function () {
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $operator->teams()->attach($team);
 
-    $teamTicket = createTicketQuietly([
+    $teamTicket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
         'verified' => true,
     ]);
 
-    $otherTicket = createTicketQuietly([
+    $otherTicket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => null,
@@ -177,7 +177,7 @@ test('operator can take unassigned ticket from their team', function () {
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $operator->teams()->attach($team);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
@@ -206,7 +206,7 @@ test('operator cannot take ticket from different team', function () {
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $operator->teams()->attach($otherTeam);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
@@ -230,7 +230,7 @@ test('takeTicket creates a ticket log entry', function () {
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $operator->teams()->attach($team);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'team_id' => $team->id,
@@ -260,7 +260,7 @@ test('teammate sees read-only sidebar without action buttons', function () {
     $teammate = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
     $teammate->teams()->attach($team);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'assigned_to' => $assignee->id,
@@ -280,7 +280,7 @@ test('assignee can see priority and status dropdowns', function () {
     $category = TicketCategory::factory()->create(['company_id' => $company->id]);
     $operator = User::factory()->create(['company_id' => $company->id, 'role' => 'operator']);
 
-    $ticket = createTicketQuietly([
+    $ticket = createTicketWithoutEvents([
         'company_id' => $company->id,
         'category_id' => $category->id,
         'assigned_to' => $operator->id,

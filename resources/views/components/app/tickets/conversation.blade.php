@@ -9,9 +9,10 @@
     'kbResults' => collect(),
     'aiSuggestionsEnabled' => false,
     'isTeammate' => false,
+    'isCustomerTyping' => false,
 ])
 
-<div class="flex flex-col flex-1 min-h-0">
+<div class="flex flex-col flex-1 min-h-0" wire:poll.5s>
     {{-- Scrollable messages --}}
     <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5 bg-zinc-50/40 dark:bg-zinc-950/40">
         {{-- Initial ticket description as first message --}}
@@ -56,6 +57,32 @@
                 </div>
             @endif
         @endforelse
+
+        @if ($isCustomerTyping)
+            <div class="flex gap-3">
+                <div
+                    class="shrink-0 w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                    {{ strtoupper(substr($ticket->customer->name ?? ($ticket->customer_name ?? '?'), 0, 1)) }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-baseline gap-2 mb-1.5">
+                        <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                            {{ $ticket->customer->name ?? $ticket->customer_name }}
+                        </span>
+                        <span class="text-xs text-zinc-400 dark:text-zinc-500">Customer is typing</span>
+                    </div>
+                    <div
+                        class="inline-flex items-center gap-1 rounded-xl border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2">
+                        <span class="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce"
+                            style="animation-delay:0ms"></span>
+                        <span class="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce"
+                            style="animation-delay:120ms"></span>
+                        <span class="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce"
+                            style="animation-delay:240ms"></span>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- Reply / note area --}}
@@ -69,14 +96,14 @@
                         <textarea wire:model="internalNote" rows="3"
                             placeholder="Add an internal note for {{ $ticket->assignedTo?->name ?? 'the assignee' }}..." required
                             class="w-full bg-white dark:bg-zinc-800 border border-amber-200 dark:border-amber-700/50 rounded-lg px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 resize-none disabled:opacity-50"
-                            wire:loading.attr="disabled"></textarea>
+                            wire:loading.attr="disabled" wire:target="addInternalNote"></textarea>
                         <div class="flex items-center justify-between mt-2">
                             <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                                 <flux:icon.lock-closed class="w-3 h-3" />
                                 Only visible to your team
                             </p>
                             <flux:button type="submit" variant="primary" size="sm" icon="plus"
-                                wire:loading.attr="disabled">
+                                wire:loading.attr="disabled" wire:target="addInternalNote">
                                 <span wire:loading.remove wire:target="addInternalNote">Add Note</span>
                                 <span wire:loading wire:target="addInternalNote">Adding...</span>
                             </flux:button>

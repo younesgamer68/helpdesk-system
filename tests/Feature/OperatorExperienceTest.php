@@ -10,6 +10,8 @@ use App\Models\Company;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
+use App\Models\TicketMention;
+use App\Models\TicketReply;
 use App\Models\User;
 use App\Notifications\TeamAssigned;
 use Illuminate\Support\Facades\Notification;
@@ -308,6 +310,57 @@ test('operator can access my team settings route', function () {
 
     $this->actingAs($operator)
         ->get(route('settings.my-team', $company->slug))
+        ->assertOk();
+});
+
+test('my teams page highlights my teams without activating settings', function () {
+    [$operator, $admin, $company] = operatorSetup();
+
+    $response = $this->actingAs($operator)
+        ->get(route('settings.my-team', $company->slug))
+        ->assertOk();
+
+    $content = $response->getContent();
+
+    expect($content)->toContain(route('settings.my-team', $company->slug));
+    expect($content)->toContain('My Teams');
+    expect($content)->toContain('bg-zinc-800 text-white');
+    expect($content)->toContain(route('settings.security', $company->slug));
+    expect($content)->toContain('text-zinc-400 hover:bg-zinc-900 hover:text-white');
+});
+
+test('operator dashboard route renders even when a mentioned ticket is soft deleted', function () {
+    [$operator, $admin, $company] = operatorSetup();
+    $category = TicketCategory::factory()->create(['company_id' => $company->id]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $company->id,
+        'category_id' => $category->id,
+        'verified' => true,
+        'assigned_to' => $operator->id,
+        'status' => 'open',
+    ]);
+
+    $reply = TicketReply::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => $admin->id,
+        'customer_name' => '',
+        'message' => 'Ping @'.$operator->name,
+        'is_internal' => false,
+    ]);
+
+    TicketMention::create([
+        'company_id' => $company->id,
+        'ticket_id' => $ticket->id,
+        'ticket_reply_id' => $reply->id,
+        'mentioned_user_id' => $operator->id,
+        'mentioned_by_user_id' => $admin->id,
+    ]);
+
+    $ticket->delete();
+
+    $this->actingAs($operator)
+        ->get(route('agent.dashboard', $company->slug))
         ->assertOk();
 });
 

@@ -103,8 +103,7 @@ class AutomationRule extends Model
      */
     public function recordExecution(): void
     {
-        $this->increment('executions_count');
-        $this->update(['last_executed_at' => now()]);
+        $this->increment('executions_count', 1, ['last_executed_at' => now()]);
     }
 
     /**

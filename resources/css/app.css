@@ -103,13 +103,14 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
- .ProseMirror {
-     color: var(--color-zinc-900);
- }
+.ProseMirror {
+    color: var(--color-zinc-900);
+}
 
- .dark .ProseMirror {
-     color: var(--color-zinc-100);
- }
+.dark .ProseMirror {
+    color: var(--color-zinc-900);
+}
+
 .ProseMirror img {
     cursor: pointer;
     border-radius: 4px;

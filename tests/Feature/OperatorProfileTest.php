@@ -75,7 +75,7 @@ test('removing operator reassigns tickets to unassigned', function () {
         ->assertDispatched('show-toast');
 
     expect($ticket->fresh()->assigned_to)->toBeNull();
-    $this->assertSoftDeleted('users', ['id' => $operator->id]);
+    $this->assertDatabaseMissing('users', ['id' => $operator->id]);
 });
 
 test('operator availability can be toggled', function () {

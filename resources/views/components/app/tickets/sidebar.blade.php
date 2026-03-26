@@ -205,7 +205,7 @@
                         <flux:icon.user-plus class="w-4 h-4 shrink-0" />
                         {{ $ticket->assignedTo ? 'Reassign' : 'Assign' }}
                     </x-slot:title>
-                    <button type="button" wire:click="assign(null)" wire:confirm="Unassign this ticket?"
+                    <button type="button" wire:click="promptActionConfirmation('unassign')"
                         class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg">
                         <span class="flex items-center gap-2">
                             <span
@@ -249,8 +249,8 @@
                         Change Priority
                     </x-slot:title>
                     @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
-                        <button type="button" wire:click="changePriority('{{ $priority }}')"
-                            wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
+                        <button type="button" wire:click="promptActionConfirmation('priority', '{{ $priority }}')"
+                            @click="open = false"
                             class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                             {{ ucfirst($priority) }}
                         </button>
@@ -263,8 +263,8 @@
                         Change Status
                     </x-slot:title>
                     @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
-                        <button type="button" wire:click="changeStatus('{{ $status }}')"
-                            wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?" @click="open = false"
+                        <button type="button" wire:click="promptActionConfirmation('status', '{{ $status }}')"
+                            @click="open = false"
                             class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                             {{ str_replace('_', ' ', ucfirst($status)) }}
                         </button>
@@ -279,8 +279,8 @@
                         Change Priority
                     </x-slot:title>
                     @foreach (['low', 'medium', 'high', 'urgent'] as $priority)
-                        <button type="button" wire:click="changePriority('{{ $priority }}')"
-                            wire:confirm="Change priority to {{ $priority }}?" @click="open = false"
+                        <button type="button" wire:click="promptActionConfirmation('priority', '{{ $priority }}')"
+                            @click="open = false"
                             class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                             {{ ucfirst($priority) }}
                         </button>
@@ -293,8 +293,7 @@
                         Change Status
                     </x-slot:title>
                     @foreach (['pending', 'open', 'in_progress', 'resolved', 'closed'] as $status)
-                        <button type="button" wire:click="changeStatus('{{ $status }}')"
-                            wire:confirm="Change status to {{ str_replace('_', ' ', $status) }}?"
+                        <button type="button" wire:click="promptActionConfirmation('status', '{{ $status }}')"
                             @click="open = false"
                             class="w-full px-4 py-2 text-left text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition first:rounded-t-lg last:rounded-b-lg">
                             {{ str_replace('_', ' ', ucfirst($status)) }}
@@ -305,8 +304,7 @@
 
 
             @if (Auth::user()->isAdmin())
-                <button type="button" wire:click="closeTicket"
-                    wire:confirm="Are you sure you want to close this ticket?"
+                <button type="button" wire:click="promptActionConfirmation('close')"
                     class="w-full px-4 py-2 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg transition text-sm font-medium flex items-center justify-center gap-2 border border-red-200 dark:border-red-800/50">
                     <flux:icon.x-mark class="w-4 h-4 shrink-0" />
                     Close ticket

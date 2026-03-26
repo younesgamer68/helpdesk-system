@@ -46,7 +46,7 @@ it('allows a pending user to set their password and active their account', funct
         ->set('password', 'Secretpass123!')
         ->set('password_confirmation', 'Secretpass123!')
         ->call('save')
-        ->assertRedirect(route('tickets', ['company' => $company->slug]));
+        ->assertRedirect(route('agent.dashboard', ['company' => $company->slug]));
 
     $user->refresh();
 
@@ -81,7 +81,7 @@ it('keeps operator specialties empty when no category is selected', function () 
         ->set('password_confirmation', 'Secretpass123!')
         ->set('selectedSpecialties', [])
         ->call('save')
-        ->assertRedirect(route('tickets', ['company' => $company->slug]));
+        ->assertRedirect(route('agent.dashboard', ['company' => $company->slug]));
 
     $operator->refresh();
 
@@ -109,7 +109,7 @@ it('saves multiple operator specialties and sets primary specialty to the first 
         ->set('password_confirmation', 'Secretpass123!')
         ->set('selectedSpecialties', [$categoryB->id, $categoryA->id])
         ->call('save')
-        ->assertRedirect(route('tickets', ['company' => $company->slug]));
+        ->assertRedirect(route('agent.dashboard', ['company' => $company->slug]));
 
     $operator->refresh();
     $attachedCategoryIds = $operator->categories()->pluck('ticket_categories.id')->all();

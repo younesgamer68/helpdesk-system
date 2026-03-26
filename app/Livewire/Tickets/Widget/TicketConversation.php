@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Tickets\Widget;
 
+use App\Mail\TicketVerified;
 use App\Models\SlaPolicy;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Notifications\ClientReplied;
 use App\Scopes\CompanyScope;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
@@ -99,6 +102,11 @@ class TicketConversation extends Component
         $this->confirmLinkedTicket = false;
     }
 
+    public function markTyping(): void
+    {
+        $this->setTypingState('customer', true);
+    }
+
     private function createReply(): void
     {
         $attachmentPaths = $this->storeAttachments();
@@ -119,6 +127,7 @@ class TicketConversation extends Component
         }
 
         $this->reset(['message', 'attachments']);
+        $this->setTypingState('customer', false);
         $this->dispatch('resetEditor');
 
         session()->flash('success', 'Your reply has been submitted!');
@@ -163,8 +172,13 @@ class TicketConversation extends Component
             $linkedTicket->assignedTo->notify(new ClientReplied($linkedTicket));
         }
 
+        if ($linkedTicket->customer_email) {
+            Mail::to($linkedTicket->customer_email)->send(new TicketVerified($linkedTicket, $linkedTicket->tracking_token));
+        }
+
         $this->confirmLinkedTicket = false;
         $this->reset(['message', 'attachments']);
+        $this->setTypingState('customer', false);
         $this->dispatch('resetEditor');
 
         session()->flash('success', 'A new follow-up ticket (#'.$linkedTicket->ticket_number.') has been created!');
@@ -195,6 +209,36 @@ class TicketConversation extends Component
         array_splice($this->attachments, $index, 1);
     }
 
+    private function typingCacheKey(string $actor): string
+    {
+        return 'ticket:typing:'.$actor.':'.$this->ticket->id;
+    }
+
+    private function setTypingState(string $actor, bool $isTyping): void
+    {
+        $key = $this->typingCacheKey($actor);
+
+        if ($isTyping) {
+            Cache::put($key, true, now()->addSeconds(6));
+
+            return;
+        }
+
+        Cache::forget($key);
+    }
+
+    private function isActorTyping(string $actor): bool
+    {
+        return (bool) Cache::get($this->typingCacheKey($actor), false);
+    }
+
+    private function getAgentTypingName(): ?string
+    {
+        $value = Cache::get($this->typingCacheKey('agent'));
+
+        return is_string($value) ? $value : ($value ? 'Support team' : null);
+    }
+
     public function render(): \Illuminate\View\View
     {
         return view('livewire.tickets.widget.ticket-conversation', [
@@ -203,6 +247,7 @@ class TicketConversation extends Component
                 ->with('user:id,name')
                 ->orderBy('created_at', 'asc')
                 ->get(),
+            'supportTypingName' => $this->getAgentTypingName(),
         ]);
     }
 }

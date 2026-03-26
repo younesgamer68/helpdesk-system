@@ -198,7 +198,7 @@ class OperatorsTable extends Component
         if (! $isStatusPending) {
             $user->assignedTickets()->update(['assigned_to' => null]);
             $this->dispatch('show-toast', message: 'Team member removed and tickets unassigned.', type: 'success');
-            $user->delete();
+            $user->forceDelete();
         } else {
             $user->forceDelete();
             $this->dispatch('show-toast', message: 'Invitation revoked successfully.', type: 'success');
@@ -281,7 +281,9 @@ class OperatorsTable extends Component
             if ($user->isActive() && $user->id !== Auth::id()) {
                 // Reassign tickets to null
                 $user->assignedTickets()->update(['assigned_to' => null]);
-                $user->delete();
+
+                $user->forceDelete();
+
                 $count++;
             }
         }

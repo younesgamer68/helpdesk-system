@@ -12,6 +12,14 @@ class LoginResponse implements LoginResponseContract
         $user = Auth::user();
 
         if ($user && $user->company) {
+            if ($user->isAdmin()) {
+                return redirect()->route('agent.dashboard', ['company' => $user->company->slug]);
+            }
+
+            if ($user->isOperator()) {
+                return redirect()->route('agent.dashboard', ['company' => $user->company->slug]);
+            }
+
             return redirect()->route('dashboard', ['company' => $user->company->slug]);
         }
 

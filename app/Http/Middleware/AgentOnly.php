@@ -15,7 +15,7 @@ class AgentOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! in_array($request->user()->role, ['agent', 'operator'])) {
+        if (! in_array($request->user()->role, ['agent', 'operator', 'admin'])) {
             return redirect()->route('tickets', $request->user()->company->slug);
         }
 

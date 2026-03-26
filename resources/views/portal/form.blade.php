@@ -226,9 +226,12 @@
 
                     <div class="mt-6">
                         <p
-                            class="text-center text-xs {{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }}">
-                            Secured by <span
-                                class="font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-600' }}">{{ $widget->company->name }}</span>
+                            class="text-center text-xs flex items-center justify-center gap-1.5 {{ $widget->theme_mode === 'dark' ? 'text-zinc-500' : 'text-gray-400' }}">
+                            Secured by
+                            <img src="{{ asset('images/' . ($widget->theme_mode === 'dark' ? 'logodm.png' : 'logolm.png')) }}"
+                                alt="Helpdesk" class="inline-block h-4 w-4">
+                            <span
+                                class="font-medium {{ $widget->theme_mode === 'dark' ? 'text-zinc-300' : 'text-gray-600' }}">Helpdesk</span>
                         </p>
                     </div>
                 </div>

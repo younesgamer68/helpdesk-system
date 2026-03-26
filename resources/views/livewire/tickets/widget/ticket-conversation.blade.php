@@ -1,105 +1,122 @@
-<div>
-    <div class="space-y-6">
+<div class="flex flex-col flex-1 min-h-0" wire:poll.5s>
+    {{-- Scrollable messages --}}
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5 bg-zinc-50/40 dark:bg-zinc-950/40">
+
         {{-- Original Ticket (First Message) --}}
-        <div class="flex gap-4">
-            <div class="flex-shrink-0">
+        @if ($ticket->description)
+            <div class="flex gap-3">
                 <div
-                    class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                    {{ substr($ticket->customer_name, 0, 1) }}
+                    class="shrink-0 w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                    {{ strtoupper(substr($ticket->customer_name, 0, 1)) }}
                 </div>
-            </div>
-            <div class="flex-1">
-                <div class="bg-gray-50 border border-gray-100 rounded-lg p-4">
-                    <div class="flex items-start justify-between mb-2">
-                        <div>
-                            <div class="font-semibold text-gray-900">{{ $ticket->customer_name }}</div>
-                            <div class="text-xs text-gray-500">
-                                {{ $ticket->created_at->format('M d, Y g:i A') }}</div>
-                        </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-baseline gap-2 mb-1.5">
                         <span
-                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                            You
-                        </span>
+                            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ $ticket->customer_name }}</span>
+                        <span class="text-xs text-blue-600 dark:text-blue-400">You</span>
+                        <span
+                            class="ml-auto text-xs text-zinc-400 dark:text-zinc-500">{{ $ticket->created_at->format('M d, g:i A') }}</span>
                     </div>
-                    <div class="text-gray-700 whitespace-pre-wrap">{{ $ticket->description }}</div>
+                    <div
+                        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-5 py-4">
+                        <div
+                            class="prose prose-sm prose-zinc dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300">
+                            {!! \Mews\Purifier\Facades\Purifier::clean($ticket->description) !!}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
 
         {{-- Replies --}}
         @foreach ($replies as $reply)
-            <div class="flex gap-4">
-                <div class="flex-shrink-0">
-                    @if ($reply->user_id || $reply->is_technician)
-                        {{-- Staff Reply (Either an actual user or a disguised technician) --}}
-                        <div
-                            class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-semibold">
-                            {{ $reply->is_technician ? 'T' : substr($reply->user->name, 0, 1) }}
-                        </div>
-                    @else
-                        {{-- Customer Reply --}}
-                        <div
-                            class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                            {{ substr($reply->customer_name, 0, 1) }}
-                        </div>
-                    @endif
-                </div>
-                <div class="flex-1">
-                    <div class="bg-gray-50 border border-gray-100 rounded-lg p-4">
-                        <div class="flex items-start justify-between mb-2">
-                            <div>
-                                <div class="font-semibold text-gray-900">
-                                    @if ($reply->is_technician)
-                                        Technician
-                                    @elseif ($reply->user_id)
-                                        {{ $reply->user->name }}
-                                    @else
-                                        {{ $reply->customer_name }}
-                                    @endif
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    {{ $reply->created_at->format('M d, Y g:i A') }}</div>
-                            </div>
-                            @if ($reply->user_id || $reply->is_technician)
-                                <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
-                                    Support Team
-                                </span>
-                            @else
-                                <span
-                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                    You
-                                </span>
-                            @endif
-                        </div>
-                        <div class="prose prose-sm max-w-none text-gray-700">{!! \Mews\Purifier\Facades\Purifier::clean($reply->message) !!}</div>
+            @php
+                $isStaff = $reply->user_id || $reply->is_technician;
+                if ($reply->is_technician) {
+                    $avatarBg = 'bg-violet-500';
+                    $senderName = 'Technician';
+                    $badgeText = 'Technician';
+                    $badgeColor = 'text-violet-600 dark:text-violet-400';
+                } elseif ($reply->user_id) {
+                    $avatarBg = 'bg-emerald-600';
+                    $senderName = $reply->user->name;
+                    $badgeText = 'Support Team';
+                    $badgeColor = 'text-emerald-600 dark:text-emerald-400';
+                } else {
+                    $avatarBg = 'bg-blue-500';
+                    $senderName = $reply->customer_name;
+                    $badgeText = 'You';
+                    $badgeColor = 'text-blue-600 dark:text-blue-400';
+                }
+                $initials = strtoupper(substr($senderName ?? '?', 0, 1));
+            @endphp
 
-                        {{-- Attachments Display --}}
+            <div class="flex gap-3">
+                <div
+                    class="shrink-0 w-9 h-9 rounded-full {{ $avatarBg }} flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                    {{ $initials }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-baseline gap-2 mb-1.5">
+                        <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ $senderName }}</span>
+                        <span class="text-xs {{ $badgeColor }}">{{ $badgeText }}</span>
+                        <span
+                            class="ml-auto text-xs text-zinc-400 dark:text-zinc-500">{{ $reply->created_at->format('M d, g:i A') }}</span>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-5 py-4">
+                        <div
+                            class="prose prose-sm prose-zinc dark:prose-invert max-w-none text-zinc-700 dark:text-zinc-300">
+                            {!! \Mews\Purifier\Facades\Purifier::clean($reply->message) !!}
+                        </div>
+
                         @if (!empty($reply->attachments))
-                            <div class="mt-3 pt-3 border-t border-gray-200">
-                                <p class="text-xs font-medium text-gray-500 mb-2">Attachments:</p>
-                                <div class="flex flex-wrap gap-2">
-                                    @foreach ($reply->attachments as $attachment)
-                                        <a href="{{ Storage::url($attachment['path']) }}" target="_blank"
-                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                            </svg>
-                                            <span class="truncate max-w-[150px]">{{ $attachment['name'] }}</span>
-                                        </a>
-                                    @endforeach
-                                </div>
+                            <div class="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex flex-wrap gap-2">
+                                @foreach ($reply->attachments as $attachment)
+                                    <a href="{{ Storage::url($attachment['path']) }}" target="_blank"
+                                        class="flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs text-zinc-600 dark:text-zinc-300 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition shadow-sm">
+                                        <svg class="w-3.5 h-3.5 text-zinc-400 shrink-0" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                        </svg>
+                                        <span class="truncate max-w-[150px]">{{ $attachment['name'] }}</span>
+                                    </a>
+                                @endforeach
                             </div>
                         @endif
                     </div>
                 </div>
             </div>
         @endforeach
+
+        {{-- Support typing indicator --}}
+        @if ($supportTypingName)
+            <div class="flex gap-3">
+                <div
+                    class="shrink-0 w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                    {{ strtoupper(substr($supportTypingName, 0, 1)) }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-baseline gap-2 mb-1.5">
+                        <span class="text-sm text-zinc-600 dark:text-zinc-400">{{ $supportTypingName }} is
+                            typing</span>
+                    </div>
+                    <div
+                        class="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2">
+                        <span class="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce"
+                            style="animation-delay:0ms"></span>
+                        <span class="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce"
+                            style="animation-delay:120ms"></span>
+                        <span class="h-1.5 w-1.5 rounded-full bg-zinc-400 animate-bounce"
+                            style="animation-delay:240ms"></span>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
-    {{-- Reply Form --}}
+    {{-- Reply / Status Forms --}}
     @php
         $status = $ticket->status;
         $reopenHours = $this->slaPolicy?->reopen_hours ?? 48;
@@ -113,82 +130,69 @@
     @endphp
 
     @if ($showForm)
-        <div class="mt-6 pt-6 border-t border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Add a Reply</h2>
-
+        <div class="shrink-0 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 sm:p-5">
             <form wire:submit="submitReply">
                 <div class="mb-4">
-                    <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
-
-                    <div class="relative">
-                        <textarea wire:model="message" id="message" rows="5"
-                            class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 text-gray-700 sm:text-sm"
-                            placeholder="Write your message here..."></textarea>
-                    </div>
-
-                    <div class="flex justify-between items-center mt-1">
-                        <div>
-                            @error('message')
-                                <p class="text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
+                    <label for="message" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Your
+                        Message</label>
+                    <textarea wire:model="message" x-on:input.debounce.1s="$wire.markTyping()" id="message" rows="4"
+                        class="block w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none"
+                        placeholder="Write your message here..."></textarea>
+                    @error('message')
+                        <p class="mt-1 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- File Uploads (Max 2) --}}
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Attachments (Optional, Max 2)</label>
-
-                    <div class="flex items-center justify-center w-full relative">
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Attachments <span
+                            class="text-zinc-400 font-normal">(Optional, Max 2)</span></label>
+                    <div class="relative">
                         <label for="dropzone-file"
-                            class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors {{ count($attachments) >= 2 ? 'opacity-50 cursor-not-allowed' : '' }}">
-                            <div class="flex flex-col items-center justify-center pt-3 pb-4">
-                                <svg class="w-6 h-6 mb-2 text-gray-500" aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                            class="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl cursor-pointer bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition {{ count($attachments) >= 2 ? 'opacity-50 pointer-events-none' : '' }}">
+                            <div class="flex flex-col items-center justify-center py-3">
+                                <svg class="w-5 h-5 mb-1.5 text-zinc-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                 </svg>
-                                <p class="text-xs text-gray-500"><span class="font-semibold">Click to upload</span> (Max
-                                    2MB per file)</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400"><span class="font-medium">Click to
+                                        upload</span> (Max 2MB per file)</p>
                             </div>
                             <input wire:model="attachments" id="dropzone-file" type="file" class="hidden" multiple
                                 accept="image/*,.pdf,.doc,.docx" {{ count($attachments) >= 2 ? 'disabled' : '' }} />
                         </label>
 
-                        {{-- Loading State for files --}}
                         <div wire:loading wire:target="attachments"
-                            class="absolute inset-0 bg-white/80 flex items-center justify-center rounded-lg">
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            class="absolute inset-0 bg-white/80 dark:bg-zinc-900/80 flex items-center justify-center rounded-xl">
+                            <svg class="animate-spin h-5 w-5 text-emerald-500 mr-2" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
+                                    stroke-width="4" />
                                 <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                             </svg>
-                            <span class="text-sm text-gray-600 font-medium">Uploading...</span>
+                            <span class="text-sm text-zinc-600 dark:text-zinc-300 font-medium">Uploading...</span>
                         </div>
                     </div>
 
                     @error('attachments.*')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
                     @enderror
                     @error('attachments')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
                     @enderror
 
-                    {{-- Previews --}}
                     @if ($attachments)
-                        <div class="mt-3 space-y-2">
+                        <div class="mt-2.5 flex flex-wrap gap-2">
                             @foreach ($attachments as $index => $attachment)
                                 <div
-                                    class="flex items-center justify-between p-2 bg-gray-50 border border-gray-200 rounded-md">
+                                    class="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs">
                                     <span
-                                        class="text-sm text-gray-700 truncate max-w-[80%]">{{ $attachment->getClientOriginalName() }}</span>
+                                        class="text-zinc-600 dark:text-zinc-300 truncate max-w-[150px]">{{ $attachment->getClientOriginalName() }}</span>
                                     <button type="button" wire:click="removeAttachment({{ $index }})"
-                                        class="text-red-500 hover:text-red-700 p-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        class="text-zinc-400 hover:text-red-500 transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
@@ -200,8 +204,8 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" wire:loading.attr="disabled"
-                        class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                    <button type="submit" wire:loading.attr="disabled" wire:target="submitReply"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -214,37 +218,41 @@
         </div>
     @elseif ($canReopen)
         {{-- Resolved within reopen window — allow reply to reopen --}}
-        <div class="mt-6 pt-6 border-t border-gray-200">
-            <div class="mb-4 bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+        <div class="shrink-0 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 sm:p-5">
+            <div
+                class="mb-4 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-start gap-3">
+                <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                    <p class="text-sm font-medium text-green-800">This ticket has been resolved.</p>
-                    <p class="text-sm text-green-700 mt-0.5">If your issue isn't fully resolved, you can reply below to
-                        reopen it. The reopen window closes
+                    <p class="text-sm font-medium text-emerald-800 dark:text-emerald-200">This ticket has been
+                        resolved.</p>
+                    <p class="text-sm text-emerald-600 dark:text-emerald-300/80 mt-0.5">If your issue isn't fully
+                        resolved, you can reply
+                        below to reopen it. The reopen window closes
                         {{ $resolvedAt->copy()->addHours($reopenHours)->diffForHumans() }}.</p>
                 </div>
             </div>
 
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Reopen Ticket</h2>
+            <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Reopen Ticket</h3>
 
             <form wire:submit="submitReply">
                 <div class="mb-4">
-                    <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
-                    <textarea wire:model="message" id="message" rows="5"
-                        class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 text-gray-700 sm:text-sm"
+                    <label for="message" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Your
+                        Message</label>
+                    <textarea wire:model="message" x-on:input.debounce.1s="$wire.markTyping()" id="message" rows="4"
+                        class="block w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none"
                         placeholder="Describe the remaining issue..."></textarea>
                     @error('message')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" wire:loading.attr="disabled"
-                        class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                    <button type="submit" wire:loading.attr="disabled" wire:target="submitReply"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         <span wire:loading.remove wire:target="submitReply">Reply &amp; Reopen</span>
                         <span wire:loading wire:target="submitReply">Sending...</span>
                     </button>
@@ -253,46 +261,54 @@
         </div>
     @elseif ($status === 'resolved' && !$canReopen)
         {{-- Resolved but past reopen window --}}
-        <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p class="text-gray-600 font-medium">This ticket has been resolved</p>
-            <p class="text-sm text-gray-500 mt-1">The reopen window has passed. Please submit a new support request if
+        <div class="shrink-0 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 text-center">
+            <div
+                class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/10 mx-auto flex items-center justify-center mb-3">
+                <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">This ticket has been resolved</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">The reopen window has passed. Please submit a new
+                support request if
                 you need further help.</p>
         </div>
     @elseif ($canCreateLinked)
         {{-- Closed within linked-ticket window --}}
         @if ($confirmLinkedTicket)
-            <div class="mt-6 pt-6 border-t border-gray-200">
-                <div class="mb-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p class="text-sm font-medium text-yellow-800">This ticket is closed. Your message will create a
+            <div class="shrink-0 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 sm:p-5">
+                <div
+                    class="mb-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                    <p class="text-sm font-medium text-amber-800 dark:text-amber-200">This ticket is closed. Your
+                        message will create a
                         new follow-up ticket linked to this one.</p>
-                    <p class="text-sm text-yellow-700 mt-1">The new ticket subject will be: <strong>Follow-up:
-                            {{ $ticket->subject }}</strong></p>
+                    <p class="text-sm text-amber-600 dark:text-amber-300/80 mt-1">The new ticket subject will be:
+                        <strong>Follow-up:
+                            {{ $ticket->subject }}</strong>
+                    </p>
                 </div>
 
                 <form wire:submit="submitReply">
                     <div class="mb-4">
-                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your
+                        <label for="message"
+                            class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Your
                             Message</label>
-                        <textarea wire:model="message" id="message" rows="5"
-                            class="block w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 text-gray-700 sm:text-sm"
+                        <textarea wire:model="message" x-on:input.debounce.1s="$wire.markTyping()" id="message" rows="4"
+                            class="block w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition resize-none"
                             placeholder="Describe your issue..."></textarea>
                         @error('message')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="flex justify-end gap-3">
                         <button type="button" wire:click="cancelLinkedTicket"
-                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                            class="px-4 py-2 text-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                             Cancel
                         </button>
-                        <button type="submit" wire:loading.attr="disabled"
-                            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="submitReply"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                             <span wire:loading.remove wire:target="submitReply">Create Follow-up Ticket</span>
                             <span wire:loading wire:target="submitReply">Creating...</span>
                         </button>
@@ -300,32 +316,38 @@
                 </form>
             </div>
         @else
-            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
-                <svg class="w-12 h-12 text-amber-400 mx-auto mb-3" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <p class="text-amber-800 font-medium">This ticket is closed</p>
-                <p class="text-sm text-amber-700 mt-1">Still need help? You can create a follow-up ticket linked to
+            <div
+                class="shrink-0 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 text-center">
+                <div
+                    class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-500/10 mx-auto flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">This ticket is closed</p>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Still need help? You can create a follow-up
+                    ticket linked to
                     this one.</p>
                 <button type="button" wire:click="submitReply"
-                    class="mt-4 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer">
+                    class="mt-4 inline-flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer">
                     Create Follow-up Ticket
                 </button>
             </div>
         @endif
     @else
         {{-- Closed and past linked-ticket window --}}
-        <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <p class="text-gray-600 font-medium">This ticket is permanently closed</p>
-            <p class="text-sm text-gray-500 mt-1">Please submit a new support request if you need further assistance.
-            </p>
+        <div class="shrink-0 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 text-center">
+            <div
+                class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 mx-auto flex items-center justify-center mb-3">
+                <svg class="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">This ticket is permanently closed</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Please submit a new support request if you need
+                further assistance.</p>
         </div>
     @endif
 </div>

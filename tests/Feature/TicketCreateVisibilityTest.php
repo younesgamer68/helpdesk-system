@@ -76,3 +76,23 @@ test('admin stays on current view after creating ticket', function () {
         ->assertSet('ticketView', 'mine')
         ->assertDispatched('show-toast');
 });
+
+test('tickets table keeps urgent priority left border color in dark mode', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+
+    $this->actingAs($admin);
+
+    Ticket::factory()->create([
+        'company_id' => $company->id,
+        'priority' => 'urgent',
+        'verified' => true,
+        'subject' => 'Urgent priority stripe test',
+    ]);
+
+    Livewire::test(TicketsTable::class)
+        ->set('ticketView', 'all')
+        ->assertSee('Urgent priority stripe test')
+        ->assertSeeHtml('dark:border-l-red-500')
+        ->assertSeeHtml('dark:border-b-zinc-800');
+});

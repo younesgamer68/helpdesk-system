@@ -183,7 +183,8 @@
                         class="rounded border-zinc-300 dark:border-zinc-600 text-teal-600 focus:ring-teal-500">
                     Keep open
                 </label>
-                <flux:button type="submit" variant="primary" icon="paper-airplane" wire:loading.attr="disabled">
+                <flux:button type="submit" variant="primary" icon="paper-airplane" wire:loading.attr="disabled"
+                    wire:target="addReply">
                     <span wire:loading.remove wire:target="addReply">Send reply</span>
                     <span wire:loading wire:target="addReply">Sending...</span>
                 </flux:button>

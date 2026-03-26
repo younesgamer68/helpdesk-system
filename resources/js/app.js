@@ -684,7 +684,7 @@ document.addEventListener("alpine:init", () => {
                     content: initialContent || "",
                     editorProps: {
                         attributes: {
-                            class: "prose prose-sm prose-invert focus:outline-none max-w-none min-h-[120px] px-3 py-2 text-zinc-200",
+                            class: "prose prose-sm prose-zinc focus:outline-none max-w-none min-h-[120px] px-3 py-2 text-zinc-900",
                         },
                     },
                     onUpdate: ({ editor: e }) => {

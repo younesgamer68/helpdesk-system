@@ -18,7 +18,7 @@ class SlaBreachRule implements RuleInterface
     {
         // Category check
         $categoryId = $rule->conditions['category_id'] ?? null;
-        if ($categoryId && $ticket->category_id !== (int) $categoryId) {
+        if ($categoryId && ! $this->matchesCategoryCondition($ticket, (int) $categoryId)) {
             return false;
         }
 
@@ -74,5 +74,14 @@ class SlaBreachRule implements RuleInterface
                 Log::info('Admin notified of SLA breach for ticket: '.$ticket->id);
             }
         }
+    }
+
+    protected function matchesCategoryCondition(Ticket $ticket, int $conditionCategoryId): bool
+    {
+        if ($ticket->category_id === $conditionCategoryId) {
+            return true;
+        }
+
+        return $ticket->category?->parent_id === $conditionCategoryId;
     }
 }
