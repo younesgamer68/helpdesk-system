@@ -94,7 +94,7 @@
         font-weight: 600 !important;
         font-size: .875rem !important;
         padding: .625rem 1rem !important;
-        background: #10b981 !important;
+        background: #EF4444 !important;
         color: #fff !important;
         border: none !important;
         box-shadow: none !important;
@@ -102,7 +102,7 @@
     }
 
     .swal-custom .swal2-confirm:hover {
-        background: #059669 !important;
+        background: #a62a19 !important;
     }
 
     .swal-custom .swal2-close {

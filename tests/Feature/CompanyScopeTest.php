@@ -140,7 +140,7 @@ it('keeps the admin dashboard isolated to the authenticated company', function (
     ]);
 
     actingAs($adminA)
-        ->get("http://{$companyA->slug}.".config('app.domain').'/admin/dashboard')
+        ->get("http://{$companyA->slug}.".config('app.domain').'/home')
         ->assertSuccessful()
         ->assertSee('TKT-ALPHA1')
         ->assertDontSee('TKT-BETA1')

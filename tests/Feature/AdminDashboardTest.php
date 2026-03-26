@@ -18,7 +18,7 @@ it('renders the dashboard for admins', function () {
     $user = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
 
     $response = actingAs($user)
-        ->get("http://{$company->slug}.".config('app.domain').'/admin/dashboard')
+        ->get("http://{$company->slug}.".config('app.domain').'/home')
         ->assertOk();
 });
 
@@ -57,7 +57,7 @@ it('does not show tickets from another company', function () {
     ]);
 
     actingAs($user)
-        ->get("http://{$company->slug}.".config('app.domain').'/admin/dashboard')
+        ->get("http://{$company->slug}.".config('app.domain').'/home')
         ->assertSuccessful()
         ->assertSee('TKT-LOCAL1')
         ->assertDontSee('TKT-OTHER1');
@@ -80,7 +80,7 @@ it('renders recent ticket customers without lazy loading violations', function (
     ]);
 
     actingAs($user)
-        ->get("http://{$company->slug}.".config('app.domain').'/admin/dashboard')
+        ->get("http://{$company->slug}.".config('app.domain').'/home')
         ->assertSuccessful()
         ->assertSee('TKT-CUSTOMER')
         ->assertSee('Acme Customer');

@@ -126,12 +126,8 @@ Route::domain('{company}.'.config('app.domain'))->group(function () {
                 return redirect()->route('agent.dashboard', ['company' => $user->company->slug]);
             })->name('dashboard');
 
-            Route::livewire('home', \App\Livewire\App\AgentDashboard::class)
-                ->name('agent.dashboard')
-                ->middleware(\App\Http\Middleware\AgentOnly::class);
-            Route::livewire('admin/dashboard', \App\Livewire\App\AdminDashboard::class)
-                ->name('admin.dashboard')
-                ->middleware(\App\Http\Middleware\AdminOnly::class);
+            Route::view('home', 'app.dashboard')->name('agent.dashboard');
+            Route::redirect('admin/dashboard', '/home')->name('admin.dashboard');
 
             Route::view('tickets', 'app.tickets.index')->name('tickets');
             Route::get('tickets/{ticket}', [TicketsController::class, 'show'])->name('details');
