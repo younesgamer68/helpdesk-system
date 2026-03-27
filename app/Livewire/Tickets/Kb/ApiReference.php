@@ -58,16 +58,12 @@ class ApiReference extends Component
 
     public function getBaseUrlProperty(): string
     {
-        $protocol = config('app.env') === 'local' ? 'http' : 'https';
-
-        return $protocol.'://'.$this->companySlug.'.'.$this->domain.'/api/kb/'.$this->companySlug;
+        return rtrim(route('api.kb.index', ['company_slug' => $this->companySlug]), '/');
     }
 
     public function getWidgetScriptSrcProperty(): string
     {
-        $protocol = config('app.env') === 'local' ? 'http' : 'https';
-
-        return $protocol.'://'.$this->companySlug.'.'.$this->domain.'/kb/widget.js?v='.$this->widgetVersion;
+        return route('kb.public.widget', ['company' => $this->companySlug]).'?v='.$this->widgetVersion;
     }
 
     public function getWidgetScriptTagProperty(): string

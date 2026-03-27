@@ -21,12 +21,12 @@ class KbWidget extends Component
 
     public function getScriptTagProperty(): string
     {
-        $protocol = config('app.env') === 'local' ? 'http' : 'https';
         $widgetVersion = filemtime(resource_path('views/kb/widget-js.blade.php')) ?: time();
         $company = Auth::user()->company;
+        $widgetScriptUrl = route('kb.public.widget', ['company' => $this->companySlug]).'?v='.$widgetVersion;
 
         $attributes = [
-            'src="'.$protocol.'://'.$this->companySlug.'.'.$this->domain.'/kb/widget.js?v='.$widgetVersion.'"',
+            'src="'.$widgetScriptUrl.'"',
             'defer',
             'data-default-link-mode="'.($company->kb_widget_link_mode === 'custom' ? 'custom' : 'portal').'"',
         ];
@@ -40,9 +40,7 @@ class KbWidget extends Component
 
     public function getWidgetUrlProperty(): string
     {
-        $protocol = config('app.env') === 'local' ? 'http' : 'https';
-
-        return $protocol.'://'.$this->companySlug.'.'.$this->domain.'/kb/widget-demo';
+        return route('kb.public.widget-demo', ['company' => $this->companySlug]);
     }
 
     public function copyToClipboard(string $text, string $key): void

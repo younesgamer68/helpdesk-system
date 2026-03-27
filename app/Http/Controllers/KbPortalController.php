@@ -130,9 +130,8 @@ class KbPortalController extends Controller
     {
         $company = $this->getCompany($companySlug);
 
-        $protocol = config('app.env') === 'local' ? 'http' : 'https';
         $widgetVersion = filemtime(resource_path('views/kb/widget-js.blade.php')) ?: time();
-        $widgetScriptUrl = $protocol.'://'.$company->slug.'.'.config('app.domain').'/kb/widget.js?v='.$widgetVersion;
+        $widgetScriptUrl = route('kb.public.widget', ['company' => $company->slug]).'?v='.$widgetVersion;
         $widgetDefaultLinkMode = $company->kb_widget_link_mode === 'custom' ? 'custom' : 'portal';
         $widgetArticleBaseUrl = filled($company->kb_widget_article_base_url)
             ? rtrim((string) $company->kb_widget_article_base_url, '/')
