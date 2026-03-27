@@ -20,9 +20,10 @@
 
     @vite(['resources/css/welcome.css'])
 
-    <!-- Alpine.js — ui-state store must load before Alpine starts -->
-    <x-ui-state />
+    <!-- Alpine.js: plugin first, then core -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.8/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <x-ui-state />
     <style>
         [x-cloak] {
             display: none !important;
@@ -74,7 +75,7 @@
     </style>
 </head>
 
-<body x-data x-cloak
+<body x-data
     class="welcome-body flex min-h-screen flex-col bg-[#ffffff] text-[#17494D] font-[Instrument_Sans,ui-sans-serif,system-ui,sans-serif] antialiased transition-colors duration-300"
     :class="$store.ui.darkMode ? 'bg-black text-white' : 'bg-[#ffffff] text-[#17494D]'">
 
@@ -85,8 +86,7 @@
     {{-- ═══════════════════════════════════════════════════════════════════
     HERO — Minimal centered w/ headline, email form, privacy note
     ═══════════════════════════════════════════════════════════════════ --}}
-    <section id="hero-section" class="relative z-0 overflow-hidden"
-        x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }" style="opacity: 0;">
+    <section id="hero-section" class="relative z-0 overflow-hidden" x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }" style="opacity: 0;">
 
 
 
@@ -120,7 +120,8 @@
                             class="inline-flex items-center gap-2 rounded-full bg-[#219653] px-8 py-4 text-[1.05rem] font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#1b7a44] hover:shadow-xl">
                             <span x-text="$store.ui.t('heroDashboard')"></span>
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </a>
                     </div>
@@ -135,19 +136,17 @@
                                                                                                                                                                                                                                                                                     heroMsgOk = false;
                                                                                                                                                                                                                                                                                     return;
                                                                                                                                                                                                                                                                                 }
-                                                                                                                                                                                                                                                                                heroMsg = $store.ui.t('heroThankYou');
-                                                                                                                                                                                                                                                                                heroMsgOk = true;
-                                                                                                                                                                                                                                                                                heroEmail = '';
+                                                                                                                                                                                                                                                                                window.location.href = '{{ route('register') }}?email=' + encodeURIComponent(em);
                                                                                                                                                                                                                                                                             ">
                         <input type="email" x-model="heroEmail"
                             class="w-full flex-1 rounded-lg border px-5 py-4 text-base outline-none transition-colors duration-200 sm:w-auto sm:px-6 sm:py-[15px] sm:text-[17px]"
                             :class="$store.ui.darkMode ?
-                                                                                                                                                                                                                                        'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20' :
-                                                                                                                                                                                                                                        'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
+                                'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20' :
+                                'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
                             :placeholder="$store.ui.t('heroPlaceholder')" />
                         <button type="submit"
                             class="w-full flex-shrink-0 cursor-pointer rounded-full bg-[#219653] px-8 py-4 text-base font-bold text-white transition hover:bg-[#4cc944] sm:w-auto sm:px-[30px] sm:py-[15px] sm:text-[17px]"
-                            x-text="$store.ui.t('heroTryFree')"></button>
+                            x-text="'Get started'"></button>
                     </form>
                 @endauth
             @endif
@@ -221,11 +220,11 @@
 
     {{-- Script for smooth entrance + scroll animations --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // ── Hero section fade-in ──
             var hero = document.getElementById('hero-section');
             if (hero) {
-                setTimeout(function () {
+                setTimeout(function() {
                     hero.style.transition = 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
                     hero.style.opacity = '1';
                 }, 250);
@@ -235,19 +234,19 @@
             var scene = document.querySelector('.scene');
             if (!scene) return;
 
-            var observer = new IntersectionObserver(function (entries) {
+            var observer = new IntersectionObserver(function(entries) {
                 if (entries[0].isIntersecting) {
                     observer.disconnect();
 
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(function () {
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(function() {
                             scene.classList.add('show-center');
 
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 scene.classList.add('show-near');
                             }, 800);
 
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 scene.classList.add('show-far');
                             }, 1000);
                         });
@@ -286,17 +285,17 @@
             },
             switchTab(tab) {
                 this.activeTab = tab;
-
+        
                 if (tab === 'automations') {
                     this.automationNotificationVisible = false;
                 }
-
+        
                 if (this.imageTab === tab) {
                     return;
                 }
-
+        
                 this.imageVisible = false;
-
+        
                 setTimeout(() => {
                     this.imageTab = tab;
                     this.imageVisible = true;
@@ -332,7 +331,8 @@
                                     'bg-gray-900 text-white shadow-[0_10px_24px_-14px_rgba(0,0,0,0.5)]') :
                                 ($store.ui.darkMode ?
                                     'text-white/65 hover:bg-white/10 hover:text-white' :
-                                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900')" @click="switchTab(tab)">
+                                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900')"
+                            @click="switchTab(tab)">
                             <span class="inline-flex items-center gap-2">
                                 <span x-text="$store.ui.t('discoverTab_' + tab)"></span>
                                 <span x-show="tab === 'automations' && automationNotificationVisible"
@@ -374,7 +374,8 @@
     ═══════════════════════════════════════════════════════════════════ --}}
     <div class="sfs-section" id="sfsSection">
         <div class="sfs-header">
-            <h2 :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'" x-text="$store.ui.t('homeSfsTitle')"></h2>
+            <h2 :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'" x-text="$store.ui.t('homeSfsTitle')">
+            </h2>
             <div class="sfs-nav-btns">
                 <button class="sfs-nav-btn" id="sfsPrevBtn">⬅</button>
                 <button class="sfs-nav-btn" id="sfsNextBtn">➡</button>
@@ -675,7 +676,8 @@
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c7">
                         <div class="sfs-rp-wrap">
-                            <div class="sfs-rp-head">📊 <span x-text="$store.ui.t('homeSfsPreviewReportsHead')"></span>
+                            <div class="sfs-rp-head">📊 <span
+                                    x-text="$store.ui.t('homeSfsPreviewReportsHead')"></span>
                             </div>
                             <div class="sfs-rp-bars">
                                 <div class="sfs-rp-bw">
@@ -688,7 +690,8 @@
                                     <div class="sfs-rp-l">Tue</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b hi sfs-anim-bar-grow" style="height:100%;animation-delay:0.6s">
+                                    <div class="sfs-rp-b hi sfs-anim-bar-grow"
+                                        style="height:100%;animation-delay:0.6s">
                                     </div>
                                     <div class="sfs-rp-l">Wed</div>
                                 </div>
@@ -805,7 +808,8 @@
 
             <div class="w-full max-w-[320px] flex-none">
                 <h1 class="mb-12 text-[2rem] leading-[1.25] font-bold"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'" x-text="$store.ui.t('beacon1Title')">
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'"
+                    x-text="$store.ui.t('beacon1Title')">
                 </h1>
 
                 <div class="flex flex-col" id="beaconTabs">
@@ -867,8 +871,9 @@
                                 <div class="flex items-center gap-[10px]">
                                     <div
                                         class="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-white/25 text-[0.82rem] font-bold text-white">
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                            stroke="#fff" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <rect x="3" y="11" width="18" height="10" rx="2" />
                                             <path d="M12 2v4M8 11V9a4 4 0 018 0v2" />
                                             <circle cx="9" cy="16" r="1" fill="#fff" />
@@ -991,7 +996,8 @@
                                 <div
                                     class="flex flex-col gap-[5px] rounded-[11px] bg-white px-[13px] py-[11px] shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
                                     <div class="flex items-center justify-between">
-                                        <div class="text-[0.77rem] font-bold text-[#219653]">Live chat 28 Apr 2025</div>
+                                        <div class="text-[0.77rem] font-bold text-[#219653]">Live chat 28 Apr 2025
+                                        </div>
                                         <div
                                             class="flex h-[17px] w-[17px] flex-none items-center justify-center rounded-full bg-[#219653] text-[0.62rem] font-bold text-white">
                                             2</div>
@@ -1035,7 +1041,8 @@
                                                 class="absolute -right-[3px] -top-[3px] h-[6px] w-[6px] rounded-full border-[1.5px] border-white bg-[#219653]"></span>
                                         </div>
                                     </div>
-                                    <div class="line-clamp-2 text-[0.72rem] leading-[1.4] text-[#6b7280]">Great news, we
+                                    <div class="line-clamp-2 text-[0.72rem] leading-[1.4] text-[#6b7280]">Great news,
+                                        we
                                         just received a huge shipment containing both those items! Would you like…</div>
                                     <div class="mt-[3px] flex items-center">
                                         <div class="flex">
@@ -1096,7 +1103,8 @@
 
             <div class="w-full max-w-[420px] flex-none">
                 <h2 class="mb-12 text-[2rem] leading-[1.25] font-bold"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'" x-text="$store.ui.t('beacon2Title')">
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'"
+                    x-text="$store.ui.t('beacon2Title')">
                 </h2>
 
                 <div class="flex flex-col">
@@ -1224,7 +1232,8 @@
                                     class="rounded-full bg-[#fef2f2] px-2 py-0.5 text-[0.62rem] font-bold uppercase text-[#dc2626]">Urgent</span>
                             </div>
                             <div class="flex items-center gap-2 border-b border-[#fecaca] bg-[#fef2f2] px-4 py-2">
-                                <span class="text-[0.68rem] font-semibold text-[#dc2626]">SLA breach in 18 min - respond
+                                <span class="text-[0.68rem] font-semibold text-[#dc2626]">SLA breach in 18 min -
+                                    respond
                                     now</span>
                             </div>
                             <div class="flex flex-1 flex-col gap-2 bg-[#f9fafb] px-4 py-3">
@@ -1384,14 +1393,16 @@
                 </button>
 
                 <div id="ggViewport" class="min-w-0 flex-1 overflow-hidden rounded-md">
-                    <div id="ggTrack" class="flex transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]">
+                    <div id="ggTrack"
+                        class="flex transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]">
                         <article class="min-w-full">
                             <div
                                 class="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-center lg:gap-12">
                                 <div class="relative h-75 w-full overflow-hidden rounded-2xl md:h-90 lg:h-105 lg:w-90 lg:shrink-0"
                                     :class="$store.ui.darkMode ? 'bg-white/10' : 'bg-[#d5cfc4]'">
                                     <img src="https://web-assets.zendesk.com/is/image/zendesk/Photo_Testimonial_Liberty?fmt=webp-alpha&qlt=65"
-                                        alt="Liberty London" class="gg-slide-image hidden h-full w-full object-cover" />
+                                        alt="Liberty London"
+                                        class="gg-slide-image hidden h-full w-full object-cover" />
                                     <div class="gg-slide-placeholder absolute inset-0 flex items-center justify-center text-sm italic"
                                         :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
                                         Add image
@@ -1576,7 +1587,8 @@
 
             {{-- Image --}}
             <div id="supportHeroesVisual" class="w-full max-w-[720px]">
-                <img src="{{ asset('images/Personnes/Team_photoo.png') }}" alt="Support hero" class="w-full h-auto" />
+                <img src="{{ asset('images/Personnes/Team_photoo.png') }}" alt="Support hero"
+                    class="w-full h-auto" />
             </div>
 
             {{-- Text --}}
@@ -1619,11 +1631,14 @@
         class="relative isolate overflow-hidden px-6 pb-32 pt-10 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
         :class="$store.ui.darkMode ? 'bg-[#0a101c]' : 'bg-[#fdf0e8]'">
         <div class="absolute inset-0 z-0"
-            :class="$store.ui.darkMode ? 'bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#1d3358_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#102840_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#1f2937_0%,transparent_60%),linear-gradient(135deg,#08111f_0%,#0f1f35_50%,#162a43_100%)]' : 'bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#d8a8cc_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#f0b090_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#f5c898_0%,transparent_60%),linear-gradient(135deg,#dbaac8_0%,#f0b888_50%,#f5a87a_100%)]'">
+            :class="$store.ui.darkMode ?
+                'bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#1d3358_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#102840_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#1f2937_0%,transparent_60%),linear-gradient(135deg,#08111f_0%,#0f1f35_50%,#162a43_100%)]' :
+                'bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#d8a8cc_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#f0b090_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#f5c898_0%,transparent_60%),linear-gradient(135deg,#dbaac8_0%,#f0b888_50%,#f5a87a_100%)]'">
         </div>
 
         <div class="absolute right-0 top-0 z-1 h-65 w-65 bg-size-[18px_18px] mask-[radial-gradient(ellipse_80%_80%_at_90%_10%,black_40%,transparent_80%)]"
-            :class="$store.ui.darkMode ? 'bg-[radial-gradient(circle,rgba(112,170,255,0.16)_1.5px,transparent_1.5px)]' : 'bg-[radial-gradient(circle,rgba(180,100,80,0.25)_1.5px,transparent_1.5px)]'">
+            :class="$store.ui.darkMode ? 'bg-[radial-gradient(circle,rgba(112,170,255,0.16)_1.5px,transparent_1.5px)]' :
+                'bg-[radial-gradient(circle,rgba(180,100,80,0.25)_1.5px,transparent_1.5px)]'">
         </div>
 
         <svg class="absolute bottom-0 left-0 z-1 h-80 w-80 opacity-[0.18]" viewBox="0 0 320 320" fill="none"
@@ -1653,11 +1668,11 @@
 
             <div class="flex translate-y-15 flex-wrap justify-center gap-3.5 opacity-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-400"
                 data-get-started-reveal>
-                <a href="#"
+                <a href="{{ route('register') }}"
                     class="rounded-lg bg-[#219653] px-8.5 py-3.75 text-base font-semibold text-white shadow-[0_6px_20px_-4px_rgba(45,157,90,0.55)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-4px_rgba(255,255,255,0.65)] active:translate-y-0">
                     <span x-text="$store.ui.t('homeGetStartedPrimaryCta')"></span>
                 </a>
-                <a href="#"
+                <a href="{{ route('help-center') }}"
                     class="rounded-lg border-[1.5px] border-white/90 bg-white/80 px-8.5 py-3.75 text-base font-semibold text-[#1a1020] shadow-[0_4px_14px_-4px_rgba(0,0,0,0.15)] backdrop-blur-[6px] transition hover:-translate-y-0.5 hover:bg-white active:translate-y-0">
                     <span x-text="$store.ui.t('homeGetStartedSecondaryCta')"></span>
                 </a>
@@ -1697,11 +1712,11 @@
     <!-- Notification Banner -->
     <x-notification-banner />
 
-    <!-- Chatbot -->
-    <livewire:ai-chat-widget />
+    <!-- Landing page chatbot (guest-friendly) -->
+    <x-portal.chatbot />
     <!-- Support Features Slider Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             /* ═══════════════════════════
                SLIDER CORE
             ═══════════════════════════ */
@@ -2125,7 +2140,8 @@
 
                 const BEACON_DURATION = 4000;
                 const beaconTabs = Array.from(beaconWrapper.querySelectorAll('.beacon-tab'));
-                const beaconPanels = panelIds.map((panelId) => document.getElementById(panelId)).filter(Boolean);
+                const beaconPanels = panelIds.map((panelId) => document.getElementById(panelId)).filter(
+                    Boolean);
                 const beaconPanelImages = Array.from(beaconWrapper.querySelectorAll('.beacon-panel-img'));
 
                 if (beaconTabs.length === 0 || beaconPanels.length === 0) {

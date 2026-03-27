@@ -21,9 +21,10 @@
 
     @vite(['resources/css/welcome.css'])
 
-    <!-- Alpine.js — ui-state store must load before Alpine starts -->
-    <x-ui-state />
+    <!-- Alpine.js: plugin first, then core -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.8/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <x-ui-state />
     <style>
         [x-cloak] {
             display: none !important;
@@ -31,13 +32,14 @@
     </style>
 </head>
 
-<body x-data x-cloak
+<body x-data
     class="welcome-body flex min-h-screen flex-col bg-[#ffffff] text-[#17494D] font-[Instrument_Sans,ui-sans-serif,system-ui,sans-serif] antialiased transition-colors duration-300"
     :class="$store.ui.darkMode ? 'bg-black text-white' : 'bg-[#ffffff] text-[#17494D]'">
 
     <!-- Navigation -->
     <nav class="w-full relative z-50 transition-colors duration-300"
-        :class="$store.ui.darkMode ? 'bg-gray-950/80 backdrop-blur-md border-b border-white/5' : 'bg-white/80 backdrop-blur-md border-b border-gray-100'">
+        :class="$store.ui.darkMode ? 'bg-gray-950/80 backdrop-blur-md border-b border-white/5' :
+            'bg-white/80 backdrop-blur-md border-b border-gray-100'">
         <div class="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6">
             {{-- LEFT Logo --}}
             <x-logo variant="landing" size="lg" href="/" />
@@ -50,29 +52,23 @@
                     class="relative flex h-9 w-9 items-center justify-center rounded-full transition-colors duration-200"
                     :class="$store.ui.darkMode ? 'text-gray-200 hover:bg-white/10' : 'text-[#1F1F1F] hover:bg-gray-100'"
                     title="Toggle dark mode">
-                    <svg x-show="!$store.ui.darkMode"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0"
-                        class="absolute" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <svg x-show="!$store.ui.darkMode" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0" class="absolute" width="18" height="18"
+                        viewBox="0 0 18 18" fill="none">
                         <path d="M15.5 11.5A7 7 0 016.5 2.5a7 7 0 109 9z" fill="none" stroke="currentColor"
                             stroke-width="1.4" stroke-linecap="round" />
                     </svg>
-                    <svg x-show="$store.ui.darkMode"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0"
-                        class="absolute" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                        style="display:none">
+                    <svg x-show="$store.ui.darkMode" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0" class="absolute" width="18" height="18"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" style="display:none">
                         <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
+                        <path
+                            d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41" />
                     </svg>
                 </button>
 
@@ -98,8 +94,9 @@
     <x-loading-overlay />
 
     <main class="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-12 relative z-0">
-         {{ $slot }}
+        {{ $slot }}
     </main>
 
 </body>
+
 </html>

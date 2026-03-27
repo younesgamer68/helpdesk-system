@@ -292,7 +292,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             x-text="$store.ui.t('productCard1Title')"></h4>
                         <p class="mt-0.5 text-xs" :class="$store.ui.darkMode ? 'text-gray-300' : 'text-[#4b5563]'"
                             x-text="$store.ui.t('productCard1Desc')"></p>
-                        <a href="#" class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#6d28d9]">
+                        <a href="{{ route('help-center') }}" class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#6d28d9]">
                             <span x-text="$store.ui.t('productLearnMore')"></span>
                             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
@@ -325,7 +325,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             x-text="$store.ui.t('productCard2Title')"></h4>
                         <p class="mt-0.5 text-xs" :class="$store.ui.darkMode ? 'text-gray-300' : 'text-[#4b5563]'"
                             x-text="$store.ui.t('productCard2Desc')"></p>
-                        <a href="#" class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#6d28d9]">
+                        <a href="{{ route('help-center') }}" class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#6d28d9]">
                             <span x-text="$store.ui.t('productLearnMore')"></span>
                             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
@@ -358,7 +358,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             x-text="$store.ui.t('productCard3Title')"></h4>
                         <p class="mt-0.5 text-xs" :class="$store.ui.darkMode ? 'text-gray-300' : 'text-[#4b5563]'"
                             x-text="$store.ui.t('productCard3Desc')"></p>
-                        <a href="#" class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#6d28d9]">
+                        <a href="{{ route('help-center') }}" class="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-[#6d28d9]">
                             <span x-text="$store.ui.t('productLearnMore')"></span>
                             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
@@ -383,7 +383,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                     </article>
                 </div>
 
-                <a href="#" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#6d28d9]">
+                <a href="{{ route('help-center') }}" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#6d28d9]">
                     <span x-text="$store.ui.t('productAllTrials')"></span>
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14m-6-6 6 6-6 6" />
@@ -408,7 +408,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             x-text="$store.ui.t('platform')"></h3>
 
                         <div class="grid grid-cols-[minmax(0,1fr)_180px] gap-3.5">
-                            <a href="#" class="group block">
+                            <a href="{{ route('help-center') }}" class="group block">
                                 <div class="overflow-hidden rounded-xl border"
                                     :class="$store.ui.darkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-white'">
                                     <img src="https://www.freshworks.com/_next/image/?url=https%3A%2F%2Fdam.freshworks.com%2Fm%2F3569eabfd1b17a84%2Foriginal%2FNAV_FS.webp&w=828&q=75"
@@ -436,19 +436,19 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
 
                             <div class="pt-0.5">
                                 <div class="space-y-2">
-                                    <a href="#" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('platformOverview')"></a>
-                                    <a href="#" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('integrations')"></a>
-                                    <a href="#" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('latestInnovations')"></a>
-                                    <a href="#" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('appMarketplace')"></a>
-                                    <a href="#" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2 rounded-lg px-1 py-1 text-sm"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('developers')"></a>
                                 </div>
@@ -462,7 +462,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             x-text="$store.ui.t('trending')"></h3>
 
                         <div class="space-y-2">
-                            <a href="#" class="group flex items-start gap-3 rounded-xl p-2 transition-colors"
+                            <a href="{{ route('help-center') }}" class="group flex items-start gap-3 rounded-xl p-2 transition-colors"
                                 :class="$store.ui.darkMode ? 'hover:bg-white/5' : 'hover:bg-white'">
                                 <img src="{{ asset('images/Personnes/reports.png') }}" alt="Solution trend 1"
                                     class="h-14 w-14 rounded-lg object-cover" />
@@ -475,7 +475,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                                         x-text="$store.ui.t('trendDesc1')"></p>
                                 </div>
                             </a>
-                            <a href="#" class="group flex items-start gap-3 rounded-xl p-2 transition-colors"
+                            <a href="{{ route('help-center') }}" class="group flex items-start gap-3 rounded-xl p-2 transition-colors"
                                 :class="$store.ui.darkMode ? 'hover:bg-white/5' : 'hover:bg-white'">
                                 <img src="{{ asset('images/Personnes/ticket view.png') }}" alt="Solution trend 2"
                                     class="h-14 w-14 rounded-lg object-cover" />
@@ -488,7 +488,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                                         x-text="$store.ui.t('trendDesc2')"></p>
                                 </div>
                             </a>
-                            <a href="#" class="group flex items-start gap-3 rounded-xl p-2 transition-colors"
+                            <a href="{{ route('help-center') }}" class="group flex items-start gap-3 rounded-xl p-2 transition-colors"
                                 :class="$store.ui.darkMode ? 'hover:bg-white/5' : 'hover:bg-white'">
                                 <img src="{{ asset('images/Personnes/Automatin.png') }}" alt="Solution trend 3"
                                     class="h-14 w-14 rounded-lg object-cover" />
@@ -523,7 +523,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                         </h3>
 
                         <div class="grid grid-cols-[minmax(0,1fr)_200px] gap-4">
-                            <a href="#" class="group block">
+                            <a href="{{ route('help-center') }}" class="group block">
                                 <div class="overflow-hidden rounded-2xl border"
                                     :class="$store.ui.darkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-white'">
                                     <img src="{{ asset('images/Personnes/ticketlist.png') }}" alt="Resources preview"
@@ -552,22 +552,22 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
 
                             <div class="pt-1">
                                 <div class="space-y-2.5">
-                                    <a href="#" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('blog')"></a>
-                                    <a href="#" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('documentation')"></a>
-                                    <a href="#" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('webinars')"></a>
-                                    <a href="#" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('academy')"></a>
-                                    <a href="#" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('community')"></a>
-                                    <a href="#" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
+                                    <a href="{{ route('help-center') }}" class="group flex items-center gap-2.5 rounded-lg px-1 py-1 text-base"
                                         :class="$store.ui.darkMode ? 'text-gray-200 hover:text-white' : 'text-[#111827] hover:text-black'"
                                         x-text="$store.ui.t('events')"></a>
                                 </div>
@@ -581,7 +581,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                             x-text="$store.ui.t('trending')"></h3>
 
                         <div class="space-y-2.5">
-                            <a href="#" class="group flex items-start gap-3.5 rounded-xl p-2 transition-colors"
+                            <a href="{{ route('help-center') }}" class="group flex items-start gap-3.5 rounded-xl p-2 transition-colors"
                                 :class="$store.ui.darkMode ? 'hover:bg-white/5' : 'hover:bg-white'">
                                 <img src="{{ asset('images/Personnes/reports.png') }}" alt="Resource trending 1"
                                     class="h-16 w-16 rounded-xl object-cover" />
@@ -594,7 +594,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                                         x-text="$store.ui.t('trendDesc1')"></p>
                                 </div>
                             </a>
-                            <a href="#" class="group flex items-start gap-3.5 rounded-xl p-2 transition-colors"
+                            <a href="{{ route('help-center') }}" class="group flex items-start gap-3.5 rounded-xl p-2 transition-colors"
                                 :class="$store.ui.darkMode ? 'hover:bg-white/5' : 'hover:bg-white'">
                                 <img src="{{ asset('images/Personnes/ticket view.png') }}" alt="Resource trending 2"
                                     class="h-16 w-16 rounded-xl object-cover" />
@@ -607,7 +607,7 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                                         x-text="$store.ui.t('trendDesc2')"></p>
                                 </div>
                             </a>
-                            <a href="#" class="group flex items-start gap-3.5 rounded-xl p-2 transition-colors"
+                            <a href="{{ route('help-center') }}" class="group flex items-start gap-3.5 rounded-xl p-2 transition-colors"
                                 :class="$store.ui.darkMode ? 'hover:bg-white/5' : 'hover:bg-white'">
                                 <img src="{{ asset('images/Personnes/Automatin.png') }}" alt="Resource trending 3"
                                     class="h-16 w-16 rounded-xl object-cover" />
@@ -680,23 +680,23 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                         </svg>
                     </button>
                     <div x-show="open" x-collapse class="ml-4 space-y-1">
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('platformOverview')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('integrations')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('latestInnovations')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('appMarketplace')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('developers')"></a>
@@ -714,19 +714,19 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                         </svg>
                     </button>
                     <div x-show="open" x-collapse class="ml-4 space-y-1">
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('customerService')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('itSupport')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('hrTeams')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('salesTeams')"></a>
@@ -744,19 +744,19 @@ Navbar — local state only; $store.ui.darkMode / lang / t() from $store.ui
                         </svg>
                     </button>
                     <div x-show="open" x-collapse class="ml-4 space-y-1">
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('blog')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('documentation')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('webinars')"></a>
-                        <a href="#"
+                        <a href="{{ route('help-center') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'"
                             class="block rounded-lg px-3 py-2 text-sm transition-colors duration-150"
                             x-text="$store.ui.t('community')"></a>
