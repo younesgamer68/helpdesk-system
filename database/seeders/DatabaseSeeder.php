@@ -171,9 +171,60 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now()->subMinutes(2),
         ]);
 
+        // Seed one deterministic client with exactly 20 tickets.
+        $demoClient = Customer::query()->updateOrCreate(
+            ['company_id' => $company->id, 'email' => 'client20@example.com'],
+            ['name' => 'Client Twenty', 'is_active' => true]
+        );
+
+        $statusCycle = ['pending', 'open', 'in_progress', 'resolved', 'closed'];
+        $priorityCycle = ['low', 'medium', 'high', 'urgent'];
+        $assignedCycle = [$tech->id, $agent1->id, $agent2->id, null];
+        $deterministicCategoryIds = collect($categories)->pluck('id')->toArray();
+
+        foreach (range(1, 20) as $index) {
+            $status = $statusCycle[($index - 1) % count($statusCycle)];
+            $priority = $priorityCycle[($index - 1) % count($priorityCycle)];
+            $assignedTo = $assignedCycle[($index - 1) % count($assignedCycle)];
+            $categoryId = $deterministicCategoryIds[($index - 1) % count($deterministicCategoryIds)];
+
+            $createdAt = now()->subDays(40 - $index);
+            $resolvedAt = in_array($status, ['resolved', 'closed'], true)
+                ? (clone $createdAt)->addDay()
+                : null;
+            $closedAt = $status === 'closed'
+                ? (clone $createdAt)->addDays(2)
+                : null;
+
+            Ticket::query()->updateOrCreate(
+                [
+                    'company_id' => $company->id,
+                    'ticket_number' => 'TKT-CLIENT20-'.str_pad((string) $index, 2, '0', STR_PAD_LEFT),
+                ],
+                [
+                    'customer_id' => $demoClient->id,
+                    'subject' => "Client Twenty demo ticket #{$index}",
+                    'description' => "Deterministic seeded ticket {$index} for demo client with 20 tickets.",
+                    'status' => $status,
+                    'priority' => $priority,
+                    'assigned_to' => $assignedTo,
+                    'category_id' => $categoryId,
+                    'verified' => true,
+                    'verification_token' => null,
+                    'tracking_token' => hash('sha256', "client20-ticket-{$company->id}-{$index}"),
+                    'source' => 'web',
+                    'created_at' => $createdAt,
+                    'updated_at' => now(),
+                    'resolved_at' => $resolvedAt,
+                    'closed_at' => $closedAt,
+                ]
+            );
+        }
+
         $hasExistingFactoryTickets = Ticket::query()
             ->where('company_id', $company->id)
             ->where('ticket_number', '!=', 'TKT-773193')
+            ->where('ticket_number', 'not like', 'TKT-CLIENT20-%')
             ->exists();
 
         // Generate tickets using factory
