@@ -130,6 +130,74 @@ it('does not lazy load article version creator during livewire updates', functio
         ->assertSee($user->name);
 });
 
+it('kb article editor does not show deprecated meta and schedule fields', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'admin',
+    ]);
+
+    $category = TicketCategory::create([
+        'company_id' => $company->id,
+        'name' => 'Product Docs',
+        'description' => 'Category for product docs',
+    ]);
+
+    $article = KbArticle::create([
+        'company_id' => $company->id,
+        'ticket_category_id' => $category->id,
+        'title' => 'How to reset password',
+        'slug' => 'how-to-reset-password',
+        'body' => '<p>Step-by-step guide</p>',
+        'status' => 'draft',
+    ]);
+
+    KbArticleVersion::create([
+        'kb_article_id' => $article->id,
+        'title' => $article->title,
+        'body' => $article->body,
+        'created_by' => $user->id,
+    ]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain')."/kb/articles/{$article->id}/edit")
+        ->assertSuccessful()
+        ->assertDontSee('Meta Description')
+        ->assertDontSee('Schedule Publish')
+        ->assertDontSee('Save Draft')
+        ->assertDontSee('wire:confirm="Are you sure you want to revert to this version? Unsaved changes will be lost."', false);
+});
+
+it('kb search matches article tags and renders tag chips', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'admin',
+    ]);
+
+    $category = TicketCategory::create([
+        'company_id' => $company->id,
+        'name' => 'Billing',
+        'description' => 'Billing category',
+    ]);
+
+    KbArticle::create([
+        'company_id' => $company->id,
+        'ticket_category_id' => $category->id,
+        'title' => 'Invoice lifecycle',
+        'slug' => 'invoice-lifecycle',
+        'body' => '<p>Details about invoices</p>',
+        'status' => 'published',
+        'tags' => json_encode(['billing', 'invoices']),
+    ]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain').'/kb/search?q=billing')
+        ->assertSuccessful()
+        ->assertSee('Invoice lifecycle')
+        ->assertSee('#billing');
+});
+
 it('renders the kb categories page showing company categories', function () {
     $company = Company::factory()->create(['onboarding_completed_at' => now()]);
     $user = User::factory()->create([
@@ -193,6 +261,36 @@ it('renders the public kb article page with related articles from ticket categor
         ->assertSuccessful()
         ->assertSee('Primary Article')
         ->assertSee('Related Article');
+});
+
+it('renders public kb search results without lazy loading exceptions', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'admin',
+    ]);
+
+    $category = TicketCategory::create([
+        'company_id' => $company->id,
+        'name' => 'Billing',
+        'description' => 'Billing category',
+    ]);
+
+    KbArticle::create([
+        'company_id' => $company->id,
+        'ticket_category_id' => $category->id,
+        'title' => 'Invoice lifecycle',
+        'slug' => 'invoice-lifecycle',
+        'body' => '<p>Details about invoices</p>',
+        'status' => 'published',
+        'tags' => json_encode(['billing', 'invoices']),
+    ]);
+
+    actingAs($user)
+        ->get("http://{$company->slug}.".config('app.domain').'/kb/search?q=billing')
+        ->assertSuccessful()
+        ->assertSee('Invoice lifecycle')
+        ->assertSee('Billing');
 });
 
 it('renders widget demo with saved custom link attributes', function () {

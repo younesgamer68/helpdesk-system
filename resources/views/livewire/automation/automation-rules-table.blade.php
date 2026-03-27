@@ -34,6 +34,7 @@
                         $typeLabels = [
                             '' => 'All Types',
                             'assignment' => 'Auto Assignment',
+                            'keyword_assignment' => 'Keyword Assignment',
                             'priority' => 'Priority Change',
                             'auto_reply' => 'Auto Reply',
                             'escalation' => 'Escalation',
@@ -56,6 +57,9 @@
                         <flux:menu.radio value="assignment"
                             class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
                             Auto Assignment</flux:menu.radio>
+                        <flux:menu.radio value="keyword_assignment"
+                            class="hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                            Keyword Assignment</flux:menu.radio>
                     @endif
                     @if ($filterMode === 'all' || $filterMode === 'ticket')
                         <flux:menu.radio value="priority"
@@ -186,6 +190,8 @@
                                 $typeColors = [
                                     'assignment' =>
                                         'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+                                    'keyword_assignment' =>
+                                        'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
                                     'priority' =>
                                         'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20',
                                     'auto_reply' =>
@@ -196,6 +202,7 @@
                                 ];
                                 $typeLabels = [
                                     'assignment' => 'Auto Assignment',
+                                    'keyword_assignment' => 'Keyword Assignment',
                                     'priority' => 'Priority Change',
                                     'auto_reply' => 'Auto Reply',
                                     'escalation' => 'Escalation',
@@ -301,6 +308,7 @@
                         <flux:select wire:model.live="type">
                             @if ($filterMode === 'all' || $filterMode === 'assignment')
                                 <flux:select.option value="assignment">Auto Assignment</flux:select.option>
+                                <flux:select.option value="keyword_assignment">Keyword Assignment</flux:select.option>
                             @endif
                             @if ($filterMode === 'all' || $filterMode === 'ticket')
                                 <flux:select.option value="priority">Priority Change</flux:select.option>
@@ -372,6 +380,31 @@
                         </flux:field>
                     @endif
 
+                    @if ($type === 'keyword_assignment')
+                        <flux:field>
+                            <flux:label>Keywords (subject or description)</flux:label>
+                            <div class="flex gap-2">
+                                <flux:input wire:model="newKeyword" placeholder="Add keyword"
+                                    wire:keydown.enter.prevent="addKeyword" />
+                                <flux:button type="button" wire:click="addKeyword" variant="ghost">Add</flux:button>
+                            </div>
+                            @if (count($keywords) > 0)
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    @foreach ($keywords as $index => $keyword)
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
+                                            {{ $keyword }}
+                                            <button type="button" wire:click="removeKeyword({{ $index }})"
+                                                class="hover:text-red-400">×</button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <p class="mt-1 text-xs text-zinc-500">Applies only to uncategorized tickets.</p>
+                            <flux:error name="keywords" />
+                        </flux:field>
+                    @endif
+
                     @if ($type === 'escalation')
                         <div class="grid grid-cols-2 gap-4">
                             <flux:field>
@@ -421,12 +454,7 @@
                             <flux:switch wire:model.live="assign_to_specialist" />
                         </flux:field>
 
-                        @if ($assign_to_specialist)
-                            <flux:field variant="inline">
-                                <flux:label>Fallback to generalist if no specialist</flux:label>
-                                <flux:switch wire:model="fallback_to_generalist" />
-                            </flux:field>
-                        @else
+                        @if (!$assign_to_specialist)
                             <div x-data="{ operatorId: $wire.entangle('assign_to_operator_id'), teamId: $wire.entangle('assign_to_team_id') }" class="space-y-4">
                                 <flux:field>
                                     <flux:label>Assign to specific operator</flux:label>
@@ -451,6 +479,29 @@
                                 </flux:field>
                             </div>
                         @endif
+                    @endif
+
+                    @if ($type === 'keyword_assignment')
+                        <flux:field>
+                            <flux:label>Set Category To</flux:label>
+                            <select wire:model="assign_to_category_id"
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                <option value="">Select Category</option>
+                                @foreach ($this->categories as $parentCategory)
+                                    <optgroup label="{{ $parentCategory->name }}">
+                                        <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                        </option>
+                                        @foreach ($parentCategory->children as $childCategory)
+                                            <option value="{{ $childCategory->id }}">{{ $childCategory->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-zinc-500">After category is set, your normal category-based
+                                assignment rules can route the ticket.</p>
+                            <flux:error name="assign_to_category_id" />
+                        </flux:field>
                     @endif
 
                     @if ($type === 'priority')
@@ -563,6 +614,7 @@
                         <flux:select wire:model.live="type">
                             @if ($filterMode === 'all' || $filterMode === 'assignment')
                                 <flux:select.option value="assignment">Auto Assignment</flux:select.option>
+                                <flux:select.option value="keyword_assignment">Keyword Assignment</flux:select.option>
                             @endif
                             @if ($filterMode === 'all' || $filterMode === 'ticket')
                                 <flux:select.option value="priority">Priority Change</flux:select.option>
@@ -634,6 +686,31 @@
                         </flux:field>
                     @endif
 
+                    @if ($type === 'keyword_assignment')
+                        <flux:field>
+                            <flux:label>Keywords (subject or description)</flux:label>
+                            <div class="flex gap-2">
+                                <flux:input wire:model="newKeyword" placeholder="Add keyword"
+                                    wire:keydown.enter.prevent="addKeyword" />
+                                <flux:button type="button" wire:click="addKeyword" variant="ghost">Add</flux:button>
+                            </div>
+                            @if (count($keywords) > 0)
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    @foreach ($keywords as $index => $keyword)
+                                        <span
+                                            class="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs rounded-full">
+                                            {{ $keyword }}
+                                            <button type="button" wire:click="removeKeyword({{ $index }})"
+                                                class="hover:text-red-400">×</button>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <p class="mt-1 text-xs text-zinc-500">Applies only to uncategorized tickets.</p>
+                            <flux:error name="keywords" />
+                        </flux:field>
+                    @endif
+
                     @if ($type === 'escalation')
                         <div class="grid grid-cols-2 gap-4">
                             <flux:field>
@@ -683,12 +760,7 @@
                             <flux:switch wire:model.live="assign_to_specialist" />
                         </flux:field>
 
-                        @if ($assign_to_specialist)
-                            <flux:field variant="inline">
-                                <flux:label>Fallback to generalist if no specialist</flux:label>
-                                <flux:switch wire:model="fallback_to_generalist" />
-                            </flux:field>
-                        @else
+                        @if (!$assign_to_specialist)
                             <div x-data="{ operatorId: $wire.entangle('assign_to_operator_id'), teamId: $wire.entangle('assign_to_team_id') }" class="space-y-4">
                                 <flux:field>
                                     <flux:label>Assign to specific operator</flux:label>
@@ -713,6 +785,29 @@
                                 </flux:field>
                             </div>
                         @endif
+                    @endif
+
+                    @if ($type === 'keyword_assignment')
+                        <flux:field>
+                            <flux:label>Set Category To</flux:label>
+                            <select wire:model="assign_to_category_id"
+                                class="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
+                                <option value="">Select Category</option>
+                                @foreach ($this->categories as $parentCategory)
+                                    <optgroup label="{{ $parentCategory->name }}">
+                                        <option value="{{ $parentCategory->id }}">{{ $parentCategory->name }}
+                                        </option>
+                                        @foreach ($parentCategory->children as $childCategory)
+                                            <option value="{{ $childCategory->id }}">{{ $childCategory->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-zinc-500">After category is set, your normal category-based
+                                assignment rules can route the ticket.</p>
+                            <flux:error name="assign_to_category_id" />
+                        </flux:field>
                     @endif
 
                     @if ($type === 'priority')

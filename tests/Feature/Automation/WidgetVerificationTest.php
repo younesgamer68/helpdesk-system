@@ -28,9 +28,9 @@ class WidgetVerificationTest extends TestCase
             'type' => 'priority',
             'is_active' => true,
             'conditions' => [
-                'keywords' => ['urgent'], 
+                'keywords' => ['urgent'],
                 'category_id' => $category->id,
-                'current_priority' => []
+                'current_priority' => [],
             ],
             'actions' => ['set_priority' => 'high'],
         ]);
@@ -44,7 +44,7 @@ class WidgetVerificationTest extends TestCase
             'description' => 'Help me',
             'category_id' => $category->id,
             'priority' => 'medium', // Default
-            'status' => 'pending',
+            'status' => 'open',
             'verified' => false,
             'verification_token' => 'token123',
             'source' => 'widget',

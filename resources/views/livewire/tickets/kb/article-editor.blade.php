@@ -5,15 +5,13 @@
                 <div class="flex items-center gap-3">
                     <a href="{{ route('kb.articles', Auth::user()->company->slug) }}" wire:navigate
                         class="px-4 py-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition">Cancel</a>
-                    <button wire:click="saveDraft"
-                        class="px-4 py-2 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-lg transition">Save
-                        Draft</button>
-                    <button wire:click="publish"
-                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition">Publish</button>
+                    <button type="submit" form="kb-article-form"
+                        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition">Save
+                        Article</button>
                 </div>
             </div>
 
-            <form wire:submit="save" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <form id="kb-article-form" wire:submit="save" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column - 2/3 width -->
                 <div class="lg:col-span-2 space-y-6">
                     <div
@@ -105,35 +103,6 @@
                             <p class="text-xs text-zinc-500 mt-1">Comma-separated tags</p>
                         </div>
 
-                        <!-- Meta Description -->
-                        <div>
-                            <label
-                                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2 flex items-center justify-between">
-                                Meta Description
-                            </label>
-                            <textarea wire:model="meta_description" rows="3" placeholder="Brief description for SEO"
-                                class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500 sm:text-sm"></textarea>
-                            @error('meta_description')
-                                <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <!-- Schedule Publish -->
-                        <div>
-                            <label
-                                class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2 flex items-center justify-between">
-                                Schedule Publish
-                                <span class="text-xs text-zinc-400 font-normal">Optional</span>
-                            </label>
-                            <input type="datetime-local" wire:model="schedule_publish_date"
-                                class="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500 sm:text-sm">
-                            <p class="text-xs text-zinc-500 mt-1">If set, article will be automatically published on
-                                this date.</p>
-                            @error('schedule_publish_date')
-                                <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                            @enderror
-                        </div>
-
                     </div>
 
                     @if ($article && $article->exists && $article->versions->count() > 0)
@@ -151,8 +120,8 @@
                                         <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                             By {{ optional($version->creator)->name ?? 'System' }}
                                         </div>
-                                        <button type="button" wire:click="revertToVersion({{ $version->id }})"
-                                            wire:confirm="Are you sure you want to revert to this version? Unsaved changes will be lost."
+                                        <button type="button"
+                                            @click="confirmAction($wire, {{ $version->id }}, 'revertToVersion', 'Revert to this version?', 'Unsaved changes will be lost.', 'Yes, revert')"
                                             class="mt-2 text-left text-xs text-emerald-600 hover:text-emerald-700 font-medium">
                                             Revert to this version
                                         </button>
@@ -161,11 +130,6 @@
                             </div>
                         </div>
                     @endif
-
-                    <button
-                        class="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium text-sm flex justify-center items-center gap-2">
-                        Save &amp; Publish
-                    </button>
                 </div>
             </form>
 

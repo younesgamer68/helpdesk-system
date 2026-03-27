@@ -16,13 +16,7 @@ class CompanyProfile extends Component
 
     public string $companyName = '';
 
-    public string $companyEmail = '';
-
-    public ?string $companyPhone = '';
-
     public string $companySlug = '';
-
-    public ?string $website = '';
 
     public $logo;
 
@@ -36,10 +30,7 @@ class CompanyProfile extends Component
 
         $company = Auth::user()->company;
         $this->companyName = $company->name;
-        $this->companyEmail = $company->email;
-        $this->companyPhone = $company->phone ?? '';
         $this->companySlug = $company->slug;
-        $this->website = $company->website ?? '';
 
         $config = TenantConfig::query()->firstOrCreate(
             ['company_id' => $company->id],
@@ -60,11 +51,8 @@ class CompanyProfile extends Component
 
         $this->validate([
             'companyName' => ['required', 'string', 'max:255'],
-            'companyEmail' => ['required', 'email', 'max:255'],
-            'companyPhone' => ['nullable', 'string', 'max:20'],
             'companySlug' => ['required', 'string', 'max:63',
                 Rule::unique('companies', 'slug')->ignore($company->id)],
-            'website' => ['nullable', 'url', 'max:255'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:2048'],
             'maxTicketsPerAgent' => ['required', 'integer', 'min:1', 'max:100'],
         ], [
@@ -76,10 +64,7 @@ class CompanyProfile extends Component
 
         $data = [
             'name' => $this->companyName,
-            'email' => $this->companyEmail,
-            'phone' => $this->companyPhone ?: null,
             'slug' => $this->companySlug,
-            'website' => $this->website ?: null,
         ];
 
         if ($this->logo) {
@@ -109,6 +94,25 @@ class CompanyProfile extends Component
         }
 
         $this->dispatch('company-profile-updated');
+    }
+
+    public function resetLogo(): void
+    {
+        if (Auth::user()->role !== 'admin') {
+            abort(403);
+        }
+
+        $company = Auth::user()->company;
+
+        if ($company->logo) {
+            Storage::disk('public')->delete($company->logo);
+            $company->update(['logo' => null]);
+        }
+
+        $this->logo = null;
+
+        $this->dispatch('company-profile-updated');
+        $this->dispatch('show-toast', message: 'Company logo removed successfully.', type: 'success');
     }
 
     public function render()

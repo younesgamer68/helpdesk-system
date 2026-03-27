@@ -88,6 +88,83 @@ test('tickets created by agent have source set to agent', function () {
     expect($ticket->source)->toBe('agent');
 });
 
+test('agent-created ticket sends tracking email to customer', function () {
+    Mail::fake();
+
+    $this->actingAs($this->admin);
+
+    Livewire\Livewire::test(\App\Livewire\Tickets\TicketsTable::class)
+        ->set('customer_name', 'Jane Doe')
+        ->set('customer_email', 'jane@example.com')
+        ->set('subject', 'Agent created ticket')
+        ->set('description', 'Agent opened this on behalf of client')
+        ->set('priority', 'high')
+        ->call('createTicket')
+        ->assertHasNoErrors();
+
+    $ticket = Ticket::where('company_id', $this->company->id)->first();
+
+    expect($ticket->verified)->toBe(1);
+    expect($ticket->tracking_token)->not->toBeNull()->toHaveLength(64);
+    expect($ticket->source)->toBe('agent');
+
+    Mail::assertQueued(TicketVerified::class, function ($mail) {
+        return $mail->hasTo('jane@example.com');
+    });
+});
+
+test('agent-created ticket tracking email contains correct ticket', function () {
+    Mail::fake();
+
+    $this->actingAs($this->admin);
+
+    Livewire\Livewire::test(\App\Livewire\Tickets\TicketsTable::class)
+        ->set('customer_name', 'Bob Smith')
+        ->set('customer_email', 'bob@example.com')
+        ->set('subject', 'Urgent issue')
+        ->set('description', 'Needs immediate attention')
+        ->set('priority', 'urgent')
+        ->call('createTicket')
+        ->assertHasNoErrors();
+
+    $ticket = Ticket::where('company_id', $this->company->id)->first();
+
+    Mail::assertQueued(TicketVerified::class, function ($mail) use ($ticket) {
+        return $mail->ticket->id === $ticket->id
+            && $mail->trackingToken === $ticket->tracking_token;
+    });
+});
+
+test('agent cannot create ticket for deactivated customer without reactivating first', function () {
+    Mail::fake();
+
+    Customer::create([
+        'company_id' => $this->company->id,
+        'name' => 'Deactivated Customer',
+        'email' => 'deactivated@example.com',
+        'phone' => null,
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($this->admin);
+
+    Livewire\Livewire::test(\App\Livewire\Tickets\TicketsTable::class)
+        ->set('customer_name', 'Deactivated Customer')
+        ->set('customer_email', 'deactivated@example.com')
+        ->set('subject', 'Should fail')
+        ->set('description', 'Cannot create ticket for deactivated customer')
+        ->set('priority', 'medium')
+        ->call('createTicket')
+        ->assertHasErrors(['customer_email']);
+
+    $this->assertDatabaseMissing('tickets', [
+        'company_id' => $this->company->id,
+        'subject' => 'Should fail',
+    ]);
+
+    Mail::assertNothingQueued();
+});
+
 test('widget submit updates existing customer name for matching email', function () {
     Customer::create([
         'company_id' => $this->company->id,

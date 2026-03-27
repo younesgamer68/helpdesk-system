@@ -32,6 +32,8 @@ class AutomationRule extends Model
 
     public const TYPE_ASSIGNMENT = 'assignment';
 
+    public const TYPE_KEYWORD_ASSIGNMENT = 'keyword_assignment';
+
     public const TYPE_PRIORITY = 'priority';
 
     public const TYPE_AUTO_REPLY = 'auto_reply';
@@ -115,6 +117,7 @@ class AutomationRule extends Model
     {
         return [
             self::TYPE_ASSIGNMENT => 'Auto Assignment',
+            self::TYPE_KEYWORD_ASSIGNMENT => 'Keyword Assignment',
             self::TYPE_PRIORITY => 'Priority Change',
             self::TYPE_AUTO_REPLY => 'Auto Reply',
             self::TYPE_ESCALATION => 'Escalation',

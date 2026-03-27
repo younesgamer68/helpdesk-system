@@ -74,6 +74,8 @@ class Profile extends Component
         $user->save();
 
         $this->dispatch('profile-updated', name: $user->name);
+
+        $this->redirectRoute('profile.edit', ['company' => $user->company->slug], navigate: true);
     }
 
     /**
@@ -124,10 +126,20 @@ class Profile extends Component
         $this->dispatch('show-toast', message: 'Specialties updated successfully.', type: 'success');
     }
 
-    #[Computed]
-    public function showDeleteUser(): bool
+    public function resetAvatar(): void
     {
-        return ! Auth::user() instanceof MustVerifyEmail
-            || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->forceFill(['avatar' => null])->save();
+
+        $this->avatar = null;
+
+        $this->dispatch('show-toast', message: 'Avatar removed successfully.', type: 'success');
+
+        $this->redirectRoute('profile.edit', ['company' => $user->company->slug], navigate: true);
     }
 }

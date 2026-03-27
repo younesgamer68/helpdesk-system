@@ -87,6 +87,69 @@ test('admin can create an assignment rule', function () {
     ]);
 });
 
+test('admin can create a keyword assignment rule', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+    $category = TicketCategory::factory()->create(['company_id' => $company->id]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(AutomationRulesTable::class)
+        ->set('name', 'Assign Network Keywords')
+        ->set('type', 'keyword_assignment')
+        ->set('newKeyword', 'network')
+        ->call('addKeyword')
+        ->set('newKeyword', 'vpn')
+        ->call('addKeyword')
+        ->set('assign_to_category_id', $category->id)
+        ->call('createRule')
+        ->assertDispatched('show-toast');
+
+    $rule = AutomationRule::where('company_id', $company->id)
+        ->where('name', 'Assign Network Keywords')
+        ->first();
+
+    expect($rule)->not->toBeNull();
+    expect($rule->type)->toBe('keyword_assignment');
+    expect($rule->conditions['keywords'])->toContain('network', 'vpn');
+    expect($rule->actions['set_category_id'])->toBe($category->id);
+});
+
+test('assignment mode shows both assignment and keyword assignment rules by default', function () {
+    $company = Company::factory()->create();
+    $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);
+
+    $this->actingAs($admin);
+
+    AutomationRule::create([
+        'company_id' => $company->id,
+        'name' => 'Auto Assign Network',
+        'description' => null,
+        'type' => 'assignment',
+        'conditions' => [],
+        'actions' => [],
+        'is_active' => true,
+        'priority' => 1,
+    ]);
+
+    AutomationRule::create([
+        'company_id' => $company->id,
+        'name' => 'Keyword Assign Network',
+        'description' => null,
+        'type' => 'keyword_assignment',
+        'conditions' => ['keywords' => ['vpn'], 'without_category' => true],
+        'actions' => ['set_category_id' => null],
+        'is_active' => true,
+        'priority' => 2,
+    ]);
+
+    Livewire::withQueryParams(['filterMode' => 'assignment'])
+        ->test(AutomationRulesTable::class, ['filterMode' => 'assignment'])
+        ->assertSet('filterType', '')
+        ->assertSee('Auto Assign Network')
+        ->assertSee('Keyword Assign Network');
+});
+
 test('admin can create a priority rule with keywords', function () {
     $company = Company::factory()->create();
     $admin = User::factory()->create(['company_id' => $company->id, 'role' => 'admin']);

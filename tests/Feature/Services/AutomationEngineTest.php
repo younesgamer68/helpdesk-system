@@ -50,6 +50,59 @@ test('automation engine applies assignment rule to new ticket', function () {
     expect($ticket->assigned_to)->toBe($operator->id);
 });
 
+test('automation engine applies keyword assignment rule for uncategorized ticket', function () {
+    $company = Company::factory()->create();
+    $networkCategory = TicketCategory::factory()->create(['company_id' => $company->id]);
+    $operator = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'operator',
+        'is_available' => true,
+        'status' => 'online',
+    ]);
+    $operator->categories()->attach($networkCategory->id);
+
+    AutomationRule::factory()->create([
+        'company_id' => $company->id,
+        'type' => AutomationRule::TYPE_KEYWORD_ASSIGNMENT,
+        'priority' => 20,
+        'conditions' => [
+            'keywords' => ['network', 'vpn'],
+            'without_category' => true,
+        ],
+        'actions' => [
+            'set_category_id' => $networkCategory->id,
+        ],
+    ]);
+
+    AutomationRule::factory()->assignment()->create([
+        'company_id' => $company->id,
+        'priority' => 30,
+        'conditions' => [
+            'category_id' => $networkCategory->id,
+            'priority' => [],
+        ],
+        'actions' => [
+            'assign_to_specialist' => true,
+        ],
+    ]);
+
+    $ticket = Ticket::withoutEvents(fn () => Ticket::factory()->create([
+        'company_id' => $company->id,
+        'category_id' => null,
+        'subject' => 'Network outage in office',
+        'description' => 'VPN is disconnected for everyone',
+        'verified' => true,
+        'assigned_to' => null,
+    ]));
+
+    $engine = app(AutomationEngine::class);
+    $engine->processNewTicket($ticket);
+
+    $ticket->refresh();
+    expect($ticket->category_id)->toBe($networkCategory->id);
+    expect($ticket->assigned_to)->toBe($operator->id);
+});
+
 test('automation engine applies priority rule based on keywords', function () {
     $company = Company::factory()->create();
 
@@ -704,4 +757,74 @@ test('check sla breaches command marks overdue tickets as breached and sets near
 
     Notification::assertSentTo($assignedOperator, SlaBreached::class);
     Notification::assertSentTo($admin, SlaBreached::class);
+});
+
+test('processNewTicket does not trigger SLA breach rules on new ticket', function () {
+    Notification::fake();
+
+    $company = Company::factory()->create();
+    $admin = User::factory()->create([
+        'company_id' => $company->id,
+        'role' => 'admin',
+    ]);
+
+    AutomationRule::factory()->create([
+        'company_id' => $company->id,
+        'type' => AutomationRule::TYPE_SLA_BREACH,
+        'is_active' => true,
+        'priority' => 1,
+        'conditions' => ['category_id' => null],
+        'actions' => [
+            'escalate_priority' => true,
+            'notify_admin' => true,
+        ],
+    ]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $company->id,
+        'priority' => 'medium',
+        'sla_status' => 'on_time',
+        'due_time' => now()->addHours(8),
+        'verified' => true,
+    ]);
+
+    $engine = app(AutomationEngine::class);
+    $engine->processNewTicket($ticket);
+
+    $ticket->refresh();
+
+    Notification::assertNotSentTo($admin, SlaBreached::class);
+    expect($ticket->priority)->toBe('medium');
+});
+
+test('SLA breach rule does not apply to non-breached tickets', function () {
+    Notification::fake();
+
+    $company = Company::factory()->create();
+
+    $rule = AutomationRule::factory()->create([
+        'company_id' => $company->id,
+        'type' => AutomationRule::TYPE_SLA_BREACH,
+        'is_active' => true,
+        'priority' => 1,
+        'conditions' => ['category_id' => null],
+        'actions' => [
+            'escalate_priority' => true,
+            'notify_admin' => true,
+        ],
+    ]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $company->id,
+        'priority' => 'medium',
+        'sla_status' => 'on_time',
+        'due_time' => now()->addHours(8),
+        'verified' => true,
+    ]);
+
+    $engine = app(AutomationEngine::class);
+    $result = $engine->executeRule($rule, $ticket);
+
+    expect($result)->toBeFalse();
+    Notification::assertNothingSent();
 });

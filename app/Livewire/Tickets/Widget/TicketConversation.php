@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Tickets\Widget;
 
+use App\Events\NewTicketReply;
+use App\Events\TicketTypingUpdated;
 use App\Mail\TicketVerified;
 use App\Models\SlaPolicy;
 use App\Models\Ticket;
@@ -35,6 +37,24 @@ class TicketConversation extends Component
     public function mount(Ticket $ticket): void
     {
         $this->ticket = $ticket;
+    }
+
+    public function getListeners(): array
+    {
+        return [
+            "echo:ticket.{$this->ticket->id},.NewTicketReply" => 'refreshConversation',
+            "echo:ticket.{$this->ticket->id},.TicketTypingUpdated" => 'refreshTyping',
+        ];
+    }
+
+    public function refreshConversation(): void
+    {
+        // Re-render triggers fresh data fetch in render()
+    }
+
+    public function refreshTyping(): void
+    {
+        // Re-render picks up latest typing state from cache
     }
 
     #[Computed]
@@ -94,7 +114,10 @@ class TicketConversation extends Component
 
         $this->validate();
         $this->createReply();
-        $this->ticket->update(['status' => 'pending']);
+
+        if ($this->ticket->status === 'pending') {
+            $this->ticket->update(['status' => 'in_progress']);
+        }
     }
 
     public function cancelLinkedTicket(): void
@@ -105,6 +128,7 @@ class TicketConversation extends Component
     public function markTyping(): void
     {
         $this->setTypingState('customer', true);
+        broadcast(new TicketTypingUpdated($this->ticket->id))->toOthers();
     }
 
     private function createReply(): void
@@ -129,6 +153,8 @@ class TicketConversation extends Component
         $this->reset(['message', 'attachments']);
         $this->setTypingState('customer', false);
         $this->dispatch('resetEditor');
+
+        broadcast(new NewTicketReply($this->ticket->id))->toOthers();
 
         session()->flash('success', 'Your reply has been submitted!');
     }

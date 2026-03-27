@@ -1,4 +1,4 @@
-<div class="flex flex-col flex-1 min-h-0" wire:poll.5s>
+<div class="flex flex-col flex-1 min-h-0">
     {{-- Scrollable messages --}}
     <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5 bg-zinc-50/40 dark:bg-zinc-950/40">
 

@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\KbArticle;
 use App\Models\TicketCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class KbPortalController extends Controller
 {
@@ -62,12 +63,15 @@ class KbPortalController extends Controller
         abort_unless($article->company_id === $company->id, 404);
         abort_unless($article->status === 'published', 404);
 
+        $article->loadMissing('category.parent');
+
         // Increment Views (simple mechanism, could be improved with session/IP checks)
         $article->increment('views');
 
         $relatedArticles = $article->category ? $article->category->kbArticles()
             ->where('status', 'published')
             ->where('id', '!=', $article->id)
+            ->with('category')
             ->take(5)
             ->get() : collect();
 
@@ -77,13 +81,21 @@ class KbPortalController extends Controller
     public function search(Request $request, $companySlug)
     {
         $company = $this->getCompany($companySlug);
-        $query = $request->input('q');
+        $query = trim((string) $request->input('q', ''));
+        $searchTerms = collect(preg_split('/\s+/', Str::lower($query)))->filter()->unique()->values();
 
         $articles = $company->kbArticles()
+            ->with('category')
             ->where('status', 'published')
-            ->where(function ($q) use ($query) {
+            ->where(function ($q) use ($query, $searchTerms) {
                 $q->where('title', 'like', "%{$query}%")
                     ->orWhere('body', 'like', "%{$query}%");
+
+                if ($searchTerms->isNotEmpty()) {
+                    foreach ($searchTerms as $term) {
+                        $q->orWhereJsonContains('tags', $term);
+                    }
+                }
             })
             ->latest()
             ->paginate(15);

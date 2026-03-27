@@ -28,7 +28,7 @@ class FormWidget extends Component
     // Defaults
     public $default_assigned_to = '';
 
-    public $default_status = 'pending';
+    public $default_status = 'open';
 
     public $default_priority = 'medium';
 

@@ -41,12 +41,14 @@ test('sla breach rule reads category_id from conditions not model property', fun
         'company_id' => $company->id,
         'category_id' => $category->id,
         'priority' => 'high',
+        'sla_status' => 'breached',
     ]);
 
     $nonMatchingTicket = makeTicketQuietly([
         'company_id' => $company->id,
         'category_id' => $otherCategory->id,
         'priority' => 'high',
+        'sla_status' => 'breached',
     ]);
 
     $slaBreachRule = new SlaBreachRule;
@@ -70,6 +72,7 @@ test('sla breach rule with no category condition applies to all tickets', functi
         'company_id' => $company->id,
         'category_id' => $category->id,
         'priority' => 'medium',
+        'sla_status' => 'breached',
     ]);
 
     $slaBreachRule = new SlaBreachRule;

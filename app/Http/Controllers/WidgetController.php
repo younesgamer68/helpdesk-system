@@ -285,8 +285,8 @@ class WidgetController extends Controller
                 'resolved_at' => null,
                 'warning_sent_at' => null,
             ]);
-        } else {
-            $ticket->update(['status' => 'pending']);
+        } elseif ($ticket->status === 'pending') {
+            $ticket->update(['status' => 'in_progress']);
         }
 
         // Notify assigned agent about client reply

@@ -1,8 +1,9 @@
 <?php
 
-use App\Models\ChatbotFaq;
+use App\Ai\Agents\HelpdeskAgent;
 use App\Models\Company;
 use App\Models\CompanyAiSettings;
+use App\Models\KbArticle;
 use App\Models\User;
 use App\Models\WidgetSetting;
 use Illuminate\Support\Str;
@@ -47,11 +48,16 @@ function setupChatbotCompany(array $aiOverrides = []): array
 it('returns escalation_url as null when threshold not reached', function () {
     [$company, $admin, $widget] = setupChatbotCompany();
 
-    ChatbotFaq::query()->create([
+    KbArticle::withoutGlobalScopes()->create([
         'company_id' => $company->id,
-        'question' => 'What is your refund policy?',
-        'answer' => 'We offer 30-day refunds.',
+        'title' => 'Refund Policy',
+        'slug' => 'refund-policy',
+        'body' => 'We offer 30-day refunds on all purchases.',
+        'status' => 'published',
+        'published_at' => now(),
     ]);
+
+    HelpdeskAgent::fake(['We offer 30-day refunds on all purchases.']);
 
     $response = $this->postJson(
         "http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$widget->widget_key}/message",
@@ -68,6 +74,8 @@ it('returns standalone escalation url when escalation_url_type is standalone', f
         'escalation_url_type' => 'standalone',
         'chatbot_fallback_threshold' => 1,
     ]);
+
+    HelpdeskAgent::fake(['I am not sure about that.']);
 
     $response = $this->postJson(
         "http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$widget->widget_key}/message",
@@ -92,6 +100,8 @@ it('returns custom escalation url when escalation_url_type is custom_url', funct
         'chatbot_fallback_threshold' => 1,
     ]);
 
+    HelpdeskAgent::fake(['I am not sure about that.']);
+
     $response = $this->postJson(
         "http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$widget->widget_key}/message",
         ['message' => 'xyzzy random gibberish no faq matches']
@@ -109,6 +119,8 @@ it('reads fallback threshold from the database', function () {
     [$company, $admin, $widget] = setupChatbotCompany([
         'chatbot_fallback_threshold' => 5,
     ]);
+
+    HelpdeskAgent::fake(['Here is some helpful info.']);
 
     // First unanswered message should NOT trigger escalation when threshold is 5
     $response = $this->postJson(
@@ -197,6 +209,8 @@ it('escalates after consecutive unanswered turns for the same chatbot session id
         'chatbot_fallback_threshold' => 2,
     ]);
 
+    HelpdeskAgent::fake(fn () => '');
+
     $sessionId = (string) Str::uuid();
     $url = "http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$widget->widget_key}/message";
 
@@ -228,4 +242,24 @@ it('escalates immediately when the customer explicitly asks for a human agent', 
 
     $response->assertSuccessful()
         ->assertJson(['show_ticket_form' => true]);
+});
+
+it('can escalate on AI rate limit when fallback threshold is reached', function () {
+    [$company, $admin, $widget] = setupChatbotCompany([
+        'chatbot_fallback_threshold' => 1,
+    ]);
+
+    HelpdeskAgent::fake(function () {
+        throw \Laravel\Ai\Exceptions\RateLimitedException::forProvider('gemini');
+    });
+
+    $response = $this->postJson(
+        "http://{$company->slug}.".config('app.domain')."/chatbot-widget/{$widget->widget_key}/message",
+        ['message' => 'I need help with billing']
+    );
+
+    $response->assertSuccessful()
+        ->assertJson(['show_ticket_form' => true]);
+
+    expect($response->json('escalation_url'))->not->toBeNull();
 });

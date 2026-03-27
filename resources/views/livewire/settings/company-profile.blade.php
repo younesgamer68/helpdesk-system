@@ -1,7 +1,7 @@
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <x-app.settings.layout :heading="__('Company Profile')" :subheading="__('Manage your company\'s name, contact info, and logo')">
+    <x-app.settings.layout :heading="__('Company Profile')" :subheading="__('Manage your company\'s core settings and logo')">
         <form wire:submit="save" class="my-6 w-full space-y-6">
             <flux:input wire:model="companyName" :label="__('Company Name')" type="text" required />
 
@@ -15,13 +15,6 @@
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror
             </div>
-
-            <flux:input wire:model="companyEmail" :label="__('Support Email')" type="email" required />
-
-            <flux:input wire:model="companyPhone" :label="__('Phone')" type="text" />
-
-            <flux:input wire:model="website" :label="__('Website URL')" type="url"
-                placeholder="https://example.com" />
 
             <div>
                 <flux:input wire:model="maxTicketsPerAgent" :label="__('Max Tickets Per Agent')" type="number"
@@ -53,6 +46,12 @@
 
                 <input type="file" wire:model="logo" accept="image/jpeg,image/png,image/gif,image/webp"
                     class="mt-1 block w-full text-sm text-zinc-500 file:mr-4 file:rounded-lg file:border-0 file:bg-zinc-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-200 dark:file:bg-zinc-700 dark:file:text-zinc-300 dark:hover:file:bg-zinc-600" />
+                @if ($logo || $company->logo)
+                    <button type="button" wire:click="resetLogo"
+                        class="mt-2 inline-flex items-center rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20">
+                        {{ __('Reset Logo') }}
+                    </button>
+                @endif
                 @error('logo')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror

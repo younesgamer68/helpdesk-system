@@ -16,7 +16,7 @@ class AiChatbotWidget extends Component
 
     public string $chatbot_greeting = 'Hi! How can I help you today?';
 
-    public int $chatbot_fallback_threshold = 2;
+    public int $chatbot_fallback_threshold = 20;
 
     public string $escalation_url_type = 'standalone';
 
@@ -41,13 +41,13 @@ class AiChatbotWidget extends Component
             [
                 'ai_chatbot_enabled' => false,
                 'chatbot_greeting' => 'Hi! How can I help you today?',
-                'chatbot_fallback_threshold' => 2,
+                'chatbot_fallback_threshold' => 20,
             ]
         );
 
         $this->ai_chatbot_enabled = (bool) $this->settings->ai_chatbot_enabled;
         $this->chatbot_greeting = (string) ($this->settings->chatbot_greeting ?: 'Hi! How can I help you today?');
-        $this->chatbot_fallback_threshold = (int) ($this->settings->chatbot_fallback_threshold ?: 2);
+        $this->chatbot_fallback_threshold = (int) ($this->settings->chatbot_fallback_threshold ?: 20);
         $this->escalation_url_type = (string) ($this->settings->escalation_url_type ?: 'standalone');
         $this->custom_escalation_url = (string) ($this->settings->custom_escalation_url ?? '');
     }
@@ -59,7 +59,7 @@ class AiChatbotWidget extends Component
             [
                 'ai_chatbot_enabled' => false,
                 'chatbot_greeting' => 'Hi! How can I help you today?',
-                'chatbot_fallback_threshold' => 2,
+                'chatbot_fallback_threshold' => 20,
             ]
         );
 
@@ -92,7 +92,7 @@ class AiChatbotWidget extends Component
                 'success_message' => 'Thank you! Please check your email to verify your ticket.',
                 'require_phone' => false,
                 'show_category' => true,
-                'default_status' => 'pending',
+                'default_status' => 'open',
                 'default_priority' => 'medium',
                 'is_active' => true,
             ]
@@ -131,7 +131,7 @@ class AiChatbotWidget extends Component
         $validated = $this->validate([
             'ai_chatbot_enabled' => ['required', 'boolean'],
             'chatbot_greeting' => ['required', 'string', 'max:500'],
-            'chatbot_fallback_threshold' => ['required', 'integer', 'min:1', 'max:10'],
+            'chatbot_fallback_threshold' => ['required', 'integer', 'min:1', 'max:50'],
             'escalation_url_type' => ['required', 'string', 'in:standalone,custom_url'],
             'custom_escalation_url' => ['nullable', 'required_if:escalation_url_type,custom_url', 'url', 'max:2048'],
         ]);

@@ -20,6 +20,7 @@ class AutomationRuleFactory extends Factory
     {
         $type = fake()->randomElement([
             AutomationRule::TYPE_ASSIGNMENT,
+            AutomationRule::TYPE_KEYWORD_ASSIGNMENT,
             AutomationRule::TYPE_PRIORITY,
             AutomationRule::TYPE_AUTO_REPLY,
             AutomationRule::TYPE_ESCALATION,
@@ -55,6 +56,10 @@ class AutomationRuleFactory extends Factory
                 'keywords' => ['urgent', 'critical', 'asap'],
                 'category_id' => null,
             ],
+            AutomationRule::TYPE_KEYWORD_ASSIGNMENT => [
+                'keywords' => ['network', 'vpn', 'router'],
+                'without_category' => true,
+            ],
             AutomationRule::TYPE_AUTO_REPLY => [
                 'on_create' => true,
             ],
@@ -80,6 +85,10 @@ class AutomationRuleFactory extends Factory
             ],
             AutomationRule::TYPE_PRIORITY => [
                 'set_priority' => 'urgent',
+            ],
+            AutomationRule::TYPE_KEYWORD_ASSIGNMENT => [
+                'assign_to_operator_id' => null,
+                'set_category_id' => null,
             ],
             AutomationRule::TYPE_AUTO_REPLY => [
                 'send_email' => true,

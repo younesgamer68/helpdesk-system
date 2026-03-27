@@ -19,6 +19,7 @@
             display: none !important;
         }
     </style>
+    @vite(['resources/js/echo.js'])
 </head>
 
 <body

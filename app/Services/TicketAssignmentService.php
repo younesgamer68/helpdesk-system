@@ -32,7 +32,9 @@ class TicketAssignmentService
     public function assignTicket(Ticket $ticket): ?User
     {
         if (! $ticket->category_id) {
-            return $this->assignToGeneralist($ticket);
+            $this->notifyAdminsTicketUnassigned($ticket);
+
+            return null;
         }
 
         // First, try to find a specialist matching the ticket category
@@ -119,9 +121,9 @@ class TicketAssignmentService
             ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
             ->first();
 
-        // If no generalist, try any available operator
+        // If no generalist, try any available operator NOT specialized in a different category
         if (! $generalist) {
-            $generalist = User::query()
+            $query = User::query()
                 ->where('company_id', $ticket->company_id)
                 ->operators()
                 ->available()
@@ -131,8 +133,25 @@ class TicketAssignmentService
                     $query->whereNotIn('status', ['resolved', 'closed']);
                 }])
                 ->orderBy('open_tickets_count', 'asc')
-                ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00'])
-                ->first();
+                ->orderByRaw('COALESCE(last_assigned_at, ?) ASC', ['1970-01-01 00:00:00']);
+
+            // Exclude operators who specialize in unrelated categories
+            if ($ticket->category_id) {
+                $matchingCategoryIds = [$ticket->category_id];
+                $parentId = TicketCategory::query()
+                    ->whereKey($ticket->category_id)
+                    ->value('parent_id');
+                if ($parentId) {
+                    $matchingCategoryIds[] = $parentId;
+                }
+
+                $query->where(function ($q) use ($matchingCategoryIds) {
+                    $q->whereDoesntHave('categories')
+                        ->orWhereHas('categories', fn ($sub) => $sub->whereIn('ticket_categories.id', $matchingCategoryIds));
+                });
+            }
+
+            $generalist = $query->first();
         }
 
         if ($generalist) {
@@ -142,6 +161,13 @@ class TicketAssignmentService
         }
 
         // Notify admins that auto-assignment failed
+        $this->notifyAdminsTicketUnassigned($ticket);
+
+        return null;
+    }
+
+    protected function notifyAdminsTicketUnassigned(Ticket $ticket): void
+    {
         $admins = User::where('company_id', $ticket->company_id)
             ->whereIn('role', ['admin', 'super_admin'])
             ->get();
@@ -149,8 +175,6 @@ class TicketAssignmentService
         foreach ($admins as $admin) {
             $admin->notify(new TicketUnassigned($ticket));
         }
-
-        return null;
     }
 
     /**
@@ -215,12 +239,23 @@ class TicketAssignmentService
             }
         }
 
-        // Fall back to least-loaded available team member
-        $operator = $availableMembers->first();
+        // Fall back to generalists (team members without specialized categories)
+        $generalists = $availableMembers->filter(function (User $member) {
+            return $member->categories->isEmpty() && ! $member->specialty_id;
+        });
 
-        $this->performAssignment($ticket, $operator, $team);
+        if ($generalists->isNotEmpty()) {
+            $operator = $generalists->first();
 
-        return $operator;
+            $this->performAssignment($ticket, $operator, $team);
+
+            return $operator;
+        }
+
+        // No suitable team member found — fall back to global assignment
+        $ticket->forceFill(['team_id' => null])->saveQuietly();
+
+        return $this->assignTicket($ticket);
     }
 
     /**
@@ -327,6 +362,7 @@ class TicketAssignmentService
     {
         $unassignedTickets = Ticket::where('company_id', $companyId)
             ->whereNull('assigned_to')
+            ->whereNotNull('category_id')
             ->where('verified', true)
             ->whereNotIn('status', ['resolved', 'closed'])
             ->with('category:id,parent_id')

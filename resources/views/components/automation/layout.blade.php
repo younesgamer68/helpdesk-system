@@ -11,6 +11,11 @@
                 <flux:navlist.item :href="route('automation.ticket-rules', ['company' => Auth::user()->company->slug])"
                     :current="request()->routeIs('automation.ticket-rules')" wire:navigate>{{ __('Ticket Rules') }}
                 </flux:navlist.item>
+                <flux:navlist.item
+                    :href="route('automation.assignment-rules', ['company' => Auth::user()->company->slug])"
+                    :current="request()->routeIs('automation.assignment-rules')" wire:navigate>
+                    {{ __('Assignment Rules') }}
+                </flux:navlist.item>
                 <flux:navlist.item :href="route('automation.sla-policy', ['company' => Auth::user()->company->slug])"
                     :current="request()->routeIs('automation.sla-policy')" wire:navigate>{{ __('SLA Policy') }}
                 </flux:navlist.item>

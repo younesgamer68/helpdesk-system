@@ -79,7 +79,7 @@
                                     <div class="flex items-center justify-between">
                                         <span class="truncate">{{ $child->name }}</span>
                                         <span
-                                            class="inline-flex items-center justify-center w-6 h-6 text-xs text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full group-hover:bg-emerald-50 group-hover:text-emerald-600 transition">{{ $child->articles()->count() }}</span>
+                                            class="inline-flex items-center justify-center w-6 h-6 text-xs text-zinc-500 bg-zinc-100 dark:bg-zinc-800 rounded-full group-hover:bg-emerald-50 group-hover:text-emerald-600 transition">{{ $child->kbArticles()->where('status', 'published')->count() }}</span>
                                     </div>
                                 </a>
                             </li>
@@ -139,6 +139,21 @@
                                             <p class="text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                                                 {{ $article->meta_description ?? strip_tags(Str::limit($article->body, 200)) }}
                                             </p>
+                                            @php
+                                                $articleTags = collect(json_decode($article->tags ?? '[]', true))
+                                                    ->filter()
+                                                    ->take(4);
+                                            @endphp
+                                            @if ($articleTags->isNotEmpty())
+                                                <div class="mt-3 flex flex-wrap gap-1.5">
+                                                    @foreach ($articleTags as $tag)
+                                                        <span
+                                                            class="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                                                            #{{ $tag }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                             <div
                                                 class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium tracking-wide text-zinc-500">
                                                 <span class="flex items-center gap-1">

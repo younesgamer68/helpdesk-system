@@ -3,6 +3,8 @@
 namespace App\Livewire\Tickets;
 
 use App\Ai\Agents\SupportReplyAgent;
+use App\Events\NewTicketReply;
+use App\Events\TicketTypingUpdated;
 use App\Mail\AgentRepliedToTicket;
 use App\Mail\TicketClosed;
 use App\Mail\TicketResolved;
@@ -119,6 +121,24 @@ class TicketDetails extends Component
                 return;
             }
         }
+    }
+
+    public function getListeners(): array
+    {
+        return [
+            "echo:ticket.{$this->ticket->id},.NewTicketReply" => 'refreshConversation',
+            "echo:ticket.{$this->ticket->id},.TicketTypingUpdated" => 'refreshTyping',
+        ];
+    }
+
+    public function refreshConversation(): void
+    {
+        $this->ticket->refresh();
+    }
+
+    public function refreshTyping(): void
+    {
+        // Re-render picks up latest typing state from cache
     }
 
     #[Computed]
@@ -578,11 +598,6 @@ class TicketDetails extends Component
 
     public function closeTicket()
     {
-        if (Auth::user()->isOperator()) {
-            $this->dispatch('show-toast', message: 'Unauthorized. Only admins can close tickets.', type: 'error');
-
-            return;
-        }
 
         if ($this->ticket->status === 'closed') {
             $this->dispatch('show-toast', message: 'Ticket is already closed!', type: 'error');
@@ -761,7 +776,7 @@ class TicketDetails extends Component
             Mail::to($this->ticket->customer?->email)->send(new AgentRepliedToTicket($this->ticket, $reply));
         }
 
-        // TRIGGER 2: Agent sends a reply
+        // Agent reply → waiting on customer
         if ($this->ticket->status !== 'closed' && ! $this->keepOpen) {
             $this->ticket->update(['status' => 'pending']);
             $this->state = 'pending';
@@ -778,6 +793,8 @@ class TicketDetails extends Component
 
         $this->logAction('reply_added', 'Added a reply. Status set to pending.');
 
+        broadcast(new NewTicketReply($this->ticket->id))->toOthers();
+
         $this->dispatch('show-toast', message: 'Reply added successfully!', type: 'success');
     }
 
@@ -787,6 +804,7 @@ class TicketDetails extends Component
 
         if ($hasMessage) {
             Cache::put($this->agentTypingCacheKey(), Auth::user()->name, now()->addSeconds(6));
+            broadcast(new TicketTypingUpdated($this->ticket->id))->toOthers();
 
             return;
         }
@@ -802,6 +820,7 @@ class TicketDetails extends Component
     private function clearAgentTypingState(): void
     {
         Cache::forget($this->agentTypingCacheKey());
+        broadcast(new TicketTypingUpdated($this->ticket->id))->toOthers();
     }
 
     #[Computed]
@@ -1123,6 +1142,8 @@ class TicketDetails extends Component
         foreach ($recipients as $recipient) {
             $recipient->notify(new InternalNoteAdded($this->ticket));
         }
+
+        broadcast(new NewTicketReply($this->ticket->id))->toOthers();
 
         $this->dispatch('show-toast', message: 'Internal note added successfully!', type: 'success');
     }

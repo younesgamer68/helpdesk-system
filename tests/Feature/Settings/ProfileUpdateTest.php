@@ -3,6 +3,7 @@
 use App\Livewire\Settings\Profile;
 use App\Models\Company;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 test('profile page is displayed', function () {
@@ -12,6 +13,16 @@ test('profile page is displayed', function () {
     $this->actingAs($user);
 
     $this->get("http://{$company->slug}.".config('app.domain').'/settings/profile')->assertOk();
+});
+
+test('profile page does not show delete account block', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create(['company_id' => $company->id]);
+
+    $this->actingAs($user);
+
+    Livewire::test(Profile::class)
+        ->assertDontSee('Delete account');
 });
 
 test('profile information can be updated', function () {
@@ -101,4 +112,26 @@ test('user can upload avatar', function () {
     $user->refresh();
     expect($user->avatar)->not->toBeNull();
     \Illuminate\Support\Facades\Storage::disk('public')->assertExists($user->avatar);
+});
+
+test('user can reset avatar', function () {
+    Storage::fake('public');
+
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $user = User::factory()->create([
+        'company_id' => $company->id,
+        'avatar' => 'avatars/existing-avatar.jpg',
+    ]);
+
+    Storage::disk('public')->put('avatars/existing-avatar.jpg', 'fake-image');
+
+    $this->actingAs($user);
+
+    Livewire::test(Profile::class)
+        ->call('resetAvatar')
+        ->assertHasNoErrors();
+
+    $user->refresh();
+    expect($user->avatar)->toBeNull();
+    Storage::disk('public')->assertMissing('avatars/existing-avatar.jpg');
 });

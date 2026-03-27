@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -73,6 +74,8 @@ class AutomationRulesTable extends Component
 
     public ?int $assign_to_team_id = null;
 
+    public ?int $assign_to_category_id = null;
+
     public string $set_priority = 'high';
 
     public bool $send_email = true;
@@ -90,10 +93,19 @@ class AutomationRulesTable extends Component
         $rules = [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'type' => 'required|in:assignment,priority,auto_reply,escalation,sla_breach',
+            'type' => 'required|in:assignment,keyword_assignment,priority,auto_reply,escalation,sla_breach',
             'is_active' => 'boolean',
             'priority' => 'required|integer|min:0|max:1000',
         ];
+
+        if ($this->type === 'keyword_assignment') {
+            $rules['keywords'] = 'required|array|min:1';
+            $rules['assign_to_category_id'] = [
+                'required',
+                'integer',
+                Rule::exists('ticket_categories', 'id')->where(fn ($query) => $query->where('company_id', Auth::user()->company_id)),
+            ];
+        }
 
         if ($this->type === 'escalation') {
             $rules['idle_hours'] = 'required|integer|min:1';
@@ -110,7 +122,7 @@ class AutomationRulesTable extends Component
     {
         if ($this->filterMode === 'assignment') {
             $this->type = 'assignment';
-            $this->filterType = 'assignment';
+            $this->filterType = '';
         } elseif ($this->filterMode === 'ticket') {
             $this->type = 'priority';
         }
@@ -155,7 +167,7 @@ class AutomationRulesTable extends Component
         }
 
         if ($this->filterMode === 'assignment') {
-            $query->where('type', 'assignment');
+            $query->whereIn('type', ['assignment', 'keyword_assignment']);
         } elseif ($this->filterMode === 'ticket') {
             $query->whereIn('type', ['priority', 'auto_reply', 'escalation', 'sla_breach']);
         }
@@ -342,6 +354,10 @@ class AutomationRulesTable extends Component
                 'category_id' => $this->category_id,
                 'priority' => $this->conditionPriorities,
             ],
+            'keyword_assignment' => [
+                'keywords' => $this->keywords,
+                'without_category' => true,
+            ],
             'priority' => [
                 'keywords' => $this->keywords,
                 'category_id' => $this->category_id,
@@ -381,6 +397,12 @@ class AutomationRulesTable extends Component
             }
 
             return $actions;
+        }
+
+        if ($this->type === 'keyword_assignment') {
+            return [
+                'set_category_id' => $this->assign_to_category_id,
+            ];
         }
 
         return match ($this->type) {
@@ -423,6 +445,7 @@ class AutomationRulesTable extends Component
         $this->fallback_to_generalist = $actions['fallback_to_generalist'] ?? true;
         $this->assign_to_operator_id = $actions['assign_to_operator_id'] ?? null;
         $this->assign_to_team_id = $actions['assign_to_team_id'] ?? null;
+        $this->assign_to_category_id = $actions['set_category_id'] ?? null;
         $this->set_priority = $actions['set_priority'] ?? 'high';
         $this->send_email = $actions['send_email'] ?? true;
         $this->email_subject = $actions['subject'] ?? '';
@@ -450,6 +473,7 @@ class AutomationRulesTable extends Component
         $this->fallback_to_generalist = true;
         $this->assign_to_operator_id = null;
         $this->assign_to_team_id = null;
+        $this->assign_to_category_id = null;
         $this->set_priority = 'high';
         $this->send_email = true;
         $this->email_subject = '';
@@ -463,7 +487,10 @@ class AutomationRulesTable extends Component
     {
         if ($value) {
             $this->assign_to_team_id = null;
-            $this->assign_to_specialist = false;
+
+            if ($this->type === 'assignment') {
+                $this->assign_to_specialist = false;
+            }
         }
     }
 
@@ -471,7 +498,10 @@ class AutomationRulesTable extends Component
     {
         if ($value) {
             $this->assign_to_operator_id = null;
-            $this->assign_to_specialist = false;
+
+            if ($this->type === 'assignment') {
+                $this->assign_to_specialist = false;
+            }
         }
     }
 

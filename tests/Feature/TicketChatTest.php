@@ -12,6 +12,7 @@ use App\Models\TicketCategory;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -139,6 +140,28 @@ it('reopens resolved ticket to open status on new customer reply', function () {
     expect($this->ticket->fresh()->status)->toBe('open');
 });
 
+it('sets ticket to in_progress when customer replies to pending ticket', function () {
+    $this->ticket->update(['status' => 'pending']);
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->set('message', 'Still waiting on this')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    expect($this->ticket->fresh()->status)->toBe('in_progress');
+});
+
+it('does not change status when customer replies to open ticket', function () {
+    $this->ticket->update(['status' => 'open']);
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->set('message', 'Just following up')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    expect($this->ticket->fresh()->status)->toBe('open');
+});
+
 it('notifies assigned agent when client replies', function () {
     Notification::fake();
 
@@ -258,19 +281,20 @@ it('shows assigned agent in reply-as dropdown for admin', function () {
         ->assertSee($agent->name);
 });
 
-it('shows live polling and operator name typing indicator on tracking chat', function () {
+it('shows operator name typing indicator on tracking chat via real-time events', function () {
     Cache::put('ticket:typing:agent:'.$this->ticket->id, 'Agent Smith', now()->addSeconds(6));
 
-    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
-        ->assertSee('Agent Smith is typing')
-        ->assertSeeHtml('wire:poll.5s');
+    $component = Livewire::test(TicketConversation::class, ['ticket' => $this->ticket]);
+
+    expect($component->html())->toContain('Agent Smith is typing');
 });
 
 it('shows fallback typing name for legacy boolean cache value', function () {
     Cache::put('ticket:typing:agent:'.$this->ticket->id, true, now()->addSeconds(6));
 
-    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
-        ->assertSee('Support team is typing');
+    $component = Livewire::test(TicketConversation::class, ['ticket' => $this->ticket]);
+
+    expect($component->html())->toContain('Support team is typing');
 });
 
 it('tracks and clears customer typing state in tracking chat', function () {
@@ -294,8 +318,9 @@ it('shows customer typing indicator in operator ticket details view', function (
 
     $this->actingAs($this->user);
 
-    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
-        ->assertSee('Customer is typing');
+    $component = Livewire::test(TicketDetails::class, ['ticket' => $this->ticket]);
+
+    expect($component->html())->toContain('Customer is typing');
 });
 
 it('sends tracking link email when creating a follow-up ticket', function () {
@@ -325,4 +350,87 @@ it('sends tracking link email when creating a follow-up ticket', function () {
     Mail::assertQueued(TicketVerified::class, function ($mail) {
         return $mail->hasTo($this->customer->email);
     });
+});
+
+it('broadcasts NewTicketReply event when customer submits a reply', function () {
+    Event::fake([\App\Events\NewTicketReply::class]);
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->set('message', 'Customer reply broadcast test')
+        ->call('submitReply')
+        ->assertHasNoErrors();
+
+    Event::assertDispatched(\App\Events\NewTicketReply::class, function ($event) {
+        return $event->ticketId === $this->ticket->id;
+    });
+});
+
+it('broadcasts NewTicketReply event when agent adds a reply', function () {
+    Event::fake([\App\Events\NewTicketReply::class]);
+
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->set('message', 'Agent reply broadcast test')
+        ->call('addReply')
+        ->assertHasNoErrors();
+
+    Event::assertDispatched(\App\Events\NewTicketReply::class, function ($event) {
+        return $event->ticketId === $this->ticket->id;
+    });
+});
+
+it('broadcasts TicketTypingUpdated event when customer types', function () {
+    Event::fake([\App\Events\TicketTypingUpdated::class]);
+
+    Livewire::test(TicketConversation::class, ['ticket' => $this->ticket])
+        ->call('markTyping');
+
+    Event::assertDispatched(\App\Events\TicketTypingUpdated::class, function ($event) {
+        return $event->ticketId === $this->ticket->id;
+    });
+});
+
+it('broadcasts TicketTypingUpdated event when agent types', function () {
+    Event::fake([\App\Events\TicketTypingUpdated::class]);
+
+    $this->actingAs($this->user);
+
+    Livewire::test(TicketDetails::class, ['ticket' => $this->ticket])
+        ->set('message', 'Agent is typing...')
+        ->assertHasNoErrors();
+
+    Event::assertDispatched(\App\Events\TicketTypingUpdated::class, function ($event) {
+        return $event->ticketId === $this->ticket->id;
+    });
+});
+
+it('broadcasts events on public channel with correct name', function () {
+    $event = new \App\Events\NewTicketReply(42);
+
+    $channels = $event->broadcastOn();
+    expect($channels)->toHaveCount(1);
+    expect($channels[0])->toBeInstanceOf(\Illuminate\Broadcasting\Channel::class);
+    expect($channels[0]->name)->toBe('ticket.42');
+    expect($event->broadcastAs())->toBe('NewTicketReply');
+});
+
+it('has Echo listeners registered on widget conversation component', function () {
+    $component = Livewire::test(TicketConversation::class, ['ticket' => $this->ticket]);
+
+    $listeners = $component->instance()->getListeners();
+
+    expect($listeners)->toHaveKey("echo:ticket.{$this->ticket->id},.NewTicketReply");
+    expect($listeners)->toHaveKey("echo:ticket.{$this->ticket->id},.TicketTypingUpdated");
+});
+
+it('has Echo listeners registered on agent ticket details component', function () {
+    $this->actingAs($this->user);
+
+    $component = Livewire::test(TicketDetails::class, ['ticket' => $this->ticket]);
+
+    $listeners = $component->instance()->getListeners();
+
+    expect($listeners)->toHaveKey("echo:ticket.{$this->ticket->id},.NewTicketReply");
+    expect($listeners)->toHaveKey("echo:ticket.{$this->ticket->id},.TicketTypingUpdated");
 });

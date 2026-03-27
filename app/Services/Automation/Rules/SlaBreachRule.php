@@ -16,13 +16,17 @@ class SlaBreachRule implements RuleInterface
      */
     public function evaluate(AutomationRule $rule, Ticket $ticket): bool
     {
+        // Only apply to tickets that are actually breached
+        if ($ticket->sla_status !== 'breached') {
+            return false;
+        }
+
         // Category check
         $categoryId = $rule->conditions['category_id'] ?? null;
         if ($categoryId && ! $this->matchesCategoryCondition($ticket, (int) $categoryId)) {
             return false;
         }
 
-        // To reach this rule from the scheduler, it must already be breached.
         return true;
     }
 

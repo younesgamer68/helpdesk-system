@@ -137,6 +137,7 @@ test('sla breach rule matches subcategory via parent category condition', functi
         'company_id' => $company->id,
         'category_id' => $child->id,
         'priority' => 'high',
+        'sla_status' => 'breached',
     ]);
 
     $handler = new SlaBreachRule;

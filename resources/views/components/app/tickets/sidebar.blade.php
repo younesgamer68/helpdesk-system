@@ -302,7 +302,6 @@
                 </x-ui.dropdown-btn>
             @endif
 
-
             @if (Auth::user()->isAdmin())
                 <button type="button" wire:click="promptActionConfirmation('close')"
                     class="w-full px-4 py-2 bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg transition text-sm font-medium flex items-center justify-center gap-2 border border-red-200 dark:border-red-800/50">
@@ -310,6 +309,7 @@
                     Close ticket
                 </button>
             @endif
+
 
         </div>
     @endif

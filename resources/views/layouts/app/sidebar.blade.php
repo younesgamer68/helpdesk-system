@@ -50,14 +50,24 @@
         <div class="flex-1"></div>
         <flux:dropdown position="top" align="end">
             <flux:button variant="ghost" icon-trailing="chevron-down" class="gap-2">
-                <flux:avatar :initials="auth()->user()->initials()" class="size-7" />
+                @if (auth()->user()->avatar)
+                    <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}"
+                        class="h-7 w-7 rounded-full object-cover border border-zinc-700">
+                @else
+                    <flux:avatar :initials="auth()->user()->initials()" class="size-7" />
+                @endif
                 <span class="truncate max-w-28">{{ auth()->user()->name }}</span>
             </flux:button>
             <flux:menu>
                 <flux:menu.radio.group>
                     <div class="p-0 text-sm font-normal">
                         <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                            <flux:avatar :name="auth()->user()->name" :initials="auth()->user()->initials()" />
+                            @if (auth()->user()->avatar)
+                                <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}"
+                                    class="h-8 w-8 rounded-full object-cover border border-zinc-700">
+                            @else
+                                <flux:avatar :name="auth()->user()->name" :initials="auth()->user()->initials()" />
+                            @endif
                             <div class="grid flex-1 text-start text-sm leading-tight">
                                 <flux:heading class="truncate">{{ auth()->user()->name }}</flux:heading>
                                 <flux:text class="truncate">{{ auth()->user()->email }}</flux:text>

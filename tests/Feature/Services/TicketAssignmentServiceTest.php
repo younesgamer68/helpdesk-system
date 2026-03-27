@@ -4,7 +4,9 @@ use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\User;
+use App\Notifications\TicketUnassigned;
 use App\Services\TicketAssignmentService;
+use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
     $this->company = Company::factory()->create();
@@ -308,6 +310,39 @@ test('does not assign to unavailable operators', function () {
     expect($assignedOperator->id)->toBe($availableGeneralist->id);
 });
 
+test('generalist fallback excludes operators specialized in different categories', function () {
+    $billing = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Billing']);
+    $network = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Network']);
+
+    // Network specialist — should NOT get billing tickets
+    $networkSpecialist = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'is_available' => true,
+        'assigned_tickets_count' => 0,
+    ]);
+    $networkSpecialist->categories()->attach($network->id);
+
+    // Billing specialist — should get billing tickets
+    $billingSpecialist = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'is_available' => true,
+        'assigned_tickets_count' => 5,
+    ]);
+    $billingSpecialist->categories()->attach($billing->id);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $billing->id,
+        'assigned_to' => null,
+        'verified' => false,
+    ]);
+
+    $assignedOperator = $this->service->assignTicket($ticket);
+
+    // Should assign to billing specialist, not the lower-workload network specialist
+    expect($assignedOperator->id)->toBe($billingSpecialist->id);
+});
+
 test('returns null when no operators are available', function () {
     $category = TicketCategory::factory()->create(['company_id' => $this->company->id]);
 
@@ -327,6 +362,33 @@ test('returns null when no operators are available', function () {
 
     expect($assignedOperator)->toBeNull();
     expect($ticket->fresh()->assigned_to)->toBeNull();
+});
+
+test('keeps ticket unassigned and notifies admins when category is missing', function () {
+    Notification::fake();
+
+    $admin = User::factory()->admin()->create([
+        'company_id' => $this->company->id,
+    ]);
+
+    User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'is_available' => true,
+    ]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => null,
+        'assigned_to' => null,
+        'verified' => true,
+    ]);
+
+    $assignedOperator = $this->service->assignTicket($ticket);
+
+    expect($assignedOperator)->toBeNull();
+    expect($ticket->fresh()->assigned_to)->toBeNull();
+
+    Notification::assertSentTo($admin, TicketUnassigned::class);
 });
 
 test('unassigns ticket and decrements counter', function () {

@@ -24,6 +24,12 @@
                     <div>
                         <input type="file" wire:model="avatar" accept="image/jpeg,image/png,image/gif,image/webp"
                             class="block w-full text-sm text-zinc-500 file:mr-4 file:rounded-lg file:border-0 file:bg-zinc-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-zinc-700 hover:file:bg-zinc-200 dark:file:bg-zinc-700 dark:file:text-zinc-300 dark:hover:file:bg-zinc-600" />
+                        @if ($avatar || Auth::user()->avatar)
+                            <button type="button" wire:click="resetAvatar"
+                                class="mt-2 inline-flex items-center rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20">
+                                {{ __('Reset Avatar') }}
+                            </button>
+                        @endif
                         @error('avatar')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
@@ -104,8 +110,5 @@
             </div>
         @endif
 
-        @if ($this->showDeleteUser)
-            <livewire:settings.delete-user-form />
-        @endif
     </x-app.settings.layout>
 </section>

@@ -11,7 +11,8 @@
                     </p>
                 </div>
                 <label class="inline-flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" wire:model.live="ai_chatbot_enabled" class="w-4 h-4 rounded checked:bg-emerald-600 dark:checked:bg-emerald-600 checked:border-emerald-600 dark:checked:border-emerald-600 border-zinc-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-600 accent-emerald-600">
+                    <input type="checkbox" wire:model.live="ai_chatbot_enabled"
+                        class="w-4 h-4 rounded checked:bg-emerald-600 dark:checked:bg-emerald-600 checked:border-emerald-600 dark:checked:border-emerald-600 border-zinc-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-600 accent-emerald-600">
                     <span class="text-sm text-zinc-700 dark:text-zinc-200">Enabled</span>
                 </label>
             </div>
@@ -49,16 +50,25 @@
                             Escalation button links to
                         </label>
                         <flux:dropdown>
-                            <button type="button" class="w-64 flex items-center justify-between rounded border border-zinc-200 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-0">
+                            <button type="button"
+                                class="w-64 flex items-center justify-between rounded border border-zinc-200 dark:border-zinc-700 px-3 py-2 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 focus:border-emerald-500 focus:outline-none focus:ring-0">
                                 <span class="truncate">
                                     {{ $escalation_url_type === 'custom_url' ? 'Custom URL (e.g. iframe embed page)' : 'Standalone form page' }}
                                 </span>
-                                <svg class="h-4 w-4 ml-2 flex-shrink-0 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                <svg class="h-4 w-4 ml-2 flex-shrink-0 text-zinc-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
                             </button>
                             <flux:menu class="w-64">
                                 <flux:menu.radio.group wire:model.live="escalation_url_type">
-                                    <flux:menu.radio value="standalone" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Standalone form page</flux:menu.radio>
-                                    <flux:menu.radio value="custom_url" class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">Custom URL (e.g. iframe embed page)</flux:menu.radio>
+                                    <flux:menu.radio value="standalone"
+                                        class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                        Standalone form page</flux:menu.radio>
+                                    <flux:menu.radio value="custom_url"
+                                        class="text-zinc-600 dark:text-zinc-300 hover:!bg-emerald-500 hover:!text-white data-active:!bg-emerald-500 data-active:!text-white dark:hover:!bg-emerald-600 dark:hover:!text-white dark:data-active:!bg-emerald-600 dark:data-active:!text-white">
+                                        Custom URL (e.g. iframe embed page)</flux:menu.radio>
                                 </flux:menu.radio.group>
                             </flux:menu>
                         </flux:dropdown>
@@ -136,7 +146,9 @@
                                                 class="px-3 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800">
                                                 Edit
                                             </button>
-                                            <button @click="confirmDeletion($wire, {{ $faq->id }}, 'deleteFaq', 'FAQ')" type="button"
+                                            <button
+                                                @click="confirmDeletion($wire, {{ $faq->id }}, 'deleteFaq', 'FAQ')"
+                                                type="button"
                                                 class="px-3 py-1.5 rounded border border-red-300 text-red-500 text-xs hover:bg-red-50 dark:hover:bg-red-900/20">
                                                 Delete
                                             </button>
@@ -183,7 +195,8 @@
             <div class="p-6 space-y-4">
                 @php
                     $isDark = $this->widgetSetting->theme_mode === 'dark';
-                    $bubbleClass = 'bg-emerald-600 text-white border border-emerald-500 shadow-lg shadow-emerald-900/20';
+                    $bubbleClass =
+                        'bg-emerald-600 text-white border border-emerald-500 shadow-lg shadow-emerald-900/20';
                 @endphp
 
                 <div class="flex items-center gap-3">

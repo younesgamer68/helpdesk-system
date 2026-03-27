@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Tickets;
 
+use App\Mail\TicketVerified;
 use App\Models\SavedFilterView;
 use App\Models\Team;
 use App\Models\TenantConfig;
@@ -11,6 +12,7 @@ use App\Models\User;
 use App\Services\TicketAssignmentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -67,7 +69,7 @@ class TicketsTable extends Component
 
     public $priority = 'medium';
 
-    public $status = 'pending';
+    public $status = 'open';
 
     public $assigned_to = '';
 
@@ -507,6 +509,20 @@ class TicketsTable extends Component
     {
         $this->validate();
 
+        $existingCustomer = \App\Models\Customer::query()
+            ->where('company_id', Auth::user()->company_id)
+            ->where('email', $this->customer_email)
+            ->first();
+
+        if ($existingCustomer && ! $existingCustomer->is_active) {
+            $message = 'This customer is deactivated. Please reactivate the customer before creating a ticket.';
+
+            $this->addError('customer_email', $message);
+            $this->dispatch('show-toast', message: $message, type: 'error');
+
+            return;
+        }
+
         // Generate unique ticket number
         $ticketNumber = $this->generateTicketNumber();
 
@@ -525,6 +541,9 @@ class TicketsTable extends Component
 
         $customer->save();
 
+        // Generate tracking token so the customer can track their ticket
+        $trackingToken = Str::random(64);
+
         // Create the ticket
         $ticket = Ticket::create([
             'company_id' => Auth::user()->company_id,
@@ -538,8 +557,12 @@ class TicketsTable extends Component
             'team_id' => $this->createTeamId ?: null,
             'category_id' => $this->category_id ?: null,
             'verified' => true, // Auto-verify admin-created tickets
+            'tracking_token' => $trackingToken,
             'source' => 'agent',
         ]);
+
+        // Send tracking email to the customer
+        Mail::to($customer->email)->queue(new TicketVerified($ticket, $trackingToken));
 
         $this->dispatch('show-toast', message: "Ticket #{$ticketNumber} created successfully!", type: 'success');
         $this->closeCreateModal();

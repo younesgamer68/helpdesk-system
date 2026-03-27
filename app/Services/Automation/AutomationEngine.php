@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Services\Automation\Rules\AssignmentRule;
 use App\Services\Automation\Rules\AutoReplyRule;
 use App\Services\Automation\Rules\EscalationRule;
+use App\Services\Automation\Rules\KeywordAssignmentRule;
 use App\Services\Automation\Rules\PriorityRule;
 use App\Services\Automation\Rules\RuleInterface;
 use App\Services\Automation\Rules\SlaBreachRule;
@@ -20,6 +21,7 @@ class AutomationEngine
      */
     protected array $ruleHandlers = [
         AutomationRule::TYPE_ASSIGNMENT => AssignmentRule::class,
+        AutomationRule::TYPE_KEYWORD_ASSIGNMENT => KeywordAssignmentRule::class,
         AutomationRule::TYPE_PRIORITY => PriorityRule::class,
         AutomationRule::TYPE_AUTO_REPLY => AutoReplyRule::class,
         AutomationRule::TYPE_ESCALATION => EscalationRule::class,
@@ -33,9 +35,26 @@ class AutomationEngine
     {
         $rules = $this->getActiveRulesForCompany($ticket->company_id);
 
+        $keywordAssignmentRules = $rules
+            ->filter(fn (AutomationRule $rule) => $rule->type === AutomationRule::TYPE_KEYWORD_ASSIGNMENT)
+            ->sortBy('priority');
+
+        foreach ($keywordAssignmentRules as $rule) {
+            $this->executeRule($rule, $ticket);
+            $ticket->refresh();
+        }
+
         foreach ($rules as $rule) {
+            if ($rule->type === AutomationRule::TYPE_KEYWORD_ASSIGNMENT) {
+                continue;
+            }
+
             if ($rule->type === AutomationRule::TYPE_ESCALATION) {
                 continue; // Escalation rules are processed by scheduler
+            }
+
+            if ($rule->type === AutomationRule::TYPE_SLA_BREACH) {
+                continue; // SLA breach rules are processed by the helpdesk:check-sla-breaches command
             }
 
             $this->executeRule($rule, $ticket);

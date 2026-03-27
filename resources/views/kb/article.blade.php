@@ -53,6 +53,22 @@
                 </span>
             @endif
 
+            @php
+                $articleTags = collect(json_decode($article->tags ?? '[]', true))
+                    ->filter()
+                    ->take(6);
+            @endphp
+            @if ($articleTags->isNotEmpty())
+                <div class="mb-4 flex flex-wrap gap-2">
+                    @foreach ($articleTags as $tag)
+                        <span
+                            class="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            #{{ $tag }}
+                        </span>
+                    @endforeach
+                </div>
+            @endif
+
             <h1 class="text-3xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 leading-tight mb-4">
                 {{ $article->title }}</h1>
 

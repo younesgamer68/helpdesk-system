@@ -36,15 +36,13 @@ test('company profile can be updated', function () {
     $this->actingAs($admin);
 
     Livewire::test(CompanyProfile::class)
-        ->set('companyEmail', 'support@updated.com')
-        ->set('companyPhone', '+1234567890')
+        ->set('companyName', 'Updated Company Name')
         ->call('save')
         ->assertHasNoErrors()
         ->assertDispatched('company-profile-updated');
 
     $company->refresh();
-    expect($company->email)->toBe('support@updated.com');
-    expect($company->phone)->toBe('+1234567890');
+    expect($company->name)->toBe('Updated Company Name');
 });
 
 test('company slug can be updated directly', function () {
@@ -126,9 +124,20 @@ test('company profile validates required fields', function () {
 
     Livewire::test(CompanyProfile::class)
         ->set('companyName', '')
-        ->set('companyEmail', '')
         ->call('save')
-        ->assertHasErrors(['companyName', 'companyEmail']);
+        ->assertHasErrors(['companyName']);
+});
+
+test('company profile does not render support email phone or website fields', function () {
+    $company = Company::factory()->create(['onboarding_completed_at' => now()]);
+    $admin = User::factory()->admin()->create(['company_id' => $company->id]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(CompanyProfile::class)
+        ->assertDontSee('Support Email')
+        ->assertDontSee('Website URL')
+        ->assertDontSee('Phone');
 });
 
 test('company logo can be uploaded', function () {
@@ -147,6 +156,29 @@ test('company logo can be uploaded', function () {
     $company->refresh();
     expect($company->logo)->not->toBeNull();
     Storage::disk('public')->assertExists($company->logo);
+});
+
+test('company logo can be reset', function () {
+    Storage::fake('public');
+
+    $company = Company::factory()->create([
+        'onboarding_completed_at' => now(),
+        'logo' => 'logos/existing-logo.png',
+    ]);
+    $admin = User::factory()->admin()->create(['company_id' => $company->id]);
+
+    Storage::disk('public')->put('logos/existing-logo.png', 'fake-image');
+
+    $this->actingAs($admin);
+
+    Livewire::test(CompanyProfile::class)
+        ->call('resetLogo')
+        ->assertHasNoErrors()
+        ->assertDispatched('company-profile-updated');
+
+    $company->refresh();
+    expect($company->logo)->toBeNull();
+    Storage::disk('public')->assertMissing('logos/existing-logo.png');
 });
 
 test('admin can update max tickets per agent setting', function () {

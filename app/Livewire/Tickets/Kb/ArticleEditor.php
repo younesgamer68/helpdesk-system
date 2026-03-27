@@ -28,10 +28,6 @@ class ArticleEditor extends Component
 
     public $tags = '';
 
-    public $meta_description = '';
-
-    public $schedule_publish_date = null;
-
     public $published_at = null;
 
     public function mount(?KbArticle $article = null)
@@ -54,10 +50,6 @@ class ArticleEditor extends Component
             $this->body = $article->body;
             $this->status = $article->status;
             $this->ticket_category_id = $article->ticket_category_id;
-            $this->meta_description = $article->meta_description;
-
-            // Format dates for datetime-local input
-            $this->schedule_publish_date = $article->schedule_publish_date ? \Carbon\Carbon::parse($article->schedule_publish_date)->format('Y-m-d\TH:i') : null;
             $this->published_at = $article->published_at;
 
             // Decode tags array to string
@@ -74,36 +66,22 @@ class ArticleEditor extends Component
             'status' => 'required|in:draft,published,archived',
             'ticket_category_id' => 'required|exists:ticket_categories,id',
             'tags' => 'nullable|string',
-            'meta_description' => 'nullable|string|max:500',
-            'schedule_publish_date' => 'nullable|date',
         ];
-    }
-
-    public function saveDraft()
-    {
-        $this->status = 'draft';
-        $this->save();
-    }
-
-    public function publish()
-    {
-        $this->status = 'published';
-        $this->save();
     }
 
     public function save()
     {
         $this->validate();
 
-        $tagsArray = $this->tags ? array_map('trim', explode(',', $this->tags)) : [];
-        $tagsJson = json_encode(array_filter($tagsArray));
+        $tagsArray = $this->tags
+            ? array_map(static fn (string $tag) => Str::lower(trim($tag)), explode(',', $this->tags))
+            : [];
+        $tagsJson = json_encode(array_values(array_unique(array_filter($tagsArray))));
 
         $cleanBody = \Mews\Purifier\Facades\Purifier::clean($this->body); // Purifier
 
-        // If publishing right now, un-schedule and set published_at
         if ($this->status === 'published' && ! $this->published_at) {
             $this->published_at = now();
-            $this->schedule_publish_date = null;
         }
 
         $articleData = [
@@ -113,8 +91,6 @@ class ArticleEditor extends Component
             'status' => $this->status,
             'ticket_category_id' => $this->ticket_category_id,
             'tags' => $tagsJson,
-            'meta_description' => $this->meta_description,
-            'schedule_publish_date' => $this->schedule_publish_date,
             'published_at' => $this->published_at,
         ];
 

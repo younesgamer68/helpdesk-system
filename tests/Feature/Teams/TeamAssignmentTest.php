@@ -105,7 +105,45 @@ test('prefers specialist matching parent category for subcategory ticket', funct
     expect($assigned->id)->toBe($parentSpecialist->id);
 });
 
-test('falls back to least loaded member when no specialist in team', function () {
+test('falls back to team generalist when no specialist matches category', function () {
+    $categoryA = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Billing']);
+    $categoryB = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Network']);
+
+    $team = Team::factory()->create(['company_id' => $this->company->id]);
+
+    // Wrong-category specialist on the team
+    $wrongSpecialist = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'assigned_tickets_count' => 0,
+    ]);
+    $wrongSpecialist->categories()->attach($categoryB->id);
+
+    // Generalist (no specialties) on the team
+    $generalist = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'assigned_tickets_count' => 2,
+    ]);
+
+    $team->members()->attach([
+        $wrongSpecialist->id => ['role' => 'member'],
+        $generalist->id => ['role' => 'member'],
+    ]);
+
+    $ticket = Ticket::factory()->create([
+        'company_id' => $this->company->id,
+        'category_id' => $categoryA->id,
+        'assigned_to' => null,
+        'verified' => true,
+    ]);
+
+    $assigned = $this->service->assignToTeam($ticket, $team);
+
+    // Should pick the generalist, NOT the wrong-category specialist
+    expect($assigned->id)->toBe($generalist->id);
+    expect($ticket->fresh()->team_id)->toBe($team->id);
+});
+
+test('falls back to global assignment when team only has wrong-category specialists', function () {
     $categoryA = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Network']);
     $categoryB = TicketCategory::factory()->create(['company_id' => $this->company->id, 'name' => 'Hardware']);
 
@@ -125,6 +163,13 @@ test('falls back to least loaded member when no specialist in team', function ()
 
     $team->members()->attach([$operatorA->id => ['role' => 'member'], $operatorB->id => ['role' => 'member']]);
 
+    // Create a global specialist for categoryA outside the team
+    $globalSpecialist = User::factory()->operator()->create([
+        'company_id' => $this->company->id,
+        'assigned_tickets_count' => 0,
+    ]);
+    $globalSpecialist->categories()->attach($categoryA->id);
+
     $ticket = Ticket::factory()->create([
         'company_id' => $this->company->id,
         'category_id' => $categoryA->id,
@@ -134,8 +179,9 @@ test('falls back to least loaded member when no specialist in team', function ()
 
     $assigned = $this->service->assignToTeam($ticket, $team);
 
-    // Falls back to least-loaded: operatorB
-    expect($assigned->id)->toBe($operatorB->id);
+    // Should NOT assign to wrong-category team members; falls back to global specialist
+    expect($assigned->id)->toBe($globalSpecialist->id);
+    expect($ticket->fresh()->team_id)->toBeNull();
 });
 
 test('falls back to global assignment when no team members available', function () {
