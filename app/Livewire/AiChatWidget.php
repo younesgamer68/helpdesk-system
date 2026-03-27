@@ -99,9 +99,22 @@ class AiChatWidget extends Component
         if (empty($this->messages)) {
             $this->messages[] = [
                 'role' => 'ai',
-                'content' => "Welcome to the Helpdesk System! 🚀\nHow can I assist you today?",
+                'content' => $this->getRandomWelcomeMessage(),
             ];
         }
+    }
+
+    private function getRandomWelcomeMessage(): string
+    {
+        $welcomeMessages = [
+            "Welcome to the Helpdesk System! 🚀\nHow can I assist you today?",
+            "Hello! 👋 I'm here to help. What can I do for you?",
+            'Welcome aboard! 🎉 Feel free to ask me anything about our services.',
+            "Hi there! 💬 Ready to help. What's on your mind?",
+            'Great to see you! 🌟 How can I make your day better?',
+        ];
+
+        return $welcomeMessages[array_rand($welcomeMessages)];
     }
 
     public function newConversation(): void
@@ -111,7 +124,7 @@ class AiChatWidget extends Component
         $this->messages = [
             [
                 'role' => 'ai',
-                'content' => "Welcome to the Helpdesk System! 🚀\nHow can I assist you today?",
+                'content' => $this->getRandomWelcomeMessage(),
             ],
         ];
         $this->chatting = true;
@@ -256,8 +269,7 @@ class AiChatWidget extends Component
                 model: $settings->ai_model,
             );
 
-            $this->messages[] = ['role' => 'ai', 'content' => trim($response->text)];
-            $this->loadMessages();
+            $this->messages[] = ['role' => 'ai', 'content' => $response->text];
 
         } catch (\Exception $e) {
             $errorMsg = $e->getMessage();

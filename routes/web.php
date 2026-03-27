@@ -23,6 +23,10 @@ Route::get('/', function (Request $request) {
     return view('welcome');
 })->name('home');
 
+Route::view('/contact', 'contact')->name('contact');
+Route::view('/help-center', 'help-center')->name('help-center');
+Route::view('/about', 'about')->name('about');
+
 // ====== CHATBOT ======
 Route::middleware(['throttle:30,1'])->group(function () {
     Route::get('/chatbot/faqs', [ChatbotFaqController::class, 'random'])->name('chatbot.faqs');

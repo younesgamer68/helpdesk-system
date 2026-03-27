@@ -8,9 +8,8 @@
 
     <title>Helpdesk System</title>
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="{{ asset('images/Logos/logos without text DM.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('images/Logos/logos without text DM.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -28,6 +27,50 @@
         [x-cloak] {
             display: none !important;
         }
+
+        @keyframes gs-wiggle-loop {
+
+            0%,
+            100% {
+                transform: rotate(0deg) scale(1);
+            }
+
+            20% {
+                transform: rotate(-2.5deg) scale(1.02);
+            }
+
+            40% {
+                transform: rotate(2.5deg) scale(1.03);
+            }
+
+            60% {
+                transform: rotate(-1.5deg) scale(1.02);
+            }
+
+            80% {
+                transform: rotate(1.5deg) scale(1.01);
+            }
+        }
+
+        @keyframes gs-red-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.42), 0 0 0 6px rgba(220, 38, 38, 0.12);
+                filter: saturate(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.12), 0 0 0 12px rgba(220, 38, 38, 0.06);
+                filter: saturate(1.12);
+            }
+        }
+
+        .gs-younes-wiggle-red {
+            animation: gs-wiggle-loop 2.6s ease-in-out infinite, gs-red-pulse 1.9s ease-in-out infinite;
+            transform-origin: center;
+            will-change: transform, box-shadow, filter;
+        }
     </style>
 </head>
 
@@ -42,8 +85,8 @@
     {{-- ═══════════════════════════════════════════════════════════════════
     HERO — Minimal centered w/ headline, email form, privacy note
     ═══════════════════════════════════════════════════════════════════ --}}
-    <section id="hero-section" class="relative z-0 overflow-hidden" x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }" style="opacity: 0;">
-        {{-- Background wave — dark mode only --}}
+    <section id="hero-section" class="relative z-0 overflow-hidden"
+        x-data="{ heroEmail: '', heroMsg: '', heroMsgOk: false }" style="opacity: 0;">
 
 
 
@@ -66,7 +109,7 @@
 
             {{-- Flash message --}}
             <p x-show="heroMsg" x-text="heroMsg" x-transition class="mt-4 text-sm font-medium"
-                :class="heroMsgOk ? 'text-green-500' : 'text-red-500'"></p>
+                :class="heroMsgOk ? 'text-[#219653]' : 'text-red-500'"></p>
 
             {{-- CTA area --}}
             @if (Route::has('login'))
@@ -74,11 +117,10 @@
                     {{-- Logged-in → Dashboard --}}
                     <div class="mt-10 flex justify-center sm:mt-12">
                         <a href="{{ Auth::user()->company ? route('tickets', Auth::user()->company->slug) : route('home') }}"
-                            class="inline-flex items-center gap-2 rounded-full bg-green-600 px-8 py-4 text-[1.05rem] font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-green-500 hover:shadow-xl">
+                            class="inline-flex items-center gap-2 rounded-full bg-[#219653] px-8 py-4 text-[1.05rem] font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#1b7a44] hover:shadow-xl">
                             <span x-text="$store.ui.t('heroDashboard')"></span>
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
                         </a>
                     </div>
@@ -87,24 +129,24 @@
                     <form
                         class="mx-auto mt-10 flex w-full max-w-[550px] flex-col items-center gap-3.5 sm:mt-12 sm:flex-row sm:max-w-[600px]"
                         @submit.prevent="
-                                                                        const em = heroEmail.trim();
-                                                                        if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
-                                                                            heroMsg = $store.ui.t('heroInvalidEmail');
-                                                                            heroMsgOk = false;
-                                                                            return;
-                                                                        }
-                                                                        heroMsg = $store.ui.t('heroThankYou');
-                                                                        heroMsgOk = true;
-                                                                        heroEmail = '';
-                                                                    ">
+                                                                                                                                                                                                                                                                                const em = heroEmail.trim();
+                                                                                                                                                                                                                                                                                if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+                                                                                                                                                                                                                                                                                    heroMsg = $store.ui.t('heroInvalidEmail');
+                                                                                                                                                                                                                                                                                    heroMsgOk = false;
+                                                                                                                                                                                                                                                                                    return;
+                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                heroMsg = $store.ui.t('heroThankYou');
+                                                                                                                                                                                                                                                                                heroMsgOk = true;
+                                                                                                                                                                                                                                                                                heroEmail = '';
+                                                                                                                                                                                                                                                                            ">
                         <input type="email" x-model="heroEmail"
                             class="w-full flex-1 rounded-lg border px-5 py-4 text-base outline-none transition-colors duration-200 sm:w-auto sm:px-6 sm:py-[15px] sm:text-[17px]"
                             :class="$store.ui.darkMode ?
-                                'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20' :
-                                'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
+                                                                                                                                                                                                                                        'border-white/20 bg-white/5 text-white placeholder-white/40 focus:border-white/40 focus:ring-1 focus:ring-white/20' :
+                                                                                                                                                                                                                                        'border-gray-400 bg-white text-gray-800 placeholder-gray-400 focus:border-gray-500 focus:ring-1 focus:ring-gray-400'"
                             :placeholder="$store.ui.t('heroPlaceholder')" />
                         <button type="submit"
-                            class="w-full flex-shrink-0 cursor-pointer rounded-full bg-[#5EDB56] px-8 py-4 text-base font-bold text-white transition hover:bg-green-500 sm:w-auto sm:px-[30px] sm:py-[15px] sm:text-[17px]"
+                            class="w-full flex-shrink-0 cursor-pointer rounded-full bg-[#219653] px-8 py-4 text-base font-bold text-white transition hover:bg-[#4cc944] sm:w-auto sm:px-[30px] sm:py-[15px] sm:text-[17px]"
                             x-text="$store.ui.t('heroTryFree')"></button>
                     </form>
                 @endauth
@@ -179,21 +221,11 @@
 
     {{-- Script for smooth entrance + scroll animations --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ── Clear navbar animation after it finishes (removes stacking context from transform) ──
-            document.querySelectorAll('.navbar-animate').forEach(function(el) {
-                el.addEventListener('animationend', function() {
-                    el.style.animation = 'none';
-                    el.style.opacity = '1';
-                }, {
-                    once: true
-                });
-            });
-
+        document.addEventListener('DOMContentLoaded', function () {
             // ── Hero section fade-in ──
             var hero = document.getElementById('hero-section');
             if (hero) {
-                setTimeout(function() {
+                setTimeout(function () {
                     hero.style.transition = 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
                     hero.style.opacity = '1';
                 }, 250);
@@ -203,19 +235,19 @@
             var scene = document.querySelector('.scene');
             if (!scene) return;
 
-            var observer = new IntersectionObserver(function(entries) {
+            var observer = new IntersectionObserver(function (entries) {
                 if (entries[0].isIntersecting) {
                     observer.disconnect();
 
-                    requestAnimationFrame(function() {
-                        requestAnimationFrame(function() {
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
                             scene.classList.add('show-center');
 
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 scene.classList.add('show-near');
                             }, 800);
 
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 scene.classList.add('show-far');
                             }, 1000);
                         });
@@ -241,50 +273,44 @@
     <section id="discoverSection"
         class="w-full px-6 py-20 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
         :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-white'" x-data="{
-            activeTab: 'automations',
+            activeTab: 'ticketView',
+            imageTab: 'ticketView',
+            automationNotificationVisible: true,
+            imageVisible: true,
             tabs: ['ticketList', 'ticketView', 'automations', 'reports'],
-            colorMap: {
-                ticketList: 'from-[#ff8a9b] via-[#ff6f91] to-[#fd4f7d]',
-                ticketView: 'from-[#4db3ff] via-[#3f8cff] to-[#2f66ff]',
-                automations: 'from-[#8a6dff] via-[#7253f8] to-[#5b3ff0]',
-                reports: 'from-[#ffd36a] via-[#ffb347] to-[#ff9742]'
+            imageMap: {
+                ticketList: '{{ asset('images/Personnes/ticketlist.png') }}',
+                ticketView: '{{ asset('images/Personnes/ticket view.png') }}',
+                automations: '{{ asset('images/Personnes/Automatin.png') }}',
+                reports: '{{ asset('images/Personnes/reports.png') }}'
+            },
+            switchTab(tab) {
+                this.activeTab = tab;
+
+                if (tab === 'automations') {
+                    this.automationNotificationVisible = false;
+                }
+
+                if (this.imageTab === tab) {
+                    return;
+                }
+
+                this.imageVisible = false;
+
+                setTimeout(() => {
+                    this.imageTab = tab;
+                    this.imageVisible = true;
+                }, 550);
             }
         }">
 
         <div class="mx-auto flex w-full max-w-6xl flex-col items-center">
-            <div class="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5"
-                :class="$store.ui.darkMode ? 'border-white/15 bg-white/5 text-white/75' :
-                    'border-gray-200 bg-gray-100 text-gray-600'">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                <span class="text-[11px] font-semibold uppercase tracking-[0.24em]">Discover HelpDesk</span>
-            </div>
 
-            {{-- Badges --}}
-            <div class="mb-7 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-                <div class="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
-                    :class="$store.ui.darkMode ? 'bg-white/5 text-white/70' : 'bg-gray-100 text-gray-600'">
-                    <div class="flex h-6 w-6 items-center justify-center rounded-full bg-red-400">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <path d="M6 1L7.2 4.4H10.8L7.9 6.5L9.1 9.9L6 7.8L2.9 9.9L4.1 6.5L1.2 4.4H4.8L6 1Z"
-                                fill="white" />
-                        </svg>
-                    </div>
-                    <span class="text-xs font-medium" x-text="$store.ui.t('discoverBadge1')"></span>
-                </div>
-                <div class="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
-                    :class="$store.ui.darkMode ? 'bg-white/5 text-white/70' : 'bg-gray-100 text-gray-600'">
-                    <div class="flex h-6 w-6 items-center justify-center rounded-full bg-blue-400">
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                            <circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.2" />
-                            <path d="M3.5 6L5 7.5L8.5 4" stroke="white" stroke-width="1.2" stroke-linecap="round" />
-                        </svg>
-                    </div>
-                    <span class="text-xs font-medium" x-text="$store.ui.t('discoverBadge2')"></span>
-                </div>
-            </div>
+
+
 
             {{-- Title --}}
-            <h2 class="mb-4 text-center font-[Playfair_Display,ui-serif,Georgia,serif] text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl"
+            <h2 class="mb-4 text-center text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.75rem]"
                 :class="$store.ui.darkMode ? 'text-white' : 'text-gray-950'" x-text="$store.ui.t('discoverTitle')">
             </h2>
 
@@ -295,8 +321,7 @@
             </p>
 
             {{-- Tabs --}}
-            <div class="mb-12 w-full max-w-5xl rounded-2xl border p-2"
-                :class="$store.ui.darkMode ? 'border-white/15 bg-white/[0.03]' : 'border-gray-200 bg-white shadow-sm'">
+            <div class="mb-12 w-full max-w-5xl ">
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-4">
                     <template x-for="tab in tabs" :key="tab">
                         <button type="button"
@@ -307,14 +332,16 @@
                                     'bg-gray-900 text-white shadow-[0_10px_24px_-14px_rgba(0,0,0,0.5)]') :
                                 ($store.ui.darkMode ?
                                     'text-white/65 hover:bg-white/10 hover:text-white' :
-                                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900')"
-                            @click="activeTab = tab">
-                            <span x-text="$store.ui.t('discoverTab_' + tab)"></span>
-                            <span
-                                class="pointer-events-none absolute inset-x-3 bottom-1 h-px rounded-full transition-opacity duration-300"
-                                :class="activeTab === tab ?
-                                    ($store.ui.darkMode ? 'bg-gray-900/25 opacity-100' : 'bg-white/40 opacity-100') :
-                                    'opacity-0'">
+                                    'text-gray-600 hover:bg-gray-100 hover:text-gray-900')" @click="switchTab(tab)">
+                            <span class="inline-flex items-center gap-2">
+                                <span x-text="$store.ui.t('discoverTab_' + tab)"></span>
+                                <span x-show="tab === 'automations' && automationNotificationVisible"
+                                    class="relative inline-flex h-2.5 w-2.5">
+                                    <span
+                                        class="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
+                                    <span
+                                        class="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                                </span>
                             </span>
                         </button>
                     </template>
@@ -322,30 +349,13 @@
             </div>
 
             {{-- Image container --}}
-            <div class="w-full max-w-240" id="discoverVisualPanel">
-                <div class="rounded-3xl p-[1px] transition-all duration-500"
-                    :class="activeTab === 'ticketList' ? 'bg-linear-to-r from-[#ff95a4]/90 to-[#fd4f7d]/90' : '' ||
-                        activeTab === 'ticketView' ? 'bg-linear-to-r from-[#4db3ff]/90 to-[#2f66ff]/90' : '' ||
-                        activeTab === 'automations' ? 'bg-linear-to-r from-[#8a6dff]/90 to-[#5b3ff0]/90' : '' ||
-                        activeTab === 'reports' ? 'bg-linear-to-r from-[#ffd36a]/90 to-[#ff9742]/90' : ''">
-                    <div class="relative h-105 w-full overflow-hidden rounded-[22px] border transition-all duration-500"
-                        :class="[$store.ui.darkMode ? 'border-white/10' : 'border-gray-200']">
-                        <div class="absolute inset-0 bg-linear-to-br transition-all duration-500"
-                            :class="colorMap[activeTab]"></div>
-                        <div
-                            class="absolute inset-0 bg-[radial-gradient(circle_at_22%_20%,rgba(255,255,255,0.35),transparent_38%),radial-gradient(circle_at_78%_80%,rgba(255,255,255,0.18),transparent_46%)]">
-                        </div>
-                        <img src="" alt=""
-                            class="relative z-[1] h-full w-full rounded-[22px] object-cover opacity-90 transition-transform duration-700 hover:scale-[1.02]" />
-                    </div>
-                </div>
+            <div class="m-0 w-full max-w-[1800px] p-0 transition-all duration-500" id="discoverVisualPanel"
+                :class="activeTab === 'automations' ? 'self-start' : 'self-center'">
+                <img :src="imageMap[imageTab]" :alt="$store.ui.t('discoverTab_' + imageTab)"
+                    :style="{ opacity: imageVisible ? '1' : '0', transition: 'opacity 500ms ease-in-out' }"
+                    class="m-0 block h-auto w-full p-0" />
 
-                <div class="mt-4 flex items-center justify-between rounded-xl px-4 py-3"
-                    :class="$store.ui.darkMode ? 'bg-white/5 text-white/70' : 'bg-gray-100 text-gray-600'">
-                    <span class="text-xs uppercase tracking-[0.2em]">Preview</span>
-                    <span class="text-xs font-semibold uppercase tracking-[0.16em]"
-                        x-text="$store.ui.t('discoverTab_' + activeTab)"></span>
-                </div>
+
             </div>
 
             {{-- CTA --}}
@@ -362,10 +372,9 @@
     {{-- ═══════════════════════════════════════════════════════════════════
     SUPPORT FEATURES SLIDER
     ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="sfs-section">
+    <div class="sfs-section" id="sfsSection">
         <div class="sfs-header">
-            <h2 :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Plus, all the little things support teams
-                love</h2>
+            <h2 :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'" x-text="$store.ui.t('homeSfsTitle')"></h2>
             <div class="sfs-nav-btns">
                 <button class="sfs-nav-btn" id="sfsPrevBtn">⬅</button>
                 <button class="sfs-nav-btn" id="sfsNextBtn">➡</button>
@@ -376,33 +385,58 @@
             :class="$store.ui.darkMode ? 'before:from-black after:from-black' : 'before:from-white after:from-white'">
             <div class="sfs-slider-track" id="sfsTrack">
 
-                <!-- 1 Workflows -->
+                <!-- 1 Automation Engine -->
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c3">
-                        <div class="sfs-wf-panel">
-                            <div class="sfs-wf-row" id="sfsWfR1">
-                                <div class="sfs-wf-av" style="background:#6366f1;">JM</div>
-                                <span>Julie Martinelli <span style="color:#bbb;font-size:10px;">Hi there, was
-                                        hoping…</span></span>
+                        <div
+                            style="position:absolute;top:20px;left:20px;right:20px;background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.6);border-radius:16px;padding:16px 18px;box-shadow:0 10px 24px rgba(200,140,60,0.1);backdrop-filter:blur(8px);">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                                <span
+                                    style="font-size:11px;font-weight:700;color:#6366f1;background:#ede9fe;border-radius:8px;padding:3px 10px;">⚡
+                                    <span x-text="$store.ui.t('homeSfsPreviewAutomationRule')"></span></span>
+                                <span
+                                    style="font-size:10px;color:#219653;background:#dcfce7;border-radius:6px;padding:2px 8px;"
+                                    x-text="$store.ui.t('homeSfsPreviewActive')"></span>
                             </div>
-                            <div class="sfs-wf-row" id="sfsWfR2">
-                                <div class="sfs-wf-tag">⚡ Refunds and Returns <em
-                                        style="font-weight:400;color:#b45309;">
-                                        was run</em></div>
+                            <div
+                                style="background:rgba(248,250,252,0.9);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;">
+                                <div
+                                    style="color:#94a3b8;font-size:9px;font-weight:700;letter-spacing:.08em;margin-bottom:6px;">
+                                    <span x-text="$store.ui.t('homeSfsPreviewWhen')"></span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                                    <span
+                                        style="background:#dbeafe;color:#1e40af;border-radius:6px;padding:3px 8px;font-size:11px;">Category</span>
+                                    <span style="color:#cbd5e1;font-size:11px;">is</span>
+                                    <span
+                                        style="background:#fce7f3;color:#9d174d;border-radius:6px;padding:3px 8px;font-size:11px;">Billing</span>
+                                </div>
                             </div>
-                            <div class="sfs-wf-row" id="sfsWfR3">
-                                <div class="sfs-wf-av" style="background:#f59e0b;">LM</div>
-                                <span>Landon Montgomery <span
-                                        style="color:#1a1aff;font-size:11px;font-weight:700;">@Sabrina B<span
-                                            class="sfs-wf-cursor"></span></span></span>
+                            <div
+                                style="background:rgba(240,253,244,0.9);border-radius:10px;padding:10px 12px;font-size:12px;">
+                                <div
+                                    style="color:#94a3b8;font-size:9px;font-weight:700;letter-spacing:.08em;margin-bottom:6px;">
+                                    <span x-text="$store.ui.t('homeSfsPreviewThen')"></span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:6px;color:#374151;font-size:11px;">
+                                    <span style="color:#219653;">→</span> <span
+                                        x-text="$store.ui.t('homeSfsPreviewAssignTo')"></span> <strong
+                                        x-text="$store.ui.t('homeSfsPreviewBillingTeam')"></strong>
+                                </div>
                             </div>
+                        </div>
+                        <div class="sfs-anim-float"
+                            style="position:absolute;bottom:18px;left:26px;background:#fff;border-radius:10px;padding:8px 14px;font-size:10px;color:#94a3b8;box-shadow:0 4px 14px rgba(0,0,0,0.1);">
+                            ⚡ <span x-text="$store.ui.t('homeSfsPreviewRanTimes')"></span>
                         </div>
                     </div>
                     <div class="sfs-card-body">
                         <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
-                            Workflows</div>
+                            <span x-text="$store.ui.t('homeSfsAutomationTitle')"></span>
+                        </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Automate the tedious but critical tasks that keep your team (and Inbox) organized.</div>
+                            <span x-text="$store.ui.t('homeSfsAutomationBody')"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -418,7 +452,7 @@
                             <div class="sfs-tag-grid" id="sfsTagGrid">
                                 <div class="sfs-tag-chip" style="background:#dbeafe;color:#1e40af;">🔵 Billing</div>
                                 <div class="sfs-tag-chip" style="background:#fce7f3;color:#9d174d;">🩷 VIP</div>
-                                <div class="sfs-tag-chip" style="background:#dcfce7;color:#166534;">🟢 Resolved</div>
+                                <div class="sfs-tag-chip" style="background:#dcfce7;color:#219653;">🟢 Resolved</div>
                                 <div class="sfs-tag-chip" style="background:#fef3c7;color:#92400e;">🟡 Pending</div>
                                 <div class="sfs-tag-chip" style="background:#ede9fe;color:#5b21b6;">🟣 Bug</div>
                                 <div class="sfs-tag-chip" style="background:#f1f5f9;color:#334155;">⚪ General</div>
@@ -428,10 +462,11 @@
                         </div>
                     </div>
                     <div class="sfs-card-body">
-                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Tags
-                            &amp; Labels</div>
+                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'"
+                            x-text="$store.ui.t('homeSfsTagsTitle')"></div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Organize every conversation with color-coded tags so nothing falls through the cracks.</div>
+                            <span x-text="$store.ui.t('homeSfsTagsBody')"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -439,11 +474,11 @@
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c5">
                         <div class="sfs-mi-av-row" id="sfsMiAvRow">
-                            <img src="{{ asset('images/Personnes/Personne01.jpg') }}" alt="Michael Rivera"
+                            <img src="{{ asset('images/Personnes/walid_photo.jpeg') }}" alt="Michael Rivera"
                                 class="sfs-mi-av border-white object-cover" />
-                            <img src="{{ asset('images/Personnes/Personne02.jpg') }}" alt="Sarah Johnson"
+                            <img src="{{ asset('images/Personnes/Younes_Photo.jpg') }}" alt="Sarah Johnson"
                                 class="sfs-mi-av border-white object-cover" />
-                            <img src="{{ asset('images/Personnes/Personne03.jpg') }}" alt="Amy Liu"
+                            <img src="{{ asset('images/Personnes/bilal_photo.jpeg') }}" alt="Amy Liu"
                                 class="sfs-mi-av border-white object-cover" />
                         </div>
                         <div class="sfs-mi-cols" id="sfsMiCols">
@@ -471,168 +506,168 @@
                     </div>
                     <div class="sfs-card-body">
                         <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
-                            Multiple Inboxes</div>
+                            <span x-text="$store.ui.t('homeSfsInboxesTitle')"></span>
+                        </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Give
-                            every department or product its own dedicated place for support.</div>
+                            <span x-text="$store.ui.t('homeSfsInboxesBody')"></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 4 Saved Replies -->
+                <!-- 4 AI Copilot -->
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c4">
-                        <div class="sfs-sr-panel">
-                            <div class="sfs-sr-msg">
-                                <div class="sfs-sr-ic">🤖</div>
-                                <div><strong>Account:</strong> Can I pause my account?<br>Here's how you can pause your
-                                    subscription…</div>
+                        <!-- Customer bubble -->
+                        <div
+                            style="position:absolute;top:18px;left:18px;right:18px;display:flex;align-items:flex-start;gap:9px;">
+                            <div
+                                style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;">
+                                CL</div>
+                            <div
+                                style="background:rgba(255,255,255,0.85);border-radius:0 12px 12px 12px;padding:10px 13px;font-size:11px;color:#374151;line-height:1.5;box-shadow:0 4px 16px rgba(0,0,0,0.06);backdrop-filter:blur(6px);">
+                                <span x-text="$store.ui.t('homeSfsPreviewAiCustomerMsg')"></span>
                             </div>
-                            <div class="sfs-sr-msg" style="border-bottom:none;">
-                                <div class="sfs-sr-ic">🤖</div>
-                                <div><strong>Account:</strong> How do I un-freeze my paused account?<br>If your account
-                                    has been frozen or pause…</div>
+                        </div>
+                        <!-- AI suggestion panel -->
+                        <div
+                            style="position:absolute;bottom:16px;left:18px;right:18px;background:rgba(255,255,255,0.88);border:1.5px solid #c7d2fe;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(99,102,241,0.12);backdrop-filter:blur(8px);">
+                            <div
+                                style="background:linear-gradient(90deg,#ede9fe,#e0e7ff);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+                                <span style="font-size:10px;font-weight:700;color:#4f46e5;">✨ <span
+                                        x-text="$store.ui.t('homeSfsPreviewAiSuggestion')"></span></span>
+                                <div style="display:flex;gap:4px;">
+                                    <span
+                                        style="font-size:9px;background:#4f46e5;color:#fff;border-radius:5px;padding:2px 7px;"
+                                        x-text="$store.ui.t('homeSfsPreviewFriendly')"></span>
+                                    <span
+                                        style="font-size:9px;background:#fff;color:#6366f1;border:1px solid #c7d2fe;border-radius:5px;padding:2px 7px;"
+                                        x-text="$store.ui.t('homeSfsPreviewFormal')"></span>
+                                </div>
                             </div>
-                            <div class="sfs-sr-footer">Search: <span>Pause account</span> ›</div>
+                            <div style="padding:10px 12px;font-size:11px;color:#374151;line-height:1.55;">
+                                Sorry about the delay! I've flagged order #4821 with logistics — expect an update within
+                                <strong>24h</strong>. 📦
+                            </div>
+                            <div style="padding:2px 12px 10px;display:flex;gap:6px;">
+                                <span
+                                    style="font-size:10px;background:#4f46e5;color:#fff;border-radius:7px;padding:4px 12px;">Use
+                                    <span x-text="$store.ui.t('homeSfsPreviewUseReply')"></span></span>
+                                <span
+                                    style="font-size:10px;background:rgba(0,0,0,0.04);color:#64748b;border-radius:7px;padding:4px 12px;"
+                                    x-text="$store.ui.t('homeSfsPreviewRegenerate')"></span>
+                            </div>
                         </div>
                     </div>
                     <div class="sfs-card-body">
-                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Saved
-                            replies</div>
-                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">Add
-                            proven answers to common questions or situations with a few clicks.</div>
+                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">AI
+                            <span x-text="$store.ui.t('homeSfsAiTitle')"></span>
+                        </div>
+                        <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
+                            <span x-text="$store.ui.t('homeSfsAiBody')"></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 5 Snooze -->
+                <!-- 5 SLA Enforcement -->
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c1">
-                        <div class="sfs-snooze-panel">
-                            <div class="sfs-snooze-top">
-                                <div class="sfs-snooze-user">
-                                    <div class="sfs-snooze-avatar"></div>
-                                    <div class="sfs-snooze-user-text">
-                                        <strong></strong>
-                                        <span></span>
+                        <!-- Main panel -->
+                        <div
+                            style="position:absolute;top:18px;left:18px;right:18px;background:rgba(255,255,255,0.72);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:14px 16px;box-shadow:0 10px 24px rgba(110,90,140,0.08);backdrop-filter:blur(8px);">
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                <span style="font-size:11px;font-weight:700;color:#444;">Ticket Queue</span>
+                                <span class="sfs-anim-pulse"
+                                    style="font-size:9px;color:#dc2626;background:rgba(254,242,242,0.9);border-radius:6px;padding:3px 8px;font-weight:700;">2
+                                    <span x-text="$store.ui.t('homeSfsPreviewBreached')"></span></span>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <div style="background:rgba(254,242,242,0.8);border-radius:10px;padding:9px 12px;">
+                                    <div style="font-size:11px;font-weight:600;color:#374151;">#1042 — <span
+                                            x-text="$store.ui.t('homeSfsPreviewPaymentFailed')"></span>
+                                    </div>
+                                    <div style="font-size:10px;color:#dc2626;margin-top:2px;">⏱ <span
+                                            x-text="$store.ui.t('homeSfsPreviewSlaBreachedUrgent')"></span>
                                     </div>
                                 </div>
-                                <div class="sfs-snooze-chip">Later today</div>
-                            </div>
-                            <div class="sfs-snooze-lines">
-                                <div class="sfs-snooze-line lg"></div>
-                                <div class="sfs-snooze-line md"></div>
-                                <div class="sfs-snooze-line sm"></div>
-                            </div>
-                        </div>
-                        <div class="sfs-snooze-calendar">
-                            <div class="sfs-snooze-calendar-head"></div>
-                            <div class="sfs-snooze-calendar-grid">
-                                <span></span><span></span><span></span><span></span>
-                                <span></span><span></span><span></span><span></span>
-                                <span></span><span></span><span></span><span></span>
+                                <div style="background:rgba(255,251,235,0.8);border-radius:10px;padding:9px 12px;">
+                                    <div style="font-size:11px;font-weight:600;color:#374151;">#1039 — <span
+                                            x-text="$store.ui.t('homeSfsPreviewCantLogin')"></span></div>
+                                    <div style="font-size:10px;color:#b45309;margin-top:2px;">⚠ <span
+                                            x-text="$store.ui.t('homeSfsPreviewMinutesLeftHigh')"></span></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="sfs-snooze-wrap">
-                            <div class="sfs-snooze-badge">🔔 Snoozed until 8:00 am</div>
-                            <div class="sfs-snooze-info">Surface at a later date<br>or snooze.</div>
+                        <!-- SLA health bar -->
+                        <div
+                            style="position:absolute;bottom:22px;left:26px;right:26px;display:flex;gap:4px;align-items:center;">
+                            <div style="flex:1;height:5px;background:#fecaca;border-radius:4px;"></div>
+                            <div style="flex:2;height:5px;background:#fde68a;border-radius:4px;"></div>
+                            <div style="flex:4;height:5px;background:#bbf7d0;border-radius:4px;"></div>
                         </div>
                     </div>
                     <div class="sfs-card-body">
-                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
-                            Snooze
+                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">SLA
+                            <span x-text="$store.ui.t('homeSlaCardTitle')"></span>
                         </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Surface a conversation at a later date or time with snooze.</div>
+                            <span x-text="$store.ui.t('homeSlaCardBody')"></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 6 Channels -->
+                <!-- 6 Knowledge Base -->
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c6">
-                        <div class="sfs-ch-topbar">
-                            <div class="sfs-ch-logo">☰</div>
-                            <div class="sfs-ch-tab on">Inboxes ▾</div>
-                            <div class="sfs-ch-tab">Docs</div>
+                        <!-- Search bar -->
+                        <div
+                            style="position:absolute;top:18px;left:18px;right:18px;background:rgba(255,255,255,0.88);border-radius:12px;padding:9px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,0.06);backdrop-filter:blur(6px);">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8"
+                                stroke-width="2.5">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
+                            </svg>
+                            <span style="font-size:11px;color:#94a3b8;"
+                                x-text="$store.ui.t('homeSfsPreviewKbSearch')"></span>
                         </div>
-                        <div class="sfs-ch-lines">
-                            <div class="sfs-ch-line"
-                                style="width:62%;background:linear-gradient(to right,#818cf8,#c7d2fe);"></div>
-                            <div class="sfs-ch-line"
-                                style="width:44%;background:linear-gradient(to right,#c7d2fe,#e0e7ff);"></div>
-                            <div class="sfs-ch-line" style="width:55%;background:#e8e8f5;"></div>
+                        <!-- Article cards -->
+                        <div
+                            style="position:absolute;top:62px;left:18px;right:18px;display:flex;flex-direction:column;gap:6px;">
+                            <div
+                                style="background:rgba(255,255,255,0.85);border-radius:11px;padding:10px 13px;box-shadow:0 3px 12px rgba(0,0,0,0.06);backdrop-filter:blur(6px);">
+                                <div style="font-size:11px;font-weight:600;color:#374151;">📄 <span
+                                        x-text="$store.ui.t('homeSfsPreviewKbArticle1')"></span></div>
+                                <div style="font-size:10px;color:#94a3b8;margin-top:3px;"
+                                    x-text="$store.ui.t('homeSfsPreviewKbMeta1')"></div>
+                            </div>
+                            <div
+                                style="background:rgba(255,255,255,0.85);border-radius:11px;padding:10px 13px;box-shadow:0 3px 12px rgba(0,0,0,0.06);backdrop-filter:blur(6px);">
+                                <div style="font-size:11px;font-weight:600;color:#374151;">📄 <span
+                                        x-text="$store.ui.t('homeSfsPreviewKbArticle2')"></span></div>
+                                <div style="font-size:10px;color:#94a3b8;margin-top:3px;"
+                                    x-text="$store.ui.t('homeSfsPreviewKbMeta2')"></div>
+                            </div>
+                            <div
+                                style="background:rgba(255,255,255,0.85);border-radius:11px;padding:10px 13px;box-shadow:0 3px 12px rgba(0,0,0,0.06);backdrop-filter:blur(6px);">
+                                <div style="font-size:11px;font-weight:600;color:#374151;">📝 <span
+                                        x-text="$store.ui.t('homeSfsPreviewKbArticle3')"></span></div>
+                                <div style="font-size:10px;color:#94a3b8;margin-top:3px;"
+                                    x-text="$store.ui.t('homeSfsPreviewKbMeta3')"></div>
+                            </div>
                         </div>
-                        <div class="sfs-ch-icons">
-                            <div class="sfs-ch-ic">
-                                <svg viewBox="0 0 48 48" width="26" height="26">
-                                    <path d="M8 36V14l16 12 16-12v22H8z" fill="#fff" stroke="#eee" />
-                                    <path d="M8 14l16 12 16-12H8z" fill="#EA4335" />
-                                    <rect x="6" y="12" width="36" height="26" rx="3" fill="none"
-                                        stroke="#FBBC05" stroke-width="1.5" />
-                                </svg>
-                            </div>
-                            <div class="sfs-ch-ic" style="background:#0078d4;">
-                                <svg viewBox="0 0 48 48" width="26" height="26">
-                                    <rect width="48" height="48" rx="8" fill="#0078d4" />
-                                    <rect x="5" y="13" width="22" height="22" rx="3" fill="#fff"
-                                        opacity=".9" />
-                                    <circle cx="16" cy="24" r="5.5" fill="#0078d4" />
-                                    <rect x="29" y="17" width="14" height="3.5" rx="1.5"
-                                        fill="#fff" />
-                                    <rect x="29" y="22.5" width="14" height="3.5" rx="1.5"
-                                        fill="#fff" />
-                                    <rect x="29" y="28" width="10" height="3.5" rx="1.5"
-                                        fill="#fff" />
-                                </svg>
-                            </div>
-                            <div class="sfs-ch-ic" style="background:linear-gradient(135deg,#0099ff,#a033ff);">
-                                <svg viewBox="0 0 48 48" width="26" height="26">
-                                    <defs>
-                                        <linearGradient id="g1" x1="0" y1="1" x2="1"
-                                            y2="0">
-                                            <stop offset="0%" stop-color="#0099ff" />
-                                            <stop offset="100%" stop-color="#a033ff" />
-                                        </linearGradient>
-                                    </defs>
-                                    <circle cx="24" cy="24" r="24" fill="url(#g1)" />
-                                    <path
-                                        d="M24 10C16 10 10 15.8 10 23c0 3.9 1.7 7.4 4.4 9.8V37l4.4-2.4c1.6.5 3.4.6 5.2.6 8 0 14-5.8 14-13S32 10 24 10z"
-                                        fill="#fff" />
-                                    <path d="M21 27l-4-4.5 8-4.5-4 4.5 4 4.5-8 4.5z" fill="#0099ff" />
-                                </svg>
-                            </div>
-                            <div class="sfs-ch-ic" style="background:#96bf48;">
-                                <svg viewBox="0 0 48 48" width="26" height="26">
-                                    <rect width="48" height="48" rx="8" fill="#96bf48" />
-                                    <path
-                                        d="M30 13c-.3-.2-.8-.2-1.3 0-.4-.9-1-1.7-2-1.7h-.3C26 10.1 25 9 23.8 9c-3.1 0-4.6 3.7-5 5.6L15 15.8C14 16 14 16 13.9 17L12 33h14.5L29 22 30 13z"
-                                        fill="#fff" opacity=".9" />
-                                </svg>
-                            </div>
-                            <div class="sfs-ch-ic"
-                                style="background:linear-gradient(135deg,#f09433,#dc2743 50%,#bc1888);">
-                                <svg viewBox="0 0 48 48" width="26" height="26">
-                                    <defs>
-                                        <linearGradient id="g2" x1="0" y1="1" x2="1"
-                                            y2="0">
-                                            <stop offset="0%" stop-color="#f09433" />
-                                            <stop offset="100%" stop-color="#bc1888" />
-                                        </linearGradient>
-                                    </defs>
-                                    <rect width="48" height="48" rx="8" fill="url(#g2)" />
-                                    <rect x="12" y="12" width="24" height="24" rx="7" fill="none"
-                                        stroke="#fff" stroke-width="2.5" />
-                                    <circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff"
-                                        stroke-width="2.5" />
-                                    <circle cx="32" cy="16" r="1.8" fill="#fff" />
-                                </svg>
-                            </div>
+                        <!-- Bottom badge -->
+                        <div class="sfs-anim-float"
+                            style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;padding:6px 14px;font-size:10px;color:#94a3b8;box-shadow:0 4px 14px rgba(0,0,0,0.08);white-space:nowrap;">
+                            <span x-text="$store.ui.t('homeSfsPreviewKbBadge')"></span>
                         </div>
                     </div>
                     <div class="sfs-card-body">
                         <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
-                            Channels</div>
+                            <span x-text="$store.ui.t('homeKnowledgeCardTitle')"></span>
+                        </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Close
-                            those extra tabs and handle messages from social, Shopify, and more in one place.</div>
+                            <span x-text="$store.ui.t('homeKnowledgeCardBody')"></span>
+                        </div>
                     </div>
                 </div>
 
@@ -640,34 +675,41 @@
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c7">
                         <div class="sfs-rp-wrap">
-                            <div class="sfs-rp-head">📊 Team Performance · This Week</div>
+                            <div class="sfs-rp-head">📊 <span x-text="$store.ui.t('homeSfsPreviewReportsHead')"></span>
+                            </div>
                             <div class="sfs-rp-bars">
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b" style="height:40%"></div>
+                                    <div class="sfs-rp-b sfs-anim-bar-grow" style="height:40%"></div>
                                     <div class="sfs-rp-l">Mon</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b" style="height:65%"></div>
+                                    <div class="sfs-rp-b sfs-anim-bar-grow" style="height:65%;animation-delay:0.3s">
+                                    </div>
                                     <div class="sfs-rp-l">Tue</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b hi" style="height:100%"></div>
+                                    <div class="sfs-rp-b hi sfs-anim-bar-grow" style="height:100%;animation-delay:0.6s">
+                                    </div>
                                     <div class="sfs-rp-l">Wed</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b" style="height:72%"></div>
+                                    <div class="sfs-rp-b sfs-anim-bar-grow" style="height:72%;animation-delay:0.9s">
+                                    </div>
                                     <div class="sfs-rp-l">Thu</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b" style="height:55%"></div>
+                                    <div class="sfs-rp-b sfs-anim-bar-grow" style="height:55%;animation-delay:1.2s">
+                                    </div>
                                     <div class="sfs-rp-l">Fri</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b" style="height:30%"></div>
+                                    <div class="sfs-rp-b sfs-anim-bar-grow" style="height:30%;animation-delay:1.5s">
+                                    </div>
                                     <div class="sfs-rp-l">Sat</div>
                                 </div>
                                 <div class="sfs-rp-bw">
-                                    <div class="sfs-rp-b" style="height:20%"></div>
+                                    <div class="sfs-rp-b sfs-anim-bar-grow" style="height:20%;animation-delay:1.8s">
+                                    </div>
                                     <div class="sfs-rp-l">Sun</div>
                                 </div>
                             </div>
@@ -678,58 +720,644 @@
                                 </div>
                                 <div class="sfs-rp-stat">
                                     <div class="sfs-rp-val">1.8h</div>
-                                    <div class="sfs-rp-key">Avg Reply</div>
+                                    <div class="sfs-rp-key" x-text="$store.ui.t('homeSfsPreviewAvgReply')"></div>
                                 </div>
                                 <div class="sfs-rp-stat">
                                     <div class="sfs-rp-val">342</div>
-                                    <div class="sfs-rp-key">Resolved</div>
+                                    <div class="sfs-rp-key" x-text="$store.ui.t('homeSfsPreviewResolved')"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="sfs-card-body">
                         <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
-                            Reports
+                            <span x-text="$store.ui.t('homeSfsReportsTitle')"></span>
                         </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Track
-                            team performance, response times, and customer satisfaction at a glance.</div>
+                            <span x-text="$store.ui.t('homeSfsReportsBody')"></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 8 Send Later -->
+                <!-- 8 Smart Routing -->
                 <div class="sfs-card" :class="$store.ui.darkMode ? 'bg-gray-900 border border-gray-800' : 'bg-white'">
                     <div class="sfs-card-preview sfs-c2">
-                        <div class="sfs-sl-compose">
-                            <div class="sfs-sl-compose-top">
-                                <div class="sfs-sl-compose-pill main"></div>
-                                <div class="sfs-sl-compose-pill side"></div>
+                        <!-- Ticket badge -->
+                        <div
+                            style="position:absolute;top:18px;left:18px;right:18px;background:rgba(255,255,255,0.88);border-radius:14px;padding:12px 16px;box-shadow:0 6px 20px rgba(70,100,180,0.1);backdrop-filter:blur(8px);">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                                <span
+                                    style="font-size:11px;font-weight:700;color:#1e40af;background:#dbeafe;border-radius:8px;padding:3px 10px;">🎫
+                                    #1048</span>
+                                <span
+                                    style="font-size:10px;color:#dc2626;background:#fef2f2;border-radius:6px;padding:2px 8px;font-weight:600;"
+                                    x-text="$store.ui.t('homeSfsPreviewUrgent')"></span>
                             </div>
-                            <div class="sfs-sl-compose-lines">
-                                <span></span><span></span><span></span>
+                            <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;"
+                                x-text="$store.ui.t('homeSfsPreviewAccount2fa')"></div>
+                            <div style="font-size:10px;color:#94a3b8;"
+                                x-text="$store.ui.t('homeSfsPreviewCategoryAccount')"></div>
+                        </div>
+                        <!-- Routing result -->
+                        <div
+                            style="position:absolute;bottom:18px;left:18px;right:18px;display:flex;flex-direction:column;gap:6px;">
+                            <div
+                                style="background:rgba(255,255,255,0.92);border-radius:12px;padding:10px 14px;box-shadow:0 4px 14px rgba(0,0,0,0.08);display:flex;align-items:center;gap:10px;backdrop-filter:blur(6px);">
+                                <div
+                                    style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;">
+                                    SK</div>
+                                <div>
+                                    <div style="font-size:11px;font-weight:600;color:#374151;"
+                                        x-text="$store.ui.t('homeSfsPreviewAssignedSara')"></div>
+                                    <div style="font-size:10px;color:#94a3b8;"
+                                        x-text="$store.ui.t('homeSfsPreviewAccountTeamTickets')"></div>
+                                </div>
+                                <span style="margin-left:auto;color:#219653;font-size:14px;">✓</span>
                             </div>
+                            <div style="text-align:center;font-size:10px;color:#94a3b8;">⚡ <span
+                                    x-text="$store.ui.t('homeSfsPreviewRoutedIn')"></span> <strong
+                                    style="color:#6366f1;">0.3s</strong></div>
                         </div>
-                        <div class="sfs-sl-floating-time text-gray-700">Best send time · 1:00 pm</div>
-                        <div class="sfs-sl-box border border-gray-100">
-                            <div class="sfs-sl-name text-gray-900">Josie G</div>
-                            <div class="sfs-sl-time">🕐 Jul 5 at 1:00 pm</div>
-                            <div class="sfs-sl-btn">Schedule</div>
-                        </div>
-                        <svg class="sfs-sl-cursor" viewBox="0 0 20 20" fill="none">
-                            <path d="M3 3l14 7-7 1-3 7z" fill="#222" stroke="#fff" stroke-width="1" />
-                        </svg>
                     </div>
                     <div class="sfs-card-body">
-                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Send
-                            later</div>
+                        <div class="sfs-card-title" :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Smart
+                            <span x-text="$store.ui.t('homeSfsRoutingTitle')"></span>
+                        </div>
                         <div class="sfs-card-desc" :class="$store.ui.darkMode ? 'text-gray-400' : 'text-gray-600'">
-                            Schedule a reply so the customer gets it at the perfect time.</div>
+                            <span x-text="$store.ui.t('homeSfsRoutingBody')"></span>
+                        </div>
                     </div>
                 </div>
 
             </div><!-- /track -->
         </div><!-- /slider-outer -->
     </div>
+
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+    BEACON 1— Embeddable support hub section
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <section id="beaconSection1"
+        class="w-full px-10 py-15 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        :class="$store.ui.darkMode ? 'bg-[#0b111b]' : 'bg-white'">
+        <div id="beaconWrapper"
+            class="mx-auto flex w-full max-w-[1060px] items-center justify-center gap-[72px] max-lg:flex-col max-lg:gap-12">
+
+            <div class="w-full max-w-[320px] flex-none">
+                <h1 class="mb-12 text-[2rem] leading-[1.25] font-bold"
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'" x-text="$store.ui.t('beacon1Title')">
+                </h1>
+
+                <div class="flex flex-col" id="beaconTabs">
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="0">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e0e0e0]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon1Tab1Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon1Tab1Body')"></div>
+                        </div>
+                    </div>
+
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="1">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e0e0e0]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon1Tab2Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon1Tab2Body')"></div>
+                        </div>
+                    </div>
+
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="2">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e0e0e0]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon1Tab3Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon1Tab3Body')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="relative h-[580px] w-[420px] flex-none overflow-hidden rounded-[22px] bg-[linear-gradient(135deg,#1c1b3a_0%,#3b2a3a_50%,#1c1b3a_100%)] max-lg:h-[520px] max-lg:w-full max-lg:max-w-[420px]">
+                <div class="beacon-panel absolute inset-0 flex items-center justify-center opacity-100 transition-all duration-300"
+                    id="beaconPanel0">
+                    <img class="beacon-panel-img absolute inset-0 z-10 hidden h-full w-full rounded-[22px] object-contain"
+                        src="" alt="Tab 0 preview" data-tab-img="0" />
+
+                    <div class="beacon-panel-mockup">
+                        <div
+                            class="flex max-h-[520px] w-[270px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                            <div class="flex flex-none items-center justify-between bg-[#219653] px-[15px] py-[13px]">
+                                <div class="flex items-center gap-[10px]">
+                                    <div
+                                        class="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-white/25 text-[0.82rem] font-bold text-white">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="10" rx="2" />
+                                            <path d="M12 2v4M8 11V9a4 4 0 018 0v2" />
+                                            <circle cx="9" cy="16" r="1" fill="#fff" />
+                                            <circle cx="15" cy="16" r="1" fill="#fff" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-[0.9rem] font-semibold text-white"
+                                        x-text="$store.ui.t('homeBeaconAiAssistant')"></span>
+                                </div>
+                                <button
+                                    class="cursor-pointer rounded-[20px] border-[1.5px] border-white/65 bg-transparent px-[11px] py-1 text-[0.74rem] font-medium text-white"
+                                    x-text="$store.ui.t('homeBeaconEndChat')"></button>
+                            </div>
+                            <div class="flex flex-1 flex-col gap-[9px] overflow-hidden bg-[#f9fafb] p-[14px]">
+                                <div class="mb-px text-[0.68rem] text-[#6b7280]"
+                                    x-text="$store.ui.t('homeBeaconAiAssistant')"></div>
+                                <div
+                                    class="max-w-[86%] self-start rounded-[13px] rounded-bl-[4px] border border-[#e5e7eb] bg-white px-[13px] py-[10px] text-[0.79rem] leading-[1.5] text-[#1c1c2e]">
+                                    <span x-text="$store.ui.t('beacon1DemoMsg1')"></span>
+                                </div>
+                                <div
+                                    class="max-w-[86%] self-end rounded-[13px] rounded-br-[4px] bg-[#219653] px-[13px] py-[10px] text-[0.79rem] leading-[1.5] text-white">
+                                    <span x-text="$store.ui.t('beacon1DemoMsg2')"></span>
+                                </div>
+                                <div class="mt-1 mb-px text-[0.68rem] text-[#6b7280]"
+                                    x-text="$store.ui.t('homeBeaconAiAssistant')"></div>
+                                <div
+                                    class="max-w-[86%] self-start rounded-[13px] rounded-bl-[4px] border border-[#e5e7eb] bg-white px-[13px] py-[10px] text-[0.79rem] leading-[1.5] text-[#1c1c2e]">
+                                    <span x-text="$store.ui.t('beacon1DemoMsg3')"></span>
+                                </div>
+                            </div>
+                            <div class="flex-none border-t border-[#e5e7eb] bg-white px-[14px] py-[11px]">
+                                <input type="text" readonly :placeholder="$store.ui.t('homeBeaconAskQuestion')"
+                                    class="w-full border-none bg-transparent text-[0.79rem] text-[#9ca3af] outline-none" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beacon-panel absolute inset-0 hidden items-center justify-center opacity-0 transition-all duration-300"
+                    id="beaconPanel1">
+                    <img class="beacon-panel-img absolute inset-0 z-10 hidden h-full w-full rounded-[22px] object-contain"
+                        src="" alt="Tab 1 preview" data-tab-img="1" />
+
+                    <div class="beacon-panel-mockup">
+                        <div
+                            class="flex max-h-[520px] w-[270px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                            <div class="flex flex-none items-center justify-between bg-[#219653] px-[15px] py-[13px]">
+                                <div class="flex items-center gap-[10px]">
+                                    <div
+                                        class="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-white/25 text-[0.82rem] font-bold text-white">
+                                        N</div>
+                                    <span class="text-[0.9rem] font-semibold text-white">Nikita</span>
+                                </div>
+                                <button
+                                    class="cursor-pointer rounded-[20px] border-[1.5px] border-white/65 bg-transparent px-[11px] py-1 text-[0.74rem] font-medium text-white"
+                                    x-text="$store.ui.t('homeBeaconEndChat')"></button>
+                            </div>
+                            <div class="flex flex-1 flex-col gap-[9px] overflow-hidden bg-[#f9fafb] p-[14px]">
+                                <div class="mb-px text-[0.68rem] text-[#6b7280]">Nikita</div>
+                                <div
+                                    class="max-w-[86%] self-start rounded-[13px] rounded-bl-[4px] border border-[#e5e7eb] bg-white px-[13px] py-[10px] text-[0.79rem] leading-[1.5] text-[#1c1c2e]">
+                                    <span x-text="$store.ui.t('beacon1DemoHuman1')"></span>
+                                </div>
+                                <div
+                                    class="max-w-[86%] self-end rounded-[13px] rounded-br-[4px] bg-[#219653] px-[13px] py-[10px] text-[0.79rem] leading-[1.5] text-white">
+                                    <span x-text="$store.ui.t('beacon1DemoHuman2')"></span>
+                                </div>
+                                <div
+                                    class="max-w-[86%] self-end rounded-[13px] rounded-br-[4px] bg-[#219653] px-[13px] py-[10px] text-[0.79rem] leading-[1.5] text-white">
+                                    <span x-text="$store.ui.t('beacon1DemoHuman3')"></span>
+                                </div>
+                                <div class="mt-[6px] mb-px text-[0.68rem] text-[#6b7280]">Nikita</div>
+                                <div
+                                    class="flex w-[58px] items-center gap-1 self-start rounded-[13px] rounded-bl-[4px] border border-[#e5e7eb] bg-white px-[14px] py-[10px]">
+                                    <span
+                                        class="h-[5px] w-[5px] rounded-full bg-[#9ca3af] animate-bounce [animation-duration:1.2s]"></span>
+                                    <span
+                                        class="h-[5px] w-[5px] rounded-full bg-[#9ca3af] animate-bounce [animation-duration:1.2s] [animation-delay:0.2s]"></span>
+                                    <span
+                                        class="h-[5px] w-[5px] rounded-full bg-[#9ca3af] animate-bounce [animation-duration:1.2s] [animation-delay:0.4s]"></span>
+                                </div>
+                            </div>
+                            <div class="flex-none border-t border-[#e5e7eb] bg-white px-[14px] py-[11px]">
+                                <input type="text" readonly :placeholder="$store.ui.t('homeBeaconAskQuestion')"
+                                    class="w-full border-none bg-transparent text-[0.79rem] text-[#9ca3af] outline-none" />
+                            </div>
+                        </div>
+
+                        <div
+                            class="absolute bottom-[72px] right-12 z-[5] flex items-center gap-[7px] rounded-[11px] bg-white px-[13px] py-[9px] text-[0.74rem] font-semibold text-[#1c1c2e] shadow-[0_6px_20px_rgba(0,0,0,0.18)]">
+                            <span class="h-[7px] w-[7px] flex-none rounded-full bg-[#219653]"></span>
+                            <span x-text="$store.ui.t('homeBeaconAgentsOnline')"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beacon-panel absolute inset-0 hidden items-center justify-center opacity-0 transition-all duration-300"
+                    id="beaconPanel2">
+                    <img class="beacon-panel-img absolute inset-0 z-10 hidden h-full w-full rounded-[22px] object-contain"
+                        src="" alt="Tab 2 preview" data-tab-img="2" />
+
+                    <div class="beacon-panel-mockup">
+                        <div
+                            class="flex max-h-[520px] w-[270px] flex-col overflow-hidden rounded-[18px] bg-[#f4f5f7] shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                            <div class="flex flex-none items-center gap-[10px] bg-[#219653] px-[15px] py-[13px]">
+                                <div class="flex cursor-pointer items-center text-white">
+                                    <svg viewBox="0 0 24 24"
+                                        class="h-[17px] w-[17px] fill-none stroke-white stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]">
+                                        <polyline points="15 18 9 12 15 6" />
+                                    </svg>
+                                </div>
+                                <div class="mr-5 flex-1 text-center text-[0.9rem] font-semibold text-white"
+                                    x-text="$store.ui.t('homeBeaconPreviousConversations')"></div>
+                            </div>
+                            <div class="flex flex-col gap-[9px] overflow-hidden px-[11px] py-[13px]">
+                                <div class="mb-[-3px] px-[3px] text-[0.67rem] font-medium text-[#9ca3af]"
+                                    x-text="$store.ui.t('homeBeaconLastUpdatedToday')"></div>
+
+                                <div
+                                    class="flex flex-col gap-[5px] rounded-[11px] bg-white px-[13px] py-[11px] shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-[0.77rem] font-bold text-[#219653]">Live chat 28 Apr 2025</div>
+                                        <div
+                                            class="flex h-[17px] w-[17px] flex-none items-center justify-center rounded-full bg-[#219653] text-[0.62rem] font-bold text-white">
+                                            2</div>
+                                    </div>
+                                    <div class="line-clamp-2 text-[0.72rem] leading-[1.4] text-[#6b7280]">Happy mixing,
+                                        friend!</div>
+                                    <div class="mt-[3px] flex items-center">
+                                        <div class="flex">
+                                            <div class="h-5 w-5 rounded-full border-2 border-white bg-[#f472b6]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="flex flex-col gap-[5px] rounded-[11px] bg-white px-[13px] py-[11px] shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-[0.77rem] font-bold text-[#219653]">Pro tumblers in stock?
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-[0.66rem] text-[#9ca3af]">
+                                        <svg viewBox="0 0 24 24"
+                                            class="h-[11px] w-[11px] fill-none stroke-[#219653] stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                        Received. Waiting for a reply
+                                    </div>
+                                </div>
+
+                                <div class="mt-[3px] mb-[-3px] px-[3px] text-[0.67rem] font-medium text-[#9ca3af]">Last
+                                    updated 3 days ago</div>
+
+                                <div
+                                    class="flex flex-col gap-[5px] rounded-[11px] bg-white px-[13px] py-[11px] shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-[0.77rem] font-bold text-[#219653]">New Stock Purchase Order
+                                        </div>
+                                        <div
+                                            class="relative flex h-[17px] w-[17px] flex-none items-center justify-center rounded-full bg-[#219653] text-[0.62rem] font-bold text-white">
+                                            3
+                                            <span
+                                                class="absolute -right-[3px] -top-[3px] h-[6px] w-[6px] rounded-full border-[1.5px] border-white bg-[#219653]"></span>
+                                        </div>
+                                    </div>
+                                    <div class="line-clamp-2 text-[0.72rem] leading-[1.4] text-[#6b7280]">Great news, we
+                                        just received a huge shipment containing both those items! Would you like…</div>
+                                    <div class="mt-[3px] flex items-center">
+                                        <div class="flex">
+                                            <div class="h-5 w-5 rounded-full border-2 border-white bg-[#f472b6]"></div>
+                                            <div class="-ml-1 h-5 w-5 rounded-full border-2 border-white bg-[#f59e0b]">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute bottom-[22px] right-[22px] z-[5] flex h-[46px] w-[46px] cursor-pointer items-center justify-center rounded-full bg-[#219653] shadow-[0_6px_20px_rgba(0,0,0,0.25)]">
+                    <svg viewBox="0 0 24 24"
+                        class="h-[18px] w-[18px] fill-none stroke-white stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+    BEACON 2 — Flipped layout with image-only preview
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <section id="beaconSection2"
+        class="w-full px-10 py-15 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        :class="$store.ui.darkMode ? 'bg-[#0b111b]' : 'bg-white'">
+        <div id="beaconWrapper2"
+            class="mx-auto flex w-full max-w-[1060px] items-center justify-center gap-[72px] max-lg:flex-col max-lg:gap-12">
+
+            <div
+                class="relative h-[580px] w-[420px] flex-none overflow-hidden rounded-[22px] bg-[linear-gradient(135deg,#1c1b3a_0%,#3b2a3a_50%,#1c1b3a_100%)] max-lg:h-[520px] max-lg:w-full max-lg:max-w-[420px]">
+                <div class="beacon-panel absolute inset-0 flex items-center justify-center opacity-100 transition-all duration-300"
+                    id="beacon2Panel0">
+                    <img class="beacon-panel-img absolute inset-0 z-10 h-full w-full rounded-[22px] object-cover"
+                        src="https://hs-marketing-contentful.imgix.net/https%3A%2F%2Fimages.ctfassets.net%2Fp15sglj92v6o%2F2g26mWCMfs8ziyuevskl1j%2F4c69ec22fab1742fbdad3770f6aa1e0f%2Frouting--tag-refund.jpg?ixlib=gatsbySourceUrl-2.1.3&auto=format%2C%20compress&q=75&w=1540&h=2055&s=b21c38fc44ebea63004bf6e8df0a86a1"
+                        alt="Beacon 2 tab 1 preview" />
+                </div>
+
+                <div class="beacon-panel absolute inset-0 hidden items-center justify-center opacity-0 transition-all duration-300"
+                    id="beacon2Panel1">
+                    <img class="beacon-panel-img absolute inset-0 z-10 h-full w-full rounded-[22px] object-cover"
+                        src="https://hs-marketing-contentful.imgix.net/https%3A%2F%2Fimages.ctfassets.net%2Fp15sglj92v6o%2F22nlFXco6s5kxPyIfasKFd%2F0436229639f8fa9cedd49b3c86ecf127%2Frouting--old-convos.jpg?ixlib=gatsbySourceUrl-2.1.3&auto=format%2C%20compress&q=75&w=1540&h=2055&s=e86c1cb0da08a273a094e81056919bdb"
+                        alt="Beacon 2 tab 2 preview" />
+                </div>
+
+                <div class="beacon-panel absolute inset-0 hidden items-center justify-center opacity-0 transition-all duration-300"
+                    id="beacon2Panel2">
+                    <img class="beacon-panel-img absolute inset-0 z-10 h-full w-full rounded-[22px] object-cover"
+                        src="https://hs-marketing-contentful.imgix.net/https%3A%2F%2Fimages.ctfassets.net%2Fp15sglj92v6o%2F3lfXWEDesrRWBPf3pXChVc%2F7cd366710258b43ebdec922d95815401%2Frouting--bug-notify.jpg?ixlib=gatsbySourceUrl-2.1.3&auto=format%2C%20compress&q=75&w=1540&h=2055&s=1af1596dfac5caf5467d3fddc047564d"
+                        alt="Beacon 2 tab 3 preview" />
+                </div>
+            </div>
+
+            <div class="w-full max-w-[420px] flex-none">
+                <h2 class="mb-12 text-[2rem] leading-[1.25] font-bold"
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'" x-text="$store.ui.t('beacon2Title')">
+                </h2>
+
+                <div class="flex flex-col">
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="0">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e5e7eb]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon2Tab1Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon2Tab1Body')"></div>
+                        </div>
+                    </div>
+
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="1">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e5e7eb]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon2Tab2Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon2Tab2Body')"></div>
+                        </div>
+                    </div>
+
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="2">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e5e7eb]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon2Tab3Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon2Tab3Body')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+    BEACON 3 — Everything in one place
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <section id="beaconSection3"
+        class="w-full px-10 py-15 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        :class="$store.ui.darkMode ? 'bg-[#0b111b]' : 'bg-white'">
+        <div id="beaconWrapper3"
+            class="mx-auto flex w-full max-w-[1060px] items-center justify-center gap-[72px] max-lg:flex-col max-lg:gap-12">
+
+            <div class="w-full max-w-[360px] flex-none">
+                <h2 class="mb-12 text-[2rem] leading-[1.25] font-bold"
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1c1c2e]'">
+                    <span x-text="$store.ui.t('beacon3TitlePrefix')"></span>
+                    - <span class="text-[#219653]" x-text="$store.ui.t('beacon3TitleEmphasis')"></span>
+                </h2>
+
+                <div class="flex flex-col">
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="0">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e0e0e0]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon3Tab1Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon3Tab1Body')"></div>
+                        </div>
+                    </div>
+
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="1">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e0e0e0]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon3Tab2Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon3Tab2Body')"></div>
+                        </div>
+                    </div>
+
+                    <div class="beacon-tab flex cursor-pointer items-stretch gap-4 py-[18px]" data-tab="2">
+                        <div class="relative min-h-10 w-[3px] flex-none overflow-hidden rounded-[3px] bg-[#e0e0e0]">
+                            <div
+                                class="beacon-tab-line-fill absolute left-0 top-0 h-0 w-full rounded-[3px] bg-[#219653]">
+                            </div>
+                        </div>
+                        <div class="flex flex-col justify-center pl-1">
+                            <div class="beacon-tab-title text-[1.05rem] font-semibold text-[#9ca3af]"
+                                x-text="$store.ui.t('beacon3Tab3Title')"></div>
+                            <div class="beacon-tab-desc mt-0 max-h-0 overflow-hidden text-[0.875rem] leading-[1.55] text-[#6b7280] opacity-0 transition-all duration-300 ease-out"
+                                x-text="$store.ui.t('beacon3Tab3Body')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="relative h-[580px] w-[420px] flex-none overflow-hidden rounded-[22px] bg-[linear-gradient(135deg,#1c1b3a_0%,#3b2a3a_50%,#1c1b3a_100%)] max-lg:h-[520px] max-lg:w-full max-lg:max-w-[420px]">
+                <div class="beacon-panel absolute inset-0 flex items-center justify-center opacity-100 transition-all duration-300"
+                    id="beacon3Panel0">
+                    <img class="beacon-panel-img absolute inset-0 z-10 hidden h-full w-full rounded-[22px] object-contain"
+                        src="" alt="Beacon 3 tab 1 preview" />
+                    <div class="beacon-panel-mockup">
+                        <div
+                            class="flex max-h-[520px] w-[310px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                            <div
+                                class="flex items-center justify-between border-b border-[#e5e7eb] bg-[#f9fafb] px-4 py-3">
+                                <span class="text-[0.7rem] font-bold tracking-wide text-[#6b7280]">#TK-00847 ·
+                                    Billing</span>
+                                <span
+                                    class="rounded-full bg-[#fef2f2] px-2 py-0.5 text-[0.62rem] font-bold uppercase text-[#dc2626]">Urgent</span>
+                            </div>
+                            <div class="flex items-center gap-2 border-b border-[#fecaca] bg-[#fef2f2] px-4 py-2">
+                                <span class="text-[0.68rem] font-semibold text-[#dc2626]">SLA breach in 18 min - respond
+                                    now</span>
+                            </div>
+                            <div class="flex flex-1 flex-col gap-2 bg-[#f9fafb] px-4 py-3">
+                                <div class="text-[0.64rem] font-semibold text-[#6b7280]">Customer · Sarah M.</div>
+                                <div
+                                    class="rounded-[10px] rounded-bl-[3px] border border-[#e5e7eb] bg-white px-3 py-2 text-[0.75rem] leading-[1.45] text-[#1c1c2e]">
+                                    Hi, I was charged twice for my subscription this month and I need this resolved
+                                    ASAP.</div>
+                            </div>
+                            <div class="border-t border-[#e5e7eb] bg-white px-3 py-2.5">
+                                <div class="mb-2 text-[0.65rem] font-bold uppercase tracking-wide text-[#219653]">AI
+                                    Suggestion</div>
+                                <div
+                                    class="mb-2 rounded-[8px] border border-[#bbf7d0] bg-[#f0fdf4] px-2.5 py-2 text-[0.73rem] leading-[1.45] text-[#1c1c2e]">
+                                    Hi Sarah, I'm sorry for the double charge. I've started a full refund for the
+                                    duplicate payment and will confirm once complete.</div>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-[0.62rem] text-[#6b7280]">Tone:</span>
+                                    <span
+                                        class="rounded-full bg-[#219653] px-2 py-0.5 text-[0.62rem] font-semibold text-white">Friendly</span>
+                                    <span
+                                        class="rounded-full border border-[#e5e7eb] px-2 py-0.5 text-[0.62rem] font-semibold text-[#6b7280]">Professional</span>
+                                    <span
+                                        class="rounded-full border border-[#e5e7eb] px-2 py-0.5 text-[0.62rem] font-semibold text-[#6b7280]">Formal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beacon-panel absolute inset-0 hidden items-center justify-center opacity-0 transition-all duration-300"
+                    id="beacon3Panel1">
+                    <img class="beacon-panel-img absolute inset-0 z-10 hidden h-full w-full rounded-[22px] object-contain"
+                        src="" alt="Beacon 3 tab 2 preview" />
+                    <div class="beacon-panel-mockup">
+                        <div
+                            class="flex max-h-[520px] w-[310px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                            <div class="flex items-center justify-between bg-[#219653] px-4 py-3">
+                                <span class="text-[0.88rem] font-bold text-white">Ticket Queue</span>
+                                <span
+                                    class="rounded-full bg-white/20 px-2 py-0.5 text-[0.68rem] font-bold text-white">12
+                                    open · 2 breached</span>
+                            </div>
+                            <div class="flex gap-1 border-b border-[#e5e7eb] bg-[#f9fafb] px-3 py-2">
+                                <span
+                                    class="rounded-full bg-[#219653] px-2 py-0.5 text-[0.62rem] font-semibold text-white">All</span>
+                                <span
+                                    class="rounded-full border border-[#e5e7eb] px-2 py-0.5 text-[0.62rem] font-semibold text-[#6b7280]">Urgent</span>
+                                <span
+                                    class="rounded-full border border-[#e5e7eb] px-2 py-0.5 text-[0.62rem] font-semibold text-[#6b7280]">Unassigned</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="border-b border-[#f3f4f6] px-3 py-2.5">
+                                    <div class="mb-1 flex items-center justify-between gap-2">
+                                        <div class="truncate text-[0.75rem] font-semibold text-[#1c1c2e]">Can't access
+                                            my account after password reset</div>
+                                        <span
+                                            class="rounded-full bg-[#fef2f2] px-2 py-0.5 text-[0.62rem] font-bold uppercase text-[#dc2626]">Urgent</span>
+                                    </div>
+                                    <div class="text-[0.66rem] text-[#6b7280]">Auto-assigned · J. Rivera · Routed to
+                                        Auth Specialists</div>
+                                </div>
+                                <div class="border-b border-[#f3f4f6] px-3 py-2.5">
+                                    <div class="mb-1 flex items-center justify-between gap-2">
+                                        <div class="truncate text-[0.75rem] font-semibold text-[#1c1c2e]">Bulk order
+                                            discount not applying</div>
+                                        <span
+                                            class="rounded-full bg-[#fff7ed] px-2 py-0.5 text-[0.62rem] font-bold uppercase text-[#ea580c]">High</span>
+                                    </div>
+                                    <div class="text-[0.66rem] text-[#6b7280]">Auto-assigned · A. Lee · 42 min left
+                                    </div>
+                                </div>
+                                <div class="px-3 py-2.5">
+                                    <div class="mb-1 flex items-center justify-between gap-2">
+                                        <div class="truncate text-[0.75rem] font-semibold text-[#1c1c2e]">How do I
+                                            export my data as CSV?</div>
+                                        <span
+                                            class="rounded-full bg-[#fefce8] px-2 py-0.5 text-[0.62rem] font-bold uppercase text-[#ca8a04]">Medium</span>
+                                    </div>
+                                    <div class="text-[0.66rem] text-[#6b7280]">Auto-assigned · M. Khan · 3h 20m left
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="beacon-panel absolute inset-0 hidden items-center justify-center opacity-0 transition-all duration-300"
+                    id="beacon3Panel2">
+                    <img class="beacon-panel-img absolute inset-0 z-10 hidden h-full w-full rounded-[22px] object-contain"
+                        src="" alt="Beacon 3 tab 3 preview" />
+                    <div class="beacon-panel-mockup">
+                        <div
+                            class="flex max-h-[520px] w-[300px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                            <div class="flex items-center gap-2 bg-[#219653] px-4 py-3">
+                                <div
+                                    class="flex h-7 w-7 items-center justify-center rounded-[7px] bg-white/25 text-white">
+                                    ◎</div>
+                                <span class="text-[0.88rem] font-bold text-white">HelpDesk Support</span>
+                            </div>
+                            <div class="flex flex-col gap-3 px-4 py-4">
+                                <div
+                                    class="rounded-[10px] border border-[#bbf7d0] bg-[#f0fdf4] px-3 py-2 text-[0.72rem] font-semibold text-[#219653]">
+                                    <span x-text="$store.ui.t('homeBeacon3NoAccountNeeded')"></span>
+                                </div>
+                                <div class="text-[0.68rem] text-[#6b7280]">Ticket #TK-00831 · Refund request - order
+                                    #8823</div>
+                                <div class="flex flex-col gap-2 text-[0.73rem]">
+                                    <div class="text-[#16a34a]">● <span
+                                            x-text="$store.ui.t('homeBeacon3StepSubmitted')"></span></div>
+                                    <div class="text-[#16a34a]">● <span
+                                            x-text="$store.ui.t('homeBeacon3StepAssigned')"></span></div>
+                                    <div class="font-semibold text-[#1c1c2e]">◉ <span
+                                            x-text="$store.ui.t('homeBeacon3StepInProgress')"></span></div>
+                                    <div class="text-[#9ca3af]">○ Resolved</div>
+                                </div>
+                                <button class="rounded-[9px] bg-[#219653] py-2 text-[0.78rem] font-bold text-white"
+                                    x-text="$store.ui.t('homeBeacon3ReplyToAgent')"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="absolute bottom-[22px] right-[22px] z-[5] flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#219653] shadow-[0_6px_20px_rgba(67,168,71,0.35)]">
+                    <svg viewBox="0 0 24 24"
+                        class="h-[18px] w-[18px] fill-none stroke-white stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
 
@@ -756,15 +1384,14 @@
                 </button>
 
                 <div id="ggViewport" class="min-w-0 flex-1 overflow-hidden rounded-md">
-                    <div id="ggTrack"
-                        class="flex transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]">
+                    <div id="ggTrack" class="flex transition-transform duration-500 ease-[cubic-bezier(0.65,0,0.35,1)]">
                         <article class="min-w-full">
                             <div
                                 class="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-center lg:gap-12">
                                 <div class="relative h-75 w-full overflow-hidden rounded-2xl md:h-90 lg:h-105 lg:w-90 lg:shrink-0"
                                     :class="$store.ui.darkMode ? 'bg-white/10' : 'bg-[#d5cfc4]'">
-                                    <img src="{{ asset('images/Personnes/Personne03.jpg') }}" alt="Liberty London"
-                                        class="gg-slide-image hidden h-full w-full object-cover" />
+                                    <img src="https://web-assets.zendesk.com/is/image/zendesk/Photo_Testimonial_Liberty?fmt=webp-alpha&qlt=65"
+                                        alt="Liberty London" class="gg-slide-image hidden h-full w-full object-cover" />
                                     <div class="gg-slide-placeholder absolute inset-0 flex items-center justify-center text-sm italic"
                                         :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
                                         Add image
@@ -772,8 +1399,8 @@
                                 </div>
                                 <div class="flex flex-1 flex-col gap-5">
                                     <p
-                                        class="font-[Playfair_Display,ui-serif,Georgia,serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
-                                        "With Zendesk AI, I'm seeing an exciting opportunity to streamline and be more
+                                        class="font-[Inter,ui-sans-serif,system-ui,sans-serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
+                                        "With Help desk AI, I'm seeing an exciting opportunity to streamline and be more
                                         efficient. That will allow our team to have more time to work on projects of
                                         importance to the business, be it driving revenue or new sales channels."
                                     </p>
@@ -783,9 +1410,9 @@
                                             :class="$store.ui.darkMode ? 'text-white/65' : 'text-gray-600'">Director of
                                             CX at Liberty London</span>
                                     </div>
-                                    <a href="#"
-                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Read
-                                        customer story →</a>
+                                    <a href="https://www.libertylondon.com/" target="_blank"
+                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Visit
+                                        official website →</a>
                                 </div>
                             </div>
                         </article>
@@ -795,8 +1422,8 @@
                                 class="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-center lg:gap-12">
                                 <div class="relative h-75 w-full overflow-hidden rounded-2xl md:h-90 lg:h-105 lg:w-90 lg:shrink-0"
                                     :class="$store.ui.darkMode ? 'bg-white/10' : 'bg-[#d5cfc4]'">
-                                    <img src="{{ asset('images/Personnes/Personne02.jpg') }}" alt="Khan Academy"
-                                        class="gg-slide-image hidden h-full w-full object-cover" />
+                                    <img src="{{ asset('images/Personnes/young-business-owners-preparing-their-store.jpg') }}"
+                                        alt="Khan Academy" class="gg-slide-image hidden h-full w-full object-cover" />
                                     <div class="gg-slide-placeholder absolute inset-0 flex items-center justify-center text-sm italic"
                                         :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
                                         Add image
@@ -804,8 +1431,8 @@
                                 </div>
                                 <div class="flex flex-1 flex-col gap-5">
                                     <p
-                                        class="font-[Playfair_Display,ui-serif,Georgia,serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
-                                        "Zendesk has helped us scale our support without scaling our team
+                                        class="font-[Inter,ui-sans-serif,system-ui,sans-serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
+                                        "Help desk has helped us scale our support without scaling our team
                                         proportionally. It's been a game-changer for delivering personalized help to
                                         millions of learners worldwide."
                                     </p>
@@ -815,9 +1442,9 @@
                                             :class="$store.ui.darkMode ? 'text-white/65' : 'text-gray-600'">Chief
                                             Learning Officer at Khan Academy</span>
                                     </div>
-                                    <a href="#"
-                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Read
-                                        customer story →</a>
+                                    <a href="https://www.khanacademy.org/" target="_blank"
+                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Visit
+                                        official website →</a>
                                 </div>
                             </div>
                         </article>
@@ -827,8 +1454,8 @@
                                 class="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-center lg:gap-12">
                                 <div class="relative h-75 w-full overflow-hidden rounded-2xl md:h-90 lg:h-105 lg:w-90 lg:shrink-0"
                                     :class="$store.ui.darkMode ? 'bg-white/10' : 'bg-[#d5cfc4]'">
-                                    <img src="{{ asset('images/Personnes/Personne01.jpg') }}" alt="ZeroFox"
-                                        class="gg-slide-image hidden h-full w-full object-cover" />
+                                    <img src="{{ asset('images/Personnes/enthusiastic-couple-pensioners-sitting-together-home-sofa-using-laptop-talking-video-call-with-family.jpg') }}"
+                                        alt="ZeroFox" class="gg-slide-image hidden h-full w-full object-cover" />
                                     <div class="gg-slide-placeholder absolute inset-0 flex items-center justify-center text-sm italic"
                                         :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
                                         Add image
@@ -836,8 +1463,9 @@
                                 </div>
                                 <div class="flex flex-1 flex-col gap-5">
                                     <p
-                                        class="font-[Playfair_Display,ui-serif,Georgia,serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
-                                        "With Zendesk, our support team now resolves tickets 40% faster. The automation
+                                        class="font-[Inter,ui-sans-serif,system-ui,sans-serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
+                                        "With Help desk, our support team now resolves tickets 40% faster. The
+                                        automation
                                         features free us up to focus on high-priority threats that actually need human
                                         judgment and expertise."
                                     </p>
@@ -847,9 +1475,9 @@
                                             :class="$store.ui.darkMode ? 'text-white/65' : 'text-gray-600'">CEO at
                                             ZeroFox</span>
                                     </div>
-                                    <a href="#"
-                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Read
-                                        customer story →</a>
+                                    <a href="https://www.zerofox.com/" target="_blank"
+                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Visit
+                                        official website →</a>
                                 </div>
                             </div>
                         </article>
@@ -859,8 +1487,8 @@
                                 class="flex flex-col items-start gap-8 md:gap-10 lg:flex-row lg:items-center lg:gap-12">
                                 <div class="relative h-75 w-full overflow-hidden rounded-2xl md:h-90 lg:h-105 lg:w-90 lg:shrink-0"
                                     :class="$store.ui.darkMode ? 'bg-white/10' : 'bg-[#d5cfc4]'">
-                                    <img src="{{ asset('images/Personnes/Personne03.jpg') }}" alt="Thrasio"
-                                        class="gg-slide-image hidden h-full w-full object-cover" />
+                                    <img src="{{ asset('images/Personnes/businessman-standing-outside-office-building.jpg') }}"
+                                        alt="Thrasio" class="gg-slide-image hidden h-full w-full object-cover" />
                                     <div class="gg-slide-placeholder absolute inset-0 flex items-center justify-center text-sm italic"
                                         :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
                                         Add image
@@ -868,8 +1496,8 @@
                                 </div>
                                 <div class="flex flex-1 flex-col gap-5">
                                     <p
-                                        class="font-[Playfair_Display,ui-serif,Georgia,serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
-                                        "Zendesk allowed Thrasio to unify support across dozens of brands under one
+                                        class="font-[Inter,ui-sans-serif,system-ui,sans-serif] text-xl leading-relaxed sm:text-2xl lg:text-[1.72rem]">
+                                        "Help desk allowed Thrasio to unify support across dozens of brands under one
                                         roof. Our CSAT scores jumped significantly within the first quarter of going
                                         live."
                                     </p>
@@ -879,9 +1507,9 @@
                                             :class="$store.ui.darkMode ? 'text-white/65' : 'text-gray-600'">Co-CEO at
                                             Thrasio</span>
                                     </div>
-                                    <a href="#"
-                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Read
-                                        customer story →</a>
+                                    <a href="https://www.thrasio.com/" target="_blank"
+                                        class="w-fit text-sm font-medium underline underline-offset-4 transition hover:opacity-70">Visit
+                                        official website →</a>
                                 </div>
                             </div>
                         </article>
@@ -939,21 +1567,16 @@
         class="relative w-full overflow-hidden px-6 py-24 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
         :class="$store.ui.darkMode ? 'bg-gray-950' : 'bg-white'">
         <div class="pointer-events-none absolute -left-12 top-8 h-44 w-44 rounded-full blur-3xl"
-            :class="$store.ui.darkMode ? 'bg-emerald-300/10' : 'bg-emerald-200/55'"></div>
+            :class="$store.ui.darkMode ? 'bg-[#219653]/10' : 'bg-[#219653]/55'"></div>
         <div class="pointer-events-none absolute -right-10 bottom-8 h-56 w-56 rounded-full blur-3xl"
             :class="$store.ui.darkMode ? 'bg-cyan-300/10' : 'bg-cyan-200/45'"></div>
 
-        <div class="relative z-1 mx-auto flex max-w-275 flex-col items-center justify-center gap-12 rounded-3xl border px-6 py-8 md:flex-row md:gap-20 md:px-10 md:py-10"
-            :class="$store.ui.darkMode ? 'border-white/10 bg-white/2' :
-                'border-gray-200 bg-white/90 shadow-[0_20px_60px_-30px_rgba(17,24,39,0.3)]'">
+        <div
+            class="relative z-1 mx-auto flex max-w-275 flex-col items-center justify-center gap-12 rounded-3xl px-6 py-8 md:flex-row md:gap-20 md:px-10 md:py-10">
 
             {{-- Image --}}
-            <div id="supportHeroesVisual"
-                class="group w-full shrink-0 overflow-hidden rounded-[22px] border p-2 transition-all duration-500 hover:-translate-y-1 md:w-107.5"
-                :class="$store.ui.darkMode ? 'border-white/12 bg-gray-900/70 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.75)]' :
-                    'border-gray-200 bg-white shadow-[0_18px_42px_-26px_rgba(15,23,42,0.35)]'">
-                <img src="{{ asset('images/Personnes/Team_photo.png') }}" alt="Support hero"
-                    class="aspect-square w-full rounded-2xl object-cover transition-transform duration-700 group-hover:scale-103" />
+            <div id="supportHeroesVisual" class="w-full max-w-[720px]">
+                <img src="{{ asset('images/Personnes/Team_photoo.png') }}" alt="Support hero" class="w-full h-auto" />
             </div>
 
             {{-- Text --}}
@@ -961,12 +1584,13 @@
                 <span
                     class="mb-4 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]"
                     :class="$store.ui.darkMode ? 'border-white/15 bg-white/5 text-white/70' :
-                        'border-emerald-200 bg-emerald-50 text-emerald-700'">
-                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                        'border-[#219653]/20 bg-[#219653]/10 text-[#219653]'">
+                    <span class="h-1.5 w-1.5 rounded-full bg-[#219653]"></span>
                     SUPPORT HEROES
                 </span>
-                <h2 class="mb-5 font-[Playfair_Display,ui-serif,Georgia,serif] text-4xl font-bold leading-[1.08] tracking-tight sm:text-[2.95rem]"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">
+                <h2 class="mb-5 text-4xl font-bold leading-[1.08] tracking-tight sm:text-[2.95rem]"
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'"
+                    style="font-family: 'Montserrat', 'DM Sans', ui-sans-serif, system-ui, sans-serif !important;">
                     <span x-text="$store.ui.t('heroesTitle1')"></span><br>
                     <span x-text="$store.ui.t('heroesTitle2')"></span>
                 </h2>
@@ -976,8 +1600,8 @@
                 <button type="button" id="supportHeroesChatBtn"
                     class="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-base font-bold text-white shadow-[0_16px_30px_-16px_rgba(34,197,94,0.75)] transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.01]"
                     :class="$store.ui.darkMode ?
-                        'bg-linear-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400' :
-                        'bg-linear-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500'">
+                        'bg-[#219653] hover:bg-[#1b7a44]' :
+                        'bg-[#219653] hover:bg-[#1b7a44]'">
                     <span x-text="$store.ui.t('heroesCta')"></span>
                     <span aria-hidden="true">→</span>
                 </button>
@@ -986,475 +1610,20 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-    LOGO BAR — Trusted brands
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <section class="border-y transition-colors duration-300"
-        :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.02]' : 'border-gray-200 bg-gray-50/50'">
-        <div class="mx-auto max-w-6xl px-6 py-10">
-            <p class="mb-8 text-center text-xs font-semibold uppercase tracking-widest"
-                :class="$store.ui.darkMode ? 'text-white/30' : 'text-gray-400'">
-                Powering support for industry leaders
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6"
-                :class="$store.ui.darkMode ? 'opacity-40' : 'opacity-30'">
-                {{-- Placeholder logos using text (swap for real SVGs) --}}
-                <span class="text-xl font-bold tracking-tight"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Shopify</span>
-                <span class="text-xl font-bold tracking-tight"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Slack</span>
-                <span class="text-xl font-bold tracking-tight"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Stripe</span>
-                <span class="text-xl font-bold tracking-tight"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Notion</span>
-                <span class="text-xl font-bold tracking-tight"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Vercel</span>
-                <span class="text-xl font-bold tracking-tight"
-                    :class="$store.ui.darkMode ? 'text-white' : 'text-gray-900'">Linear</span>
-            </div>
-        </div>
-    </section>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-    FEATURES GRID — 3 column with icon cards
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <section id="features" class="mx-auto max-w-6xl px-6 py-24">
-        <div class="mb-16 text-center">
-            <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl text-[#17494D]">
-                Everything you need to <span class="text-brand">deliver great support</span>
-            </h2>
-            <p class="mx-auto max-w-2xl text-lg" :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/80'">
-                Powerful features that help your team resolve issues faster and keep customers happy.
-            </p>
-        </div>
-
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {{-- Card 1 --}}
-            <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
-                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
-                <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
-                    <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                    </svg>
-                </div>
-                <h3 class="mb-2 text-lg font-semibold">Ticket Management</h3>
-                <p class="text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    Create, assign and track support tickets from start to resolution with smart routing and SLA
-                    tracking.
-                </p>
-            </div>
-
-            {{-- Card 2 --}}
-            <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
-                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
-                <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
-                    <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
-                <h3 class="mb-2 text-lg font-semibold">Team Collaboration</h3>
-                <p class="text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    Internal notes, mentions and shared views so your team stays aligned and responds together.
-                </p>
-            </div>
-
-            {{-- Card 3 --}}
-            <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
-                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
-                <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
-                    <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                </div>
-                <h3 class="mb-2 text-lg font-semibold">Analytics &amp; Reporting</h3>
-                <p class="text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    Real-time dashboards and custom reports to measure response times, satisfaction and team
-                    performance.
-                </p>
-            </div>
-
-            {{-- Card 4 --}}
-            <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
-                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
-                <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
-                    <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                    </svg>
-                </div>
-                <h3 class="mb-2 text-lg font-semibold">Live Chat</h3>
-                <p class="text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    Engage customers in real time with an embedded chat widget that routes to the right agent instantly.
-                </p>
-            </div>
-
-            {{-- Card 5 --}}
-            <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
-                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
-                <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
-                    <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
-                <h3 class="mb-2 text-lg font-semibold">Automation</h3>
-                <p class="text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    Auto-assign, auto-tag and trigger workflows so repetitive tasks handle themselves.
-                </p>
-            </div>
-
-            {{-- Card 6 --}}
-            <div class="group rounded-2xl border p-8 transition-all duration-300"
-                :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03] hover:border-brand/30 hover:bg-brand/[0.04]' :
-                    'border-gray-200 bg-white hover:border-brand/40 hover:shadow-lg'">
-                <div
-                    class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 transition-colors group-hover:bg-brand/25">
-                    <svg class="h-6 w-6 stroke-brand" fill="none" stroke-width="1.5" viewBox="0 0 24 24"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                    </svg>
-                </div>
-                <h3 class="mb-2 text-lg font-semibold">Knowledge Base</h3>
-                <p class="text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    Help customers help themselves with searchable articles, FAQs and guided troubleshooting.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-    STATS BAR — Social proof numbers
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <section class="border-y transition-colors duration-300"
-        :class="$store.ui.darkMode ? 'border-white/10 bg-brand/[0.03]' : 'border-[#17494D]/10 bg-brand/[0.05]'">
-        <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-16 sm:grid-cols-4">
-            <div class="text-center">
-                <div class="text-4xl font-bold text-brand sm:text-5xl">2K+</div>
-                <p class="mt-2 text-sm font-medium"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
-                    Support teams</p>
-            </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-brand sm:text-5xl">10M+</div>
-                <p class="mt-2 text-sm font-medium"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
-                    Tickets resolved</p>
-            </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-brand sm:text-5xl">98%</div>
-                <p class="mt-2 text-sm font-medium"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
-                    Customer satisfaction</p>
-            </div>
-            <div class="text-center">
-                <div class="text-4xl font-bold text-brand sm:text-5xl">&lt;2min</div>
-                <p class="mt-2 text-sm font-medium"
-                    :class="$store.ui.darkMode ? 'text-white/50' : 'text-[#17494D]/70'">
-                    Avg. first response</p>
-            </div>
-        </div>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-    SPOTLIGHT — Two-column feature highlights (alternating)
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <section class="mx-auto max-w-6xl space-y-24 px-6 py-24">
-
-        {{-- Highlight 1: Omnichannel --}}
-        <div class="flex flex-col items-center gap-12 md:flex-row">
-            <div class="flex-1">
-                <span
-                    class="mb-3 inline-block rounded-full bg-brand/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-brand">Omnichannel</span>
-                <h3 class="mb-4 text-3xl font-bold tracking-tight">Meet your customers where they are</h3>
-                <p class="mb-6 text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
-                    Email, chat, social, phone — every conversation in one unified inbox. No more switching between
-                    tools or losing context.
-                </p>
-                <ul class="space-y-3">
-                    <li class="flex items-center gap-3 text-[0.9375rem]"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        <svg class="h-5 w-5 shrink-0 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Unified agent workspace
-                    </li>
-                    <li class="flex items-center gap-3 text-[0.9375rem]"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        <svg class="h-5 w-5 shrink-0 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Full conversation history
-                    </li>
-                    <li class="flex items-center gap-3 text-[0.9375rem]"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        <svg class="h-5 w-5 shrink-0 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Smart channel routing
-                    </li>
-                </ul>
-            </div>
-            {{-- Illustration placeholder --}}
-            <div class="flex flex-1 items-center justify-center">
-                <div class="flex h-64 w-full items-center justify-center rounded-2xl border-2 border-dashed sm:h-80"
-                    :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.02]' : 'border-gray-200 bg-gray-50'">
-                    <svg class="h-20 w-20" :class="$store.ui.darkMode ? 'text-white/10' : 'text-gray-200'"
-                        fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
-                        <path
-                            d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        {{-- Highlight 2: AI-Powered (reversed) --}}
-        <div class="flex flex-col-reverse items-center gap-12 md:flex-row">
-            {{-- Illustration placeholder --}}
-            <div class="flex flex-1 items-center justify-center">
-                <div class="flex h-64 w-full items-center justify-center rounded-2xl border-2 border-dashed sm:h-80"
-                    :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.02]' : 'border-gray-200 bg-gray-50'">
-                    <svg class="h-20 w-20" :class="$store.ui.darkMode ? 'text-white/10' : 'text-gray-200'"
-                        fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M12 .75a8.25 8.25 0 00-4.135 15.39c.686.398 1.115 1.008 1.134 1.623a.75.75 0 00.577.706 7.998 7.998 0 004.848 0 .75.75 0 00.577-.706c.02-.615.448-1.225 1.134-1.623A8.25 8.25 0 0012 .75z" />
-                        <path fill-rule="evenodd"
-                            d="M9.013 19.9a.75.75 0 01.877-.597 11.319 11.319 0 004.22 0 .75.75 0 11.28 1.473 12.819 12.819 0 01-4.78 0 .75.75 0 01-.597-.876zM9.754 22.344a.75.75 0 01.824-.668 13.682 13.682 0 002.844 0 .75.75 0 11.156 1.492 15.156 15.156 0 01-3.156 0 .75.75 0 01-.668-.824z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </div>
-            </div>
-            <div class="flex-1">
-                <span
-                    class="mb-3 inline-block rounded-full bg-brand/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-brand">AI-Powered</span>
-                <h3 class="mb-4 text-3xl font-bold tracking-tight">Resolve issues before they escalate</h3>
-                <p class="mb-6 text-[0.9375rem] leading-relaxed"
-                    :class="$store.ui.darkMode ? 'text-white/55' : 'text-gray-500'">
-                    Built-in AI suggests responses, summarizes tickets and surfaces relevant knowledge base articles —
-                    so agents can focus on what matters.
-                </p>
-                <ul class="space-y-3">
-                    <li class="flex items-center gap-3 text-[0.9375rem]"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        <svg class="h-5 w-5 shrink-0 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        AI-suggested replies
-                    </li>
-                    <li class="flex items-center gap-3 text-[0.9375rem]"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        <svg class="h-5 w-5 shrink-0 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Auto-ticket summaries
-                    </li>
-                    <li class="flex items-center gap-3 text-[0.9375rem]"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        <svg class="h-5 w-5 shrink-0 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Intelligent chatbot
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-    TESTIMONIALS — 3 cards
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <section class="border-y transition-colors duration-300"
-        :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.02]' : 'border-gray-200 bg-gray-50/50'">
-        <div class="mx-auto max-w-6xl px-6 py-24">
-            <div class="mb-16 text-center">
-                <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">Loved by support teams</h2>
-                <p class="mx-auto max-w-xl text-lg" :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-                    See why thousands of teams choose us to power their customer support.
-                </p>
-            </div>
-
-            <div class="grid gap-8 md:grid-cols-3">
-                {{-- Testimonial 1 --}}
-                <div class="rounded-2xl border p-8 transition-colors duration-300"
-                    :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03]' : 'border-gray-200 bg-white'">
-                    <div class="mb-4 flex gap-1">
-                        @for ($i = 0; $i < 5; $i++)
-                            <svg class="h-4 w-4 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        @endfor
-                    </div>
-                    <p class="mb-6 text-[0.9375rem] leading-relaxed"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        &ldquo;Reduced our average response time by 60%. The automation features are a game changer for
-                        our team.&rdquo;
-                    </p>
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-sm font-bold text-brand">
-                            SJ</div>
-                        <div>
-                            <div class="text-sm font-semibold">Sarah Johnson</div>
-                            <div class="text-xs" :class="$store.ui.darkMode ? 'text-white/40' : 'text-gray-400'">Head
-                                of
-                                Support, TechCorp</div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Testimonial 2 --}}
-                <div class="rounded-2xl border p-8 transition-colors duration-300"
-                    :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03]' : 'border-gray-200 bg-white'">
-                    <div class="mb-4 flex gap-1">
-                        @for ($i = 0; $i < 5; $i++)
-                            <svg class="h-4 w-4 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        @endfor
-                    </div>
-                    <p class="mb-6 text-[0.9375rem] leading-relaxed"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        &ldquo;The unified inbox is exactly what we needed. Our agents love it and our CSAT scores have
-                        never been higher.&rdquo;
-                    </p>
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-sm font-bold text-brand">
-                            MR</div>
-                        <div>
-                            <div class="text-sm font-semibold">Michael Rivera</div>
-                            <div class="text-xs" :class="$store.ui.darkMode ? 'text-white/40' : 'text-gray-400'">CTO,
-                                StartupFlow</div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Testimonial 3 --}}
-                <div class="rounded-2xl border p-8 transition-colors duration-300"
-                    :class="$store.ui.darkMode ? 'border-white/10 bg-white/[0.03]' : 'border-gray-200 bg-white'">
-                    <div class="mb-4 flex gap-1">
-                        @for ($i = 0; $i < 5; $i++)
-                            <svg class="h-4 w-4 text-brand" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        @endfor
-                    </div>
-                    <p class="mb-6 text-[0.9375rem] leading-relaxed"
-                        :class="$store.ui.darkMode ? 'text-white/70' : 'text-gray-600'">
-                        &ldquo;We migrated from Zendesk and haven&rsquo;t looked back. Faster, cleaner and the AI
-                        features actually work.&rdquo;
-                    </p>
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-sm font-bold text-brand">
-                            AL</div>
-                        <div>
-                            <div class="text-sm font-semibold">Amy Liu</div>
-                            <div class="text-xs" :class="$store.ui.darkMode ? 'text-white/40' : 'text-gray-400'">VP
-                                Operations, CloudBase</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-    FINAL CTA
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <section class="mx-auto max-w-4xl px-6 py-28 text-center">
-        <h2 class="mb-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            Ready to transform your support?
-        </h2>
-        <p class="mx-auto mb-10 max-w-xl text-lg" :class="$store.ui.darkMode ? 'text-white/50' : 'text-gray-500'">
-            Join thousands of teams delivering faster, smarter customer support. Start your free trial today — no credit
-            card required.
-        </p>
-        <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}"
-                        class="inline-flex items-center gap-2 rounded-xl bg-brand px-10 py-4 text-base font-semibold text-white shadow-lg shadow-brand/25 transition hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-xl hover:shadow-brand/30">
-                        Go to Dashboard
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                    </a>
-                @else
-                    <a href="{{ route('register') }}"
-                        class="inline-flex items-center gap-2 rounded-xl bg-brand px-10 py-4 text-base font-semibold text-white shadow-lg shadow-brand/25 transition hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-xl hover:shadow-brand/30">
-                        Start free trial
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
-                    </a>
-                    <a href="{{ route('login') }}"
-                        class="inline-flex items-center gap-2 rounded-xl border px-10 py-4 text-base font-semibold transition hover:-translate-y-0.5"
-                        :class="$store.ui.darkMode ? 'border-white/20 text-white hover:border-white/40 hover:bg-white/5' :
-                            'border-[#17494D]/30 text-[#17494D] hover:border-[#17494D]/50 hover:bg-[#17494D]/5'">
-                        Talk to sales
-                    </a>
-                @endauth
-            @endif
-        </div>
-    </section>
 
     {{-- ═══════════════════════════════════════════════════════════════════
     GET STARTED — Animated hero block from gg.html
     ═══════════════════════════════════════════════════════════════════ --}}
     <section id="getStartedHeroSection"
-        class="relative isolate overflow-hidden bg-[#fdf0e8] px-6 pb-32 pt-10 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
-        <div
-            class="absolute inset-0 z-0 bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#d8a8cc_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#f0b090_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#f5c898_0%,transparent_60%),linear-gradient(135deg,#dbaac8_0%,#f0b888_50%,#f5a87a_100%)]">
+        class="relative isolate overflow-hidden px-6 pb-32 pt-10 opacity-0 translate-y-8 blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        :class="$store.ui.darkMode ? 'bg-[#0a101c]' : 'bg-[#fdf0e8]'">
+        <div class="absolute inset-0 z-0"
+            :class="$store.ui.darkMode ? 'bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#1d3358_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#102840_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#1f2937_0%,transparent_60%),linear-gradient(135deg,#08111f_0%,#0f1f35_50%,#162a43_100%)]' : 'bg-[radial-gradient(ellipse_70%_60%_at_20%_40%,#d8a8cc_0%,transparent_55%),radial-gradient(ellipse_60%_70%_at_80%_30%,#f0b090_0%,transparent_55%),radial-gradient(ellipse_80%_80%_at_50%_80%,#f5c898_0%,transparent_60%),linear-gradient(135deg,#dbaac8_0%,#f0b888_50%,#f5a87a_100%)]'">
         </div>
 
-        <div
-            class="absolute right-0 top-0 z-1 h-65 w-65 bg-[radial-gradient(circle,rgba(180,100,80,0.25)_1.5px,transparent_1.5px)] bg-size-[18px_18px] mask-[radial-gradient(ellipse_80%_80%_at_90%_10%,black_40%,transparent_80%)]">
+        <div class="absolute right-0 top-0 z-1 h-65 w-65 bg-size-[18px_18px] mask-[radial-gradient(ellipse_80%_80%_at_90%_10%,black_40%,transparent_80%)]"
+            :class="$store.ui.darkMode ? 'bg-[radial-gradient(circle,rgba(112,170,255,0.16)_1.5px,transparent_1.5px)]' : 'bg-[radial-gradient(circle,rgba(180,100,80,0.25)_1.5px,transparent_1.5px)]'">
         </div>
 
         <svg class="absolute bottom-0 left-0 z-1 h-80 w-80 opacity-[0.18]" viewBox="0 0 320 320" fill="none"
@@ -1468,27 +1637,29 @@
             class="relative z-2 mx-auto flex min-h-[10vh] w-full max-w-5000 flex-col items-center justify-center pb-24 text-center">
             <div class="mb-7 overflow-hidden leading-none">
                 <span id="getStartedHeadline"
-                    class="block translate-y-15 font-[Barlow_Condensed,sans-serif] text-[clamp(72px,12vw,148px)] font-black uppercase leading-[0.92] tracking-[-1px] text-[#1a1020] opacity-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                    data-get-started-reveal>
-                    GET STARTED
-                </span>
+                    class="block translate-y-15 font-[Barlow_Condensed,sans-serif] text-[clamp(72px,12vw,148px)] font-black uppercase leading-[0.92] tracking-[-1px] opacity-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    :class="$store.ui.darkMode ? 'text-white' : 'text-[#1a1020]'" data-get-started-reveal
+                    x-text="$store.ui.t('homeGetStartedHeading')"></span>
             </div>
 
-            <p class="mb-10 translate-y-15 text-[clamp(16px,2vw,22px)] leading-[1.65] text-[#3a1e2e] opacity-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-250"
-                data-get-started-reveal>
-                Learn the platform in less than an hour.<br>
-                Become a <em class="font-[Lora,serif] italic font-normal">power user</em> in less than a day.
+            <p class="mb-10 translate-y-15 text-[clamp(16px,2vw,22px)] leading-[1.65] opacity-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-250"
+                :class="$store.ui.darkMode ? 'text-white/85' : 'text-[#3a1e2e]'" data-get-started-reveal>
+                <span x-text="$store.ui.t('homeGetStartedLine1')"></span><br>
+                <span x-text="$store.ui.t('homeGetStartedLine2Prefix')"></span>
+                <em class="font-[Lora,serif] italic font-normal"
+                    x-text="$store.ui.t('homeGetStartedLine2Emphasis')"></em>
+                <span x-text="$store.ui.t('homeGetStartedLine2Suffix')"></span>
             </p>
 
             <div class="flex translate-y-15 flex-wrap justify-center gap-3.5 opacity-0 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] delay-400"
                 data-get-started-reveal>
                 <a href="#"
-                    class="rounded-lg bg-[#2d9e5a] px-8.5 py-3.75 text-base font-semibold text-white shadow-[0_6px_20px_-4px_rgba(45,157,90,0.55)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-4px_rgba(255,255,255,0.65)] active:translate-y-0">
-                    Get Started
+                    class="rounded-lg bg-[#219653] px-8.5 py-3.75 text-base font-semibold text-white shadow-[0_6px_20px_-4px_rgba(45,157,90,0.55)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-4px_rgba(255,255,255,0.65)] active:translate-y-0">
+                    <span x-text="$store.ui.t('homeGetStartedPrimaryCta')"></span>
                 </a>
                 <a href="#"
                     class="rounded-lg border-[1.5px] border-white/90 bg-white/80 px-8.5 py-3.75 text-base font-semibold text-[#1a1020] shadow-[0_4px_14px_-4px_rgba(0,0,0,0.15)] backdrop-blur-[6px] transition hover:-translate-y-0.5 hover:bg-white active:translate-y-0">
-                    Book a Demo
+                    <span x-text="$store.ui.t('homeGetStartedSecondaryCta')"></span>
                 </a>
             </div>
 
@@ -1499,19 +1670,19 @@
                     <span class="flex-1 text-[15px] font-medium text-[#333]">
                         App help?
                         <span
-                            class="ml-1 inline-block rounded bg-[#e8f5e9] px-2 py-0.75 text-[11px] font-semibold text-[#2e7d32]">vip</span>
+                            class="ml-1 inline-block rounded bg-[#e8f5e9] px-2 py-0.75 text-[11px] font-semibold text-[#219653]">vip</span>
                         <span
                             class="ml-1 inline-block rounded bg-[#fce4ec] px-2 py-0.75 text-[11px] font-semibold text-[#c62828]">sales-lead</span>
                     </span>
                     <div class="flex items-center">
                         <div
                             class="-ml-2.5 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-[2.5px] border-[#f3e8ff] bg-linear-to-br from-[#a78bfa] to-[#7c3aed] text-lg first:ml-0">
-                            <img src="https://i.pravatar.cc/88?img=12" alt="Support agent"
+                            <img src="{{ asset('images/Personnes/walid_photo.jpeg') }}" alt="Support agent"
                                 class="h-full w-full rounded-full object-cover" />
                         </div>
                         <div
-                            class="-ml-2.5 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-[2.5px] border-[#fff0ec] bg-linear-to-br from-[#fb923c] to-[#dc2626] text-lg first:ml-0">
-                            <img src="https://i.pravatar.cc/88?img=32" alt="Support agent"
+                            class="gs-younes-wiggle-red -ml-2.5 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-[2.5px] border-[#fff0ec] bg-linear-to-br from-[#fb923c] to-[#dc2626] text-lg first:ml-0">
+                            <img src="{{ asset('images/Personnes/Younes_Photo.jpg') }}" alt="Support agent"
                                 class="h-full w-full rounded-full object-cover" />
                         </div>
                     </div>
@@ -1530,7 +1701,7 @@
     <livewire:ai-chat-widget />
     <!-- Support Features Slider Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             /* ═══════════════════════════
                SLIDER CORE
             ═══════════════════════════ */
@@ -1539,66 +1710,174 @@
             const sfsNextBtn = document.getElementById('sfsNextBtn');
 
             if (sfsTrack && sfsPrevBtn && sfsNextBtn) {
-                const sfsCards = sfsTrack.querySelectorAll('.sfs-card');
-                const sfsTotal = sfsCards.length;
-                const sfsStepCards = 3;
-                let sfsCurrent = 0,
-                    sfsAutoTimer;
+                const sfsViewport = sfsTrack.closest('.sfs-slider-outer');
+                const sfsOriginalCards = Array.from(sfsTrack.querySelectorAll('.sfs-card'));
+                const sfsTotal = sfsOriginalCards.length;
+                const sfsAutoIntervalMs = 5000;
+                const sfsTransitionValue = 'transform 0.65s cubic-bezier(0.65, 0, 0.35, 1)';
+                let sfsCurrent = sfsTotal > 1 ? sfsTotal : 0;
+                let sfsAutoTimer;
+                let sfsIsTransitioning = false;
+                let sfsTouchStartX = 0;
 
-                function sfsGap() {
-                    return parseFloat(getComputedStyle(sfsTrack).gap) || 16;
+                if (sfsTotal > 1) {
+                    const sfsAppendClones = sfsOriginalCards.map((card, index) => {
+                        const clone = card.cloneNode(true);
+                        clone.setAttribute('data-sfs-clone', 'append');
+                        clone.setAttribute('data-sfs-origin-index', String(index));
+                        return clone;
+                    });
+
+                    const sfsPrependClones = sfsOriginalCards.map((card, index) => {
+                        const clone = card.cloneNode(true);
+                        clone.setAttribute('data-sfs-clone', 'prepend');
+                        clone.setAttribute('data-sfs-origin-index', String(index));
+                        return clone;
+                    });
+
+                    sfsAppendClones.forEach((clone) => {
+                        sfsTrack.appendChild(clone);
+                    });
+
+                    for (let i = sfsPrependClones.length - 1; i >= 0; i -= 1) {
+                        sfsTrack.insertBefore(sfsPrependClones[i], sfsTrack.firstChild);
+                    }
+
+                    sfsTrack.style.width = 'max-content';
                 }
 
-                function sfsMaxIndex() {
-                    return Math.max(0, sfsTotal - 2);
+                function sfsCards() {
+                    return Array.from(sfsTrack.querySelectorAll('.sfs-card'));
                 }
 
-                function sfsStepPx() {
-                    return sfsCards[0].offsetWidth + sfsGap();
+                function sfsClampIndex(index) {
+                    const cards = sfsCards();
+                    const maxIndex = Math.max(0, cards.length - 1);
+                    return Math.max(0, Math.min(index, maxIndex));
                 }
 
-                function sfsGoTo(idx) {
-                    sfsCurrent = Math.max(0, Math.min(idx, sfsMaxIndex()));
-                    sfsTrack.style.transform = `translateX(-${sfsCurrent * sfsStepPx()}px)`;
-                    sfsUpdateNavState();
+                function sfsTranslateToCurrent() {
+                    const cards = sfsCards();
+                    sfsCurrent = sfsClampIndex(sfsCurrent);
+                    const target = cards[sfsCurrent] || cards[0];
+                    const offset = target ? target.offsetLeft : 0;
+
+                    console.log('index:', sfsCurrent);
+                    console.log('offset:', offset);
+                    console.log('total cards:', cards.length);
+
+                    sfsTrack.style.transform = `translateX(-${offset}px)`;
                 }
 
-                function sfsUpdateNavState() {
-                    const atStart = sfsCurrent === 0;
-                    const atEnd = sfsCurrent === sfsMaxIndex();
+                function sfsJumpTo(index) {
+                    sfsTrack.style.transition = 'none';
+                    sfsCurrent = sfsClampIndex(index);
+                    sfsTranslateToCurrent();
 
-                    sfsPrevBtn.classList.toggle('is-disabled', atStart);
-                    sfsNextBtn.classList.toggle('is-disabled', atEnd);
-                    sfsPrevBtn.setAttribute('aria-disabled', atStart ? 'true' : 'false');
-                    sfsNextBtn.setAttribute('aria-disabled', atEnd ? 'true' : 'false');
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            sfsTrack.style.transition = sfsTransitionValue;
+                            console.log('[SFS] current index:', sfsCurrent);
+                        });
+                    });
+                }
+
+                function sfsMoveBy(step) {
+                    if (sfsIsTransitioning || sfsTotal < 2) {
+                        return;
+                    }
+
+                    sfsIsTransitioning = true;
+                    sfsCurrent += step;
+                    sfsCurrent = sfsClampIndex(sfsCurrent);
+                    sfsTrack.style.transition = sfsTransitionValue;
+                    sfsTranslateToCurrent();
+                    console.log('[SFS] current index:', sfsCurrent);
                 }
 
                 function sfsStartAuto() {
+                    if (sfsTotal < 2) {
+                        return;
+                    }
+
+                    clearInterval(sfsAutoTimer);
                     sfsAutoTimer = setInterval(() => {
-                        sfsGoTo(sfsCurrent >= sfsMaxIndex() ? 0 : sfsCurrent + sfsStepCards);
-                    }, 7000);
+                        if (!document.hidden) {
+                            sfsMoveBy(1);
+                        }
+                    }, sfsAutoIntervalMs);
+                }
+
+                function sfsStopAuto() {
+                    clearInterval(sfsAutoTimer);
                 }
 
                 function sfsResetAuto() {
-                    clearInterval(sfsAutoTimer);
+                    sfsStopAuto();
                     sfsStartAuto();
                 }
 
-                sfsPrevBtn.addEventListener('click', () => {
-                    if (sfsCurrent === 0) return;
-                    sfsGoTo(sfsCurrent - sfsStepCards);
-                    sfsResetAuto();
-                });
-                sfsNextBtn.addEventListener('click', () => {
-                    if (sfsCurrent === sfsMaxIndex()) return;
-                    sfsGoTo(sfsCurrent + sfsStepCards);
-                    sfsResetAuto();
-                });
-                window.addEventListener('resize', () => {
-                    sfsGoTo(Math.min(sfsCurrent, sfsMaxIndex()));
+                sfsTrack.addEventListener('transitionend', (event) => {
+                    if (event.target !== sfsTrack || event.propertyName !== 'transform') {
+                        return;
+                    }
+
+                    if (sfsCurrent >= sfsTotal * 2) {
+                        console.log('[SFS] reset: appended set -> real set');
+                        sfsJumpTo(sfsCurrent - sfsTotal);
+                        sfsIsTransitioning = false;
+                    } else if (sfsCurrent < sfsTotal) {
+                        console.log('[SFS] reset: prepended set -> real set');
+                        sfsJumpTo(sfsCurrent + sfsTotal);
+                        sfsIsTransitioning = false;
+                    } else {
+                        sfsIsTransitioning = false;
+                    }
                 });
 
-                sfsGoTo(0);
+                sfsPrevBtn.addEventListener('click', () => {
+                    sfsMoveBy(-1);
+                    sfsResetAuto();
+                });
+
+                sfsNextBtn.addEventListener('click', () => {
+                    sfsMoveBy(1);
+                    sfsResetAuto();
+                });
+
+                const sfsSection = document.getElementById('sfsSection');
+                const sfsHoverTarget = sfsSection || sfsViewport;
+
+                if (sfsHoverTarget) {
+                    sfsHoverTarget.addEventListener('mouseenter', sfsStopAuto);
+                    sfsHoverTarget.addEventListener('mouseleave', sfsStartAuto);
+                }
+
+                if (sfsViewport) {
+                    sfsViewport.addEventListener('touchstart', (event) => {
+                        sfsTouchStartX = event.touches[0].clientX;
+                        sfsStopAuto();
+                    }, {
+                        passive: true
+                    });
+
+                    sfsViewport.addEventListener('touchend', (event) => {
+                        const deltaX = event.changedTouches[0].clientX - sfsTouchStartX;
+                        if (Math.abs(deltaX) > 40) {
+                            sfsMoveBy(deltaX < 0 ? 1 : -1);
+                        }
+                        sfsStartAuto();
+                    }, {
+                        passive: true
+                    });
+                }
+
+                window.addEventListener('resize', () => {
+                    sfsJumpTo(sfsCurrent);
+                });
+
+                sfsTrack.style.transition = sfsTransitionValue;
+                sfsJumpTo(sfsTotal > 1 ? sfsTotal : 0);
                 sfsStartAuto();
 
                 /* ═══════════════════════════
@@ -1832,6 +2111,206 @@
 
                     ggObserver.observe(ggSection);
                 }
+            }
+
+            /* ═══════════════════════════
+               Beacon tabs (embeddable support hub)
+            ═══════════════════════════ */
+            const initBeaconTabs = (wrapperId, panelIds) => {
+                const beaconWrapper = document.getElementById(wrapperId);
+
+                if (!beaconWrapper) {
+                    return;
+                }
+
+                const BEACON_DURATION = 4000;
+                const beaconTabs = Array.from(beaconWrapper.querySelectorAll('.beacon-tab'));
+                const beaconPanels = panelIds.map((panelId) => document.getElementById(panelId)).filter(Boolean);
+                const beaconPanelImages = Array.from(beaconWrapper.querySelectorAll('.beacon-panel-img'));
+
+                if (beaconTabs.length === 0 || beaconPanels.length === 0) {
+                    return;
+                }
+
+                const beaconApplyImgSwap = () => {
+                    beaconPanelImages.forEach((image) => {
+                        const mockup = image.nextElementSibling;
+                        const hasImagePath = image.getAttribute('src')?.trim();
+
+                        if (hasImagePath) {
+                            image.classList.remove('hidden');
+                            mockup?.classList.add('hidden');
+                        } else {
+                            image.classList.add('hidden');
+                            mockup?.classList.remove('hidden');
+                        }
+                    });
+                };
+
+                beaconApplyImgSwap();
+
+                let beaconCurrent = 0;
+                let beaconPaused = false;
+                let beaconElapsed = 0;
+                let beaconLastTs = null;
+                let beaconRafId = null;
+
+                const beaconIsDarkMode = () => {
+                    const alpineStore = window.Alpine?.store?.('ui');
+
+                    if (alpineStore && typeof alpineStore.darkMode === 'boolean') {
+                        return alpineStore.darkMode;
+                    }
+
+                    return document.body.classList.contains('bg-black');
+                };
+
+                const beaconSetActiveFillProgress = () => {
+                    const progress = Math.max(0, Math.min(1, beaconElapsed / BEACON_DURATION));
+                    const activeTab = beaconTabs[beaconCurrent];
+                    const fill = activeTab?.querySelector('.beacon-tab-line-fill');
+
+                    if (fill) {
+                        fill.style.height = `${progress * 100}%`;
+                    }
+                };
+
+                const beaconActivateTab = (index) => {
+                    beaconCurrent = index;
+                    beaconElapsed = 0;
+                    beaconLastTs = beaconPaused ? null : performance.now();
+                    const isDarkMode = beaconIsDarkMode();
+
+                    beaconTabs.forEach((tab, tabIndex) => {
+                        const isActive = tabIndex === beaconCurrent;
+                        const title = tab.querySelector('.beacon-tab-title');
+                        const desc = tab.querySelector('.beacon-tab-desc');
+                        const fill = tab.querySelector('.beacon-tab-line-fill');
+
+                        if (title) {
+                            title.classList.toggle('text-white', isActive && isDarkMode);
+                            title.classList.toggle('text-[#1c1c2e]', isActive && !isDarkMode);
+                            title.classList.toggle('text-[#9ca3af]', !isActive);
+                        }
+
+                        if (desc) {
+                            desc.classList.toggle('max-h-20', isActive);
+                            desc.classList.toggle('opacity-100', isActive);
+                            desc.classList.toggle('mt-[7px]', isActive);
+
+                            desc.classList.toggle('max-h-0', !isActive);
+                            desc.classList.toggle('opacity-0', !isActive);
+                            desc.classList.toggle('mt-0', !isActive);
+                        }
+
+                        if (fill) {
+                            fill.style.height = '0%';
+                        }
+                    });
+
+                    beaconPanels.forEach((panel, panelIndex) => {
+                        const isActive = panelIndex === beaconCurrent;
+                        panel.classList.toggle('hidden', !isActive);
+                        panel.classList.toggle('flex', isActive);
+                        panel.classList.toggle('opacity-0', !isActive);
+                        panel.classList.toggle('opacity-100', isActive);
+                    });
+
+                    beaconSetActiveFillProgress();
+                };
+
+                const beaconTick = (ts) => {
+                    if (beaconPaused) {
+                        return;
+                    }
+
+                    if (beaconLastTs !== null) {
+                        beaconElapsed += ts - beaconLastTs;
+                    }
+
+                    beaconLastTs = ts;
+
+                    if (beaconElapsed >= BEACON_DURATION) {
+                        beaconActivateTab((beaconCurrent + 1) % beaconTabs.length);
+                    } else {
+                        beaconSetActiveFillProgress();
+                    }
+
+                    beaconRafId = requestAnimationFrame(beaconTick);
+                };
+
+                const beaconPauseAuto = () => {
+                    beaconPaused = true;
+
+                    if (beaconRafId) {
+                        cancelAnimationFrame(beaconRafId);
+                    }
+
+                    beaconRafId = null;
+                    beaconLastTs = null;
+                };
+
+                const beaconResumeAuto = () => {
+                    beaconPaused = false;
+                    beaconLastTs = performance.now();
+                    beaconRafId = requestAnimationFrame(beaconTick);
+                };
+
+                beaconTabs.forEach((tab, tabIndex) => {
+                    tab.addEventListener('mouseenter', beaconPauseAuto);
+                    tab.addEventListener('mouseleave', beaconResumeAuto);
+
+                    tab.addEventListener('click', () => {
+                        if (beaconRafId) {
+                            cancelAnimationFrame(beaconRafId);
+                        }
+
+                        beaconActivateTab(tabIndex);
+
+                        if (!beaconPaused) {
+                            beaconLastTs = performance.now();
+                            beaconRafId = requestAnimationFrame(beaconTick);
+                        }
+                    });
+                });
+
+                beaconActivateTab(0);
+                beaconRafId = requestAnimationFrame(beaconTick);
+            };
+
+            initBeaconTabs('beaconWrapper', ['beaconPanel0', 'beaconPanel1', 'beaconPanel2']);
+            initBeaconTabs('beaconWrapper2', ['beacon2Panel0', 'beacon2Panel1', 'beacon2Panel2']);
+            initBeaconTabs('beaconWrapper3', ['beacon3Panel0', 'beacon3Panel1', 'beacon3Panel2']);
+
+            const beaconSections = [
+                document.getElementById('beaconSection1'),
+                document.getElementById('beaconSection2'),
+                document.getElementById('beaconSection3'),
+            ].filter(Boolean);
+
+            const showBeaconSection = (section) => {
+                section.classList.remove('opacity-0', 'translate-y-8', 'blur-sm');
+                section.classList.add('opacity-100', 'translate-y-0', 'blur-0');
+            };
+
+            if (!('IntersectionObserver' in window)) {
+                beaconSections.forEach(showBeaconSection);
+            } else {
+                const beaconSectionObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            showBeaconSection(entry.target);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.18,
+                    rootMargin: '0px 0px -6% 0px',
+                });
+
+                beaconSections.forEach((section) => {
+                    beaconSectionObserver.observe(section);
+                });
             }
 
             /* ═══════════════════════════

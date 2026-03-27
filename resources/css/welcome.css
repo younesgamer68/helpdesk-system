@@ -3,8 +3,8 @@
 @source '../views';
 
 @theme {
-    --color-brand: #007260;
-    --color-brand-light: #00A983;
+    --color-brand: #219653;
+    --color-brand-light: #1b7a44;
     --color-brand-dark: #17494D;
     --color-cta: #17494D;
 }
@@ -62,6 +62,51 @@
     30% {
         transform: translateY(-4px);
     }
+}
+
+@keyframes avatar-wiggle-loop {
+
+    0%,
+    100% {
+        transform: rotate(0deg) translateX(0);
+    }
+
+    20% {
+        transform: rotate(-3deg) translateX(-1px);
+    }
+
+    40% {
+        transform: rotate(3deg) translateX(1px);
+    }
+
+    60% {
+        transform: rotate(-2deg) translateX(-1px);
+    }
+
+    80% {
+        transform: rotate(2deg) translateX(1px);
+    }
+}
+
+@keyframes avatar-red-border-pulse {
+
+    0%,
+    100% {
+        border-color: #f3e8ff;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.25);
+    }
+
+    50% {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.18);
+    }
+}
+
+.avatar-wiggle-pulse {
+    transform-origin: center;
+    animation: avatar-wiggle-loop 1.1s ease-in-out infinite,
+        avatar-red-border-pulse 1.4s ease-in-out infinite;
+    will-change: transform, box-shadow, border-color;
 }
 
 /* ── Scene card animations ── */
@@ -298,8 +343,8 @@
     width: clamp(38px, 3.6vw, 50px);
     height: clamp(38px, 3.6vw, 50px);
     border-radius: 50%;
-    border: 1.5px solid #2d9e5a;
-    background: #2d9e5a;
+    border: 1.5px solid #219653;
+    background: #219653;
     color: #fff;
     font-size: clamp(17px, 1.7vw, 22px);
     font-weight: 900;
@@ -313,8 +358,8 @@
 }
 
 .sfs-nav-btn:hover {
-    border-color: #5EDB56;
-    background: #5EDB56;
+    border-color: #1b7a44;
+    background: #1b7a44;
 }
 
 .sfs-nav-btn:active {
@@ -338,6 +383,7 @@
     position: relative;
     overflow: hidden;
     --edge-fade: clamp(34px, 5vw, 92px);
+    --sfs-edge-color: #ffffff;
 }
 
 .sfs-slider-outer::before,
@@ -353,12 +399,12 @@
 
 .sfs-slider-outer::before {
     left: 0;
-    background: linear-gradient(to right, #ffffff 15%, transparent);
+    background: linear-gradient(to right, var(--sfs-edge-color) 15%, transparent);
 }
 
 .sfs-slider-outer::after {
     right: 0;
-    background: linear-gradient(to left, #ffffff 15%, transparent);
+    background: linear-gradient(to left, var(--sfs-edge-color) 15%, transparent);
 
 }
 
@@ -374,7 +420,8 @@
 .sfs-card {
     background: #fff;
     border-radius: clamp(14px, 1.4vw, 24px);
-    flex: 0 0 var(--sfs-card-width);
+    flex: 0 0 auto;
+    width: var(--sfs-card-width);
     padding: 0 0 clamp(20px, 2.2vh, 34px);
     overflow: hidden;
     box-shadow: 0 2px 24px rgba(0, 0, 0, 0.08);
@@ -430,11 +477,12 @@
 
 
 @media (min-width: 1000px) {
-    .sfs-section{
-            padding: 0 clamp(50px, 3.5vw, 56px);
+    .sfs-section {
+        padding: 0 clamp(50px, 3.5vw, 56px);
 
     }
 }
+
 @media (max-width: 900px) {
     .sfs-slider-outer {
         --edge-fade: clamp(18px, 4vw, 36px);
@@ -716,7 +764,7 @@
 }
 
 .sfs-sl-btn {
-    background: #2d9e5a;
+    background: #219653;
     color: #fff;
     font-weight: 700;
     font-size: clamp(11px, 1vw, 13px);
@@ -1151,6 +1199,7 @@
     align-items: center;
     gap: 4px;
     flex: 1;
+    height: 100%;
 }
 
 .sfs-rp-b {
@@ -1193,6 +1242,74 @@
     font-size: 9.5px;
     color: #888;
     margin-top: 1px;
+}
+
+/* ── Card loop animations ── */
+@keyframes sfs-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes sfs-pulse-badge {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes sfs-bar-grow {
+    0% {
+        transform: scaleY(0.3);
+    }
+
+    50% {
+        transform: scaleY(1);
+    }
+
+    100% {
+        transform: scaleY(0.3);
+    }
+}
+
+@keyframes sfs-slide-in-up {
+
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-3px);
+        opacity: 0.9;
+    }
+}
+
+.sfs-anim-float {
+    animation: sfs-float 3s ease-in-out infinite;
+}
+
+.sfs-anim-pulse {
+    animation: sfs-pulse-badge 2.4s ease-in-out infinite;
+}
+
+.sfs-anim-bar-grow {
+    animation: sfs-bar-grow 4s ease-in-out infinite;
+    transform-origin: bottom;
 }
 
 /* ── C8 – Tags & Labels ── */

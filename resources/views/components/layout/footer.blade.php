@@ -143,7 +143,7 @@ Footer — reads darkMode / lang / t() from Alpine.store('ui')
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-white/70 hover:text-white'"
                             class="text-sm transition-colors duration-150" x-text="$store.ui.t('footerCareers')"></a>
                     </li>
-                    <li><a href="#"
+                    <li><a href="{{ route('contact') }}"
                             :class="$store.ui.darkMode ? 'text-gray-400 hover:text-white' : 'text-white/70 hover:text-white'"
                             class="text-sm transition-colors duration-150" x-text="$store.ui.t('footerContact')"></a>
                     </li>
